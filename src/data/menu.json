@@ -1,0 +1,94 @@
+[
+    {
+        "submenu": false,
+        "title": "Dashboard",
+        "icon": "<BsFillHouseFill />",
+        "url": "/dashboard",
+        "subtitle": []
+    },
+    {
+        "submenu": false,
+        "title": "Jadwal Mengajar",
+        "icon": "<MdOutlineTableChart />",
+        "url": "/finance",
+        "subtitle": []
+    },
+    {
+        "submenu": false,
+        "title": "Agenda Kedinasan",
+        "icon": "<BsTable />",
+        "url": "/akun",
+        "subtitle": []
+    },
+    {
+        "submenu": true,
+        "title": "Kehadiran",
+        "icon": "<FaPersonCircleCheck />",
+        "url": "/invenstment",
+        "subtitle": [
+            {
+                "name": "Rekap Kehadiran",
+                "url": "/button"
+            },
+            {
+                "name": "Pengajuan Cuti / Izin",
+                "url": "/card"
+            }
+        ]
+    },
+  
+    {
+        "submenu": true,
+        "title": "Siswa",
+        "icon": "<GrGroup />",
+        "url": "",
+        "subtitle": [
+            {
+                "name": "administrasi",
+                "url": "/button"
+            },
+            {
+                "name": "Presensi",
+                "url": "/card"
+            },
+            {
+                "name": "Daftar Nilai",
+                "url": "/card"
+            }
+        ]
+    },
+    {
+        "submenu": true,
+        "title": "Guru",
+        "icon": "<IoPersonOutline />",
+        "url": "",
+        "subtitle": [
+            {
+                "name": "Administrasi",
+                "url": "/button"
+            },
+            {
+                "name": "Bahan Ajar",
+                "url": "/card"
+            },
+            {
+                "name": "Agenda Kegiatan",
+                "url": "/card"
+            }
+        ]
+    },
+    {
+        "submenu": false,
+        "title": "Pelatihan",
+        "icon": "<FaRegStar />",
+        "url": "/akun",
+        "subtitle": []
+    },
+    {
+        "submenu": false,
+        "title": "Customer Care",
+        "icon": "<MdOutlineMessage />",
+        "url": "/akun",
+        "subtitle": []
+    }
+]
