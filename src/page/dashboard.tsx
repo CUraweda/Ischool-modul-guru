@@ -1,5 +1,4 @@
-import React from "react";
-import Layout from "../component/Layout";
+
 import guru from "../assets/guru.png";
 import asesment from "../assets/Asesmen.png"
 import { FaDownload } from "react-icons/fa";

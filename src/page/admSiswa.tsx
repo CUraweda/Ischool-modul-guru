@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Layout from "../component/Layout";
 import { FiPlus } from "react-icons/fi";
 import Modal from "../component/modal";
 import { format } from "date-fns";
@@ -138,7 +137,7 @@ const AdmSiswa = () => {
 
       <Modal id="add-cuti">
         <div className="w-full flex flex-col items-center">
-          <span className="text-xl font-bold">Form Pengajuan Cuti / Izin</span>
+          <span className="text-xl font-bold">Tambah Tugas</span>
           <div className="flex w-full mt-5 flex-col">
             <div className="w-full">
               <label className="mt-4 font-bold">Topik</label>

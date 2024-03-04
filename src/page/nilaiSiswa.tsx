@@ -1,5 +1,4 @@
-import React from "react";
-import Layout from "../component/Layout";
+
 
 const NilaiSiswa = () => {
   return (
@@ -17,6 +16,8 @@ const NilaiSiswa = () => {
               <option>MTK</option>
               <option>PKN</option>
             </select>
+            <div className="flex gap-2">
+
             <select className="select select-primary w-32 max-w-xs">
               <option disabled selected>
                 Filter
@@ -26,6 +27,8 @@ const NilaiSiswa = () => {
               <option>Alfa</option>
               <option>Sakit</option>
             </select>
+            <button className="btn bg-green-500 text-white">Upload Nilai</button>
+            </div>
           </div>
           <div className="overflow-x-auto my-5 w-full p-5 ">
             <table className="table shadow-lg">

@@ -1,5 +1,4 @@
-import React from "react";
-import Layout from "../component/Layout";
+
 import Calendar from "../component/calendar";
 
 const jadwalMengajar = () => {

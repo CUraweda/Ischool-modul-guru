@@ -1,10 +1,9 @@
 import { useState } from "react";
-import Layout from "../component/Layout";
 import { FiPlus } from "react-icons/fi";
 import Modal from "../component/modal";
-import { format } from "date-fns";
+import { addDays, format } from "date-fns";
 import { DateRange, DayPicker } from "react-day-picker";
-import "react-day-picker/dist/style.css";
+import 'react-day-picker/dist/style.css';
 
 const pastMonth = new Date();
 
@@ -15,8 +14,11 @@ const pengajuanCuti = () => {
       modalElement.showModal();
     }
   };
-
-  const [range, setRange] = useState<DateRange | undefined>();
+  const defaultSelected: DateRange = {
+    from: pastMonth,
+    to: addDays(pastMonth, 1),
+  };
+  const [range, setRange] = useState<DateRange | undefined>(defaultSelected);
 
   let footer = <p>Please pick the first day.</p>;
   if (range?.from) {
@@ -33,102 +35,102 @@ const pengajuanCuti = () => {
 
   return (
     <>
-     <div className="w-full flex flex-col items-center">
-          <div className="flex justify-between w-full flex-wrap">
-            <div className="p-3 sm:w-1/4 w-full">
-              <div className="bg-green-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
-                <span className="text-xl font-bold">
-                  Jumlah Cuti Tahun Berjalan
-                </span>
-                <div className="flex justify-center w-full">
-                  <div className="w-full my-4 flex justify-center items-center">
-                    <span className="text-8xl md:text-8xl font-bold">12</span>
-                    <span className="text-xl font-bold">Hari</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="p-3 sm:w-1/4 w-full">
-              <div className="bg-blue-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
-                <span className="text-xl font-bold">
-                  Jumlah Cuti Tahun Berjalan
-                </span>
-                <div className="flex justify-center w-full">
-                  <div className="w-full my-4 flex justify-center items-center">
-                    <span className="text-8xl md:text-8xl font-bold">12</span>
-                    <span className="text-xl font-bold">Hari</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="p-3 sm:w-1/4 w-full">
-              <div className="bg-red-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
-                <span className="text-xl font-bold">
-                  Jumlah Cuti Tahun Berjalan
-                </span>
-                <div className="flex justify-center w-full">
-                  <div className="w-full my-4 flex justify-center items-center">
-                    <span className="text-8xl md:text-8xl font-bold">12</span>
-                    <span className="text-xl font-bold">Hari</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="p-3 sm:w-1/4 w-full">
-              <div className="bg-yellow-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
-                <span className="text-xl font-bold">
-                  Jumlah Cuti Tahun Berjalan
-                </span>
-                <div className="flex justify-center w-full">
-                  <div className="w-full my-4 flex justify-center items-center">
-                    <span className="text-8xl md:text-8xl font-bold">12</span>
-                    <span className="text-xl font-bold">Hari</span>
-                  </div>
+      <div className="w-full flex flex-col items-center">
+        <div className="flex justify-between w-full flex-wrap">
+          <div className="p-3 sm:w-1/4 w-full">
+            <div className="bg-green-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
+              <span className="text-xl font-bold">
+                Jumlah Cuti Tahun Berjalan
+              </span>
+              <div className="flex justify-center w-full">
+                <div className="w-full my-4 flex justify-center items-center">
+                  <span className="text-8xl md:text-8xl font-bold">12</span>
+                  <span className="text-xl font-bold">Hari</span>
                 </div>
               </div>
             </div>
           </div>
-          <div className="overflow-x-auto w-full flex flex-col p-5 my-10 justify-center">
-            <div className="w-full justify-end bg-red flex">
-              <button
-                className="btn bg-green-500 text-white font-bold"
-                onClick={showModalAdd}
-              >
-                <span className="text-xl">
-                  <FiPlus />
-                </span>{" "}
-                Add
-              </button>
+          <div className="p-3 sm:w-1/4 w-full">
+            <div className="bg-blue-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
+              <span className="text-xl font-bold">
+                Jumlah Cuti Tahun Berjalan
+              </span>
+              <div className="flex justify-center w-full">
+                <div className="w-full my-4 flex justify-center items-center">
+                  <span className="text-8xl md:text-8xl font-bold">12</span>
+                  <span className="text-xl font-bold">Hari</span>
+                </div>
+              </div>
             </div>
-            <div className="overflow-x-auto">
-              <table className="table table-zebra shadow-md mt-5">
-                {/* head */}
-                <thead className="bg-blue-200">
-                  <tr>
-                    <th>No</th>
-                    <th>Name</th>
-                    <th>Tanggal Mulai</th>
-                    <th>Tanggal Selesai</th>
-                    <th>Durasi</th>
-                    <th>Keterangan</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th>1</th>
-                    <td>Cy Ganderton</td>
-                    <td>Quality Control Specialist</td>
-                    <td>Blue</td>
-                    <td>Blue</td>
-                    <td>Blue</td>
-                    <td>Blue</td>
-                  </tr>
-                </tbody>
-              </table>
+          </div>
+          <div className="p-3 sm:w-1/4 w-full">
+            <div className="bg-red-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
+              <span className="text-xl font-bold">
+                Jumlah Cuti Tahun Berjalan
+              </span>
+              <div className="flex justify-center w-full">
+                <div className="w-full my-4 flex justify-center items-center">
+                  <span className="text-8xl md:text-8xl font-bold">12</span>
+                  <span className="text-xl font-bold">Hari</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="p-3 sm:w-1/4 w-full">
+            <div className="bg-yellow-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
+              <span className="text-xl font-bold">
+                Jumlah Cuti Tahun Berjalan
+              </span>
+              <div className="flex justify-center w-full">
+                <div className="w-full my-4 flex justify-center items-center">
+                  <span className="text-8xl md:text-8xl font-bold">12</span>
+                  <span className="text-xl font-bold">Hari</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+        <div className="overflow-x-auto w-full flex flex-col p-5 my-10 justify-center">
+          <div className="w-full justify-end bg-red flex">
+            <button
+              className="btn bg-green-500 text-white font-bold"
+              onClick={showModalAdd}
+            >
+              <span className="text-xl">
+                <FiPlus />
+              </span>{" "}
+              Add
+            </button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="table table-zebra shadow-md mt-5">
+              {/* head */}
+              <thead className="bg-blue-200">
+                <tr>
+                  <th>No</th>
+                  <th>Name</th>
+                  <th>Tanggal Mulai</th>
+                  <th>Tanggal Selesai</th>
+                  <th>Durasi</th>
+                  <th>Keterangan</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>Quality Control Specialist</td>
+                  <td>Blue</td>
+                  <td>Blue</td>
+                  <td>Blue</td>
+                  <td>Blue</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
       <Modal id="add-cuti">
         <div className="w-full flex flex-col items-center">
