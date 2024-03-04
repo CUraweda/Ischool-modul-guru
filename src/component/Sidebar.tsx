@@ -1,3 +1,4 @@
+import React from "react";
 import { BsListNested } from "react-icons/bs";
 import { useState } from "react";
 import { iconMapping } from "../component/icon/icon";
@@ -41,23 +42,23 @@ const Sidebar = () => {
           <ul className="menu p-4 w-80 min-h-full bg-base-100">
             <div className="w-full flex justify-between mb-10 items-center">
               <div className="flex justify-center items-center gap-1">
-                <img src={logo} alt="logo" className="w-20"/>
+                <img src={logo} alt="logo" className="w-20" />
                 <p className="sm:text-xl text-xl font-bold">
                   Sekolah Alam Depok
                 </p>
               </div>
               <label
                 htmlFor="my-drawer-2"
-                className=" text-3xl font-bold lg:hidden"
+                className="btn btn-ghost text-3xl font-bold lg:hidden"
               >
                 <BsListNested />
               </label>
             </div>
             <ul className="menu font-bold rounded-lg max-w-xs w-full text-gray-500">
               {menu.map((item: Menu, index: number) => (
-                <>
+                <React.Fragment key={`menu-` + index}>
                   {item.submenu ? (
-                    <li className="my-2" key={`submenu-` + index}>
+                    <li className="my-2">
                       <details>
                         <summary>
                           <span className="text-2xl">
@@ -68,7 +69,7 @@ const Sidebar = () => {
                         <ul>
                           {item.subtitle?.map(
                             (Item: subtitle, Index: number) => (
-                              <Link to={Item.url}>
+                              <Link to={Item.url} key={`link-` + Index}>
                                 <li
                                   key={`subtitle-` + Index}
                                   className={`my-2 transition duration-200 rounded-md ${
@@ -78,7 +79,7 @@ const Sidebar = () => {
                                   }`}
                                   onClick={() => handleMenuItemClick(Item.url)}
                                 >
-                                  <a>{Item.name}</a>
+                                  <p>{Item.name}</p>
                                 </li>
                               </Link>
                             )
@@ -87,26 +88,25 @@ const Sidebar = () => {
                       </details>
                     </li>
                   ) : (
-                    <Link to={item.url}>
+                    <Link to={item.url} key={`link-` + index}>
                       <li
                         className={`my-2 transition duration-200 rounded-md ${
                           activeMenuItem === item.url
                             ? "bg-blue-100 text-blue-600"
                             : ""
                         }`}
-                        key={`menu-` + index}
                         onClick={() => handleMenuItemClick(item.url)}
                       >
-                        <p>
+                        <div>
                           <span className="text-2xl">
                             {iconMapping[item.icon]}
                           </span>
-                          <a>{item.title}</a>
-                        </p>
+                          <p>{item.title}</p>
+                        </div>
                       </li>
                     </Link>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </ul>
           </ul>

@@ -4,17 +4,16 @@ import Sidebar from "./Sidebar";
 
 interface Props {
   children?: React.ReactNode;
-  name?: string ;
+  name?: string;
 }
-const Layout: FC<Props> = ({ children, name}) => {
+const Layout: FC<Props> = ({ children, name }) => {
   return (
     <>
       <div className="flex flex-col min-h-screen" data-theme="light">
         <main className="flex flex-grow">
           <Sidebar />
           <div className="w-full">
-            <Navbar/>
-
+            <Navbar />
             {children}
           </div>
         </main>

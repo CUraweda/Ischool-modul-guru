@@ -10,15 +10,14 @@ const Navbar = () => {
   
   return (
     <div>
-      <div className="navbar shadow-md">
+      <div className="navbar shadow-md bg-base-100">
         <div className="flex-1">
-          <label className="text-3xl lg:hidden" htmlFor="my-drawer-2">
-          
+          <label className="btn btn-ghost text-3xl lg:hidden" htmlFor="my-drawer-2">
             <BsList />
           </label>
-          <label className="btn btn-ghost text-xl" htmlFor="my-drawer-2">
+          <span className="ml-3 text-xl">
            {date}
-          </label>
+          </span>
         </div>
         <div className="flex-none gap-5">
          

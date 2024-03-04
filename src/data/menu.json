@@ -10,14 +10,14 @@
         "submenu": false,
         "title": "Jadwal Mengajar",
         "icon": "<MdOutlineTableChart />",
-        "url": "/finance",
+        "url": "/jadwal-guru",
         "subtitle": []
     },
     {
         "submenu": false,
         "title": "Agenda Kedinasan",
         "icon": "<BsTable />",
-        "url": "/akun",
+        "url": "/jadwal-dinas",
         "subtitle": []
     },
     {
@@ -28,11 +28,11 @@
         "subtitle": [
             {
                 "name": "Rekap Kehadiran",
-                "url": "/button"
+                "url": "/rekap-kehadiran"
             },
             {
                 "name": "Pengajuan Cuti / Izin",
-                "url": "/card"
+                "url": "/pengajuan-cuti"
             }
         ]
     },
@@ -45,15 +45,15 @@
         "subtitle": [
             {
                 "name": "administrasi",
-                "url": "/button"
+                "url": "/adm-siswa"
             },
             {
                 "name": "Presensi",
-                "url": "/card"
+                "url": "/presensi-siswa"
             },
             {
                 "name": "Daftar Nilai",
-                "url": "/card"
+                "url": "/daftar-nilai-siswa"
             }
         ]
     },
