@@ -33,8 +33,7 @@ const pengajuanCuti = () => {
 
   return (
     <>
-      <Layout>
-        <div className="w-full flex flex-col items-center">
+     <div className="w-full flex flex-col items-center">
           <div className="flex justify-between w-full flex-wrap">
             <div className="p-3 sm:w-1/4 w-full">
               <div className="bg-green-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
@@ -130,7 +129,6 @@ const pengajuanCuti = () => {
             </div>
           </div>
         </div>
-      </Layout>
 
       <Modal id="add-cuti">
         <div className="w-full flex flex-col items-center">

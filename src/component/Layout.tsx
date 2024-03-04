@@ -11,7 +11,10 @@ const Layout: FC<Props> = ({ children, name }) => {
     <>
       <div className="flex flex-col min-h-screen" data-theme="light">
         <main className="flex flex-grow">
+          <div className="z-10">
+
           <Sidebar />
+          </div>
           <div className="w-full">
             <Navbar />
             {children}

@@ -65,15 +65,15 @@
         "subtitle": [
             {
                 "name": "Administrasi",
-                "url": "/button"
+                "url": "/adm-guru"
             },
             {
                 "name": "Bahan Ajar",
-                "url": "/card"
+                "url": "/bahan-ajar"
             },
             {
                 "name": "Agenda Kegiatan",
-                "url": "/card"
+                "url": "/agenda-kegiatan"
             }
         ]
     },
@@ -81,14 +81,14 @@
         "submenu": false,
         "title": "Pelatihan",
         "icon": "<FaRegStar />",
-        "url": "/akun",
+        "url": "/pelatihan",
         "subtitle": []
     },
     {
         "submenu": false,
         "title": "Customer Care",
         "icon": "<MdOutlineMessage />",
-        "url": "/akun",
+        "url": "/cs",
         "subtitle": []
     }
 ]

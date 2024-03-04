@@ -7,8 +7,7 @@ import { FaDownload } from "react-icons/fa";
 const dashboard = () => {
   return (
     <div>
-      <Layout name="Overview">
-        <div className="flex justify-center my-10 flex-col items-center ">
+      <div className="flex justify-center my-10 flex-col items-center ">
           <span className="text-3xl font-bold">Dashboard Guru</span>
           <div className="flex justify-between w-full flex-wrap">
             <div className="p-3 sm:w-1/3 w-full">
@@ -103,7 +102,6 @@ const dashboard = () => {
             </div>
           </div>
         </div>
-      </Layout>
     </div>
   );
 };
