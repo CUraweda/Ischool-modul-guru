@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FiPlus } from "react-icons/fi";
-import Modal from "../component/modal";
+import Modal from "../../component/modal";
 import { format } from "date-fns";
 import { DateRange, DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -9,7 +9,7 @@ import { BiTrash } from "react-icons/bi";
 
 const pastMonth = new Date();
 
-const AdmSiswa = () => {
+const AdmGuru = () => {
   const showModalAdd = () => {
     let modalElement = document.getElementById("add-cuti") as HTMLDialogElement;
     if (modalElement) {
@@ -35,10 +35,7 @@ const AdmSiswa = () => {
   return (
     <>
       <div className="w-full flex flex-col items-center">
-        <div className="my-10 flex flex-col text-center">
-          <span className="text-4xl font-bold">Administrasi Siswa</span>
-          <span>Kelas II</span>
-        </div>
+        
         <div className="flex justify-between w-full flex-wrap">
           <div className="p-3 sm:w-1/4 w-full">
             <div className="bg-green-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
@@ -87,7 +84,7 @@ const AdmSiswa = () => {
         </div>
         <div className="overflow-x-auto w-full flex flex-col p-5 my-10 justify-center">
           <div className="w-full justify-between bg-red flex">
-            <span className="text-2xl font-bold">Tugas Siswa</span>
+            <span className="text-2xl font-bold">Task List</span>
             <button
               className="btn bg-green-500 text-white font-bold"
               onClick={showModalAdd}
@@ -120,9 +117,9 @@ const AdmSiswa = () => {
                   <td>Blue</td>
                   <td>Blue</td>
                   <td>Blue</td>
-                  <td >
+                  <td>
                     <button className="btn btn-ghost text-orange-600 text-xl">
-                      <FaPenClip/>
+                      <FaPenClip />
                     </button>
                     <button className="btn btn-ghost text-red-600 text-xl">
                       <BiTrash />
@@ -164,7 +161,6 @@ const AdmSiswa = () => {
                 </option>
                 <option>Pribadi</option>
                 <option>WWP</option>
-               
               </select>
               <label className="mt-4 w-full font-bold">Periode</label>
               <div className="w-full flex justify-center">
@@ -181,8 +177,11 @@ const AdmSiswa = () => {
               </div>
             </div>
             <div className="w-full mt-5 gap-2 flex flex-col">
-            <label className="mt-4 font-bold">Upload File</label>
-            <input type="file" className="file-input file-input-bordered w-full" />
+              <label className="mt-4 font-bold">Upload File</label>
+              <input
+                type="file"
+                className="file-input file-input-bordered w-full"
+              />
             </div>
           </div>
 
@@ -198,4 +197,4 @@ const AdmSiswa = () => {
   );
 };
 
-export default AdmSiswa;
+export default AdmGuru;

@@ -3,36 +3,36 @@
         "submenu": false,
         "title": "Dashboard",
         "icon": "<BsFillHouseFill />",
-        "url": "/dashboard",
+        "url": "/guru/dashboard",
         "subtitle": []
     },
     {
         "submenu": false,
         "title": "Jadwal Mengajar",
         "icon": "<MdOutlineTableChart />",
-        "url": "/jadwal-guru",
+        "url": "/guru/jadwal-guru",
         "subtitle": []
     },
     {
         "submenu": false,
         "title": "Agenda Kedinasan",
         "icon": "<BsTable />",
-        "url": "/jadwal-dinas",
+        "url": "/guru/jadwal-dinas",
         "subtitle": []
     },
     {
         "submenu": true,
         "title": "Kehadiran",
         "icon": "<FaPersonCircleCheck />",
-        "url": "/invenstment",
+        "url": "/guru/invenstment",
         "subtitle": [
             {
                 "name": "Rekap Kehadiran",
-                "url": "/rekap-kehadiran"
+                "url": "/guru/rekap-kehadiran"
             },
             {
                 "name": "Pengajuan Cuti / Izin",
-                "url": "/pengajuan-cuti"
+                "url": "/guru/pengajuan-cuti"
             }
         ]
     },
@@ -45,15 +45,15 @@
         "subtitle": [
             {
                 "name": "administrasi",
-                "url": "/adm-siswa"
+                "url": "/guru/adm-siswa"
             },
             {
                 "name": "Presensi",
-                "url": "/presensi-siswa"
+                "url": "/guru/presensi-siswa"
             },
             {
                 "name": "Daftar Nilai",
-                "url": "/daftar-nilai-siswa"
+                "url": "/guru/daftar-nilai-siswa"
             }
         ]
     },
@@ -65,15 +65,15 @@
         "subtitle": [
             {
                 "name": "Administrasi",
-                "url": "/adm-guru"
+                "url": "/guru/adm-guru"
             },
             {
                 "name": "Bahan Ajar",
-                "url": "/bahan-ajar"
+                "url": "/guru/bahan-ajar"
             },
             {
                 "name": "Agenda Kegiatan",
-                "url": "/agenda-kegiatan"
+                "url": "/guru/agenda-kegiatan"
             }
         ]
     },
@@ -81,14 +81,14 @@
         "submenu": false,
         "title": "Pelatihan",
         "icon": "<FaRegStar />",
-        "url": "/pelatihan",
+        "url": "/guru/pelatihan",
         "subtitle": []
     },
     {
         "submenu": false,
         "title": "Customer Care",
         "icon": "<MdOutlineMessage />",
-        "url": "/cs",
+        "url": "/guru/cs",
         "subtitle": []
     }
 ]

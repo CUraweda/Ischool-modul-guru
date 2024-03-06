@@ -5,6 +5,7 @@ import { iconMapping } from "../component/icon/icon";
 import logo from "../assets/sade.png";
 import { Link } from "react-router-dom";
 import menu from "../data/menu.json";
+import karyawan from "../data/karyawan.json"
 
 interface Menu {
   title: string;
@@ -20,6 +21,7 @@ type subtitle = {
 };
 
 const Sidebar = () => {
+  const role = sessionStorage.getItem("role")
   const Side = sessionStorage.getItem("side");
   const [activeMenuItem, setActiveMenuItem] = useState<string>(
     Side ? Side : "/"
@@ -28,6 +30,8 @@ const Sidebar = () => {
     setActiveMenuItem(name);
     sessionStorage.setItem("side", name);
   };
+  let data = []
+  data = role === 'guru' ? menu : karyawan
 
   return (
     <div>
@@ -39,8 +43,8 @@ const Sidebar = () => {
             aria-label="close sidebar"
             className="drawer-overlay"
           />
-          <ul className="menu p-4 w-80 min-h-full bg-base-100 z-50">
-            <div className="w-full flex justify-between mb-10 items-center">
+          <ul className="menu p-4 w-80 min-h-full bg-base-100">
+            <div className="w-full flex justify-between mb-10 items-center top-0 sticky z-10 bg-white pb-6">
               <div className="flex justify-center items-center gap-1">
                 <img src={logo} alt="logo" className="w-20" />
                 <p className="sm:text-xl text-xl font-bold">
@@ -55,7 +59,7 @@ const Sidebar = () => {
               </label>
             </div>
             <ul className="menu font-bold rounded-lg max-w-xs w-full text-gray-500">
-              {menu.map((item: Menu, index: number) => (
+              {data.map((item: Menu, index: number) => (
                 <React.Fragment key={`menu-` + index}>
                   {item.submenu ? (
                     <li className="my-2">

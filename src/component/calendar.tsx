@@ -1,4 +1,4 @@
-import * as React from 'react';
+
 import { styled, alpha } from '@mui/material/styles';
 import { ViewState } from '@devexpress/dx-react-scheduler';
 import {
@@ -57,7 +57,7 @@ const StyledAppointmentsAppointment = styled(Appointments.Appointment)(() => ({
   },
 }));
 
-const StyledAppointmentsAppointmentContent = styled(Appointments.AppointmentContent)(({ theme: { palette } }) => ({
+const StyledAppointmentsAppointmentContent = styled(Appointments.AppointmentContent)(() => ({
   [`& .${classes.text}`]: {
     overflow: 'hidden',
     textOverflow: 'ellipsis',

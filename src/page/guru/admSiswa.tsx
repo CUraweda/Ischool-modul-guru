@@ -1,24 +1,23 @@
 import { useState } from "react";
 import { FiPlus } from "react-icons/fi";
-import Modal from "../component/modal";
-import { addDays, format } from "date-fns";
+import Modal from "../../component/modal";
+import { format } from "date-fns";
 import { DateRange, DayPicker } from "react-day-picker";
-import 'react-day-picker/dist/style.css';
+import "react-day-picker/dist/style.css";
+import { FaPenClip } from "react-icons/fa6";
+import { BiTrash } from "react-icons/bi";
 
 const pastMonth = new Date();
 
-const pengajuanCuti = () => {
+const AdmSiswa = () => {
   const showModalAdd = () => {
     let modalElement = document.getElementById("add-cuti") as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
     }
   };
-  const defaultSelected: DateRange = {
-    from: pastMonth,
-    to: addDays(pastMonth, 1),
-  };
-  const [range, setRange] = useState<DateRange | undefined>(defaultSelected);
+
+  const [range, setRange] = useState<DateRange | undefined>();
 
   let footer = <p>Please pick the first day.</p>;
   if (range?.from) {
@@ -36,12 +35,14 @@ const pengajuanCuti = () => {
   return (
     <>
       <div className="w-full flex flex-col items-center">
+        <div className="my-10 flex flex-col text-center">
+          <span className="text-4xl font-bold">Administrasi Siswa</span>
+          <span>Kelas II</span>
+        </div>
         <div className="flex justify-between w-full flex-wrap">
           <div className="p-3 sm:w-1/4 w-full">
             <div className="bg-green-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
-              <span className="text-xl font-bold">
-                Jumlah Cuti Tahun Berjalan
-              </span>
+              <span className="text-xl font-bold">Hadir</span>
               <div className="flex justify-center w-full">
                 <div className="w-full my-4 flex justify-center items-center">
                   <span className="text-8xl md:text-8xl font-bold">12</span>
@@ -52,9 +53,7 @@ const pengajuanCuti = () => {
           </div>
           <div className="p-3 sm:w-1/4 w-full">
             <div className="bg-blue-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
-              <span className="text-xl font-bold">
-                Jumlah Cuti Tahun Berjalan
-              </span>
+              <span className="text-xl font-bold">Sakit</span>
               <div className="flex justify-center w-full">
                 <div className="w-full my-4 flex justify-center items-center">
                   <span className="text-8xl md:text-8xl font-bold">12</span>
@@ -65,9 +64,7 @@ const pengajuanCuti = () => {
           </div>
           <div className="p-3 sm:w-1/4 w-full">
             <div className="bg-red-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
-              <span className="text-xl font-bold">
-                Jumlah Cuti Tahun Berjalan
-              </span>
+              <span className="text-xl font-bold">Izin</span>
               <div className="flex justify-center w-full">
                 <div className="w-full my-4 flex justify-center items-center">
                   <span className="text-8xl md:text-8xl font-bold">12</span>
@@ -78,9 +75,7 @@ const pengajuanCuti = () => {
           </div>
           <div className="p-3 sm:w-1/4 w-full">
             <div className="bg-yellow-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
-              <span className="text-xl font-bold">
-                Jumlah Cuti Tahun Berjalan
-              </span>
+              <span className="text-xl font-bold">Alfa</span>
               <div className="flex justify-center w-full">
                 <div className="w-full my-4 flex justify-center items-center">
                   <span className="text-8xl md:text-8xl font-bold">12</span>
@@ -91,7 +86,8 @@ const pengajuanCuti = () => {
           </div>
         </div>
         <div className="overflow-x-auto w-full flex flex-col p-5 my-10 justify-center">
-          <div className="w-full justify-end bg-red flex">
+          <div className="w-full justify-between bg-red flex">
+            <span className="text-2xl font-bold">Tugas Siswa</span>
             <button
               className="btn bg-green-500 text-white font-bold"
               onClick={showModalAdd}
@@ -108,12 +104,12 @@ const pengajuanCuti = () => {
               <thead className="bg-blue-200">
                 <tr>
                   <th>No</th>
-                  <th>Name</th>
-                  <th>Tanggal Mulai</th>
-                  <th>Tanggal Selesai</th>
-                  <th>Durasi</th>
-                  <th>Keterangan</th>
+                  <th>Topik</th>
+                  <th>Detail</th>
+                  <th>Periode</th>
+                  <th>Jenis</th>
                   <th>Status</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -124,7 +120,14 @@ const pengajuanCuti = () => {
                   <td>Blue</td>
                   <td>Blue</td>
                   <td>Blue</td>
-                  <td>Blue</td>
+                  <td>
+                    <button className="btn btn-ghost text-orange-600 text-xl">
+                      <FaPenClip />
+                    </button>
+                    <button className="btn btn-ghost text-red-600 text-xl">
+                      <BiTrash />
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -134,18 +137,23 @@ const pengajuanCuti = () => {
 
       <Modal id="add-cuti">
         <div className="w-full flex flex-col items-center">
-          <span className="text-xl font-bold">Form Pengajuan Cuti / Izin</span>
-          <div className="flex w-full mt-5">
-            <table className="sm:w-1/2 w-full">
-              <tr>
-                <td className="font-bold">Nama</td>
-                <td>: nama kamu</td>
-              </tr>
-              <tr>
-                <td className="font-bold">Jabatan</td>
-                <td>: admin</td>
-              </tr>
-            </table>
+          <span className="text-xl font-bold">Tambah Tugas</span>
+          <div className="flex w-full mt-5 flex-col">
+            <div className="w-full">
+              <label className="mt-4 font-bold">Topik</label>
+              <input
+                type="text"
+                placeholder="Type here"
+                className="input input-bordered w-full"
+              />
+            </div>
+            <div className="w-full flex flex-col gap-2">
+              <label className="mt-4 w-full font-bold">Detail</label>
+              <textarea
+                className="textarea textarea-bordered bg-white shadow-md scrollbar-hide"
+                placeholder="Bio"
+              ></textarea>
+            </div>
           </div>
           <div className="w-full">
             <div className="w-full flex flex-col gap-2">
@@ -154,11 +162,10 @@ const pengajuanCuti = () => {
                 <option disabled selected>
                   Pick one
                 </option>
-                <option>Cuti Tahunan</option>
-                <option>Cuti Besar</option>
-                <option>Cuti Sakit</option>
+                <option>Pribadi</option>
+                <option>WWP</option>
               </select>
-              <label className="mt-4 w-full font-bold">Tanggal Cuti </label>
+              <label className="mt-4 w-full font-bold">Periode</label>
               <div className="w-full flex justify-center">
                 <div className="shadow-md">
                   <DayPicker
@@ -172,12 +179,12 @@ const pengajuanCuti = () => {
                 </div>
               </div>
             </div>
-            <div className="w-full flex flex-col gap-2">
-              <label className="mt-4 w-full font-bold">Keterangan</label>
-              <textarea
-                className="textarea textarea-bordered bg-white shadow-md scrollbar-hide"
-                placeholder="Bio"
-              ></textarea>
+            <div className="w-full mt-5 gap-2 flex flex-col">
+              <label className="mt-4 font-bold">Upload File</label>
+              <input
+                type="file"
+                className="file-input file-input-bordered w-full"
+              />
             </div>
           </div>
 
@@ -193,4 +200,4 @@ const pengajuanCuti = () => {
   );
 };
 
-export default pengajuanCuti;
+export default AdmSiswa;

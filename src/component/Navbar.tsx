@@ -1,12 +1,18 @@
 import { BsList } from "react-icons/bs";
-import { IoMdNotificationsOutline } from "react-icons/io";
+import { useNavigate} from 'react-router-dom';
 import moment from "moment";
 
 
 const Navbar = () => {
+  const navigate = useNavigate();
 
   moment.locale('id');
   const date = moment().format('llll');
+
+  const logout = () => {
+    sessionStorage.clear()
+    navigate("/")
+  }
   
   return (
     <div>
@@ -41,13 +47,11 @@ const Navbar = () => {
               <li>
                 <a className="justify-between">
                   Profile
-                  <span className="badge">New</span>
+                  
                 </a>
               </li>
-              <li>
-                <a>Settings</a>
-              </li>
-              <li>
+            
+              <li onClick={logout} className="text-red-500">
                 <a>Logout</a>
               </li>
             </ul>

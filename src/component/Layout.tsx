@@ -6,18 +6,22 @@ interface Props {
   children?: React.ReactNode;
   name?: string;
 }
-const Layout: FC<Props> = ({ children, name }) => {
+const Layout: FC<Props> = ({ children }) => {
   return (
     <>
       <div className="flex flex-col min-h-screen" data-theme="light">
         <main className="flex flex-grow">
-          <div className="z-10">
-
-          <Sidebar />
+          <div className="top-0 sticky z-10">
+            <Sidebar />
           </div>
           <div className="w-full">
-            <Navbar />
+            <div className="top-0 sticky z-10">
+              <Navbar />
+            </div>
+            <div>
+
             {children}
+            </div>
           </div>
         </main>
       </div>

@@ -1,11 +1,14 @@
+import { BsDownload } from "react-icons/bs";
 
-
-const NilaiSiswa = () => {
+const BahanAjar = () => {
   return (
-    <div>
-      <div className="flex justify-center w-full mt-5 flex-col items-center">
-          <span className="text-3xl font-bold">Daftar Nilai Siswa </span>
-          <span className="text-xl">kelas II</span>
+    <>
+      <div className="w-full flex flex-col items-center">
+        <div className="w-full flex justify-center mt-10">
+          <span className="text-4xl font-bold">Bahan Ajar Guru</span>
+        </div>
+
+        <div className="w-full flex justify-center mt-10 flex-col items-center">
           <div className="w-full justify-between flex px-5">
             <select className="select select-primary w-32 max-w-xs">
               <option disabled selected>
@@ -17,20 +20,12 @@ const NilaiSiswa = () => {
               <option>PKN</option>
             </select>
             <div className="flex gap-2">
-
-            <select className="select select-primary w-32 max-w-xs">
-              <option disabled selected>
-                Filter
-              </option>
-              <option>Hadir</option>
-              <option>Izin</option>
-              <option>Alfa</option>
-              <option>Sakit</option>
-            </select>
-            <button className="btn bg-green-500 text-white">Upload Nilai</button>
+              <button className="btn bg-green-500 text-white">
+                Tambah
+              </button>
             </div>
           </div>
-          <div className="overflow-x-auto my-5 w-full p-5 ">
+          <div className="overflow-x-auto w-full p-5 ">
             <table className="table shadow-lg">
               {/* head */}
               <thead className="bg-blue-200">
@@ -38,7 +33,7 @@ const NilaiSiswa = () => {
                   <th>No</th>
                   <th>Nama</th>
                   <th>Mapel</th>
-                  <th>Nilai</th>
+                  <th>Kelas</th>
                   <th>Keterangan</th>
                   <th>Action</th>
                 </tr>
@@ -52,15 +47,16 @@ const NilaiSiswa = () => {
                   <td>Blue</td>
                   <td>ini keterangan</td>
                   <td>
-                    <button className="btn btn-primary">Detail</button>
+                    <button className="btn bg-blue-400 text-xl font-bold text-white"><BsDownload/></button>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-    </div>
+      </div>
+    </>
   );
 };
 
-export default NilaiSiswa;
+export default BahanAjar;

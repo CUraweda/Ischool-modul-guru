@@ -1,0 +1,56 @@
+[
+    {
+        "submenu": false,
+        "title": "Dashboard",
+        "icon": "<BsFillHouseFill />",
+        "url": "/karyawan/dashboard",
+        "subtitle": []
+    },
+    {
+        "submenu": false,
+        "title": "Kehadiran",
+        "icon": "<FaPersonCircleCheck />",
+        "url": "/karyawan/presensi",
+        "subtitle": []
+    },
+    {
+        "submenu": true,
+        "title": "Agenda Kegiatan",
+        "icon": "<MdOutlineTableChart />",
+        "url": "//invenstment",
+        "subtitle": [
+            {
+                "name": "Meeting / Rapat Kordinasi",
+                "url": "/karyawan/rapat"
+            },
+            {
+                "name": "Logbook Harian",
+                "url": "/karyawan/loogbook-harian"
+            }
+        ]
+    },
+   
+    {
+        "submenu": true,
+        "title": "Karyawan",
+        "icon": "<IoPersonOutline />",
+        "url": "",
+        "subtitle": [
+            {
+                "name": "Administrasi",
+                "url": "/karyawan/adm"
+            },
+            {
+                "name": "KPI",
+                "url": "/karyawan/kpi"
+            }
+        ]
+    },
+    {
+        "submenu": false,
+        "title": "Pelatihan",
+        "icon": "<FaRegStar />",
+        "url": "/karyawan/pelatihan",
+        "subtitle": []
+    }
+]
