@@ -54,6 +54,10 @@
             {
                 "name": "Daftar Nilai",
                 "url": "/guru/daftar-nilai-siswa"
+            },
+            {
+                "name": "Raport Siswa",
+                "url": "/guru/rapor-siswa"
             }
         ]
     },

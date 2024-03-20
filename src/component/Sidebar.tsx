@@ -35,7 +35,7 @@ const Sidebar = () => {
 
   return (
     <div>
-      <div className="drawer lg:drawer-open ">
+      <div className="drawer lg:drawer-open top-0 sticky z-10">
         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
         <div className="drawer-side shadow-lg">
           <label
@@ -43,8 +43,8 @@ const Sidebar = () => {
             aria-label="close sidebar"
             className="drawer-overlay"
           />
-          <ul className="menu p-4 w-80 min-h-full bg-base-100">
-            <div className="w-full flex justify-between mb-10 items-center top-0 sticky z-10 bg-white pb-6">
+          <ul className="menu p-4 w-80 min-h-full bg-base-100 ">
+            <div className="w-full flex justify-between mb-10 items-center  bg-white pb-6">
               <div className="flex justify-center items-center gap-1">
                 <img src={logo} alt="logo" className="w-20" />
                 <p className="sm:text-xl text-xl font-bold">

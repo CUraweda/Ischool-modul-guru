@@ -7,7 +7,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   moment.locale('id');
-  const date = moment().format('llll');
+  // const date = moment().format('llll');
 
   const logout = () => {
     sessionStorage.clear()
@@ -21,9 +21,9 @@ const Navbar = () => {
           <label className="btn btn-ghost text-3xl lg:hidden" htmlFor="my-drawer-2">
             <BsList />
           </label>
-          <span className="ml-3 text-xl">
+          {/* <span className="ml-3 text-xl">
            {date}
-          </span>
+          </span> */}
         </div>
         <div className="flex-none gap-5">
          

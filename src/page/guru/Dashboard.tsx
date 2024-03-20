@@ -108,6 +108,11 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <div className="w-full h-full p-3">
+        <div className="p-3 bg-gray-200 rounded-md h-[500px]">
+          <span className="text-xl font-bold">Pengumuman : </span>
+        </div>
+      </div>
     </div>
   );
 };

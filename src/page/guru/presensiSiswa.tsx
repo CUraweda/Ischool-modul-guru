@@ -24,8 +24,8 @@ const PresensiSiswa = () => {
                   <td>Cy Ganderton</td>
                   <td>Quality Control Specialist</td>
                   <td>Blue</td>
-                  <td>
-                    <select className="select select-primary w-32 max-w-xs">
+                  <td className="flex gap-2">
+                    <select className="select w-32 max-w-xs bg-green-300">
                       <option disabled selected>
                         Presensi
                       </option>
@@ -33,6 +33,15 @@ const PresensiSiswa = () => {
                       <option>Izin</option>
                       <option>Alfa</option>
                       <option>Sakit</option>
+                    </select>
+                    <select className="select  w-32 max-w-xs bg-cyan-300">
+                      <option disabled selected>
+                        Transportasi
+                      </option>
+                      <option>Jalan Kaki</option>
+                      <option>Kendaraan Umum</option>
+                      <option>Antar Jemput</option>
+                      <option>Sepeda</option>
                     </select>
                   </td>
                 </tr>

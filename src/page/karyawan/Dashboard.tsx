@@ -5,7 +5,7 @@ import { FaDownload } from "react-icons/fa";
 const Dashboard = () => {
   return (
     <div className="flex justify-center my-10 flex-col items-center ">
-      <span className="text-3xl font-bold">Dashboard Guru</span>
+      <span className="text-3xl font-bold">Dashboard Karyawan</span>
       <div className="flex justify-between w-full flex-wrap">
         <div className="p-3 sm:w-1/3 w-full">
           <div className="bg-gradient-to-r from-green-300 to-green-400 w-full rounded-md p-3 flex flex-col items-center gap-3">
@@ -106,6 +106,11 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      <div className="w-full h-full p-3">
+        <div className="p-3 bg-gray-200 rounded-md h-[500px]">
+          <span className="text-xl font-bold">Pengumuman : </span>
         </div>
       </div>
     </div>
