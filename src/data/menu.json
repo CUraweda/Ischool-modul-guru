@@ -76,6 +76,10 @@
                 "url": "/guru/bahan-ajar"
             },
             {
+                "name": "KPI",
+                "url": "/guru/kpi"
+            },
+            {
                 "name": "Agenda Kegiatan",
                 "url": "/guru/agenda-kegiatan"
             }

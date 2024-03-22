@@ -70,6 +70,7 @@ const NilaiSiswa = () => {
         <div className="w-full flex flex-col items-center">
           <span className="text-xl font-bold">Upload Nilai</span>
           <div className="w-full mt-5 gap-2 flex flex-col">
+            <button className="btn btn-sm w-1/3 bg-green-300">dowload template</button>
             <label className="mt-4 font-bold">Upload File</label>
             <input
               type="file"

@@ -119,6 +119,14 @@ const RootRoutes = () => {
           }
         />
         <Route
+          path="/guru/kpi"
+          element={
+            <Layout>
+              <AdmGuru />
+            </Layout>
+          }
+        />
+        <Route
           path="/guru/pelatihan"
           element={
             <Layout>

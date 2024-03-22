@@ -34,7 +34,7 @@ const pengajuanCuti = () => {
             >
               <span className="text-xl">
                 <FiPlus />
-              </span>{" "}
+              </span>
               Add
             </button>
           </div>

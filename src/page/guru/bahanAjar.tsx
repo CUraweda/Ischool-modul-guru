@@ -19,9 +19,12 @@ const BahanAjar = () => {
               <option>MTK</option>
               <option>PKN</option>
             </select>
-            <div className="flex gap-2">
-              <button className="btn bg-green-500 text-white">
+            <div className="join">
+              <button className="btn join-item bg-blue-500 text-white">
                 Tambah
+              </button>
+              <button className="btn join-item bg-green-500 text-white">
+                Upload
               </button>
             </div>
           </div>

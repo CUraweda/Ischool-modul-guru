@@ -9,8 +9,7 @@ const PesanCs = () => {
           <span className="text-4xl font-bold">Customer Care</span>
         </div>
         <div className=" w-5/6 shadow-lg max-h-[650px] min-h-[650px] relative">
-        <div className="w-[300px] h-[300px] bg-red-500 absolute bottom-20 right-0 rounded-full blur-md"/>
-        <div className="w-[500px] h-[500px] bg-yellow-500 absolute top-20 rounded-full blur-md"/>
+       
           <div className="flex w-full">
             <div className="w-1/4 shadow-md min-h-[650px] z-10 glass">
               <div className="w-full p-5 text-3xl font-bold bg-white">Chats</div>
