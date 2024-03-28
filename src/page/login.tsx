@@ -1,6 +1,7 @@
 import { useState} from "react";
 import { useNavigate} from 'react-router-dom';
 import logo from "../assets/sade.png";
+import bg from "../assets/bg2.png"
 
 const login = () => {
     const navigate = useNavigate();
@@ -23,9 +24,9 @@ const login = () => {
 
   return (
     <>
-      <div className="w-full flex flex-col justify-center items-center min-h-screen" style={{backgroundImage: "url('https://imansulaiman.com/wp-content/uploads/2019/04/25db546b-4135-4c2e-9be2-2409dbfa4b36.jpg')", backgroundSize: 'cover'}}>
+      <div className="w-full flex flex-col justify-center items-center min-h-screen" style={{backgroundImage: `url('${bg}')`, backgroundSize: 'cover'}}>
        
-        <div className="w-full sm:w-1/3 glass shadow-xl flex justify-center items-center p-4 rounded-md flex-col">
+        <div className="w-full sm:w-1/3 glass shadow-2xl flex justify-center items-center p-4 rounded-md flex-col">
           <div className="w-32">
             <img src={logo} alt="" />
           </div>
