@@ -171,6 +171,158 @@ const RaportAngka = () => {
                 </div>
               </td>
             </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td>Matematika</td>
+              <td>75</td>
+              <td>89</td>
+              <td>Sembilan Delapan</td>
+              <td>
+                <div className="join">
+                  <button
+                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
+                    data-tip="edit"
+                    disabled
+                  >
+                    <span className="text-xl">
+                      <FaPencilAlt />
+                    </span>
+                  </button>
+                  <button
+                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
+                    data-tip="hapus"
+                    disabled
+                  >
+                    <span className="text-xl">
+                      <FaRegTrashAlt />
+                    </span>
+                  </button>
+                  <button
+                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
+                    data-tip="tandai belum selesai"
+                  >
+                    <span className="text-xl">
+                      <FaRegWindowClose />
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td>Matematika</td>
+              <td>75</td>
+              <td>89</td>
+              <td>Sembilan Delapan</td>
+              <td>
+                <div className="join">
+                  <button
+                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
+                    data-tip="edit"
+                    disabled
+                  >
+                    <span className="text-xl">
+                      <FaPencilAlt />
+                    </span>
+                  </button>
+                  <button
+                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
+                    data-tip="hapus"
+                    disabled
+                  >
+                    <span className="text-xl">
+                      <FaRegTrashAlt />
+                    </span>
+                  </button>
+                  <button
+                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
+                    data-tip="tandai belum selesai"
+                  >
+                    <span className="text-xl">
+                      <FaRegWindowClose />
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td>Matematika</td>
+              <td>75</td>
+              <td>89</td>
+              <td>Sembilan Delapan</td>
+              <td>
+                <div className="join">
+                  <button
+                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
+                    data-tip="edit"
+                    disabled
+                  >
+                    <span className="text-xl">
+                      <FaPencilAlt />
+                    </span>
+                  </button>
+                  <button
+                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
+                    data-tip="hapus"
+                    disabled
+                  >
+                    <span className="text-xl">
+                      <FaRegTrashAlt />
+                    </span>
+                  </button>
+                  <button
+                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
+                    data-tip="tandai belum selesai"
+                  >
+                    <span className="text-xl">
+                      <FaRegWindowClose />
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td>Matematika</td>
+              <td>75</td>
+              <td>89</td>
+              <td>Sembilan Delapan</td>
+              <td>
+                <div className="join">
+                  <button
+                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
+                    data-tip="edit"
+                    disabled
+                  >
+                    <span className="text-xl">
+                      <FaPencilAlt />
+                    </span>
+                  </button>
+                  <button
+                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
+                    data-tip="hapus"
+                    disabled
+                  >
+                    <span className="text-xl">
+                      <FaRegTrashAlt />
+                    </span>
+                  </button>
+                  <button
+                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
+                    data-tip="tandai belum selesai"
+                  >
+                    <span className="text-xl">
+                      <FaRegWindowClose />
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>

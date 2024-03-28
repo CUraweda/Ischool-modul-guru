@@ -27,6 +27,7 @@ const pengajuanCuti = () => {
       <div className="w-full flex flex-col items-center">
        
         <div className="overflow-x-auto w-full flex flex-col p-5 my-10 justify-center">
+          <span className='text-center text-2xl font-bold'>PENGAJUAN CUTI</span>
           <div className="w-full justify-end bg-red flex">
             <button
               className="btn bg-green-500 text-white font-bold"
@@ -38,10 +39,10 @@ const pengajuanCuti = () => {
               Add
             </button>
           </div>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto bg-white p-3 mt-3">
             <table className="table table-zebra shadow-md mt-5">
               {/* head */}
-              <thead className="bg-blue-200">
+              <thead className="bg-blue-400 text-white">
                 <tr>
                   <th>No</th>
                   <th>Name</th>
@@ -56,11 +57,38 @@ const pengajuanCuti = () => {
                 <tr>
                   <th>1</th>
                   <td>Cy Ganderton</td>
-                  <td>Quality Control Specialist</td>
-                  <td>Blue</td>
-                  <td>Blue</td>
-                  <td>Blue</td>
-                  <td>Blue</td>
+                  <td>3 maret 2023</td>
+                  <td>5 maret 2023</td>
+                  <td>3 hari</td>
+                  <td>cuti sakit</td>
+                  <td>done</td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>3 maret 2023</td>
+                  <td>5 maret 2023</td>
+                  <td>3 hari</td>
+                  <td>cuti sakit</td>
+                  <td>done</td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>3 maret 2023</td>
+                  <td>5 maret 2023</td>
+                  <td>3 hari</td>
+                  <td>cuti sakit</td>
+                  <td>done</td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>3 maret 2023</td>
+                  <td>5 maret 2023</td>
+                  <td>3 hari</td>
+                  <td>cuti sakit</td>
+                  <td>done</td>
                 </tr>
               </tbody>
             </table>

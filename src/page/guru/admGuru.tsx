@@ -85,10 +85,10 @@ const AdmGuru = () => {
               Add
             </button>
           </div>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto bg-white p-3">
             <table className="table table-zebra shadow-md mt-5">
               {/* head */}
-              <thead className="bg-blue-200">
+              <thead className="bg-blue-400">
                 <tr>
                   <th>No</th>
                   <th>Topik</th>
@@ -102,11 +102,11 @@ const AdmGuru = () => {
               <tbody>
                 <tr>
                   <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>Quality Control Specialist</td>
-                  <td>Blue</td>
-                  <td>Blue</td>
-                  <td>Blue</td>
+                  <td>IPA</td>
+                  <td>merangkum</td>
+                  <td>8 april - 10 april 2023</td>
+                  <td>individu</td>
+                  <td>open</td>
                   <td>
                     <button className="btn btn-ghost text-orange-600 text-xl">
                       <FaPenClip />
@@ -116,6 +116,87 @@ const AdmGuru = () => {
                     </button>
                   </td>
                 </tr>
+                <tr>
+                  <th>1</th>
+                  <td>IPA</td>
+                  <td>merangkum</td>
+                  <td>8 april - 10 april 2023</td>
+                  <td>individu</td>
+                  <td>open</td>
+                  <td>
+                    <button className="btn btn-ghost text-orange-600 text-xl">
+                      <FaPenClip />
+                    </button>
+                    <button className="btn btn-ghost text-red-600 text-xl">
+                      <BiTrash />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>IPA</td>
+                  <td>merangkum</td>
+                  <td>8 april - 10 april 2023</td>
+                  <td>individu</td>
+                  <td>open</td>
+                  <td>
+                    <button className="btn btn-ghost text-orange-600 text-xl">
+                      <FaPenClip />
+                    </button>
+                    <button className="btn btn-ghost text-red-600 text-xl">
+                      <BiTrash />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>IPA</td>
+                  <td>merangkum</td>
+                  <td>8 april - 10 april 2023</td>
+                  <td>individu</td>
+                  <td>open</td>
+                  <td>
+                    <button className="btn btn-ghost text-orange-600 text-xl">
+                      <FaPenClip />
+                    </button>
+                    <button className="btn btn-ghost text-red-600 text-xl">
+                      <BiTrash />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>IPA</td>
+                  <td>merangkum</td>
+                  <td>8 april - 10 april 2023</td>
+                  <td>individu</td>
+                  <td>open</td>
+                  <td>
+                    <button className="btn btn-ghost text-orange-600 text-xl">
+                      <FaPenClip />
+                    </button>
+                    <button className="btn btn-ghost text-red-600 text-xl">
+                      <BiTrash />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>IPA</td>
+                  <td>merangkum</td>
+                  <td>8 april - 10 april 2023</td>
+                  <td>individu</td>
+                  <td>open</td>
+                  <td>
+                    <button className="btn btn-ghost text-orange-600 text-xl">
+                      <FaPenClip />
+                    </button>
+                    <button className="btn btn-ghost text-red-600 text-xl">
+                      <BiTrash />
+                    </button>
+                  </td>
+                </tr>
+               
               </tbody>
             </table>
           </div>

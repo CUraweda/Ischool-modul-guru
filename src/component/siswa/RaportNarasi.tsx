@@ -90,6 +90,150 @@ const RaportNarasi = () => {
                 </div>
               </td>
             </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td className="max-w-md">VII</td>
+              <td className="">
+                <div className="join">
+
+                <Link to={"/guru/rapor-siswa/narasi"}>
+                  <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
+                    data-tip="Detail"
+                  >
+                    <MdOutlineDocumentScanner />
+                  </button>
+                </Link>
+                <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-green-500 tooltip"
+                    data-tip="tandai selesai"
+                  >
+                    <FaRegCheckSquare />
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td className="max-w-md">VII</td>
+              <td className="">
+                <div className="join">
+
+                <Link to={"/guru/rapor-siswa/narasi"}>
+                  <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
+                    data-tip="Detail"
+                  >
+                    <MdOutlineDocumentScanner />
+                  </button>
+                </Link>
+                <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-green-500 tooltip"
+                    data-tip="tandai selesai"
+                  >
+                    <FaRegCheckSquare />
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td className="max-w-md">VII</td>
+              <td className="">
+                <div className="join">
+
+                <Link to={"/guru/rapor-siswa/narasi"}>
+                  <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
+                    data-tip="Detail"
+                  >
+                    <MdOutlineDocumentScanner />
+                  </button>
+                </Link>
+                <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-green-500 tooltip"
+                    data-tip="tandai selesai"
+                  >
+                    <FaRegCheckSquare />
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td className="max-w-md">VII</td>
+              <td className="">
+                <div className="join">
+
+                <Link to={"/guru/rapor-siswa/narasi"}>
+                  <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
+                    data-tip="Detail"
+                  >
+                    <MdOutlineDocumentScanner />
+                  </button>
+                </Link>
+                <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-green-500 tooltip"
+                    data-tip="tandai selesai"
+                  >
+                    <FaRegCheckSquare />
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td className="max-w-md">VII</td>
+              <td className="">
+                <div className="join">
+
+                <Link to={"/guru/rapor-siswa/narasi"}>
+                  <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
+                    data-tip="Detail"
+                  >
+                    <MdOutlineDocumentScanner />
+                  </button>
+                </Link>
+                <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-green-500 tooltip"
+                    data-tip="tandai selesai"
+                  >
+                    <FaRegCheckSquare />
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td className="max-w-md">VII</td>
+              <td className="">
+                <div className="join">
+
+                <Link to={"/guru/rapor-siswa/narasi"}>
+                  <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
+                    data-tip="Detail"
+                  >
+                    <MdOutlineDocumentScanner />
+                  </button>
+                </Link>
+                <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-green-500 tooltip"
+                    data-tip="tandai selesai"
+                  >
+                    <FaRegCheckSquare />
+                  </button>
+                </div>
+              </td>
+            </tr>
             
           </tbody>
         </table>

@@ -16,7 +16,7 @@ const DaftarPelatihan = () => {
             </button>
           </div>
         </div>
-        <div className="overflow-x-auto w-full p-5 ">
+        <div className="overflow-x-auto w-full p-5 bg-white">
           <table className="table shadow-lg">
             {/* head */}
             <thead className="bg-blue-200">
@@ -33,10 +33,70 @@ const DaftarPelatihan = () => {
               {/* row 1 */}
               <tr>
                 <th>1</th>
-                <td>Cy Ganderton</td>
-                <td>Quality Control Specialist</td>
-                <td>Blue</td>
-                <td>ini keterangan</td>
+                <td>8 maret 2024</td>
+                <td>management kelas</td>
+                <td>prof.ahmad</td>
+                <td>Complete</td>
+                <td>
+                  <button className="btn bg-blue-400 text-xl font-bold text-white">
+                    <BsUpload />
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <th>1</th>
+                <td>8 maret 2024</td>
+                <td>management kelas</td>
+                <td>prof.ahmad</td>
+                <td>Complete</td>
+                <td>
+                  <button className="btn bg-blue-400 text-xl font-bold text-white">
+                    <BsUpload />
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <th>1</th>
+                <td>8 maret 2024</td>
+                <td>management kelas</td>
+                <td>prof.ahmad</td>
+                <td>Complete</td>
+                <td>
+                  <button className="btn bg-blue-400 text-xl font-bold text-white">
+                    <BsUpload />
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <th>1</th>
+                <td>8 maret 2024</td>
+                <td>management kelas</td>
+                <td>prof.ahmad</td>
+                <td>Complete</td>
+                <td>
+                  <button className="btn bg-blue-400 text-xl font-bold text-white">
+                    <BsUpload />
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <th>1</th>
+                <td>8 maret 2024</td>
+                <td>management kelas</td>
+                <td>prof.ahmad</td>
+                <td>Complete</td>
+                <td>
+                  <button className="btn bg-blue-400 text-xl font-bold text-white">
+                    <BsUpload />
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <th>1</th>
+                <td>8 maret 2024</td>
+                <td>management kelas</td>
+                <td>prof.ahmad</td>
+                <td>Complete</td>
                 <td>
                   <button className="btn bg-blue-400 text-xl font-bold text-white">
                     <BsUpload />

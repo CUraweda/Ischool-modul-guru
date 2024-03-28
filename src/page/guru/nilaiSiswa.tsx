@@ -36,10 +36,10 @@ const NilaiSiswa = () => {
             </button>
           </div>
         </div>
-        <div className="overflow-x-auto my-5 w-full p-5 ">
+        <div className="overflow-x-auto my-5 w-full p-5 bg-white">
           <table className="table shadow-lg">
             {/* head */}
-            <thead className="bg-blue-200">
+            <thead className="bg-blue-400 text-white">
               <tr>
                 <th>No</th>
                 <th>Nama</th>
@@ -54,9 +54,99 @@ const NilaiSiswa = () => {
               <tr>
                 <th>1</th>
                 <td>Cy Ganderton</td>
-                <td>Quality Control Specialist</td>
-                <td>Blue</td>
-                <td>ini keterangan</td>
+                <td>MTK</td>
+                <td>98</td>
+                <td>-</td>
+                <td>
+                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                </td>
+              </tr>
+              <tr>
+                <th>2</th>
+                <td>Nama 2</td>
+                <td>MTK</td>
+                <td>98</td>
+                <td>-</td>
+                <td>
+                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                </td>
+              </tr>
+              <tr>
+                <th>3</th>
+                <td>nama 3</td>
+                <td>MTK</td>
+                <td>98</td>
+                <td>-</td>
+                <td>
+                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                </td>
+              </tr>
+              <tr>
+                <th>4</th>
+                <td>nama 4</td>
+                <td>MTK</td>
+                <td>98</td>
+                <td>-</td>
+                <td>
+                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                </td>
+              </tr>
+              <tr>
+                <th>5</th>
+                <td>nama 5</td>
+                <td>MTK</td>
+                <td>98</td>
+                <td>-</td>
+                <td>
+                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                </td>
+              </tr>
+              <tr>
+                <th>6</th>
+                <td>nama 6</td>
+                <td>MTK</td>
+                <td>98</td>
+                <td>-</td>
+                <td>
+                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                </td>
+              </tr>
+              <tr>
+                <th>7</th>
+                <td>nama7</td>
+                <td>MTK</td>
+                <td>98</td>
+                <td>-</td>
+                <td>
+                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                </td>
+              </tr>
+              <tr>
+                <th>8</th>
+                <td>nama 8</td>
+                <td>MTK</td>
+                <td>98</td>
+                <td>-</td>
+                <td>
+                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                </td>
+              </tr>
+              <tr>
+                <th>9</th>
+                <td>nama 9</td>
+                <td>MTK</td>
+                <td>98</td>
+                <td>-</td>
+                <td>
+                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                </td>
+              </tr>
+              <tr>
+                <th>10</th>
+                <td>nama 10</td>
+                <td>MTK</td>
+                <td>98</td>
+                <td>-</td>
                 <td>
                   <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
                 </td>

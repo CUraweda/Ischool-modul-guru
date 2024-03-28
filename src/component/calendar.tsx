@@ -1,3 +1,4 @@
+import React from "react";
 import { styled, alpha } from "@mui/material/styles";
 import { ViewState } from "@devexpress/dx-react-scheduler";
 import {
@@ -13,7 +14,6 @@ import {
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { indigo, blue, teal } from "@mui/material/colors";
 import Paper from "@mui/material/Paper";
-import classNames from "clsx";
 
 const PREFIX = "Demo";
 
@@ -67,77 +67,25 @@ const StyledAppointmentsAppointment = styled(Appointments.Appointment)(() => ({
   },
 }));
 
-const appointments = [
-  {
-    title: "Prepare 2015 Marketing Plan",
-    startDate: new Date("2024/03/05"),
-    endDate: new Date("2024/03/06"),
-    priority: 2,
-    location: "Room 3",
-  },
-];
+interface MySchedulerProps {
+  data: any[]; // Modify the type according to your data structure
+}
 
-const isWeekEnd = (date: Date): boolean =>
-  date.getDay() === 0 || date.getDay() === 6;
-const defaultCurrentDate = new Date();
-
-const DayScaleCell = ({
-  startDate,
-  ...restProps
-}: MonthView.DayScaleCellProps) => (
-  <StyledMonthViewDayScaleCell
-    className={classNames({
-      [classes.weekEndDayScaleCell]: isWeekEnd(startDate),
-    })}
-    startDate={startDate}
-    {...restProps}
-  />
-);
-
-const TimeTableCell = ({
-  startDate,
-  ...restProps
-}: MonthView.TimeTableCellProps) => (
-  <StyledMonthViewTimeTableCell
-    className={classNames({
-      [classes.weekEndCell]: isWeekEnd(startDate!),
-    })}
-    startDate={startDate}
-    {...restProps}
-  />
-);
-
-const Appointment = ({ data, ...restProps }: Appointments.AppointmentProps) => (
-  <StyledAppointmentsAppointment
-    {...restProps}
-    className={classNames({
-      [classes.highPriorityAppointment]: data.priority === 1,
-      [classes.mediumPriorityAppointment]: data.priority === 2,
-      [classes.lowPriorityAppointment]: data.priority === 3,
-      [classes.appointment]: true,
-    })}
-    data={data}
-  />
-);
-
-export default (data: any) => (
+const MyScheduler: React.FC<MySchedulerProps> = ({ data }) => (
   <Paper>
-    <Scheduler data={appointments}>
-      <ViewState defaultCurrentDate={defaultCurrentDate} />
-
+    <Scheduler data={data}>
+      <ViewState defaultCurrentDate={new Date()} />
       <MonthView
-        dayScaleCellComponent={DayScaleCell}
-        timeTableCellComponent={TimeTableCell}
+        dayScaleCellComponent={StyledMonthViewDayScaleCell}
+        timeTableCellComponent={StyledMonthViewTimeTableCell}
       />
       <DayView
-        displayName={"Three days"}
+        displayName="Three days"
         startDayHour={7}
         endDayHour={18}
         intervalCount={7}
       />
-
-      <Appointments appointmentComponent={Appointment} />
-
+      <Appointments appointmentComponent={StyledAppointmentsAppointment} />
       <AppointmentTooltip showCloseButton />
       <Toolbar />
       <DateNavigator />
@@ -146,3 +94,5 @@ export default (data: any) => (
     </Scheduler>
   </Paper>
 );
+
+export default MyScheduler;

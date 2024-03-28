@@ -148,6 +148,231 @@ const RaportPortofolio = () => {
                 </div>
               </td>
             </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td className="max-w-md">VII</td>
+              <td className="flex items-center">
+                <div className="join">
+                  <button
+                    className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
+                    data-tip="Upload portofolio"
+                    onClick={() => showModal("upload-portofolio")}
+                  >
+                    <span className="text-2xl">
+                      <MdCloudUpload />
+                    </span>
+                  </button>
+                  
+                  <button
+                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
+                    data-tip="lihat portofolio"
+                    onClick={() => showModal("show-portofolio")}
+                  >
+                    <span className="text-xl">
+                      <FaFilePdf />
+                    </span>
+                  </button>
+                  <button
+                    className="btn btn-sm join-item bg-green-500 text-white tooltip"
+                    data-tip="tandai selesai"
+                    
+                  >
+                    <span className="text-xl">
+                    <FaRegCheckSquare />
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td className="max-w-md">VII</td>
+              <td className="flex items-center">
+                <div className="join">
+                  <button
+                    className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
+                    data-tip="Upload portofolio"
+                    onClick={() => showModal("upload-portofolio")}
+                    disabled
+                  >
+                    <span className="text-2xl">
+                      <MdCloudUpload />
+                    </span>
+                  </button>
+                 
+                  <button
+                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
+                    data-tip="lihat portofolio"
+                    onClick={() => showModal("show-portofolio")}
+                  >
+                    <span className="text-xl">
+                      <FaFilePdf />
+                    </span>
+                  </button>
+                  <button
+                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
+                    data-tip="tandai belum selesai"
+                    
+                  >
+                    <span className="text-xl">
+                    <FaRegWindowClose />
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td className="max-w-md">VII</td>
+              <td className="flex items-center">
+                <div className="join">
+                  <button
+                    className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
+                    data-tip="Upload portofolio"
+                    onClick={() => showModal("upload-portofolio")}
+                  >
+                    <span className="text-2xl">
+                      <MdCloudUpload />
+                    </span>
+                  </button>
+                  
+                  <button
+                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
+                    data-tip="lihat portofolio"
+                    onClick={() => showModal("show-portofolio")}
+                  >
+                    <span className="text-xl">
+                      <FaFilePdf />
+                    </span>
+                  </button>
+                  <button
+                    className="btn btn-sm join-item bg-green-500 text-white tooltip"
+                    data-tip="tandai selesai"
+                    
+                  >
+                    <span className="text-xl">
+                    <FaRegCheckSquare />
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td className="max-w-md">VII</td>
+              <td className="flex items-center">
+                <div className="join">
+                  <button
+                    className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
+                    data-tip="Upload portofolio"
+                    onClick={() => showModal("upload-portofolio")}
+                    disabled
+                  >
+                    <span className="text-2xl">
+                      <MdCloudUpload />
+                    </span>
+                  </button>
+                 
+                  <button
+                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
+                    data-tip="lihat portofolio"
+                    onClick={() => showModal("show-portofolio")}
+                  >
+                    <span className="text-xl">
+                      <FaFilePdf />
+                    </span>
+                  </button>
+                  <button
+                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
+                    data-tip="tandai belum selesai"
+                    
+                  >
+                    <span className="text-xl">
+                    <FaRegWindowClose />
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td className="max-w-md">VII</td>
+              <td className="flex items-center">
+                <div className="join">
+                  <button
+                    className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
+                    data-tip="Upload portofolio"
+                    onClick={() => showModal("upload-portofolio")}
+                  >
+                    <span className="text-2xl">
+                      <MdCloudUpload />
+                    </span>
+                  </button>
+                  
+                  <button
+                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
+                    data-tip="lihat portofolio"
+                    onClick={() => showModal("show-portofolio")}
+                  >
+                    <span className="text-xl">
+                      <FaFilePdf />
+                    </span>
+                  </button>
+                  <button
+                    className="btn btn-sm join-item bg-green-500 text-white tooltip"
+                    data-tip="tandai selesai"
+                    
+                  >
+                    <span className="text-xl">
+                    <FaRegCheckSquare />
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>Cy Ganderton</td>
+              <td className="max-w-md">VII</td>
+              <td className="flex items-center">
+                <div className="join">
+                  <button
+                    className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
+                    data-tip="Upload portofolio"
+                    onClick={() => showModal("upload-portofolio")}
+                    disabled
+                  >
+                    <span className="text-2xl">
+                      <MdCloudUpload />
+                    </span>
+                  </button>
+                 
+                  <button
+                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
+                    data-tip="lihat portofolio"
+                    onClick={() => showModal("show-portofolio")}
+                  >
+                    <span className="text-xl">
+                      <FaFilePdf />
+                    </span>
+                  </button>
+                  <button
+                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
+                    data-tip="tandai belum selesai"
+                    
+                  >
+                    <span className="text-xl">
+                    <FaRegWindowClose />
+                    </span>
+                  </button>
+                </div>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>

@@ -87,6 +87,154 @@ const StatusRaport = () => {
                 />
               </td>
             </tr>
+            <tr>
+              <th>1</th>
+              <td>anisa</td>
+              <td>
+                <span
+                  className="text-green-500 text-xl tooltip"
+                  data-tip="sudah terisi"
+                >
+                  <FaRegCheckSquare />
+                </span>
+              </td>
+              <td>
+                <span
+                  className="text-red-500 text-xl tooltip"
+                  data-tip="belum terisi"
+                >
+                  <FaRegWindowClose />
+                </span>
+              </td>
+              <td>
+                <span
+                  className="text-green-500 text-xl tooltip"
+                  data-tip="sudah terisi"
+                >
+                  <FaRegCheckSquare />
+                </span>
+              </td>
+
+              <td className="flex items-start flex-col justify-center">
+                <p>20%</p>
+                <progress
+                  className="progress progress-accent"
+                  value="20"
+                  max="100"
+                />
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>anisa</td>
+              <td>
+                <span
+                  className="text-green-500 text-xl tooltip"
+                  data-tip="sudah terisi"
+                >
+                  <FaRegCheckSquare />
+                </span>
+              </td>
+              <td>
+                <span
+                  className="text-red-500 text-xl tooltip"
+                  data-tip="belum terisi"
+                >
+                  <FaRegWindowClose />
+                </span>
+              </td>
+              <td>
+                <span
+                  className="text-green-500 text-xl tooltip"
+                  data-tip="sudah terisi"
+                >
+                  <FaRegCheckSquare />
+                </span>
+              </td>
+
+              <td className="flex items-start flex-col justify-center">
+                <p>20%</p>
+                <progress
+                  className="progress progress-accent"
+                  value="20"
+                  max="100"
+                />
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>anisa</td>
+              <td>
+                <span
+                  className="text-green-500 text-xl tooltip"
+                  data-tip="sudah terisi"
+                >
+                  <FaRegCheckSquare />
+                </span>
+              </td>
+              <td>
+                <span
+                  className="text-red-500 text-xl tooltip"
+                  data-tip="belum terisi"
+                >
+                  <FaRegWindowClose />
+                </span>
+              </td>
+              <td>
+                <span
+                  className="text-green-500 text-xl tooltip"
+                  data-tip="sudah terisi"
+                >
+                  <FaRegCheckSquare />
+                </span>
+              </td>
+
+              <td className="flex items-start flex-col justify-center">
+                <p>20%</p>
+                <progress
+                  className="progress progress-accent"
+                  value="20"
+                  max="100"
+                />
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>anisa</td>
+              <td>
+                <span
+                  className="text-green-500 text-xl tooltip"
+                  data-tip="sudah terisi"
+                >
+                  <FaRegCheckSquare />
+                </span>
+              </td>
+              <td>
+                <span
+                  className="text-red-500 text-xl tooltip"
+                  data-tip="belum terisi"
+                >
+                  <FaRegWindowClose />
+                </span>
+              </td>
+              <td>
+                <span
+                  className="text-green-500 text-xl tooltip"
+                  data-tip="sudah terisi"
+                >
+                  <FaRegCheckSquare />
+                </span>
+              </td>
+
+              <td className="flex items-start flex-col justify-center">
+                <p>20%</p>
+                <progress
+                  className="progress progress-accent"
+                  value="20"
+                  max="100"
+                />
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>

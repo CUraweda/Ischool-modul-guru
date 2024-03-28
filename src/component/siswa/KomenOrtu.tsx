@@ -80,6 +80,132 @@ const KomenOrtu = () => {
                 </button>
               </td>
             </tr>
+            <tr>
+              <th>1</th>
+              <td>anisa</td>
+              <td>Ummu anisa</td>
+              <td className="max-w-md">
+                Mampu melafadzkan ta’awudz dan basmallah dengan 3M (Mangap,
+                meringis, monyong) dan mampu mengikuti intonasi nada bacaan yang
+                di contohkan pembimbing
+              </td>
+              <td>
+                <button
+                  className="btn btn-sm join-item bg-green-500 text-white tooltip"
+                  data-tip="lihat portofolio"
+                  onClick={() => showModal("show-ortu")}
+                >
+                  <span className="text-xl">
+                  <FaFilePdf />
+                  </span>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>anisa</td>
+              <td>Ummu anisa</td>
+              <td className="max-w-md">
+                Mampu melafadzkan ta’awudz dan basmallah dengan 3M (Mangap,
+                meringis, monyong) dan mampu mengikuti intonasi nada bacaan yang
+                di contohkan pembimbing
+              </td>
+              <td>
+                <button
+                  className="btn btn-sm join-item bg-green-500 text-white tooltip"
+                  data-tip="lihat portofolio"
+                  onClick={() => showModal("show-ortu")}
+                >
+                  <span className="text-xl">
+                  <FaFilePdf />
+                  </span>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>anisa</td>
+              <td>Ummu anisa</td>
+              <td className="max-w-md">
+                Mampu melafadzkan ta’awudz dan basmallah dengan 3M (Mangap,
+                meringis, monyong) dan mampu mengikuti intonasi nada bacaan yang
+                di contohkan pembimbing
+              </td>
+              <td>
+                <button
+                  className="btn btn-sm join-item bg-green-500 text-white tooltip"
+                  data-tip="lihat portofolio"
+                  onClick={() => showModal("show-ortu")}
+                >
+                  <span className="text-xl">
+                  <FaFilePdf />
+                  </span>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>anisa</td>
+              <td>Ummu anisa</td>
+              <td className="max-w-md">
+                Mampu melafadzkan ta’awudz dan basmallah dengan 3M (Mangap,
+                meringis, monyong) dan mampu mengikuti intonasi nada bacaan yang
+                di contohkan pembimbing
+              </td>
+              <td>
+                <button
+                  className="btn btn-sm join-item bg-green-500 text-white tooltip"
+                  data-tip="lihat portofolio"
+                  onClick={() => showModal("show-ortu")}
+                >
+                  <span className="text-xl">
+                  <FaFilePdf />
+                  </span>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>anisa</td>
+              <td>Ummu anisa</td>
+              <td className="max-w-md">
+                Mampu melafadzkan ta’awudz dan basmallah dengan 3M (Mangap,
+                meringis, monyong) dan mampu mengikuti intonasi nada bacaan yang
+                di contohkan pembimbing
+              </td>
+              <td>
+                <button
+                  className="btn btn-sm join-item bg-green-500 text-white tooltip"
+                  data-tip="lihat portofolio"
+                  onClick={() => showModal("show-ortu")}
+                >
+                  <span className="text-xl">
+                  <FaFilePdf />
+                  </span>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>anisa</td>
+              <td>Ummu anisa</td>
+              <td className="max-w-md">
+                Mampu melafadzkan ta’awudz dan basmallah dengan 3M (Mangap,
+                meringis, monyong) dan mampu mengikuti intonasi nada bacaan yang
+                di contohkan pembimbing
+              </td>
+              <td>
+                <button
+                  className="btn btn-sm join-item bg-green-500 text-white tooltip"
+                  data-tip="lihat portofolio"
+                  onClick={() => showModal("show-ortu")}
+                >
+                  <span className="text-xl">
+                  <FaFilePdf />
+                  </span>
+                </button>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>

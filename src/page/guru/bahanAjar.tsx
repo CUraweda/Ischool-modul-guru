@@ -28,7 +28,7 @@ const BahanAjar = () => {
               </button>
             </div>
           </div>
-          <div className="overflow-x-auto w-full p-5 ">
+          <div className="overflow-x-auto w-full p-5 bg-white">
             <table className="table shadow-lg">
               {/* head */}
               <thead className="bg-blue-200">
@@ -46,8 +46,48 @@ const BahanAjar = () => {
                 <tr>
                   <th>1</th>
                   <td>Cy Ganderton</td>
-                  <td>Quality Control Specialist</td>
-                  <td>Blue</td>
+                  <td>IPA</td>
+                  <td>VIII</td>
+                  <td>ini keterangan</td>
+                  <td>
+                    <button className="btn bg-blue-400 text-xl font-bold text-white"><BsDownload/></button>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>IPA</td>
+                  <td>VIII</td>
+                  <td>ini keterangan</td>
+                  <td>
+                    <button className="btn bg-blue-400 text-xl font-bold text-white"><BsDownload/></button>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>IPA</td>
+                  <td>VIII</td>
+                  <td>ini keterangan</td>
+                  <td>
+                    <button className="btn bg-blue-400 text-xl font-bold text-white"><BsDownload/></button>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>IPA</td>
+                  <td>VIII</td>
+                  <td>ini keterangan</td>
+                  <td>
+                    <button className="btn bg-blue-400 text-xl font-bold text-white"><BsDownload/></button>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>IPA</td>
+                  <td>VIII</td>
                   <td>ini keterangan</td>
                   <td>
                     <button className="btn bg-blue-400 text-xl font-bold text-white"><BsDownload/></button>

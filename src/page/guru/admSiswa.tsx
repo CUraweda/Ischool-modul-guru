@@ -85,7 +85,7 @@ const AdmSiswa = () => {
             </div>
           </div>
         </div>
-        <div className="overflow-x-auto w-full flex flex-col p-5 my-10 justify-center">
+        <div className="overflow-x-auto w-full flex flex-col p-5 my-10 justify-center bg-white">
           <div className="w-full justify-between bg-red flex">
             <span className="text-2xl font-bold">Tugas Siswa</span>
             <button
@@ -116,10 +116,74 @@ const AdmSiswa = () => {
                 <tr>
                   <th>1</th>
                   <td>Cy Ganderton</td>
-                  <td>Quality Control Specialist</td>
-                  <td>Blue</td>
-                  <td>Blue</td>
-                  <td>Blue</td>
+                  <td>IPA</td>
+                  <td>halaman 9</td>
+                  <td>8 april - 10 april</td>
+                  <td>Individu</td>
+                  <td>
+                    <button className="btn btn-ghost text-orange-600 text-xl">
+                      <FaPenClip />
+                    </button>
+                    <button className="btn btn-ghost text-red-600 text-xl">
+                      <BiTrash />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>IPA</td>
+                  <td>halaman 9</td>
+                  <td>8 april - 10 april</td>
+                  <td>Individu</td>
+                  <td>
+                    <button className="btn btn-ghost text-orange-600 text-xl">
+                      <FaPenClip />
+                    </button>
+                    <button className="btn btn-ghost text-red-600 text-xl">
+                      <BiTrash />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>IPA</td>
+                  <td>halaman 9</td>
+                  <td>8 april - 10 april</td>
+                  <td>Individu</td>
+                  <td>
+                    <button className="btn btn-ghost text-orange-600 text-xl">
+                      <FaPenClip />
+                    </button>
+                    <button className="btn btn-ghost text-red-600 text-xl">
+                      <BiTrash />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>IPA</td>
+                  <td>halaman 9</td>
+                  <td>8 april - 10 april</td>
+                  <td>Individu</td>
+                  <td>
+                    <button className="btn btn-ghost text-orange-600 text-xl">
+                      <FaPenClip />
+                    </button>
+                    <button className="btn btn-ghost text-red-600 text-xl">
+                      <BiTrash />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <th>1</th>
+                  <td>Cy Ganderton</td>
+                  <td>IPA</td>
+                  <td>halaman 9</td>
+                  <td>8 april - 10 april</td>
+                  <td>Individu</td>
                   <td>
                     <button className="btn btn-ghost text-orange-600 text-xl">
                       <FaPenClip />

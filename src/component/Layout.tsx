@@ -14,11 +14,11 @@ const Layout: FC<Props> = ({ children }) => {
           <div className="top-0 sticky z-10">
             <Sidebar />
           </div>
-          <div className="w-full">
+          <div className="w-full bg-blue-200">
             <div className="top-0 sticky z-10">
               <Navbar />
             </div>
-            <div>
+            <div className="">
 
             {children}
             </div>

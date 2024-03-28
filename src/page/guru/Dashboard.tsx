@@ -48,23 +48,23 @@ const Dashboard = () => {
               </div>
               <div className="w-3/5 flex flex-col items-center px-3 gap-3">
                 <div className="w-full flex justify-between">
-                  <span>Narasi</span>
-                  <span>9 jan</span>
-                  <span>
+                  <span className="w-1/3">Narasi</span>
+                  <span className="w-1/3 text-center">9 jan</span>
+                  <span className="w-1/3 text-center">
                     <FaDownload />
                   </span>
                 </div>
                 <div className="w-full flex justify-between">
-                  <span>Portofolio</span>
-                  <span>9 jan</span>
-                  <span>
+                  <span className="w-1/3">Portofolio</span>
+                  <span className="w-1/3 text-center">9 jan</span>
+                  <span className="w-1/3 text-center">
                     <FaDownload />
                   </span>
                 </div>
                 <div className="w-full flex justify-between">
-                  <span>Rapot angka</span>
-                  <span>9 jan</span>
-                  <span>
+                  <span className="w-1/3">Rapot angka</span>
+                  <span className="w-1/3 text-center">9 jan</span>
+                  <span className="w-1/3 text-center">
                     <FaDownload />
                   </span>
                 </div>
