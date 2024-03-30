@@ -68,7 +68,7 @@ const RaportNarasi = () => {
           <tbody>
             <tr>
               <th>1</th>
-              <td>Cy Ganderton</td>
+              <td>anwar</td>
               <td className="max-w-md">VII</td>
               <td className="">
                 <div className="join">
@@ -91,8 +91,8 @@ const RaportNarasi = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>Cy Ganderton</td>
+              <th>2</th>
+              <td>jani</td>
               <td className="max-w-md">VII</td>
               <td className="">
                 <div className="join">
@@ -115,8 +115,8 @@ const RaportNarasi = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>Cy Ganderton</td>
+              <th>3</th>
+              <td>melina</td>
               <td className="max-w-md">VII</td>
               <td className="">
                 <div className="join">
@@ -139,8 +139,8 @@ const RaportNarasi = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>Cy Ganderton</td>
+              <th>4</th>
+              <td>bayu</td>
               <td className="max-w-md">VII</td>
               <td className="">
                 <div className="join">
@@ -163,8 +163,8 @@ const RaportNarasi = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>Cy Ganderton</td>
+              <th>5</th>
+              <td>ratih</td>
               <td className="max-w-md">VII</td>
               <td className="">
                 <div className="join">
@@ -187,8 +187,8 @@ const RaportNarasi = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>Cy Ganderton</td>
+              <th>6</th>
+              <td>aldi</td>
               <td className="max-w-md">VII</td>
               <td className="">
                 <div className="join">
@@ -211,8 +211,8 @@ const RaportNarasi = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>Cy Ganderton</td>
+              <th>7</th>
+              <td>meli</td>
               <td className="max-w-md">VII</td>
               <td className="">
                 <div className="join">

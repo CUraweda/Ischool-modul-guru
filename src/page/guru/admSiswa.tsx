@@ -1,20 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiPlus } from "react-icons/fi";
 import Modal from "../../component/modal";
 import { format } from "date-fns";
 import { DateRange, DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import { FaPenClip } from "react-icons/fa6";
+import { FaListCheck, FaPenClip } from "react-icons/fa6";
 import { BiTrash } from "react-icons/bi";
+import { Task } from "../../controller/api";
+import { useStore } from "../../store/Store";
 
 const pastMonth = new Date();
 
 const AdmSiswa = () => {
+  const { token } = useStore();
+
+  const [task, setTask] = useState<any>([]);
+
   const showModalAdd = () => {
     let modalElement = document.getElementById("add-cuti") as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
     }
+  };
+
+  const getTask = async () => {
+    try {
+      const response = await Task.GetAll(token, 0, 20);
+      console.log(response.data.data.result);
+      setTask(response.data.data.result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getTask();
+  }, []);
+
+  const formatDate = (date: string) => {
+    let Newdate = new Date(date);
+    let formattedDate = Newdate.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    return formattedDate;
   };
 
   const [range, setRange] = useState<DateRange | undefined>();
@@ -105,94 +134,37 @@ const AdmSiswa = () => {
                 <tr>
                   <th>No</th>
                   <th>Topik</th>
-                  <th>Detail</th>
-                  <th>Periode</th>
+                  <th>Mapel</th>
+                  <th>Tgl Mulai</th>
+                  <th>Tgl Selesai</th>
                   <th>Jenis</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>IPA</td>
-                  <td>halaman 9</td>
-                  <td>8 april - 10 april</td>
-                  <td>Individu</td>
-                  <td>
-                    <button className="btn btn-ghost text-orange-600 text-xl">
-                      <FaPenClip />
-                    </button>
-                    <button className="btn btn-ghost text-red-600 text-xl">
-                      <BiTrash />
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>IPA</td>
-                  <td>halaman 9</td>
-                  <td>8 april - 10 april</td>
-                  <td>Individu</td>
-                  <td>
-                    <button className="btn btn-ghost text-orange-600 text-xl">
-                      <FaPenClip />
-                    </button>
-                    <button className="btn btn-ghost text-red-600 text-xl">
-                      <BiTrash />
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>IPA</td>
-                  <td>halaman 9</td>
-                  <td>8 april - 10 april</td>
-                  <td>Individu</td>
-                  <td>
-                    <button className="btn btn-ghost text-orange-600 text-xl">
-                      <FaPenClip />
-                    </button>
-                    <button className="btn btn-ghost text-red-600 text-xl">
-                      <BiTrash />
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>IPA</td>
-                  <td>halaman 9</td>
-                  <td>8 april - 10 april</td>
-                  <td>Individu</td>
-                  <td>
-                    <button className="btn btn-ghost text-orange-600 text-xl">
-                      <FaPenClip />
-                    </button>
-                    <button className="btn btn-ghost text-red-600 text-xl">
-                      <BiTrash />
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>IPA</td>
-                  <td>halaman 9</td>
-                  <td>8 april - 10 april</td>
-                  <td>Individu</td>
-                  <td>
-                    <button className="btn btn-ghost text-orange-600 text-xl">
-                      <FaPenClip />
-                    </button>
-                    <button className="btn btn-ghost text-red-600 text-xl">
-                      <BiTrash />
-                    </button>
-                  </td>
-                </tr>
+                {task?.map((item: any, index: number) => (
+                  <tr>
+                    <th>{index + 1}</th>
+                    <td>{item?.topic}</td>
+                    <td>{item?.subject.name}</td>
+                    <td>{formatDate(item?.start_date)}</td>
+                    <td>{formatDate(item?.end_date)}</td>
+                    <td>{item?.characteristic}</td>
+                    <td>{item?.status}</td>
+                    <td className="join text-white">
+                      <button className="btn btn-sm btn-ghost bg-orange-600 text-xl join-item">
+                        <FaPenClip />
+                      </button>
+                      <button className="btn btn-sm btn-ghost bg-red-600 text-xl join-item">
+                        <BiTrash />
+                      </button>
+                      <button className="btn btn-sm btn-ghost bg-blue-600 text-xl join-item">
+                        <FaListCheck />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

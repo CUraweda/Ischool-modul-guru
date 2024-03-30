@@ -64,30 +64,30 @@ const pengajuanCuti = () => {
                   <td>done</td>
                 </tr>
                 <tr>
-                  <th>1</th>
+                  <th>2</th>
                   <td>Cy Ganderton</td>
-                  <td>3 maret 2023</td>
                   <td>5 maret 2023</td>
+                  <td>6 maret 2023</td>
+                  <td>2 hari</td>
+                  <td>lainnya</td>
+                  <td>done</td>
+                </tr>
+                <tr>
+                  <th>3</th>
+                  <td>Cy Ganderton</td>
+                  <td>8 maret 2023</td>
+                  <td>11 maret 2023</td>
                   <td>3 hari</td>
                   <td>cuti sakit</td>
                   <td>done</td>
                 </tr>
                 <tr>
-                  <th>1</th>
+                  <th>4</th>
                   <td>Cy Ganderton</td>
-                  <td>3 maret 2023</td>
-                  <td>5 maret 2023</td>
-                  <td>3 hari</td>
-                  <td>cuti sakit</td>
-                  <td>done</td>
-                </tr>
-                <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>3 maret 2023</td>
-                  <td>5 maret 2023</td>
-                  <td>3 hari</td>
-                  <td>cuti sakit</td>
+                  <td>15 maret 2023</td>
+                  <td>20 maret 2023</td>
+                  <td>5 hari</td>
+                  <td>cuti lainnya</td>
                   <td>done</td>
                 </tr>
               </tbody>

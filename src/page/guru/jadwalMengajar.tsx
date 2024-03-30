@@ -1,5 +1,5 @@
+import MyScheduler  from "../../component/calendar";
 
-import MyScheduler from "../../component/calendar";
 
 const jadwalMengajar = () => {
   const appointments = [
@@ -47,6 +47,8 @@ const jadwalMengajar = () => {
     },
    
   ];
+
+  
   return (
     <div className="my-10 w-full flex flex-col items-center">
     <div className=" flex flex-col items-center w-full text-3xl font-bold text-center">
@@ -54,7 +56,7 @@ const jadwalMengajar = () => {
         <span className="text-xl">Bulan Februari</span>
     </div>
     <div className="w-full p-6">
-        <MyScheduler data={appointments}/>
+        <MyScheduler data={appointments} />
     </div>
 
   </div>

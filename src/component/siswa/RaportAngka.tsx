@@ -99,7 +99,7 @@ const RaportAngka = () => {
           <tbody>
             <tr>
               <th>1</th>
-              <td>Cy Ganderton</td>
+              <td>jani</td>
               <td>Matematika</td>
               <td>75</td>
               <td>89</td>
@@ -134,8 +134,8 @@ const RaportAngka = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>Cy Ganderton</td>
+              <th>2</th>
+              <td>melina</td>
               <td>Matematika</td>
               <td>75</td>
               <td>89</td>
@@ -172,8 +172,8 @@ const RaportAngka = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>Cy Ganderton</td>
+              <th>3</th>
+              <td>raza</td>
               <td>Matematika</td>
               <td>75</td>
               <td>89</td>
@@ -210,8 +210,8 @@ const RaportAngka = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>Cy Ganderton</td>
+              <th>4</th>
+              <td>anwar</td>
               <td>Matematika</td>
               <td>75</td>
               <td>89</td>
@@ -248,8 +248,8 @@ const RaportAngka = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>Cy Ganderton</td>
+              <th>5</th>
+              <td>melina</td>
               <td>Matematika</td>
               <td>75</td>
               <td>89</td>
@@ -286,8 +286,8 @@ const RaportAngka = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>Cy Ganderton</td>
+              <th>6</th>
+              <td>bayu</td>
               <td>Matematika</td>
               <td>75</td>
               <td>89</td>

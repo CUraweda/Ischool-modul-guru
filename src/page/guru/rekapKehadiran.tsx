@@ -1,5 +1,4 @@
-
-import MyScheduler from "../../component/calendar";
+import MyScheduler  from "../../component/calendar";
 
 const jadwalMengajar = () => {
   const appointments = [

@@ -31,7 +31,7 @@ const Sidebar = () => {
     sessionStorage.setItem("side", name);
   };
   let data = []
-  data = role === 'guru' ? menu : karyawan
+  data = role === 'guru' ? menu : menu
 
   return (
     <div>

@@ -21,9 +21,9 @@ const PresensiSiswa = () => {
                 {/* row 1 */}
                 <tr>
                   <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>Quality Control Specialist</td>
-                  <td>Blue</td>
+                  <td>aldi</td>
+                  <td>123123123</td>
+                  <td>VIII</td>
                   <td className="flex gap-2">
                     <select className="select w-32 max-w-xs bg-green-300">
                       <option disabled selected>
@@ -46,10 +46,10 @@ const PresensiSiswa = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>Quality Control Specialist</td>
-                  <td>Blue</td>
+                  <th>2</th>
+                  <td>anwar</td>
+                  <td>324234234</td>
+                  <td>VIII</td>
                   <td className="flex gap-2">
                     <select className="select w-32 max-w-xs bg-green-300">
                       <option disabled selected>
@@ -72,10 +72,10 @@ const PresensiSiswa = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>Quality Control Specialist</td>
-                  <td>Blue</td>
+                  <th>3</th>
+                  <td>farel</td>
+                  <td>34234242</td>
+                  <td>VIII</td>
                   <td className="flex gap-2">
                     <select className="select w-32 max-w-xs bg-green-300">
                       <option disabled selected>
@@ -98,10 +98,10 @@ const PresensiSiswa = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>Quality Control Specialist</td>
-                  <td>Blue</td>
+                  <th>4</th>
+                  <td>ahmad</td>
+                  <td>23904824</td>
+                  <td>VIII</td>
                   <td className="flex gap-2">
                     <select className="select w-32 max-w-xs bg-green-300">
                       <option disabled selected>
@@ -124,10 +124,10 @@ const PresensiSiswa = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>Quality Control Specialist</td>
-                  <td>Blue</td>
+                  <th>5</th>
+                  <td>fani</td>
+                  <td>987987</td>
+                  <td>VIII</td>
                   <td className="flex gap-2">
                     <select className="select w-32 max-w-xs bg-green-300">
                       <option disabled selected>
@@ -150,10 +150,10 @@ const PresensiSiswa = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>Quality Control Specialist</td>
-                  <td>Blue</td>
+                  <th>6</th>
+                  <td>ratih</td>
+                  <td>9799879</td>
+                  <td>VIII</td>
                   <td className="flex gap-2">
                     <select className="select w-32 max-w-xs bg-green-300">
                       <option disabled selected>
@@ -176,10 +176,10 @@ const PresensiSiswa = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>Quality Control Specialist</td>
-                  <td>Blue</td>
+                  <th>7</th>
+                  <td>melina</td>
+                  <td>8687676878</td>
+                  <td>VIII</td>
                   <td className="flex gap-2">
                     <select className="select w-32 max-w-xs bg-green-300">
                       <option disabled selected>
@@ -202,10 +202,10 @@ const PresensiSiswa = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>Quality Control Specialist</td>
-                  <td>Blue</td>
+                  <th>8</th>
+                  <td>jani</td>
+                  <td>67579</td>
+                  <td>VIII</td>
                   <td className="flex gap-2">
                     <select className="select w-32 max-w-xs bg-green-300">
                       <option disabled selected>

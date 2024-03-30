@@ -23,6 +23,8 @@ import KaryawanPresensi from "../page/karyawan/rekapKehadiran"
 import KaryawanPelatihan from "../page/karyawan/daftarPelatihan"
 import RaportSiswa from "../page/guru/raportSiswa";
 import RaportNarasi from "../page/guru/RaportNarasi";
+import DetailTugasSswa from "../page/guru/detailTugasSswa";
+import KalenderKegiatan from "../page/guru/kalenderKegiatan";
 
 const RootRoutes = () => {
   return (
@@ -115,6 +117,22 @@ const RootRoutes = () => {
           element={
             <Layout>
               <AdmGuru />
+            </Layout>
+          }
+        />
+        <Route
+          path="/guru/kalender-kegiatan"
+          element={
+            <Layout>
+              <KalenderKegiatan />
+            </Layout>
+          }
+        />
+        <Route
+          path="/guru/task/siswa"
+          element={
+            <Layout>
+              <DetailTugasSswa />
             </Layout>
           }
         />

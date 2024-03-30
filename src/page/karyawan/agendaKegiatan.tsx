@@ -1,4 +1,4 @@
-import MyScheduler from "../../component/calendar";
+// import MyScheduler from "../../component/calendar";
 
 const AgendaKegiatan = () => {
   const appointments = [
@@ -60,7 +60,7 @@ const AgendaKegiatan = () => {
             <span>AGENDA KEGIATAN</span>
         </div>
         <div className="w-full p-6">
-           <MyScheduler data={appointments}/>
+           {/* <MyScheduler data={appointments}/> */}
         </div>
 
       </div>

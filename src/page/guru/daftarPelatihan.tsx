@@ -44,10 +44,10 @@ const DaftarPelatihan = () => {
                 </td>
               </tr>
               <tr>
-                <th>1</th>
-                <td>8 maret 2024</td>
-                <td>management kelas</td>
-                <td>prof.ahmad</td>
+                <th>2</th>
+                <td>9 maret 2024</td>
+                <td>management diri</td>
+                <td>syafii</td>
                 <td>Complete</td>
                 <td>
                   <button className="btn bg-blue-400 text-xl font-bold text-white">
@@ -56,10 +56,10 @@ const DaftarPelatihan = () => {
                 </td>
               </tr>
               <tr>
-                <th>1</th>
-                <td>8 maret 2024</td>
-                <td>management kelas</td>
-                <td>prof.ahmad</td>
+                <th>3</th>
+                <td>13 maret 2024</td>
+                <td>control management</td>
+                <td>ahmad syafii</td>
                 <td>Complete</td>
                 <td>
                   <button className="btn bg-blue-400 text-xl font-bold text-white">
@@ -68,10 +68,10 @@ const DaftarPelatihan = () => {
                 </td>
               </tr>
               <tr>
-                <th>1</th>
-                <td>8 maret 2024</td>
-                <td>management kelas</td>
-                <td>prof.ahmad</td>
+                <th>4</th>
+                <td>15 maret 2024</td>
+                <td>pelatiihan membuat bahan ajar</td>
+                <td>dedi widiantoro</td>
                 <td>Complete</td>
                 <td>
                   <button className="btn bg-blue-400 text-xl font-bold text-white">
@@ -80,10 +80,10 @@ const DaftarPelatihan = () => {
                 </td>
               </tr>
               <tr>
-                <th>1</th>
-                <td>8 maret 2024</td>
-                <td>management kelas</td>
-                <td>prof.ahmad</td>
+                <th>5</th>
+                <td>20 maret 2024</td>
+                <td>pelatihan membuat pantun</td>
+                <td>alfi musfiroh</td>
                 <td>Complete</td>
                 <td>
                   <button className="btn bg-blue-400 text-xl font-bold text-white">
@@ -92,10 +92,10 @@ const DaftarPelatihan = () => {
                 </td>
               </tr>
               <tr>
-                <th>1</th>
-                <td>8 maret 2024</td>
-                <td>management kelas</td>
-                <td>prof.ahmad</td>
+                <th>6</th>
+                <td>21 maret 2024</td>
+                <td>pelatihan bahasa arab</td>
+                <td>khusnur</td>
                 <td>Complete</td>
                 <td>
                   <button className="btn bg-blue-400 text-xl font-bold text-white">

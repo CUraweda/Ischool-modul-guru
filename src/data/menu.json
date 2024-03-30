@@ -21,6 +21,13 @@
         "subtitle": []
     },
     {
+        "submenu": false,
+        "title": "Kalender Kegiatan",
+        "icon": "<BsTable />",
+        "url": "/guru/kalender-kegiatan",
+        "subtitle": []
+    },
+    {
         "submenu": true,
         "title": "Kehadiran",
         "icon": "<FaPersonCircleCheck />",

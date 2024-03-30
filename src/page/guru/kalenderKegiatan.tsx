@@ -1,9 +1,7 @@
 import Demo from "../../component/CalendarEdit";
-import MyScheduler  from "../../component/calendar";
 
 
-
-const AgendaKegiatan = () => {
+const KalenderKegiatan = () => {
   const appointments = [
     {
       title: "Kunjungan",
@@ -33,7 +31,7 @@ const AgendaKegiatan = () => {
   return (
     <div className="my-10 w-full flex flex-col items-center">
         <div className=" flex flex-col items-center w-full text-3xl font-bold">
-            <span>AGENDA KEGIATAN GURU</span>
+            <span>KALENDER KEGIATAN TAHUN 2023 / 2024</span>
         
         </div>
         <div className="w-full p-6">
@@ -45,4 +43,4 @@ const AgendaKegiatan = () => {
   );
 };
 
-export default AgendaKegiatan;
+export default KalenderKegiatan;

@@ -117,10 +117,10 @@ const AdmGuru = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>IPA</td>
-                  <td>merangkum</td>
-                  <td>8 april - 10 april 2023</td>
+                  <th>2</th>
+                  <td>MTK</td>
+                  <td>mengerjakan tugas</td>
+                  <td>9 april - 12 april 2023</td>
                   <td>individu</td>
                   <td>open</td>
                   <td>
@@ -133,10 +133,10 @@ const AdmGuru = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>IPA</td>
-                  <td>merangkum</td>
-                  <td>8 april - 10 april 2023</td>
+                  <th>3</th>
+                  <td>IPS</td>
+                  <td>mencarisilsilah</td>
+                  <td>11 april - 13 april 2023</td>
                   <td>individu</td>
                   <td>open</td>
                   <td>
@@ -149,10 +149,10 @@ const AdmGuru = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>IPA</td>
-                  <td>merangkum</td>
-                  <td>8 april - 10 april 2023</td>
+                  <th>4</th>
+                  <td>Bahasa Indonesia</td>
+                  <td>kalimat positif</td>
+                  <td>15 april - 16 april 2023</td>
                   <td>individu</td>
                   <td>open</td>
                   <td>
@@ -165,9 +165,9 @@ const AdmGuru = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>IPA</td>
-                  <td>merangkum</td>
+                  <th>5</th>
+                  <td>Bahasa Inggris</td>
+                  <td>mengerjakan soal</td>
                   <td>8 april - 10 april 2023</td>
                   <td>individu</td>
                   <td>open</td>
@@ -180,22 +180,7 @@ const AdmGuru = () => {
                     </button>
                   </td>
                 </tr>
-                <tr>
-                  <th>1</th>
-                  <td>IPA</td>
-                  <td>merangkum</td>
-                  <td>8 april - 10 april 2023</td>
-                  <td>individu</td>
-                  <td>open</td>
-                  <td>
-                    <button className="btn btn-ghost text-orange-600 text-xl">
-                      <FaPenClip />
-                    </button>
-                    <button className="btn btn-ghost text-red-600 text-xl">
-                      <BiTrash />
-                    </button>
-                  </td>
-                </tr>
+               
                
               </tbody>
             </table>

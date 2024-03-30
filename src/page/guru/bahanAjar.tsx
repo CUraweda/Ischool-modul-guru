@@ -45,7 +45,7 @@ const BahanAjar = () => {
                 {/* row 1 */}
                 <tr>
                   <th>1</th>
-                  <td>Cy Ganderton</td>
+                  <td>bahan ajar tumbuhan</td>
                   <td>IPA</td>
                   <td>VIII</td>
                   <td>ini keterangan</td>
@@ -54,9 +54,9 @@ const BahanAjar = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>IPA</td>
+                  <th>2</th>
+                  <td>bahan ajar bilangan bulat</td>
+                  <td>MTK</td>
                   <td>VIII</td>
                   <td>ini keterangan</td>
                   <td>
@@ -64,9 +64,9 @@ const BahanAjar = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>IPA</td>
+                  <th>3</th>
+                  <td>bahan ajar bilangan desimal</td>
+                  <td>MTK</td>
                   <td>VIII</td>
                   <td>ini keterangan</td>
                   <td>
@@ -74,9 +74,9 @@ const BahanAjar = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>IPA</td>
+                  <th>4</th>
+                  <td>bahan ajar kalimat pantun</td>
+                  <td>Bahasa Indonesia</td>
                   <td>VIII</td>
                   <td>ini keterangan</td>
                   <td>
@@ -84,9 +84,9 @@ const BahanAjar = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>1</th>
-                  <td>Cy Ganderton</td>
-                  <td>IPA</td>
+                  <th>5</th>
+                  <td>bahan ajar bangun datar</td>
+                  <td>MTK</td>
                   <td>VIII</td>
                   <td>ini keterangan</td>
                   <td>

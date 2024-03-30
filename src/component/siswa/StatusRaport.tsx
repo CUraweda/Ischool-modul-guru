@@ -88,8 +88,8 @@ const StatusRaport = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>anisa</td>
+              <th>2</th>
+              <td>anwar</td>
               <td>
                 <span
                   className="text-green-500 text-xl tooltip"
@@ -125,8 +125,8 @@ const StatusRaport = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>anisa</td>
+              <th>3</th>
+              <td>melisa</td>
               <td>
                 <span
                   className="text-green-500 text-xl tooltip"
@@ -162,8 +162,8 @@ const StatusRaport = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>anisa</td>
+              <th>4</th>
+              <td>bayu</td>
               <td>
                 <span
                   className="text-green-500 text-xl tooltip"
@@ -199,8 +199,8 @@ const StatusRaport = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>anisa</td>
+              <th>5</th>
+              <td>jani</td>
               <td>
                 <span
                   className="text-green-500 text-xl tooltip"

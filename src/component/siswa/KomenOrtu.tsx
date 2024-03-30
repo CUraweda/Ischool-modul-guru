@@ -81,9 +81,9 @@ const KomenOrtu = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>anisa</td>
-              <td>Ummu anisa</td>
+              <th>2</th>
+              <td>anwar</td>
+              <td>Ummu anwar</td>
               <td className="max-w-md">
                 Mampu melafadzkan ta’awudz dan basmallah dengan 3M (Mangap,
                 meringis, monyong) dan mampu mengikuti intonasi nada bacaan yang
@@ -102,9 +102,9 @@ const KomenOrtu = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>anisa</td>
-              <td>Ummu anisa</td>
+              <th>3</th>
+              <td>farel</td>
+              <td>Ummu farel</td>
               <td className="max-w-md">
                 Mampu melafadzkan ta’awudz dan basmallah dengan 3M (Mangap,
                 meringis, monyong) dan mampu mengikuti intonasi nada bacaan yang
@@ -123,9 +123,9 @@ const KomenOrtu = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>anisa</td>
-              <td>Ummu anisa</td>
+              <th>4</th>
+              <td>melina</td>
+              <td>Ummu melina</td>
               <td className="max-w-md">
                 Mampu melafadzkan ta’awudz dan basmallah dengan 3M (Mangap,
                 meringis, monyong) dan mampu mengikuti intonasi nada bacaan yang
@@ -144,9 +144,9 @@ const KomenOrtu = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>anisa</td>
-              <td>Ummu anisa</td>
+              <th>5</th>
+              <td>bayu</td>
+              <td>Ummu bayu</td>
               <td className="max-w-md">
                 Mampu melafadzkan ta’awudz dan basmallah dengan 3M (Mangap,
                 meringis, monyong) dan mampu mengikuti intonasi nada bacaan yang
@@ -165,9 +165,9 @@ const KomenOrtu = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>anisa</td>
-              <td>Ummu anisa</td>
+              <th>6</th>
+              <td>aldi</td>
+              <td>Ummu aldi</td>
               <td className="max-w-md">
                 Mampu melafadzkan ta’awudz dan basmallah dengan 3M (Mangap,
                 meringis, monyong) dan mampu mengikuti intonasi nada bacaan yang
@@ -186,9 +186,9 @@ const KomenOrtu = () => {
               </td>
             </tr>
             <tr>
-              <th>1</th>
-              <td>anisa</td>
-              <td>Ummu anisa</td>
+              <th>7</th>
+              <td>ratih</td>
+              <td>Ummu ratih</td>
               <td className="max-w-md">
                 Mampu melafadzkan ta’awudz dan basmallah dengan 3M (Mangap,
                 meringis, monyong) dan mampu mengikuti intonasi nada bacaan yang
