@@ -19,17 +19,6 @@ import {
 import { useStore } from "../store/Store";
 import { Kalender } from "../controller/api";
 
-const appointments = [
-  {
-    id: 1,
-    title: "Hadir",
-    startDate: new Date(2024, 3, 20).toISOString(), // Correctly formatted as string
-    endDate: new Date(2024, 3, 21).toISOString(), // Correctly formatted as string
-    location: "Room 3",
-  },
-  // ...other appointments
-];
-
 const Demo = () => {
   const { token } = useStore();
 
@@ -40,10 +29,8 @@ const Demo = () => {
     try {
       const response = await Kalender.GetAllDetail(token, 0, 20);
       const dataList = response.data.data.result;
-      
-      
+
       const setNewData = dataList.map((item: any, index: number) => {
-          console.log(item.start_date);
         const dataRest = {
           id: index,
           title: item.agenda,
@@ -54,7 +41,7 @@ const Demo = () => {
         return dataRest;
       });
 
-      setData(setNewData)
+      setData(setNewData);
     } catch (error) {
       console.log(error);
     }
@@ -63,6 +50,37 @@ const Demo = () => {
   useEffect(() => {
     getKalenderPendidikan();
   }, []);
+
+  const editAgenda = async (id: number, data: any) => {
+    try {
+      const dataRest = {
+        ...(data.startDate ? { start_date: data.startDate } : {}),
+        ...(data.endDate ? { end_date: data.endDate } : {}),
+        ...(data.title ? { agenda: data.title } : {}),
+      };
+      const response = await Kalender.EditDetail(token, id, dataRest);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const createAgenda = async (data: any) => {
+    const dataRest = {
+      edu_id: 1,
+      start_date: data.startDate,
+      end_date: data.endDate,
+      agenda: data.title,
+    };
+    const response = await Kalender.createDetail(token, dataRest);
+    console.log(response);
+  };
+
+  const deleteDetail = async (id: number) => {
+    await Kalender.deleteDetail(token, id);
+
+    getKalenderPendidikan();
+  };
 
   const commitChanges = ({
     added,
@@ -74,23 +92,25 @@ const Demo = () => {
     deleted?: any;
   }) => {
     if (added) {
-      console.log(added);
+      createAgenda(added);
+      // console.log(added);
     }
 
     if (changed) {
-      console.log(changed);
+      Object.keys(changed).forEach((id) => {
+        const changes = changed[id];
+        editAgenda(parseInt(id), changes);
+      });
     }
 
     if (deleted !== undefined) {
-      console.log(deleted);
+      deleteDetail(deleted);
     }
   };
-  console.log(data);
-  
 
   return (
     <Paper>
-      <Scheduler data={data} height={660}>
+      <Scheduler data={data}>
         <ViewState
           currentDate={currentDate}
           onCurrentDateChange={setCurrentDate}
