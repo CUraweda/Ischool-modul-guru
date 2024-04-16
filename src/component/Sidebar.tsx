@@ -5,7 +5,6 @@ import { iconMapping } from "../component/icon/icon";
 import logo from "../assets/sade.png";
 import { Link } from "react-router-dom";
 import menu from "../data/menu.json";
-import karyawan from "../data/karyawan.json"
 
 interface Menu {
   title: string;

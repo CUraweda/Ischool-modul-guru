@@ -30,6 +30,49 @@ const Task = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  GetAllClass: (
+    token: string | null,
+    page: number | null,
+    limit: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/classes?search_query=&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  GetAllMapel: (
+    token: string | null,
+    page: number | null,
+    limit: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/subject?search_query=&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+    createTask: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/student-task/create-by-class`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+
+    deleteTask: (token: string | null, id: number | null): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: `/api/student-task/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
 };
 
 const Kalender = {
@@ -41,6 +84,18 @@ const Kalender = {
     instance({
       method: "GET",
       url: `/api/edu-calendar-detail?search_query=&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  GetAllTopik: (
+    token: string | null,
+    page: number | null,
+    limit: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/edu-calendar?search_query=&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -57,35 +112,34 @@ const Kalender = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      data: {
-        data
-      },
+      data,
     }),
-  createDetail: (
-    token: string | null,
-    data: any
-  ): AxiosPromise<any> =>
+  createDetail: (token: string | null, data: any): AxiosPromise<any> =>
     instance({
       method: "POST",
       url: `/api/edu-calendar-detail/create`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      data: {
-        data
-      },
+      data,
     }),
-  deleteDetail: (
-    token: string | null,
-    id: number | null,
-  ): AxiosPromise<any> =>
+  createTopik: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/edu-calendar/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+
+  deleteDetail: (token: string | null, id: number | null): AxiosPromise<any> =>
     instance({
       method: "DELETE",
       url: `/api/edu-calendar-detail/delete/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      
     }),
 };
 

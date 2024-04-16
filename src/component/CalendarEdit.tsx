@@ -23,6 +23,7 @@ const Demo = () => {
   const { token } = useStore();
 
   const [data, setData] = useState<any[]>([]);
+  const [triger, setTriger] = useState<boolean>(false)
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const getKalenderPendidikan = async () => {
@@ -30,9 +31,9 @@ const Demo = () => {
       const response = await Kalender.GetAllDetail(token, 0, 20);
       const dataList = response.data.data.result;
 
-      const setNewData = dataList.map((item: any, index: number) => {
+      const setNewData = dataList.map((item: any) => {
         const dataRest = {
-          id: index,
+          id: item.id,
           title: item.agenda,
           startDate: new Date(item.start_date),
           endDate: new Date(item.end_date),
@@ -40,6 +41,8 @@ const Demo = () => {
         };
         return dataRest;
       });
+      console.log(setNewData);
+      
 
       setData(setNewData);
     } catch (error) {
@@ -49,7 +52,7 @@ const Demo = () => {
 
   useEffect(() => {
     getKalenderPendidikan();
-  }, []);
+  }, [triger]);
 
   const editAgenda = async (id: number, data: any) => {
     try {
@@ -60,6 +63,7 @@ const Demo = () => {
       };
       const response = await Kalender.EditDetail(token, id, dataRest);
       console.log(response);
+      setTriger(!triger)
     } catch (error) {
       console.log(error);
     }
@@ -74,12 +78,15 @@ const Demo = () => {
     };
     const response = await Kalender.createDetail(token, dataRest);
     console.log(response);
+    setTriger(!triger)
   };
 
   const deleteDetail = async (id: number) => {
-    await Kalender.deleteDetail(token, id);
-
-    getKalenderPendidikan();
+   
+   const response = await Kalender.deleteDetail(token, id);
+    console.log(response);
+    
+    setTriger(!triger)
   };
 
   const commitChanges = ({
@@ -97,16 +104,22 @@ const Demo = () => {
     }
 
     if (changed) {
+      
       Object.keys(changed).forEach((id) => {
+        console.log(id);
         const changes = changed[id];
         editAgenda(parseInt(id), changes);
       });
     }
 
     if (deleted !== undefined) {
+      console.log(deleted);
+      
       deleteDetail(deleted);
     }
   };
+
+ 
 
   return (
     <Paper>
