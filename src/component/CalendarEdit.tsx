@@ -19,6 +19,21 @@ import {
 import { useStore } from "../store/Store";
 import { Kalender } from "../controller/api";
 
+
+const CustomAppointment: React.FC<any> = ({ children, style, data, ...restProps }) => {
+  const customStyle = {
+    ...style,
+    backgroundColor: '#d946ef', // Use the color field from the appointment data
+    // backgroundColor: data.color, // Use the color field from the appointment data
+  };
+
+  return (
+    <Appointments.Appointment {...restProps} style={customStyle}>
+      {children}
+    </Appointments.Appointment>
+  );
+};
+
 const Demo = () => {
   const { token } = useStore();
 
@@ -41,9 +56,8 @@ const Demo = () => {
         };
         return dataRest;
       });
-      console.log(setNewData);
-      
-
+    console.log(response);
+    
       setData(setNewData);
     } catch (error) {
       console.log(error);
@@ -120,7 +134,6 @@ const Demo = () => {
   };
 
  
-
   return (
     <Paper>
       <Scheduler data={data}>
@@ -132,7 +145,7 @@ const Demo = () => {
         <IntegratedEditing />
         <MonthView />
         <ConfirmationDialog />
-        <Appointments />
+        <Appointments appointmentComponent={CustomAppointment} />
         <Toolbar />
         <DateNavigator />
         <TodayButton />

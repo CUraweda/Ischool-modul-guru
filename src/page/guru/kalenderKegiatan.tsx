@@ -17,9 +17,17 @@ const schema = Yup.object({
   smt: Yup.string().required("required"),
 });
 
+interface propsColor {
+  color: string;
+  value: string;
+}
 const KalenderKegiatan = () => {
   const { token } = useStore();
   const [topik, setTopik] = useState<any[]>([]);
+  const [Color, setColor] = useState<propsColor>({
+    color: "red",
+    value: "#dc2626",
+  });
 
   const getTopik = async () => {
     const response = await Kalender.GetAllTopik(token, 0, 10);
@@ -41,6 +49,50 @@ const KalenderKegiatan = () => {
       console.log(values);
     },
   });
+
+  const dataColor = [
+    {
+      color: "red",
+      value: "#dc2626",
+    },
+    {
+      color: "orange",
+      value: "#f97316",
+    },
+    {
+      color: "yellow",
+      value: "#eab308",
+    },
+    {
+      color: "lime",
+      value: "#84cc16",
+    },
+    {
+      color: "green",
+      value: "#22c55e",
+    },
+    {
+      color: "teal",
+      value: "#14b8a6",
+    },
+    {
+      color: "cyan",
+      value: "#06b6d4",
+    },
+    {
+      color: "blue",
+      value: "#3b82f6",
+    },
+    {
+      color: "violet",
+      value: "#8b5cf6",
+    },
+
+    {
+      color: "rose",
+      value: "#f43f5e",
+    },
+  ];
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
@@ -74,14 +126,13 @@ const KalenderKegiatan = () => {
       semester: smt,
     };
     await Kalender.createTopik(token, data);
-    
-    formik.resetForm()
+
+    formik.resetForm();
     getTopik();
   };
 
   return (
     <div className="my-10 w-full flex flex-col items-center">
-     
       <div className=" flex flex-col items-center w-full text-3xl font-bold">
         <span>KALENDER KEGIATAN TAHUN 2023 / 2024</span>
       </div>
@@ -160,15 +211,38 @@ const KalenderKegiatan = () => {
               </div>
             </div>
           </div>
+          <div className="w-full mt-5">
+            <label className="mt-4 font-bold">Warna Background</label>
+            <div className="w-full flex gap-2 mt-3">
+              {dataColor.map((item: propsColor, index: number) => (
+                <span
+                  key={index}
+                  className={`w-8 h-8 rounded-md bg-${
+                    item.color
+                  }-500 cursor-pointer hover:bg-${item.color}-400 ${
+                    Color?.value === item.value
+                      ? "ring ring-primary ring-offset-base-100 ring-offset-2"
+                      : ""
+                  }`}
+                  onClick={() => setColor(item)}
+                />
+              ))}
+            </div>
+          </div>
 
           <div className="w-full flex justify-center mt-10 gap-2">
+           
             <button
-              className="btn bg-green-500 text-white font-bold w-full"
+              className={`btn btn-ghost bg-${
+                Color ? Color.color : "green"
+              }-500 text-white font-bold w-full hover:bg-${
+                Color ? Color.color : "green"
+              }-400`}
               onClick={createAgenda}
             >
               Simpan
             </button>
-            {/* <button className="btn bg-green-500 text-white font-bold">Submit</button> */}
+           
           </div>
         </div>
       </Modal>
