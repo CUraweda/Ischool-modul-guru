@@ -12,61 +12,71 @@ import {
   AppointmentTooltip,
   ConfirmationDialog,
   MonthView,
-  DateNavigator,
   Toolbar,
+  DateNavigator,
   TodayButton,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { useStore } from "../store/Store";
 import { Kalender } from "../controller/api";
 
+const CustomAppointment: React.FC<any> = ({
+  children,
+  style,
+  data,
+  ...restProps
+}) => {
+  const warna = data?.color;
+  if (warna) {
+    const [colorCode] = warna.split("_");
+    const customStyle = {
+      ...style,
+      backgroundColor: colorCode,
+    };
 
-const CustomAppointment: React.FC<any> = ({ children, style, data, ...restProps }) => {
-  const customStyle = {
+    return (
+      <Appointments.Appointment {...restProps} style={customStyle}>
+        {children}
+      </Appointments.Appointment>
+    );
+  }
+  const Style = {
     ...style,
-    backgroundColor: '#d946ef', // Use the color field from the appointment data
-    // backgroundColor: data.color, // Use the color field from the appointment data
+    backgroundColor: "#3b82f6",
   };
-
   return (
-    <Appointments.Appointment {...restProps} style={customStyle}>
+    <Appointments.Appointment {...restProps} style={Style}>
       {children}
     </Appointments.Appointment>
   );
 };
 
-const Demo = () => {
+const Demo: React.FC = () => {
   const { token } = useStore();
-
-  const [data, setData] = useState<any[]>([]);
-  const [triger, setTriger] = useState<boolean>(false)
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [Data, setData] = useState<any[]>([]);
+  const [trigger, setTrigger] = useState<boolean>(false);
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
   const getKalenderPendidikan = async () => {
     try {
       const response = await Kalender.GetAllDetail(token, 0, 20);
       const dataList = response.data.data.result;
 
-      const setNewData = dataList.map((item: any) => {
-        const dataRest = {
-          id: item.id,
-          title: item.agenda,
-          startDate: new Date(item.start_date),
-          endDate: new Date(item.end_date),
-          location: "Room 3",
-        };
-        return dataRest;
-      });
-    console.log(response);
-    
-      setData(setNewData);
+      const newData = dataList.map((item: any) => ({
+        id: item.id,
+        title: item.agenda,
+        startDate: new Date(item.start_date),
+        endDate: new Date(item.end_date),
+        color: item.color,
+      }));
+      setData(newData);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   useEffect(() => {
     getKalenderPendidikan();
-  }, [triger]);
+  }, [trigger]);
 
   const editAgenda = async (id: number, data: any) => {
     try {
@@ -77,7 +87,7 @@ const Demo = () => {
       };
       const response = await Kalender.EditDetail(token, id, dataRest);
       console.log(response);
-      setTriger(!triger)
+      setTrigger(!trigger);
     } catch (error) {
       console.log(error);
     }
@@ -92,15 +102,14 @@ const Demo = () => {
     };
     const response = await Kalender.createDetail(token, dataRest);
     console.log(response);
-    setTriger(!triger)
+    setTrigger(!trigger);
   };
 
   const deleteDetail = async (id: number) => {
-   
-   const response = await Kalender.deleteDetail(token, id);
+    const response = await Kalender.deleteDetail(token, id);
     console.log(response);
-    
-    setTriger(!triger)
+
+    setTrigger(!trigger);
   };
 
   const commitChanges = ({
@@ -118,9 +127,10 @@ const Demo = () => {
     }
 
     if (changed) {
-      
+      console.log(changed);
+
       Object.keys(changed).forEach((id) => {
-        console.log(id);
+        console.log("ini id", id);
         const changes = changed[id];
         editAgenda(parseInt(id), changes);
       });
@@ -128,15 +138,13 @@ const Demo = () => {
 
     if (deleted !== undefined) {
       console.log(deleted);
-      
+
       deleteDetail(deleted);
     }
   };
-
- 
   return (
     <Paper>
-      <Scheduler data={data}>
+      <Scheduler data={Data}>
         <ViewState
           currentDate={currentDate}
           onCurrentDateChange={setCurrentDate}
@@ -145,6 +153,7 @@ const Demo = () => {
         <IntegratedEditing />
         <MonthView />
         <ConfirmationDialog />
+        {/* <Appointments/> */}
         <Appointments appointmentComponent={CustomAppointment} />
         <Toolbar />
         <DateNavigator />

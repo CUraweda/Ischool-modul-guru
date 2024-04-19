@@ -2,8 +2,7 @@ import { useState } from "react";
 
 import RaportAngka from "../../component/siswa/RaportAngka";
 import RaportNarasi from "../../component/siswa/RaportNarasi";
-import RaportPortofolio from "../../component/siswa/RaportPortofolio";
-import KomenOrtu from "../../component/siswa/KomenOrtu";
+import RaportPortofolio from "../../component/siswa/RaportPortofolio"
 import StatusRaport from "../../component/siswa/StatusRaport";
 
 const RaportSiswa = () => {
@@ -74,7 +73,7 @@ const RaportSiswa = () => {
           >
             <RaportPortofolio />
           </div>
-          <input
+          {/* <input
             type="radio"
             name="my_tabs_2"
             role="tab"
@@ -88,7 +87,7 @@ const RaportSiswa = () => {
             className="tab-content bg-base-100 border-base-300 rounded-box p-6"
           >
             <KomenOrtu />
-          </div>
+          </div> */}
         </div>
       </div>
     </>

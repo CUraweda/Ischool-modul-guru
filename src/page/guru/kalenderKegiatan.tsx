@@ -25,8 +25,8 @@ const KalenderKegiatan = () => {
   const { token } = useStore();
   const [topik, setTopik] = useState<any[]>([]);
   const [Color, setColor] = useState<propsColor>({
-    color: "red",
-    value: "#dc2626",
+    color: "bg-red-500",
+    value: "#dc2626_red",
   });
 
   const getTopik = async () => {
@@ -52,45 +52,49 @@ const KalenderKegiatan = () => {
 
   const dataColor = [
     {
-      color: "red",
-      value: "#dc2626",
+      color: "bg-red-500",
+      value: "#dc2626_red",
     },
     {
-      color: "orange",
-      value: "#f97316",
+      color: "bg-orange-500",
+      value: "#f97316_orange",
     },
     {
-      color: "yellow",
-      value: "#eab308",
+      color: "bg-yellow-500",
+      value: "#eab308_yellow",
     },
     {
-      color: "lime",
-      value: "#84cc16",
+      color: "bg-lime-500",
+      value: "#84cc16_lime",
     },
     {
-      color: "green",
-      value: "#22c55e",
+      color: "bg-green-500",
+      value: "#22c55e_green",
     },
     {
-      color: "teal",
-      value: "#14b8a6",
+      color: "bg-teal-500",
+      value: "#14b8a6_teal",
     },
     {
-      color: "cyan",
-      value: "#06b6d4",
+      color: "bg-cyan-500",
+      value: "#06b6d4_cyan",
     },
     {
-      color: "blue",
-      value: "#3b82f6",
+      color: "bg-blue-500",
+      value: "#3b82f6_blue",
     },
     {
-      color: "violet",
-      value: "#8b5cf6",
+      color: "bg-violet-500",
+      value: "#8b5cf6_deep-purple",
+    },
+    {
+      color: "bg-purple-500",
+      value: "#a855f7_purple",
     },
 
     {
-      color: "rose",
-      value: "#f43f5e",
+      color: "bg-rose-500",
+      value: "#f43f5e_pink",
     },
   ];
 
@@ -106,15 +110,18 @@ const KalenderKegiatan = () => {
 
   const createAgenda = async () => {
     const { edu_id, start_date, end_date, agenda } = formik.values;
+    const color = Color.value
     const dataRest = {
       edu_id: parseInt(edu_id),
       start_date,
       end_date,
       agenda,
+      color
     };
 
-    await Kalender.createDetail(token, dataRest);
-
+   const response = await Kalender.createDetail(token, dataRest);
+    console.log(response);
+    
     window.location.reload();
   };
 
@@ -217,9 +224,9 @@ const KalenderKegiatan = () => {
               {dataColor.map((item: propsColor, index: number) => (
                 <span
                   key={index}
-                  className={`w-8 h-8 rounded-md bg-${
+                  className={`w-8 h-8 rounded-md ${
                     item.color
-                  }-500 cursor-pointer hover:bg-${item.color}-400 ${
+                  } cursor-pointer  ${
                     Color?.value === item.value
                       ? "ring ring-primary ring-offset-base-100 ring-offset-2"
                       : ""
@@ -233,11 +240,7 @@ const KalenderKegiatan = () => {
           <div className="w-full flex justify-center mt-10 gap-2">
            
             <button
-              className={`btn btn-ghost bg-${
-                Color ? Color.color : "green"
-              }-500 text-white font-bold w-full hover:bg-${
-                Color ? Color.color : "green"
-              }-400`}
+              className={`btn btn-ghost bg-green-500 text-white font-bold w-full `}
               onClick={createAgenda}
             >
               Simpan

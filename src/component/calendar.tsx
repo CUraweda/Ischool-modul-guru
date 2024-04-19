@@ -1,14 +1,13 @@
 import React from "react";
-import { styled, alpha } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import { ViewState } from "@devexpress/dx-react-scheduler";
 import {
   Scheduler,
   DayView,
   Appointments,
-  MonthView,
+
   Toolbar,
   DateNavigator,
-  ViewSwitcher,
   TodayButton,
   AppointmentTooltip,
 } from "@devexpress/dx-react-scheduler-material-ui";
@@ -29,27 +28,27 @@ const classes = {
   container: `${PREFIX}-container`,
 };
 
-const StyledMonthViewDayScaleCell = styled(MonthView.DayScaleCell)(
-  ({ theme: { palette } }) => ({
-    [`&.${classes.weekEndDayScaleCell}`]: {
-      backgroundColor: alpha(palette.action.disabledBackground, 0.06),
-    },
-  })
-);
+// const StyledMonthViewDayScaleCell = styled(MonthView.DayScaleCell)(
+//   ({ theme: { palette } }) => ({
+//     [`&.${classes.weekEndDayScaleCell}`]: {
+//       backgroundColor: alpha(palette.action.disabledBackground, 0.06),
+//     },
+//   })
+// );
 
-const StyledMonthViewTimeTableCell = styled(MonthView.TimeTableCell)(
-  ({ theme: { palette } }) => ({
-    [`&.${classes.weekEndCell}`]: {
-      backgroundColor: alpha(palette.action.disabledBackground, 0.04),
-      "&:hover": {
-        backgroundColor: alpha(palette.action.disabledBackground, 0.04),
-      },
-      "&:focus": {
-        backgroundColor: alpha(palette.action.disabledBackground, 0.04),
-      },
-    },
-  })
-);
+// const StyledMonthViewTimeTableCell = styled(MonthView.TimeTableCell)(
+//   ({ theme: { palette } }) => ({
+//     [`&.${classes.weekEndCell}`]: {
+//       backgroundColor: alpha(palette.action.disabledBackground, 0.04),
+//       "&:hover": {
+//         backgroundColor: alpha(palette.action.disabledBackground, 0.04),
+//       },
+//       "&:focus": {
+//         backgroundColor: alpha(palette.action.disabledBackground, 0.04),
+//       },
+//     },
+//   })
+// );
 
 const StyledAppointmentsAppointment = styled(Appointments.Appointment)(() => ({
   [`&.${classes.appointment}`]: {
@@ -75,21 +74,20 @@ const MyScheduler: React.FC<MySchedulerProps> = ({ data }) => (
   <Paper>
     <Scheduler data={data}>
       <ViewState defaultCurrentDate={new Date()} />
-      <MonthView
+      {/* <MonthView
         dayScaleCellComponent={StyledMonthViewDayScaleCell}
         timeTableCellComponent={StyledMonthViewTimeTableCell}
-      />
+      /> */}
       <DayView
-        displayName="Three days"
+        // displayName="Three days"
         startDayHour={7}
-        endDayHour={18}
+        endDayHour={16}
         intervalCount={7}
       />
       <Appointments appointmentComponent={StyledAppointmentsAppointment} />
       <AppointmentTooltip showCloseButton />
       <Toolbar />
       <DateNavigator />
-      <ViewSwitcher />
       <TodayButton />
     </Scheduler>
   </Paper>
