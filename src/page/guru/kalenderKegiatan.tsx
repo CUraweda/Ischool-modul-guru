@@ -61,7 +61,7 @@ const KalenderKegiatan = () => {
     },
     {
       color: "bg-yellow-500",
-      value: "#eab308_yellow",
+      value: "#eab308_amber",
     },
     {
       color: "bg-lime-500",

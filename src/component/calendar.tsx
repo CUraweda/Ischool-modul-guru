@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import { ViewState } from "@devexpress/dx-react-scheduler";
 import {
   Scheduler,
-  DayView,
+
   Appointments,
   Toolbar,
   DateNavigator,

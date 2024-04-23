@@ -4,7 +4,6 @@ import {
   ViewState,
   EditingState,
   IntegratedEditing,
-  
 } from "@devexpress/dx-react-scheduler";
 import {
   Scheduler,
@@ -26,7 +25,7 @@ const CustomAppointment: React.FC<any> = ({
   ...restProps
 }) => {
   const colorProps = restProps.data.color;
-  const [colorCode] = colorProps ? colorProps.split("_") : '';
+  const [colorCode] = colorProps ? colorProps.split("_") : "";
   const backgroundColor = colorCode;
 
   return (
@@ -36,13 +35,17 @@ const CustomAppointment: React.FC<any> = ({
         ...style,
         backgroundColor: backgroundColor,
         borderRadius: "8px",
+        fontSize: "15px",
+        textAlign: "center",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
       {children}
     </Appointments.Appointment>
   );
 };
-
 
 const Demo: React.FC = () => {
   const { token } = useStore();
@@ -131,7 +134,6 @@ const Demo: React.FC = () => {
     }
   };
 
-
   return (
     <Paper>
       <Scheduler data={Dataappointment}>
@@ -142,13 +144,13 @@ const Demo: React.FC = () => {
         <EditingState onCommitChanges={commitChanges} />
         <IntegratedEditing />
         <MonthView />
-        <ConfirmationDialog ignoreCancel/>
+        <ConfirmationDialog ignoreCancel />
         <Appointments appointmentComponent={CustomAppointment} />
         <Toolbar />
         <DateNavigator />
         <TodayButton />
         <AppointmentTooltip showOpenButton showDeleteButton />
-        <AppointmentForm/>
+        <AppointmentForm />
       </Scheduler>
     </Paper>
   );
