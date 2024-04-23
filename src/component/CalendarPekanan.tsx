@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
 import Paper from "@mui/material/Paper";
 import {
   ViewState,
   EditingState,
   IntegratedEditing,
-  
 } from "@devexpress/dx-react-scheduler";
 import {
   Scheduler,
@@ -12,10 +11,10 @@ import {
   AppointmentForm,
   AppointmentTooltip,
   ConfirmationDialog,
-  MonthView,
   Toolbar,
   DateNavigator,
   TodayButton,
+  DayView,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { useStore } from "../store/Store";
 import { Kalender } from "../controller/api";
@@ -26,8 +25,8 @@ const CustomAppointment: React.FC<any> = ({
   ...restProps
 }) => {
   const colorProps = restProps.data.color;
-  const [colorCode] = colorProps ? colorProps.split("_") : '';
-  const backgroundColor = colorCode;
+  const [colorCode] = colorProps.split("_");
+  const backgroundColor = colorCode || "#FFC107";
 
   return (
     <Appointments.Appointment
@@ -43,8 +42,7 @@ const CustomAppointment: React.FC<any> = ({
   );
 };
 
-
-const Demo: React.FC = () => {
+const KalenderPekanan: React.FC = () => {
   const { token } = useStore();
   const [Dataappointment, setData] = useState<any[]>([]);
   const [trigger, setTrigger] = useState<boolean>(false);
@@ -117,41 +115,50 @@ const Demo: React.FC = () => {
   }) => {
     if (added) {
       createAgenda(added);
+      // console.log(added);
     }
 
     if (changed) {
+      console.log(changed);
+
       Object.keys(changed).forEach((id) => {
+        console.log("ini id", id);
         const changes = changed[id];
         editAgenda(parseInt(id), changes);
       });
     }
 
     if (deleted !== undefined) {
+      console.log(deleted);
+
       deleteDetail(deleted);
     }
   };
-
-
   return (
     <Paper>
-      <Scheduler data={Dataappointment}>
+      <Scheduler data={Dataappointment} height={650}>
         <ViewState
           currentDate={currentDate}
           onCurrentDateChange={setCurrentDate}
         />
         <EditingState onCommitChanges={commitChanges} />
         <IntegratedEditing />
-        <MonthView />
-        <ConfirmationDialog ignoreCancel/>
+        <DayView
+        // displayName="Three days"
+        startDayHour={7}
+        endDayHour={16}
+        intervalCount={7}
+      />
+        <ConfirmationDialog />
         <Appointments appointmentComponent={CustomAppointment} />
         <Toolbar />
         <DateNavigator />
         <TodayButton />
         <AppointmentTooltip showOpenButton showDeleteButton />
-        <AppointmentForm/>
+        <AppointmentForm />
       </Scheduler>
     </Paper>
   );
 };
 
-export default Demo;
+export default KalenderPekanan;

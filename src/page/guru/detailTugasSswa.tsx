@@ -4,13 +4,16 @@ import { VscTasklist } from "react-icons/vsc";
 import { Link } from "react-router-dom";
 import { useStore } from "../../store/Store";
 import { Task } from "../../controller/api";
+import { BsEye } from "react-icons/bs";
 
 const DetailTugasSswa = () => {
   const { token } = useStore();
   const [taskList, setTaskList] = useState<any>([]);
+  const [task, setTask] = useState<any>([]);
 
   useEffect(() => {
     getTaskDetail();
+    getTaskId();
   }, []);
   const getTaskDetail = async () => {
     try {
@@ -21,8 +24,23 @@ const DetailTugasSswa = () => {
         idTask = parseInt(id);
       }
       const response = await Task.getDetailTask(token, idTask);
-      console.log(response.data.data);
+
       setTaskList(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getTaskId = async () => {
+    try {
+      const id: string | null = sessionStorage.getItem("idTask");
+      let idTask: number | null = null;
+
+      if (id !== null) {
+        idTask = parseInt(id);
+      }
+      const response = await Task.getTaskById(token, idTask);
+      console.log(response.data.data);
+      setTask(response.data.data);
     } catch (error) {
       console.log(error);
     }
@@ -41,7 +59,6 @@ const DetailTugasSswa = () => {
     });
     return formattedDate;
   };
-  
 
   return (
     <>
@@ -62,7 +79,64 @@ const DetailTugasSswa = () => {
           </ul>
 
           <div className="mt-5 w-full bg-white p-3 rounded-md">
-            <p className="text-xl font-bold">Detail Tugas</p>
+            <div className="text-center">
+              <p className="text-xl font-bold">Detail Tugas</p>
+            </div>
+            <div className="w-full flex justify-between">
+              <div className="w-1/2 mt-5">
+                <table className="table">
+                  <tbody>
+                    <tr>
+                      <th>Topik</th>
+                      <td>:</td>
+                      <td>{task?.topic}</td>
+                    </tr>
+                    <tr>
+                      <th>Mapel</th>
+                      <td>:</td>
+                      <td>{task?.subject_id}</td>
+                    </tr>
+                    <tr>
+                      <th>Kelas</th>
+                      <td>:</td>
+                      <td>{task?.class_id}</td>
+                    </tr>
+                    <tr>
+                      <th>Tanggal Mulai</th>
+                      <td>:</td>
+                      <td>{formatDate(task?.start_date)}</td>
+                    </tr>
+                    <tr>
+                      <th>Tanggal Selesai</th>
+                      <td>:</td>
+                      <td>{formatDate(task?.end_date)}</td>
+                    </tr>
+                    <tr>
+                      <th>Jenis</th>
+                      <td>:</td>
+                      <td>{task?.task_category_id}</td>
+                    </tr>
+                    <tr>
+                      <th>File Tugas</th>
+                      <td>:</td>
+                      <td>
+                        <button className="btn btn-sm btn-ghost bg-green-600 text-white text-xl join-item">
+                          <BsEye />
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="w-40 h-40 mr-10 rounded-md p-3 flex flex-wrap justify-center items-center shadow-xl">
+                <div className="w-full text-8xl font-bold flex justify-center text-blue-500">
+                  {taskList?.length}
+                </div>
+                <div className="w-full font-bold flex justify-center">
+                  Siswa Mengerjakan
+                </div>
+              </div>
+            </div>
             <div className="overflow-x-auto mt-10">
               <table className="table table-zebra shadow-md mt-5">
                 {/* head */}

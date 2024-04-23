@@ -30,6 +30,20 @@ const Student = {
         Authorization: `Bearer ${token}`,
       },
     }),
+
+    CreatePresensi: (
+      token: string | null,
+      data: any
+    ): AxiosPromise<any> => 
+      instance ({
+        method: "POST",
+        url: '/api/student-attendance/create',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data,
+      })
+
 };
 
 const Task = {
@@ -128,6 +142,14 @@ const Task = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  getTaskById: (token: string | null, id: number | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/task/show/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 const Kalender = {
@@ -196,6 +218,10 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
+
+
 };
+
+
 
 export { Auth, Task, Kalender, Student };

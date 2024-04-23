@@ -10,7 +10,6 @@ import { useStore } from "../../store/Store";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
-import { Link } from "react-router-dom";
 import { VscTasklist } from "react-icons/vsc";
 
 const schema = Yup.object({
@@ -26,7 +25,7 @@ const schema = Yup.object({
 });
 
 const AdmSiswa = () => {
-  const { token, data, setData , removeData} = useStore();
+  const { token } = useStore();
   const navigate = useNavigate();
 
   const [task, setTask] = useState<any>([]);
@@ -63,8 +62,8 @@ const AdmSiswa = () => {
     getTaskClass();
   }, []);
 
-  const showModalAdd = () => {
-    let modalElement = document.getElementById("add-task") as HTMLDialogElement;
+  const showModal = (props: string) => {
+    let modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
       getClass();
@@ -121,7 +120,7 @@ const AdmSiswa = () => {
   };
 
   const createTugas = async () => {
-    const { classId, subjectId, topik, startDate, endDate, status ,jenis} =
+    const { classId, subjectId, topik, startDate, endDate, status, jenis } =
       formik.values;
 
     const formData = new FormData();
@@ -254,8 +253,13 @@ const AdmSiswa = () => {
   };
 
   const handleDetailTask = async (id: number) => {
-   sessionStorage.setItem("idTask" , `${id}`)
+    sessionStorage.setItem("idTask", `${id}`);
     navigate("/guru/task/siswa");
+  };
+
+  const handleEdit = async (show: string, hidden: string) => {
+    document.getElementById(hidden)?.classList.add("hidden");
+    document.getElementById(show)?.classList.remove("hidden");
   };
 
   return (
@@ -316,12 +320,12 @@ const AdmSiswa = () => {
             <span className="text-2xl font-bold">Tugas Siswa</span>
             <button
               className="btn bg-green-500 text-white font-bold"
-              onClick={showModalAdd}
+              onClick={() => showModal("add-task")}
             >
               <span className="text-xl">
                 <FiPlus />
               </span>{" "}
-              Add
+              Tambah
             </button>
           </div>
           <div className="overflow-x-auto">
@@ -354,9 +358,12 @@ const AdmSiswa = () => {
                     </td>
                     <td>{item?.status}</td>
                     <td className="join text-white">
-                      <button className="btn btn-sm btn-ghost bg-orange-600 text-xl join-item">
+                      {/* <button
+                        className="btn btn-sm btn-ghost bg-orange-600 text-xl join-item"
+                        onClick={() => showModal("edit-task")}
+                      >
                         <FaPenClip />
-                      </button>
+                      </button> */}
                       <button
                         className="btn btn-sm btn-ghost bg-red-600 text-xl join-item"
                         onClick={() => deleteTaskClass2(item.id)}
@@ -406,9 +413,7 @@ const AdmSiswa = () => {
                     </td>
                     <td>{item?.status}</td>
                     <td className="join text-white">
-                      <button className="btn btn-sm btn-ghost bg-orange-600 text-xl join-item">
-                        <FaPenClip />
-                      </button>
+                      
                       <button
                         className="btn btn-sm btn-ghost bg-red-600 text-xl join-item"
                         onClick={() => deleteTask(item.id)}
@@ -466,6 +471,200 @@ const AdmSiswa = () => {
               <select
                 value={siswa}
                 className="select select-bordered bg-white"
+                onChange={(e) => setSiswa(e.target.value)}
+              >
+                <option value="all-student">Semua Siswa</option>
+                {DataSiswa?.map((item: any, index: number) => (
+                  <option value={item?.id} key={index}>
+                    {item?.student?.full_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="w-full flex flex-col gap-2">
+              <label className="mt-4 font-bold">Pelajaran</label>
+              <select
+                className="select select-bordered bg-white"
+                onChange={(e) =>
+                  formik.setFieldValue("subjectId", e.target.value)
+                }
+              >
+                <option disabled selected>
+                  Pick one
+                </option>
+                {mapel?.map((item: any, index: number) => (
+                  <option value={item.id} key={index}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div
+              className={`w-full flex flex-col gap-2 ${
+                siswa === "all-student" ? "hidden" : ""
+              }`}
+            >
+              <label className="mt-4 font-bold">Tahun Pelajaran</label>
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                onChange={(e) => formik.setFieldValue("tahun", e.target.value)}
+              />
+            </div>
+            <div
+              className={`w-full flex flex-col gap-2 ${
+                siswa === "all-student" ? "hidden" : ""
+              }`}
+            >
+              <label className="mt-4 font-bold">Semester</label>
+              <select
+                className="select select-bordered bg-white"
+                onChange={(e) =>
+                  formik.setFieldValue("semester", e.target.value)
+                }
+              >
+                <option disabled selected>
+                  Pick one
+                </option>
+                <option value={1}>1</option>
+                <option value={2}>2</option>
+              </select>
+            </div>
+            <div className="w-full flex flex-col gap-2">
+              <label className="mt-4 font-bold">Topik</label>
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                onChange={(e) => formik.setFieldValue("topik", e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="w-full">
+            <div className="w-full flex flex-col gap-2">
+              <label className="mt-4 font-bold">Kategori</label>
+              <select
+                className="select select-bordered bg-white"
+                onChange={(e) => formik.setFieldValue("jenis", e.target.value)}
+              >
+                <option disabled selected>
+                  Pick one
+                </option>
+                <option value={2}>Project Kelompok</option>
+                <option value={1}>WWP</option>
+                <option value={3}>Mandiri</option>
+              </select>
+              <label className="mt-4 w-full font-bold">Periode</label>
+              <div className="w-full flex justify-center">
+                <div className="flex gap-2 justify-center items-center">
+                  <input
+                    type="datetime-local"
+                    className="input input-bordered bg-white"
+                    onChange={(e) =>
+                      formik.setFieldValue("startDate", e.target.value)
+                    }
+                  />
+                  <span>-</span>
+                  <input
+                    type="datetime-local"
+                    className="input input-bordered bg-white"
+                    onChange={(e) =>
+                      formik.setFieldValue("endDate", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full flex flex-col gap-2">
+              <label className="mt-4 font-bold">Status</label>
+              <select
+                className="select select-bordered bg-white"
+                onChange={(e) => formik.setFieldValue("status", e.target.value)}
+              >
+                <option disabled selected>
+                  Pick one
+                </option>
+                <option value={"Open"}>Open</option>
+                <option value={"Close"}>Close</option>
+              </select>
+            </div>
+            <div className="w-full mt-5 gap-2 flex flex-col">
+              <label className="mt-4 font-bold">Upload File</label>
+              <input
+                type="file"
+                onChange={handleFile}
+                className="file-input file-input-bordered w-full"
+              />
+            </div>
+          </div>
+
+          <div className="w-full flex justify-center mt-10 gap-2">
+            <button
+              className="btn bg-green-500 text-white font-bold w-full"
+              onClick={handleCreate}
+            >
+              Submit
+            </button>
+            {/* <button className="btn bg-green-500 text-white font-bold">Submit</button> */}
+          </div>
+        </div>
+      </Modal>
+      <Modal id="edit-task">
+        <div className="w-full flex flex-col items-center">
+          <span className="text-xl font-bold">Edit Tugas</span>
+          <div className="flex w-full mt-5 flex-col">
+            <div className="w-full flex flex-col gap-2">
+              <label className="mt-4 font-bold">Kelas</label>
+              <div
+                id="kelasShow"
+                className="w-full h-10 bg-gray-100 rounded-md p-3 flex justify-between items-center"
+              >
+                <p>XII</p>
+                <button
+                  className="btn btn-sm btn-ghost text-orange-500 join-item"
+                  onClick={() => handleEdit("selectClass", "kelasShow")}
+                >
+                  <FaPenClip />
+                </button>
+              </div>
+
+              <select
+                id="selectClass"
+                className="select select-bordered bg-white hidden"
+                onChange={(e) =>
+                  formik.setFieldValue("classId", e.target.value)
+                }
+              >
+                <option disabled selected>
+                  Pick one
+                </option>
+                {kelas?.map((item: any, index: number) => (
+                  <option
+                    value={item.id}
+                    key={index}
+                  >{`${item.level}-${item.class_name}`}</option>
+                ))}
+              </select>
+            </div>
+            <div className="w-full flex flex-col gap-2">
+              <label className="mt-4 font-bold">Siswa</label>
+              <div
+                id="siswaShow"
+                className="w-full h-10 bg-gray-100 rounded-md p-3 flex justify-between items-center"
+              >
+                <p>XII</p>
+                <button
+                  className="btn btn-sm btn-ghost text-orange-500 join-item"
+                  onClick={() => handleEdit("siswaClass", "siswaShow")}
+                >
+                  <FaPenClip />
+                </button>
+              </div>
+              <select
+                id="siswaClass"
+                value={siswa}
+                className="select select-bordered bg-white hidden"
                 onChange={(e) => setSiswa(e.target.value)}
               >
                 <option value="all-student">Semua Siswa</option>

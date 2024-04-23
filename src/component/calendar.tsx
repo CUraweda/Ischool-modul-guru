@@ -5,11 +5,11 @@ import {
   Scheduler,
   DayView,
   Appointments,
-
   Toolbar,
   DateNavigator,
   TodayButton,
   AppointmentTooltip,
+  MonthView,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { indigo, blue, teal } from "@mui/material/colors";
 import Paper from "@mui/material/Paper";
@@ -72,18 +72,10 @@ interface MySchedulerProps {
 
 const MyScheduler: React.FC<MySchedulerProps> = ({ data }) => (
   <Paper>
-    <Scheduler data={data}>
+    <Scheduler data={data} height={700}>
       <ViewState defaultCurrentDate={new Date()} />
-      {/* <MonthView
-        dayScaleCellComponent={StyledMonthViewDayScaleCell}
-        timeTableCellComponent={StyledMonthViewTimeTableCell}
-      /> */}
-      <DayView
-        // displayName="Three days"
-        startDayHour={7}
-        endDayHour={16}
-        intervalCount={7}
-      />
+      <MonthView />
+
       <Appointments appointmentComponent={StyledAppointmentsAppointment} />
       <AppointmentTooltip showCloseButton />
       <Toolbar />
