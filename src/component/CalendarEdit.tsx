@@ -134,6 +134,27 @@ const Demo: React.FC = () => {
     }
   };
 
+  const showModal = (props: string) => {
+    let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
+    if (modalElement) {
+      modalElement.showModal();
+    }
+   
+  };
+
+  const DayCell: React.FC<any> = (props) => (
+    <MonthView.TimeTableCell
+      {...props}
+      onClick={() => {
+        console.log(props);
+        
+        showModal('add-kalender')
+        
+      }}
+    />
+  );
+  
+
   return (
     <Paper>
       <Scheduler data={Dataappointment}>
@@ -143,7 +164,7 @@ const Demo: React.FC = () => {
         />
         <EditingState onCommitChanges={commitChanges} />
         <IntegratedEditing />
-        <MonthView />
+        <MonthView timeTableCellComponent={DayCell}/>
         <ConfirmationDialog ignoreCancel />
         <Appointments appointmentComponent={CustomAppointment} />
         <Toolbar />

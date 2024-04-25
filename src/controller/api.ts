@@ -31,19 +31,38 @@ const Student = {
       },
     }),
 
-    CreatePresensi: (
-      token: string | null,
-      data: any
-    ): AxiosPromise<any> => 
-      instance ({
-        method: "POST",
-        url: '/api/student-attendance/create',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        data,
-      })
-
+  CreatePresensi: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: "/api/student-attendance/create",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  GetPresensiByClassDate: (
+    token: string | null,
+    id: number | null,
+    date: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-attendance/show-by-class/${id}?att_date=${date}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  deletePresensi: (
+    token: string | null,
+    id: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: `/api/student-attendance/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 const Task = {
@@ -218,10 +237,27 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
-
-
+  GetAllTimetable: (
+    token: string | null,
+    page: number | null,
+    limit: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `https://api-dev.curaweda.com:7000/api/timetable/show-by-class/:id?semester=1/2&academic=xxxx/xxxx`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+    createTimeTable: (token: string | null, data: any): AxiosPromise<any> =>
+      instance({
+        method: "POST",
+        url: `/api/timetable/create`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data,
+      }),
 };
-
-
 
 export { Auth, Task, Kalender, Student };

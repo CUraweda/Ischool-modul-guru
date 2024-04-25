@@ -12,7 +12,8 @@ const PresensiSiswa = () => {
   const [date, setDate] = useState<any>(today.toISOString().substr(0, 10));
   const [kelas, setKelas] = useState<any[]>([]);
   const [siswa, setSiswa] = useState<any[]>([]);
-  const [idClass, setIdClass] = useState<string>("");
+  const [dataSiswa, setDataSiswa] = useState<any[]>([]);
+  const [idClass, setIdClass] = useState<string>("1");
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
   const [totalCreate, setTotalCreate] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -23,7 +24,8 @@ const PresensiSiswa = () => {
 
   useEffect(() => {
     getStudent();
-  }, [idClass]);
+    getPresensiData();
+  }, [idClass, date]);
 
   const formattedDate = new Date(date).toLocaleDateString("id-ID", {
     weekday: "long",
@@ -51,13 +53,26 @@ const PresensiSiswa = () => {
     setKelas(response.data.data.result);
   };
 
+  const getPresensiData = async () => {
+    const newDate = new Date(date);
+    const isoDate = newDate.toISOString();
+    const formattedDate = isoDate.slice(0, 10);
+    const Class = parseInt(idClass);
+    const response = await Student.GetPresensiByClassDate(
+      token,
+      Class,
+      formattedDate
+    );
+    setDataSiswa(response.data.data);
+  };
+
   const getStudent = async () => {
     const id = parseInt(idClass);
     try {
       const response = await Student.GetStudentByClass(token, id, "2023/2024");
       setSiswa(response.data.data);
     } catch (error) {
-      closeModal('add-presensi')
+      closeModal("add-presensi");
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -71,7 +86,9 @@ const PresensiSiswa = () => {
       try {
         setLoading(true);
         const dataStatus = selectedStudents
-          .filter((item: any) => !item.presensi || !item.transportasi)
+          .filter(
+            (item: any) => item.presensi === "Hadir" && !item.transportasi
+          )
           .map((item: any) => item.student.id);
 
         setTotalCreate(dataStatus);
@@ -82,7 +99,7 @@ const PresensiSiswa = () => {
               student_class_id: item.student.id,
               att_date: new Date(date),
               status: item.presensi,
-              remark: item.transportasi,
+              remark: item.presensi === "Hadir" ? item.transportasi : "",
             };
             return create(dataRest);
           });
@@ -98,6 +115,7 @@ const PresensiSiswa = () => {
             showConfirmButton: false,
             timer: 1500,
           });
+          getPresensiData();
           // Update your state here instead of reloading the page
         }
       } catch (error) {
@@ -110,6 +128,34 @@ const PresensiSiswa = () => {
 
   const create = async (data: any) => {
     await Student.CreatePresensi(token, data);
+  };
+  const deletePresensi = async (id: number) => {
+    try {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          deletePresensiApi(id);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const deletePresensiApi = async (id: number) => {
+    await Student.deletePresensi(token, id);
+    Swal.fire({
+      title: "Deleted!",
+      text: "Your file has been deleted.",
+      icon: "success",
+    });
+    getPresensiData();
   };
 
   return (
@@ -152,7 +198,7 @@ const PresensiSiswa = () => {
           </div>
           <table className="table shadow-lg">
             {/* head */}
-            <thead className="bg-blue-400">
+            <thead className="bg-blue-400 text-white">
               <tr>
                 <th>No</th>
                 <th>Name</th>
@@ -164,23 +210,32 @@ const PresensiSiswa = () => {
               </tr>
             </thead>
             <tbody>
-              {/* row 1 */}
-              <tr>
-                <th>1</th>
-                <td>aldi</td>
-                <td>123123123</td>
-                <td>VIII</td>
-                <td>Izin</td>
-                <td>Sepeda</td>
-                <td className="join text-white">
-                  <button
-                    className="btn btn-sm btn-ghost bg-red-600 text-xl join-item"
-                    // onClick={() => deleteTask(item.id)}
-                  >
-                    <BiTrash />
-                  </button>
-                </td>
-              </tr>
+              {dataSiswa && dataSiswa.length > 0 ? (
+                dataSiswa.map((item: any, index: number) => (
+                  <tr key={index}>
+                    <th>{index + 1}</th>
+                    <td>{item?.studentclass?.student?.full_name}</td>
+                    <td>{item?.studentclass?.student?.nis}</td>
+                    <td>{item?.studentclass?.student?.class}</td>
+                    <td>{item?.status}</td>
+                    <td>{item?.remark}</td>
+                    <td className="join text-white">
+                      <button
+                        className="btn btn-sm btn-ghost bg-red-600 text-xl join-item"
+                        onClick={() => deletePresensi(item.id)}
+                      >
+                        <BiTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={7} className="text-center">
+                    Tidak ada data
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -219,7 +274,7 @@ const PresensiSiswa = () => {
           <div className="w-full max-h-[400px] mt-10 overflow-auto">
             <table className="table shadow-lg">
               {/* head */}
-              <thead className="bg-blue-400">
+              <thead className="bg-blue-400 text-white">
                 <tr>
                   <th></th>
                   <th>Name</th>
@@ -316,7 +371,7 @@ const PresensiSiswa = () => {
                         disabled={
                           !selectedStudents.some(
                             (student) => student.student.id === item.student.id
-                          )
+                          ) || item.presensi !== "Hadir"
                         }
                       >
                         <option disabled selected>
