@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Demo from "../../component/CalendarEdit";
 import Modal from "../../component/modal";
 import { useStore } from "../../store/Store";
 import { Kalender } from "../../controller/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { FaPlus } from "react-icons/fa";
 
 const schema = Yup.object({
   edu_id: Yup.string().required("required"),
@@ -25,15 +24,17 @@ const KalenderKegiatan = () => {
   const { token } = useStore();
   const [topik, setTopik] = useState<any[]>([]);
   const [Color, setColor] = useState<propsColor>({
-    color: "red",
-    value: "#dc2626",
+    color: "bg-red-500",
+    value: "#dc2626_red",
   });
 
   const getTopik = async () => {
     const response = await Kalender.GetAllTopik(token, 0, 10);
     setTopik(response.data.data.result);
   };
-
+  useEffect(() => {
+    getTopik();
+  }, []);
   const formik = useFormik({
     initialValues: {
       edu_id: "",
@@ -52,45 +53,49 @@ const KalenderKegiatan = () => {
 
   const dataColor = [
     {
-      color: "red",
-      value: "#dc2626",
+      color: "bg-red-500",
+      value: "#dc2626_red",
     },
     {
-      color: "orange",
-      value: "#f97316",
+      color: "bg-orange-500",
+      value: "#f97316_orange",
     },
     {
-      color: "yellow",
-      value: "#eab308",
+      color: "bg-yellow-500",
+      value: "#eab308_amber",
     },
     {
-      color: "lime",
-      value: "#84cc16",
+      color: "bg-lime-500",
+      value: "#84cc16_lime",
     },
     {
-      color: "green",
-      value: "#22c55e",
+      color: "bg-green-500",
+      value: "#22c55e_green",
     },
     {
-      color: "teal",
-      value: "#14b8a6",
+      color: "bg-teal-500",
+      value: "#14b8a6_teal",
     },
     {
-      color: "cyan",
-      value: "#06b6d4",
+      color: "bg-cyan-500",
+      value: "#06b6d4_cyan",
     },
     {
-      color: "blue",
-      value: "#3b82f6",
+      color: "bg-blue-500",
+      value: "#3b82f6_blue",
     },
     {
-      color: "violet",
-      value: "#8b5cf6",
+      color: "bg-violet-500",
+      value: "#8b5cf6_deep-purple",
+    },
+    {
+      color: "bg-purple-500",
+      value: "#a855f7_purple",
     },
 
     {
-      color: "rose",
-      value: "#f43f5e",
+      color: "bg-rose-500",
+      value: "#f43f5e_pink",
     },
   ];
 
@@ -99,22 +104,28 @@ const KalenderKegiatan = () => {
     if (modalElement) {
       modalElement.showModal();
     }
-    if (props === "add-kalender") {
-      getTopik();
+  };
+
+  const closeModal = (props: string) => {
+    let modalElement = document.getElementById(props) as HTMLDialogElement;
+    if (modalElement) {
+      modalElement.close();
     }
   };
 
   const createAgenda = async () => {
     const { edu_id, start_date, end_date, agenda } = formik.values;
+    const color = Color.value;
     const dataRest = {
       edu_id: parseInt(edu_id),
       start_date,
       end_date,
       agenda,
+      color,
     };
 
     await Kalender.createDetail(token, dataRest);
-
+    closeModal("add-kalender");
     window.location.reload();
   };
 
@@ -126,28 +137,23 @@ const KalenderKegiatan = () => {
       semester: smt,
     };
     await Kalender.createTopik(token, data);
-
+    closeModal("add-topik-edu");
     formik.resetForm();
     getTopik();
+  };
+
+  const getDate = () => {
+    const options: Intl.DateTimeFormatOptions = { month: "long", year: "numeric" };
+    const date = new Date().toLocaleDateString("id-ID", options).toUpperCase();
+    return date;
   };
 
   return (
     <div className="my-10 w-full flex flex-col items-center">
       <div className=" flex flex-col items-center w-full text-3xl font-bold">
-        <span>KALENDER KEGIATAN TAHUN 2023 / 2024</span>
+      <span>KALENDER KEGIATAN {getDate()}</span>
       </div>
       <div className="w-full p-6">
-        <div className="w-full flex justify-end mb-5">
-          <button
-            className="btn bg-green-500 btn-ghost text-white"
-            onClick={() => showModal("add-kalender")}
-          >
-            <span className="text-xl">
-              <FaPlus />
-            </span>
-            Tambah
-          </button>
-        </div>
         <Demo />
       </div>
 
@@ -217,9 +223,9 @@ const KalenderKegiatan = () => {
               {dataColor.map((item: propsColor, index: number) => (
                 <span
                   key={index}
-                  className={`w-8 h-8 rounded-md bg-${
+                  className={`w-8 h-8 rounded-md ${
                     item.color
-                  }-500 cursor-pointer hover:bg-${item.color}-400 ${
+                  } cursor-pointer  ${
                     Color?.value === item.value
                       ? "ring ring-primary ring-offset-base-100 ring-offset-2"
                       : ""
@@ -231,21 +237,16 @@ const KalenderKegiatan = () => {
           </div>
 
           <div className="w-full flex justify-center mt-10 gap-2">
-           
             <button
-              className={`btn btn-ghost bg-${
-                Color ? Color.color : "green"
-              }-500 text-white font-bold w-full hover:bg-${
-                Color ? Color.color : "green"
-              }-400`}
+              className={`btn btn-ghost bg-green-500 text-white font-bold w-full `}
               onClick={createAgenda}
             >
               Simpan
             </button>
-           
           </div>
         </div>
       </Modal>
+
       <Modal id="add-topik-edu">
         <div className="w-full flex flex-col items-center">
           <span className="text-xl font-bold">Tambah Topik Kalender</span>

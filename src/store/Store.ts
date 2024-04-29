@@ -15,6 +15,22 @@ const Store = create<StoreState>((set: SetState<StoreState>) => ({
     localStorage.removeItem("token");
     set({ token: null });
   },
+
+  data: sessionStorage.getItem("data") ? JSON.parse(sessionStorage.getItem("data") as string) : null,
+  setData: (data) => {
+    if (data) {
+      sessionStorage.setItem("data", JSON.stringify(data));
+    } else {
+      sessionStorage.removeItem("data");
+    }
+    set({ data });
+  },
+  removeData: () => {
+    sessionStorage.removeItem("data");
+    set({ data: null });
+  },
+
 }));
+
 
 export const useStore = Store;

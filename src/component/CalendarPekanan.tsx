@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
 import Paper from "@mui/material/Paper";
 import {
   ViewState,
@@ -11,10 +11,10 @@ import {
   AppointmentForm,
   AppointmentTooltip,
   ConfirmationDialog,
-  MonthView,
   Toolbar,
   DateNavigator,
   TodayButton,
+  DayView,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { useStore } from "../store/Store";
 import { Kalender } from "../controller/api";
@@ -25,8 +25,8 @@ const CustomAppointment: React.FC<any> = ({
   ...restProps
 }) => {
   const colorProps = restProps.data.color;
-  const [colorCode] = colorProps ? colorProps.split("_") : "";
-  const backgroundColor = colorCode;
+  const [colorCode] = colorProps.split("_");
+  const backgroundColor = colorCode || "#FFC107";
 
   return (
     <Appointments.Appointment
@@ -35,11 +35,6 @@ const CustomAppointment: React.FC<any> = ({
         ...style,
         backgroundColor: backgroundColor,
         borderRadius: "8px",
-        fontSize: "15px",
-        textAlign: "center",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
       }}
     >
       {children}
@@ -47,7 +42,7 @@ const CustomAppointment: React.FC<any> = ({
   );
 };
 
-const Demo: React.FC = () => {
+const KalenderPekanan: React.FC = () => {
   const { token } = useStore();
   const [Dataappointment, setData] = useState<any[]>([]);
   const [trigger, setTrigger] = useState<boolean>(false);
@@ -120,52 +115,41 @@ const Demo: React.FC = () => {
   }) => {
     if (added) {
       createAgenda(added);
+      // console.log(added);
     }
 
     if (changed) {
+      console.log(changed);
+
       Object.keys(changed).forEach((id) => {
+        console.log("ini id", id);
         const changes = changed[id];
         editAgenda(parseInt(id), changes);
       });
     }
 
     if (deleted !== undefined) {
+      console.log(deleted);
+
       deleteDetail(deleted);
     }
   };
-
-  const showModal = (props: string) => {
-    let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
-    if (modalElement) {
-      modalElement.showModal();
-    }
-   
-  };
-
-  const DayCell: React.FC<any> = (props) => (
-    <MonthView.TimeTableCell
-      {...props}
-      onClick={() => {
-        console.log(props);
-        
-        showModal('add-kalender')
-        
-      }}
-    />
-  );
-  
-
   return (
     <Paper>
-      <Scheduler data={Dataappointment}>
+      <Scheduler data={Dataappointment} height={650}>
         <ViewState
           currentDate={currentDate}
           onCurrentDateChange={setCurrentDate}
         />
         <EditingState onCommitChanges={commitChanges} />
         <IntegratedEditing />
-        <MonthView timeTableCellComponent={DayCell}/>
-        <ConfirmationDialog ignoreCancel />
+        <DayView
+        // displayName="Three days"
+        startDayHour={7}
+        endDayHour={16}
+        intervalCount={7}
+      />
+        <ConfirmationDialog />
         <Appointments appointmentComponent={CustomAppointment} />
         <Toolbar />
         <DateNavigator />
@@ -177,4 +161,4 @@ const Demo: React.FC = () => {
   );
 };
 
-export default Demo;
+export default KalenderPekanan;

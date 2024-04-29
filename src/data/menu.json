@@ -8,18 +8,12 @@
     },
     {
         "submenu": false,
-        "title": "Jadwal Mengajar",
+        "title": "Rencana Pekanan",
         "icon": "<MdOutlineTableChart />",
         "url": "/guru/jadwal-guru",
         "subtitle": []
     },
-    {
-        "submenu": false,
-        "title": "Agenda Kedinasan",
-        "icon": "<BsTable />",
-        "url": "/guru/jadwal-dinas",
-        "subtitle": []
-    },
+   
     {
         "submenu": false,
         "title": "Kalender Kegiatan",

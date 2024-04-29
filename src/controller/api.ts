@@ -17,6 +17,54 @@ const Auth = {
     }),
 };
 
+const Student = {
+  GetStudentByClass: (
+    token: string | null,
+    id: number | null,
+    tahun: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-class/show-by-class/${id}?academic=${tahun}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  CreatePresensi: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: "/api/student-attendance/create",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  GetPresensiByClassDate: (
+    token: string | null,
+    id: number | null,
+    date: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-attendance/show-by-class/${id}?att_date=${date}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  deletePresensi: (
+    token: string | null,
+    id: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: `/api/student-attendance/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
 const Task = {
   GetAll: (
     token: string | null,
@@ -26,6 +74,18 @@ const Task = {
     instance({
       method: "GET",
       url: `/api/student-task?search_query=&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  GetAllTask: (
+    token: string | null,
+    page: number | null,
+    limit: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/task?search_query=&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -54,17 +114,26 @@ const Task = {
         Authorization: `Bearer ${token}`,
       },
     }),
-    createTask: (token: string | null, data: any): AxiosPromise<any> =>
+  createTask: (token: string | null, data: any): AxiosPromise<any> =>
     instance({
       method: "POST",
-      url: `/api/student-task/create-by-class`,
+      url: `/api/student-task/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  createTaskClass: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/task/create`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
       data,
     }),
 
-    deleteTask: (token: string | null, id: number | null): AxiosPromise<any> =>
+  deleteTask: (token: string | null, id: number | null): AxiosPromise<any> =>
     instance({
       method: "DELETE",
       url: `/api/student-task/delete/${id}`,
@@ -72,7 +141,34 @@ const Task = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  deleteTaskClass: (
+    token: string | null,
+    id: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: `/api/task/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 
+  getDetailTask: (token: string | null, id: number | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/task-detail/show-by-task/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getTaskById: (token: string | null, id: number | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/task/show/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 const Kalender = {
@@ -141,6 +237,27 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  GetAllTimetable: (
+    token: string | null,
+    page: number | null,
+    limit: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `https://api-dev.curaweda.com:7000/api/timetable/show-by-class/:id?semester=1/2&academic=xxxx/xxxx`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+    createTimeTable: (token: string | null, data: any): AxiosPromise<any> =>
+      instance({
+        method: "POST",
+        url: `/api/timetable/create`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data,
+      }),
 };
 
-export { Auth, Task, Kalender };
+export { Auth, Task, Kalender, Student };

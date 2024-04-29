@@ -2,12 +2,13 @@ import { MdOutlineDocumentScanner } from "react-icons/md";
 import { Link } from "react-router-dom";
 import Modal from "../modal";
 import { FaRegCheckSquare } from "react-icons/fa";
+import { IoChatboxEllipsesOutline } from "react-icons/io5";
 
 const RaportNarasi = () => {
   return (
     <div>
       <div className="w-full flex justify-between gap-2">
-      <div className="join">
+        <div className="join">
           <select className="select select-sm join-item w-32 max-w-md select-bordered">
             <option disabled selected>
               Tahun Pelajaran
@@ -42,16 +43,12 @@ const RaportNarasi = () => {
         </div>
         <div>
           <div className="join">
-            <button
-              className="btn btn-sm join-item bg-green-500 text-white "
-             
-            >
+            <button className="btn btn-sm join-item bg-green-500 text-white ">
               <span className="text-xl">
                 <FaRegCheckSquare />
               </span>
               Selesai Semua
             </button>
-           
           </div>
         </div>
       </div>
@@ -71,21 +68,26 @@ const RaportNarasi = () => {
               <td>anwar</td>
               <td className="max-w-md">VII</td>
               <td className="">
-                <div className="join">
-
-                <Link to={"/guru/rapor-siswa/narasi"}>
+              <div className="join">
+                  <Link to={"/guru/rapor-siswa/narasi"}>
+                    <button
+                      className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
+                      data-tip="Detail"
+                    >
+                      <MdOutlineDocumentScanner />
+                    </button>
+                  </Link>
                   <button
-                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
-                    data-tip="Detail"
-                  >
-                    <MdOutlineDocumentScanner />
-                  </button>
-                </Link>
-                <button
                     className="btn join-item btn-ghost btn-sm text-xl text-white bg-green-500 tooltip"
                     data-tip="tandai selesai"
                   >
                     <FaRegCheckSquare />
+                  </button>
+                  <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-orange-500 tooltip"
+                    data-tip="Komentar Guru"
+                  >
+                    <IoChatboxEllipsesOutline />
                   </button>
                 </div>
               </td>
@@ -95,21 +97,26 @@ const RaportNarasi = () => {
               <td>jani</td>
               <td className="max-w-md">VII</td>
               <td className="">
-                <div className="join">
-
-                <Link to={"/guru/rapor-siswa/narasi"}>
+              <div className="join">
+                  <Link to={"/guru/rapor-siswa/narasi"}>
+                    <button
+                      className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
+                      data-tip="Detail"
+                    >
+                      <MdOutlineDocumentScanner />
+                    </button>
+                  </Link>
                   <button
-                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
-                    data-tip="Detail"
-                  >
-                    <MdOutlineDocumentScanner />
-                  </button>
-                </Link>
-                <button
                     className="btn join-item btn-ghost btn-sm text-xl text-white bg-green-500 tooltip"
                     data-tip="tandai selesai"
                   >
                     <FaRegCheckSquare />
+                  </button>
+                  <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-orange-500 tooltip"
+                    data-tip="Komentar Guru"
+                  >
+                    <IoChatboxEllipsesOutline />
                   </button>
                 </div>
               </td>
@@ -119,21 +126,26 @@ const RaportNarasi = () => {
               <td>melina</td>
               <td className="max-w-md">VII</td>
               <td className="">
-                <div className="join">
-
-                <Link to={"/guru/rapor-siswa/narasi"}>
+              <div className="join">
+                  <Link to={"/guru/rapor-siswa/narasi"}>
+                    <button
+                      className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
+                      data-tip="Detail"
+                    >
+                      <MdOutlineDocumentScanner />
+                    </button>
+                  </Link>
                   <button
-                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
-                    data-tip="Detail"
-                  >
-                    <MdOutlineDocumentScanner />
-                  </button>
-                </Link>
-                <button
                     className="btn join-item btn-ghost btn-sm text-xl text-white bg-green-500 tooltip"
                     data-tip="tandai selesai"
                   >
                     <FaRegCheckSquare />
+                  </button>
+                  <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-orange-500 tooltip"
+                    data-tip="Komentar Guru"
+                  >
+                    <IoChatboxEllipsesOutline />
                   </button>
                 </div>
               </td>
@@ -143,21 +155,26 @@ const RaportNarasi = () => {
               <td>bayu</td>
               <td className="max-w-md">VII</td>
               <td className="">
-                <div className="join">
-
-                <Link to={"/guru/rapor-siswa/narasi"}>
+              <div className="join">
+                  <Link to={"/guru/rapor-siswa/narasi"}>
+                    <button
+                      className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
+                      data-tip="Detail"
+                    >
+                      <MdOutlineDocumentScanner />
+                    </button>
+                  </Link>
                   <button
-                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
-                    data-tip="Detail"
-                  >
-                    <MdOutlineDocumentScanner />
-                  </button>
-                </Link>
-                <button
                     className="btn join-item btn-ghost btn-sm text-xl text-white bg-green-500 tooltip"
                     data-tip="tandai selesai"
                   >
                     <FaRegCheckSquare />
+                  </button>
+                  <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-orange-500 tooltip"
+                    data-tip="Komentar Guru"
+                  >
+                    <IoChatboxEllipsesOutline />
                   </button>
                 </div>
               </td>
@@ -167,21 +184,26 @@ const RaportNarasi = () => {
               <td>ratih</td>
               <td className="max-w-md">VII</td>
               <td className="">
-                <div className="join">
-
-                <Link to={"/guru/rapor-siswa/narasi"}>
+              <div className="join">
+                  <Link to={"/guru/rapor-siswa/narasi"}>
+                    <button
+                      className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
+                      data-tip="Detail"
+                    >
+                      <MdOutlineDocumentScanner />
+                    </button>
+                  </Link>
                   <button
-                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
-                    data-tip="Detail"
-                  >
-                    <MdOutlineDocumentScanner />
-                  </button>
-                </Link>
-                <button
                     className="btn join-item btn-ghost btn-sm text-xl text-white bg-green-500 tooltip"
                     data-tip="tandai selesai"
                   >
                     <FaRegCheckSquare />
+                  </button>
+                  <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-orange-500 tooltip"
+                    data-tip="Komentar Guru"
+                  >
+                    <IoChatboxEllipsesOutline />
                   </button>
                 </div>
               </td>
@@ -191,21 +213,26 @@ const RaportNarasi = () => {
               <td>aldi</td>
               <td className="max-w-md">VII</td>
               <td className="">
-                <div className="join">
-
-                <Link to={"/guru/rapor-siswa/narasi"}>
+              <div className="join">
+                  <Link to={"/guru/rapor-siswa/narasi"}>
+                    <button
+                      className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
+                      data-tip="Detail"
+                    >
+                      <MdOutlineDocumentScanner />
+                    </button>
+                  </Link>
                   <button
-                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
-                    data-tip="Detail"
-                  >
-                    <MdOutlineDocumentScanner />
-                  </button>
-                </Link>
-                <button
                     className="btn join-item btn-ghost btn-sm text-xl text-white bg-green-500 tooltip"
                     data-tip="tandai selesai"
                   >
                     <FaRegCheckSquare />
+                  </button>
+                  <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-orange-500 tooltip"
+                    data-tip="Komentar Guru"
+                  >
+                    <IoChatboxEllipsesOutline />
                   </button>
                 </div>
               </td>
@@ -216,25 +243,29 @@ const RaportNarasi = () => {
               <td className="max-w-md">VII</td>
               <td className="">
                 <div className="join">
-
-                <Link to={"/guru/rapor-siswa/narasi"}>
+                  <Link to={"/guru/rapor-siswa/narasi"}>
+                    <button
+                      className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
+                      data-tip="Detail"
+                    >
+                      <MdOutlineDocumentScanner />
+                    </button>
+                  </Link>
                   <button
-                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
-                    data-tip="Detail"
-                  >
-                    <MdOutlineDocumentScanner />
-                  </button>
-                </Link>
-                <button
                     className="btn join-item btn-ghost btn-sm text-xl text-white bg-green-500 tooltip"
                     data-tip="tandai selesai"
                   >
                     <FaRegCheckSquare />
                   </button>
+                  <button
+                    className="btn join-item btn-ghost btn-sm text-xl text-white bg-orange-500 tooltip"
+                    data-tip="Komentar Guru"
+                  >
+                    <IoChatboxEllipsesOutline />
+                  </button>
                 </div>
               </td>
             </tr>
-            
           </tbody>
         </table>
       </div>
