@@ -3,17 +3,18 @@ import { useState } from "react";
 import RaportAngka from "../../component/siswa/RaportAngka";
 import RaportNarasi from "../../component/siswa/RaportNarasi";
 import RaportPortofolio from "../../component/siswa/RaportPortofolio"
-import StatusRaport from "../../component/siswa/StatusRaport";
+// import StatusRaport from "../../component/siswa/StatusRaport";
 import KomenOrtu from "../../component/siswa/KomenOrtu";
 import KomenGuru from "../../component/siswa/KomenGuru";
+import RaportAll from "../../component/siswa/RaportAll";
 
 const RaportSiswa = () => {
-  const [tab, setTab] = useState<string>("status");
+  const [tab, setTab] = useState<string>("angka");
   return (
     <>
       <div className="w-full mt-5 p-3">
         <div role="tablist" className="tabs tabs-lifted">
-          <input
+          {/* <input
             type="radio"
             name="my_tabs_2"
             role="tab"
@@ -27,7 +28,7 @@ const RaportSiswa = () => {
             className="tab-content bg-base-100 border-base-300 rounded-box p-6"
           >
             <StatusRaport/>
-          </div>
+          </div> */}
           <input
             type="radio"
             name="my_tabs_2"
@@ -80,9 +81,24 @@ const RaportSiswa = () => {
             name="my_tabs_2"
             role="tab"
             className="tab bg-blue-300 font-bold"
+            aria-label="Komentar Guru"
+            checked={tab == "komen-guru"}
+            onClick={() => setTab("komen-guru")}
+          />
+          <div
+            role="tabpanel"
+            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+          >
+            <KomenGuru />
+          </div>
+          <input
+            type="radio"
+            name="my_tabs_2"
+            role="tab"
+            className="tab bg-blue-300 font-bold"
             aria-label="Komentar Ortu"
-            checked={tab == "komen"}
-            onClick={() => setTab("komen")}
+            checked={tab == "komen-ortu"}
+            onClick={() => setTab("komen-ortu")}
           />
           <div
             role="tabpanel"
@@ -95,16 +111,17 @@ const RaportSiswa = () => {
             name="my_tabs_2"
             role="tab"
             className="tab bg-blue-300 font-bold"
-            aria-label="Komentar Guru"
-            checked={tab == "komen"}
-            onClick={() => setTab("komen")}
+            aria-label="Raport Siswa"
+            checked={tab == "raport-siswa"}
+            onClick={() => setTab("raport-siswa")}
           />
           <div
             role="tabpanel"
             className="tab-content bg-base-100 border-base-300 rounded-box p-6"
           >
-            <KomenGuru />
+            <RaportAll />
           </div>
+          
         </div>
       </div>
     </>

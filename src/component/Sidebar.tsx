@@ -5,6 +5,7 @@ import { iconMapping } from "../component/icon/icon";
 import logo from "../assets/sade.png";
 import { Link } from "react-router-dom";
 import menu from "../data/menu.json";
+// import karywan from "../data/karyawan.json"
 
 interface Menu {
   title: string;
@@ -30,6 +31,7 @@ const Sidebar = () => {
     sessionStorage.setItem("side", name);
   };
   let data = []
+  // data = role === 'guru' ? karywan : karywan
   data = role === 'guru' ? menu : menu
 
   return (

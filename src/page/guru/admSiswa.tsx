@@ -11,6 +11,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
 import { VscTasklist } from "react-icons/vsc";
+import { BsEyeFill } from "react-icons/bs";
 
 const schema = Yup.object({
   classId: Yup.string().required("required"),
@@ -174,7 +175,7 @@ const AdmSiswa = () => {
       console.log(formData);
 
       console.log(response);
-      // window.location.reload();
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }
@@ -262,14 +263,34 @@ const AdmSiswa = () => {
     document.getElementById(show)?.classList.remove("hidden");
   };
 
+  const downloadTugas = async (path:string) => {
+    try {
+      const response = await Task.downloadTugas(token, path)
+      const urlParts = path.split('/');
+      const fileName = urlParts.pop() || '';
+      const blobUrl = window.URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.setAttribute('download', fileName);
+      link.style.display = 'none'; 
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      
+    }
+  }
+
   return (
     <>
       <div className="w-full flex flex-col items-center">
         <div className="my-10 flex flex-col text-center">
-          <span className="text-4xl font-bold">Administrasi Siswa</span>
-          <span>Kelas II</span>
+          <span className="text-4xl font-bold">Daftar Tugas</span>
+          {/* <span>Kelas II</span> */}
         </div>
-        <div className="flex justify-between w-full flex-wrap">
+        {/* <div className="flex justify-between w-full flex-wrap">
           <div className="p-3 sm:w-1/4 w-full">
             <div className="bg-green-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
               <span className="text-xl font-bold">Hadir</span>
@@ -314,7 +335,7 @@ const AdmSiswa = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="overflow-x-auto w-full flex flex-col p-5 my-10 justify-center bg-white">
           <div className="w-full justify-between bg-red flex">
             <span className="text-2xl font-bold">Tugas Siswa</span>
@@ -354,7 +375,7 @@ const AdmSiswa = () => {
                     <td>{formatDate(item?.start_date)}</td>
                     <td>{formatDate(item?.end_date)}</td>
                     <td>
-                      {item?.characteristic == 1 ? "WWP" : "Project Kelompok"}
+                      {item?.characteristic == 1 ? "WWP" : item?.characteristic == 2 ? "Project Kelompok" : "Prbadi"}
                     </td>
                     <td>{item?.status}</td>
                     <td className="join text-white">
@@ -409,28 +430,40 @@ const AdmSiswa = () => {
                     <td>{formatDate(item?.start_date)}</td>
                     <td>{formatDate(item?.end_date)}</td>
                     <td>
-                      {item?.characteristic == 1 ? "WWP" : "Project Kelompok"}
+                    {item?.characteristic == 1 ? "WWP" : item?.characteristic == 2 ? "Project Kelompok" : "Prbadi"}
                     </td>
                     <td>{item?.status}</td>
                     <td className="join text-white">
                       
                       <button
-                        className="btn btn-sm btn-ghost bg-red-600 text-xl join-item"
+                        className="btn btn-sm btn-ghost bg-red-600 text-xl join-item tooltip"
+                        data-tip='hapus tugas'
                         onClick={() => deleteTask(item.id)}
                       >
                         <BiTrash />
                       </button>
                       <button
-                        className={`${
-                          !item?.down_file ? "btn-disabled" : ""
-                        } btn btn-sm btn-ghost bg-blue-600 text-xl join-item`}
+                        className={`btn btn-sm btn-ghost bg-orange-600 text-xl join-item tooltip`}
+                        data-tip='download file Tugas'
+                       
                       >
-                        <BiDownload />
+                        <BsEyeFill />
                       </button>
                       <button
                         className={`${
                           !item?.down_file ? "btn-disabled" : ""
-                        } btn btn-sm btn-ghost bg-green-600 text-xl join-item`}
+                        } btn btn-sm btn-ghost bg-blue-600 text-xl join-item tooltip`}
+                        data-tip='download tugas siswa'
+                        onClick={() => downloadTugas(item?.down_file)}
+                      >
+                        <BiDownload />
+                      </button>
+                      
+                      <button
+                        className={`${
+                          !item?.down_file ? "btn-disabled" : ""
+                        } btn btn-sm btn-ghost bg-green-600 text-xl join-item tooltip`}
+                        data-tip='feedback'
                       >
                         <VscTasklist />
                       </button>
@@ -555,7 +588,6 @@ const AdmSiswa = () => {
                 <option value={3}>Mandiri</option>
               </select>
               <label className="mt-4 w-full font-bold">Periode</label>
-              <div className="w-full flex justify-center">
                 <div className="flex gap-2 justify-center items-center">
                   <input
                     type="datetime-local"
@@ -573,7 +605,7 @@ const AdmSiswa = () => {
                     }
                   />
                 </div>
-              </div>
+              
             </div>
 
             <div className="w-full flex flex-col gap-2">
@@ -748,9 +780,8 @@ const AdmSiswa = () => {
                 <option value={1}>WWP</option>
                 <option value={3}>Mandiri</option>
               </select>
-              <label className="mt-4 w-full font-bold">Periode</label>
-              <div className="w-full flex justify-center">
-                <div className="flex gap-2 justify-center items-center">
+              <label className="mt-4 w-full font-bold">Perioddde</label>
+                <div className="flex gap-2 justify-center items-center flex-wrap bg-red-500">
                   <input
                     type="datetime-local"
                     className="input input-bordered bg-white"
@@ -767,7 +798,7 @@ const AdmSiswa = () => {
                     }
                   />
                 </div>
-              </div>
+              
             </div>
 
             <div className="w-full flex flex-col gap-2">
@@ -802,6 +833,11 @@ const AdmSiswa = () => {
             </button>
             {/* <button className="btn bg-green-500 text-white font-bold">Submit</button> */}
           </div>
+        </div>
+      </Modal>
+      <Modal id={"add-feedback"}>
+        <div>
+          
         </div>
       </Modal>
     </>

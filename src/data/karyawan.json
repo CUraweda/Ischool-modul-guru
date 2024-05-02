@@ -17,7 +17,7 @@
         "submenu": true,
         "title": "Agenda Kegiatan",
         "icon": "<MdOutlineTableChart />",
-        "url": "//invenstment",
+        "url": "/invenstment",
         "subtitle": [
             {
                 "name": "Meeting / Rapat Kordinasi",

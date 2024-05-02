@@ -1,4 +1,4 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect, FC } from "react";
 import Paper from "@mui/material/Paper";
 import {
   ViewState,
@@ -15,6 +15,8 @@ import {
   DateNavigator,
   TodayButton,
   DayView,
+  MonthView,
+  ViewSwitcher,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { useStore } from "../store/Store";
 import { Kalender } from "../controller/api";
@@ -25,8 +27,8 @@ const CustomAppointment: React.FC<any> = ({
   ...restProps
 }) => {
   const colorProps = restProps.data.color;
-  const [colorCode] = colorProps.split("_");
-  const backgroundColor = colorCode || "#FFC107";
+  const [colorCode] = colorProps ? colorProps.split("_") : "";
+  const backgroundColor = colorCode;
 
   return (
     <Appointments.Appointment
@@ -35,6 +37,11 @@ const CustomAppointment: React.FC<any> = ({
         ...style,
         backgroundColor: backgroundColor,
         borderRadius: "8px",
+        fontSize: "15px",
+        textAlign: "center",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
       {children}
@@ -42,7 +49,12 @@ const CustomAppointment: React.FC<any> = ({
   );
 };
 
-const KalenderPekanan: React.FC = () => {
+interface Props {
+  smt: string;
+  kelas: string;
+}
+
+const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
   const { token } = useStore();
   const [Dataappointment, setData] = useState<any[]>([]);
   const [trigger, setTrigger] = useState<boolean>(false);
@@ -50,16 +62,19 @@ const KalenderPekanan: React.FC = () => {
 
   const getKalenderPendidikan = async () => {
     try {
-      const response = await Kalender.GetAllDetail(token, 0, 20);
-      const dataList = response.data.data.result;
+      // const smt = sessionStorage.getItem("smt") ? sessionStorage.getItem("smt") : '1'
+      const response = await Kalender.GetAllTimetable(token, kelas, smt);
+      const dataList = response.data.data;
 
       const newData = dataList.map((item: any) => ({
         id: item.id,
-        title: item.agenda,
+        title: item.title,
         startDate: new Date(item.start_date),
         endDate: new Date(item.end_date),
-        color: item.color,
+        // color: item.color,
       }));
+      console.log(newData);
+
       setData(newData);
     } catch (error) {
       console.error(error);
@@ -68,7 +83,7 @@ const KalenderPekanan: React.FC = () => {
 
   useEffect(() => {
     getKalenderPendidikan();
-  }, [trigger]);
+  }, [trigger, smt, kelas]);
 
   const editAgenda = async (id: number, data: any) => {
     try {
@@ -77,7 +92,9 @@ const KalenderPekanan: React.FC = () => {
         ...(data.endDate ? { end_date: data.endDate } : {}),
         ...(data.title ? { agenda: data.title } : {}),
       };
-      const response = await Kalender.EditDetail(token, id, dataRest);
+      console.log({ dataRest });
+      const response = await Kalender.EditTimeTable(token, id, dataRest);
+
       console.log(response);
       setTrigger(!trigger);
     } catch (error) {
@@ -98,7 +115,7 @@ const KalenderPekanan: React.FC = () => {
   };
 
   const deleteDetail = async (id: number) => {
-    const response = await Kalender.deleteDetail(token, id);
+    const response = await Kalender.deleteTimeTable(token, id);
     console.log(response);
 
     setTrigger(!trigger);
@@ -119,7 +136,7 @@ const KalenderPekanan: React.FC = () => {
     }
 
     if (changed) {
-      console.log(changed);
+      console.log({ changed });
 
       Object.keys(changed).forEach((id) => {
         console.log("ini id", id);
@@ -134,6 +151,34 @@ const KalenderPekanan: React.FC = () => {
       deleteDetail(deleted);
     }
   };
+
+  const showModal = (props: string) => {
+    let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
+    if (modalElement) {
+      modalElement.showModal();
+    }
+  };
+
+  const DayCell: React.FC<any> = (props) => (
+    <DayView.TimeTableCell
+      {...props}
+      onClick={() => {
+        console.log(props);
+
+        showModal("add-rencana");
+      }}
+    />
+  );
+  const mountCell: React.FC<any> = (props) => (
+    <MonthView.TimeTableCell
+      {...props}
+      onClick={() => {
+        console.log(props);
+
+        showModal("add-kalender");
+      }}
+    />
+  );
   return (
     <Paper>
       <Scheduler data={Dataappointment} height={650}>
@@ -144,14 +189,17 @@ const KalenderPekanan: React.FC = () => {
         <EditingState onCommitChanges={commitChanges} />
         <IntegratedEditing />
         <DayView
-        // displayName="Three days"
-        startDayHour={7}
-        endDayHour={16}
-        intervalCount={7}
-      />
+          displayName="Pekan"
+          startDayHour={7}
+          endDayHour={16}
+          intervalCount={7}
+          timeTableCellComponent={DayCell}
+        />
+        <MonthView timeTableCellComponent={mountCell} displayName="Bulan" />
         <ConfirmationDialog />
         <Appointments appointmentComponent={CustomAppointment} />
         <Toolbar />
+        <ViewSwitcher />
         <DateNavigator />
         <TodayButton />
         <AppointmentTooltip showOpenButton showDeleteButton />

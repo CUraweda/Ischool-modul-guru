@@ -1,3 +1,4 @@
+import { useState, useEffect, ChangeEvent } from "react";
 import {
   FaPencilAlt,
   FaPlus,
@@ -7,14 +8,97 @@ import {
 } from "react-icons/fa";
 import Modal from "../modal";
 import { MdCloudUpload } from "react-icons/md";
+import { useStore } from "../../store/Store";
+import { Task, Student, Raport } from "../../controller/api";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
+const schema = Yup.object({
+  classId: Yup.string().required("required"),
+  studentId: Yup.string().required("required"),
+  semester: Yup.string().required("required"),
+  subjectId: Yup.string().required("required"),
+  nilai: Yup.string().required("required"),
+  terbilang: Yup.string().required("required"),
+});
 
 const RaportAngka = () => {
+  const { token } = useStore();
+  const [kelas, setKelas] = useState<any[]>([]);
+  const [DataSiswa, setDataSiswa] = useState<any[]>([]);
+  const [mapel, setMapel] = useState<any[]>([]);
+
+  const formik = useFormik({
+    initialValues: {
+      classId: "",
+      subjectId: "",
+      semester: "",
+      studentId: "",
+      nilai: "",
+      terbilang: "",
+    },
+    validationSchema: schema,
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
+
+  useEffect(() => {
+    getStudent();
+  }, [formik.values.classId]);
+
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
+      getClass();
+      getMapel();
     }
   };
+
+  const getClass = async () => {
+    const response = await Task.GetAllClass(token, 0, 20);
+    setKelas(response.data.data.result);
+  };
+
+  const getStudent = async () => {
+    const idClass = parseInt(formik.values.classId);
+    const response = await Student.GetStudentByClass(
+      token,
+      idClass,
+      "2023/2024"
+    );
+    setDataSiswa(response.data.data);
+  };
+
+  const getMapel = async () => {
+    const response = await Task.GetAllMapel(token, 0, 20);
+    setMapel(response.data.data.result);
+  };
+
+  const handleCreateNumber = async () => {
+    const {classId, subjectId, studentId, nilai, semester, terbilang} = formik.values
+
+    try {
+      const rest = {
+        student_class_id : classId ,
+        semester,
+        subject_id : subjectId,
+        grade: nilai,
+        grade_text : terbilang
+      }
+      const response = await Raport.createNumberRaport(token, rest )
+
+      console.log(response);
+      
+    } catch (error) {
+      console.log(error);
+      
+      
+    }
+    // console.log(classId, subjectId, studentId, nilai, semester, terbilang);
+    
+  }
 
   return (
     <div>
@@ -54,14 +138,12 @@ const RaportAngka = () => {
         </div>
         <div>
           <div className="join">
-            <button
-              className="btn btn-sm join-item bg-green-500 text-white "
-            >
+            {/* <button className="btn btn-sm join-item bg-green-500 text-white ">
               <span className="text-xl">
                 <FaRegCheckSquare />
               </span>
               Selesai Semua
-            </button>
+            </button> */}
             <button
               className="btn btn-sm join-item bg-blue-500 text-white "
               onClick={() => showModal("add-angka")}
@@ -332,27 +414,80 @@ const RaportAngka = () => {
           <div className="mt-5 flex justify-start w-full flex-col gap-3">
             <div className="flex flex-col w-full">
               <label htmlFor="" className="font-bold">
-                Nama
+                Kelas
               </label>
-              <select className="select join-item w-full select-bordered">
+              <select
+                className="select join-item w-full select-bordered"
+                onChange={(e) =>
+                  formik.setFieldValue("classId", e.target.value)
+                }
+              >
                 <option disabled selected>
-                  Siswa
+                  pilih kelas
                 </option>
-                <option>Aldi</option>
-                <option>Damar</option>
-                <option>beni</option>
-                <option>jono</option>
+                {kelas?.map((item: any, index: number) => (
+                  <option
+                    value={item.id}
+                    key={index}
+                  >{`${item.level}-${item.class_name}`}</option>
+                ))}
               </select>
             </div>
             <div className="flex flex-col w-full">
               <label htmlFor="" className="font-bold">
-                KKM
+                Nama
               </label>
-              <input
-                type="number"
-                placeholder="75"
-                className="input input-bordered w-full"
-              />
+              <select
+                className="select join-item w-full select-bordered"
+                onChange={(e) =>
+                  formik.setFieldValue("studentId", e.target.value)
+                }
+              >
+                <option disabled selected>
+                  Siswa
+                </option>
+                {DataSiswa?.map((item: any, index: number) => (
+                  <option value={item?.id} key={index}>
+                    {item?.student?.full_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col w-full">
+              <label htmlFor="" className="font-bold">
+                Semester
+              </label>
+              <select
+                className="select join-item w-full select-bordered"
+                onChange={(e) =>
+                  formik.setFieldValue("semester", e.target.value)
+                }
+              >
+                <option disabled selected>
+                  Semester
+                </option>
+                <option value={"1"}>Semester 1</option>
+                <option value={"2"}>Semester 2</option>
+              </select>
+            </div>
+            <div className="flex flex-col w-full">
+              <label htmlFor="" className="font-bold">
+                Mapel
+              </label>
+              <select className="select join-item w-full select-bordered"
+               onChange={(e) =>
+                formik.setFieldValue("subjectId", e.target.value)
+              }
+              >
+                <option disabled selected>
+                  Pelajaran
+                </option>
+                {mapel?.map((item: any, index: number) => (
+                  <option value={item.id} key={index}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex flex-col w-full">
               <label htmlFor="" className="font-bold">
@@ -362,6 +497,7 @@ const RaportAngka = () => {
                 type="number"
                 placeholder="75"
                 className="input input-bordered w-full"
+                onChange={(e) => formik.setFieldValue("nilai", e.target.value)}
               />
             </div>
             <div className="flex flex-col w-full">
@@ -372,10 +508,11 @@ const RaportAngka = () => {
                 type="text"
                 placeholder="tujuh puluh lima"
                 className="input input-bordered w-full"
+                onChange={(e) => formik.setFieldValue("terbilang", e.target.value)}
               />
             </div>
             <div className="flex flex-col w-full mt-10">
-              <button className="btn btn-ghost bg-green-500 w-full text-white">
+              <button className="btn btn-ghost bg-green-500 w-full text-white" onClick={handleCreateNumber}>
                 Simpan
               </button>
             </div>

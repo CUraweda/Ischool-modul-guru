@@ -169,6 +169,16 @@ const Task = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  downloadTugas: (token: string | null, path: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-task/download?filepath=${path}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: 'blob',
+    }),
+
 };
 
 const Kalender = {
@@ -237,22 +247,43 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  GetAllTimetable: (
-    token: string | null,
-    page: number | null,
-    limit: number | null
-  ): AxiosPromise<any> =>
+  deleteTimeTable: (token: string | null, id: number | null): AxiosPromise<any> =>
     instance({
-      method: "GET",
-      url: `https://api-dev.curaweda.com:7000/api/timetable/show-by-class/:id?semester=1/2&academic=xxxx/xxxx`,
+      method: "DELETE",
+      url: `/api/timetable/delete/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }),
-    createTimeTable: (token: string | null, data: any): AxiosPromise<any> =>
+  GetAllTimetable: (
+    token: string | null,
+    kelas: string | null,
+    semester: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/timetable/show-by-class/${kelas}?semester=${semester}&academic=2023/2024`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  createTimeTable: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/timetable/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+    EditTimeTable: (
+      token: string | null,
+      id: number | null,
+      data: any
+    ): AxiosPromise<any> =>
       instance({
-        method: "POST",
-        url: `/api/timetable/create`,
+        method: "PUT",
+        url: `/api/timetable/update/${id}`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -260,4 +291,16 @@ const Kalender = {
       }),
 };
 
-export { Auth, Task, Kalender, Student };
+const Raport = {
+  createNumberRaport: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/number-report/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+}
+
+export { Auth, Task, Kalender, Student, Raport };

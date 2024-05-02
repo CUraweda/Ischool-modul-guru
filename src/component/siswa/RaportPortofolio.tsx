@@ -401,8 +401,8 @@ const RaportPortofolio = () => {
       </Modal>
       <Modal id="show-portofolio" width="w-11/12 max-w-5xl">
         <div className="join ">
-          <button className="btn btn-sm join-item bg-blue-500 text-white">portofolio</button>
-          <button className="btn btn-sm join-item bg-blue-700 text-white">merge portofolio</button>
+          <button className="btn btn-sm join-item bg-blue-500 text-white">Non Merge Portofolio</button>
+          <button className="btn btn-sm join-item bg-blue-700 text-white">Merge Portofolio</button>
         </div>
         <div className="w-full flex flex-col items-center min-h-svh">
           <iframe className="w-full min-h-svh mt-5" src={Pdf} />

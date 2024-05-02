@@ -25,6 +25,7 @@ const PresensiSiswa = () => {
   useEffect(() => {
     getStudent();
     getPresensiData();
+    setSelectedStudents([]);
   }, [idClass, date]);
 
   const formattedDate = new Date(date).toLocaleDateString("id-ID", {
@@ -95,19 +96,26 @@ const PresensiSiswa = () => {
 
         if (dataStatus.length === 0) {
           const createPromises = selectedStudents.map((item: any) => {
+            
             const dataRest = {
               student_class_id: item.student.id,
-              att_date: new Date(date),
-              status: item.presensi,
-              remark: item.presensi === "Hadir" ? item.transportasi : "",
+              att_date: new Date(date).setHours(0, 0, 0, 0),
+              status: item.presensi ? item.presensi : "Hadir",
+              remark: item.transportasi ? item.transportasi : "🚗antar jemput",
             };
-            return create(dataRest);
+
+            const isExist = dataSiswa.some(
+              (data) =>
+                data.studentclass.student.id === item.student.id &&
+                new Date(data.att_date).setHours(0, 0, 0, 0) ===
+                  new Date(date).setHours(0, 0, 0, 0)
+            );
+
+            return isExist ? null : create(dataRest);
+
           });
-
           await Promise.all(createPromises);
-
           closeModal("add-presensi");
-
           Swal.fire({
             position: "center",
             icon: "success",
@@ -116,7 +124,8 @@ const PresensiSiswa = () => {
             timer: 1500,
           });
           getPresensiData();
-          // Update your state here instead of reloading the page
+          setSelectedStudents([]);
+         
         }
       } catch (error) {
         console.log(error);
@@ -129,6 +138,7 @@ const PresensiSiswa = () => {
   const create = async (data: any) => {
     await Student.CreatePresensi(token, data);
   };
+
   const deletePresensi = async (id: number) => {
     try {
       Swal.fire({
@@ -276,7 +286,19 @@ const PresensiSiswa = () => {
               {/* head */}
               <thead className="bg-blue-400 text-white">
                 <tr>
-                  <th></th>
+                  <th>
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedStudents(siswa);
+                        } else {
+                          setSelectedStudents([]);
+                        }
+                      }}
+                    />
+                  </th>
                   <th>Name</th>
                   <th>NIS</th>
                   <th>Kelas</th>
@@ -289,6 +311,9 @@ const PresensiSiswa = () => {
                     <th>
                       <input
                         type="checkbox"
+                        checked={selectedStudents.some(
+                          (student) => student.student.id === item.student.id
+                        )}
                         onChange={(e) => {
                           if (e.target.checked) {
                             setSelectedStudents([...selectedStudents, item]);
@@ -337,10 +362,9 @@ const PresensiSiswa = () => {
                           )
                         }
                       >
-                        <option disabled selected>
-                          Presensi
+                        <option value="Hadir" selected>
+                          Hadir
                         </option>
-                        <option value="Hadir">Hadir</option>
                         <option value="Izin">Izin</option>
                         <option value="Alfa">Alfa</option>
                         <option value="Sakit">Sakit</option>
@@ -371,15 +395,14 @@ const PresensiSiswa = () => {
                         disabled={
                           !selectedStudents.some(
                             (student) => student.student.id === item.student.id
-                          ) || item.presensi !== "Hadir"
+                          )
                         }
                       >
-                        <option disabled selected>
-                          Transportasi
-                        </option>
                         <option value="🚶‍♂️jalan kaki">Jalan Kaki</option>
                         <option value="🚌kendaraan umum">Kendaraan Umum</option>
-                        <option value="🚗antar jemput">Antar Jemput</option>
+                        <option value="🚗antar jemput" selected>
+                          Antar Jemput
+                        </option>
                         <option value="🚲sepeda">Sepeda</option>
                       </select>
                     </td>

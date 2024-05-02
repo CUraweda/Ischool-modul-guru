@@ -6,6 +6,7 @@ import { Kalender, Task } from "../../controller/api";
 import { useStore } from "../../store/Store";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import Swal from "sweetalert2";
 
 const schema = Yup.object({
   tahun: Yup.string().required("required"),
@@ -14,11 +15,14 @@ const schema = Yup.object({
   title: Yup.string().required("required"),
   start_date: Yup.string().required("required"),
   end_date: Yup.string().required("required"),
+  hide: Yup.boolean().required("required"),
 });
 
 const jadwalMengajar = () => {
   const { token } = useStore();
   const [kelas, setKelas] = useState<any[]>([]);
+  const [smt, setSmt] = useState<string>("1");
+  const [idClass, setIdClass] = useState<string>("11");
 
   const formik = useFormik({
     initialValues: {
@@ -28,6 +32,7 @@ const jadwalMengajar = () => {
       title: "",
       start_date: "",
       end_date: "",
+      hide: false,
     },
     validationSchema: schema,
     onSubmit: (values) => {
@@ -46,6 +51,12 @@ const jadwalMengajar = () => {
     }
     getClass();
   };
+  const closeModal = (props: string) => {
+    let modalElement = document.getElementById(props) as HTMLDialogElement;
+    if (modalElement) {
+      modalElement.close();
+    }
+  };
 
   const getClass = async () => {
     const response = await Task.GetAllClass(token, 0, 20);
@@ -53,7 +64,7 @@ const jadwalMengajar = () => {
   };
 
   const createAgenda = async () => {
-    const { tahun, title, kelas, semester, start_date, end_date } =
+    const { tahun, title, kelas, semester, start_date, end_date, hide } =
       formik.values;
 
     const data = {
@@ -61,12 +72,28 @@ const jadwalMengajar = () => {
       class_id: kelas,
       semester,
       title,
-      start_date,
-      end_date,
+      start_date: new Date(start_date),
+      end_date: new Date(end_date),
+      hide_student: hide ? hide : false
     };
 
-    const response = await Kalender.createTimeTable(token, data);
-    console.log(response);
+    const pertama = new Date(start_date).getTime();
+    const kedua = new Date(end_date).getTime();
+    const jeda = Math.abs(kedua - pertama);
+    const jedaMenit = jeda / (1000 * 60);
+
+    if (jedaMenit < 5) {
+      closeModal("add-rencana");
+      Swal.fire({
+        title: "Waktu Error?",
+        text: "Rentang waktu minimal 5 menit. Harap ubah tanggal atau jam.",
+        icon: "error",
+      });
+    } else {
+      await Kalender.createTimeTable(token, data);
+      window.location.reload();
+    }
+    
   };
 
   return (
@@ -80,7 +107,7 @@ const jadwalMengajar = () => {
           <div className="join">
             <select
               className="select select-bordered w-36 join-item"
-              onChange={(e) => formik.setFieldValue("kelas", e.target.value)}
+              onChange={(e) => setIdClass(e.target.value)}
             >
               <option disabled selected>
                 Kelas
@@ -91,6 +118,16 @@ const jadwalMengajar = () => {
                   key={index}
                 >{`${item.level}-${item.class_name}`}</option>
               ))}
+            </select>
+            <select
+              className="select select-bordered w-36 join-item"
+              onChange={(e) => setSmt(e.target.value)}
+            >
+              <option disabled selected>
+                Semester
+              </option>
+              <option value={1}>1</option>
+              <option value={2}>2</option>
             </select>
             <button
               className="btn bg-green-500 btn-ghost text-white join-item"
@@ -105,7 +142,7 @@ const jadwalMengajar = () => {
         </div>
 
         <div className={`w-full bg-white mt-5`}>
-          <KalenderPekanan />
+          <KalenderPekanan smt={smt} kelas={idClass} />
         </div>
       </div>
 
@@ -120,7 +157,7 @@ const jadwalMengajar = () => {
                 onChange={(e) => formik.setFieldValue("tahun", e.target.value)}
               >
                 <option disabled selected>
-                  Pilih Kelas
+                  Pilih Tahun
                 </option>
                 <option value={"2023/2024"}>2023 / 2024</option>
                 <option value={"2024/2025"}>2024 / 2025</option>
@@ -137,7 +174,7 @@ const jadwalMengajar = () => {
                 <option disabled selected>
                   Pilih Semester
                 </option>
-                <option value={"1"}>1</option>
+                <option value={1}>1</option>
                 <option value={2}>2</option>
               </select>
             </div>
@@ -176,6 +213,8 @@ const jadwalMengajar = () => {
                 <input
                   type="datetime-local"
                   className="input input-bordered bg-white shadow-md"
+                  min="07:00"
+                  max="15:30"
                   onChange={(e) =>
                     formik.setFieldValue("start_date", e.target.value)
                   }
@@ -184,6 +223,8 @@ const jadwalMengajar = () => {
                 <input
                   type="datetime-local"
                   className="input input-bordered bg-white shadow-md"
+                  min="07:00"
+                  max="15:30"
                   onChange={(e) =>
                     formik.setFieldValue("end_date", e.target.value)
                   }
@@ -192,7 +233,13 @@ const jadwalMengajar = () => {
             </div>
           </div>
           <div className="w-full mt-3 justify-start items-center flex gap-3">
-            <input type="checkbox" className="checkbox" />
+            <input
+              type="checkbox"
+              className="checkbox"
+              onChange={(e) => {
+                formik.setFieldValue("hide", e.target.checked);
+              }}
+            />
             <label className="font-bold">Tampilkan di modul siswa ?</label>
           </div>
 
