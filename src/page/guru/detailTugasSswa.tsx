@@ -5,11 +5,17 @@ import { Link } from "react-router-dom";
 import { useStore } from "../../store/Store";
 import { Task } from "../../controller/api";
 import { BsEye } from "react-icons/bs";
+import Modal from "../../component/modal";
+import Swal from "sweetalert2";
 
 const DetailTugasSswa = () => {
   const { token } = useStore();
   const [taskList, setTaskList] = useState<any>([]);
-  const [task, setTask] = useState<any>([]);
+  const [task, setTask] = useState<any>();
+  const [showFile, setShowFile] = useState<any>();
+  const [feedback, setFeedback] = useState<string>("");
+  const [idDetail, setIdDetail] = useState<string>("");
+  const [idSiswa, setIdSiswa] = useState<string>("");
 
   useEffect(() => {
     getTaskDetail();
@@ -24,6 +30,7 @@ const DetailTugasSswa = () => {
         idTask = parseInt(id);
       }
       const response = await Task.getDetailTask(token, idTask);
+      console.log(response);
 
       setTaskList(response.data.data);
     } catch (error) {
@@ -33,13 +40,9 @@ const DetailTugasSswa = () => {
   const getTaskId = async () => {
     try {
       const id: string | null = sessionStorage.getItem("idTask");
-      let idTask: number | null = null;
 
-      if (id !== null) {
-        idTask = parseInt(id);
-      }
-      const response = await Task.getTaskById(token, idTask);
-      console.log(response.data.data);
+      const response = await Task.getTaskById(token, id);
+
       setTask(response.data.data);
     } catch (error) {
       console.log(error);
@@ -58,6 +61,81 @@ const DetailTugasSswa = () => {
       hour12: false,
     });
     return formattedDate;
+  };
+
+  const showFileTugas = async () => {
+    try {
+      const path = task?.task_file;
+      const response = await Task.downloadTugas(token, path);
+      const blob = new Blob([response.data], { type: "application/pdf" }); //
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      setShowFile(blobUrl);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const showModal = (props: string) => {
+    let modalElement = document.getElementById(props) as HTMLDialogElement;
+    if (modalElement) {
+      modalElement.showModal();
+      showFileTugas();
+    }
+  };
+
+  const closeModal = (props: string) => {
+    let modalElement = document.getElementById(props) as HTMLDialogElement;
+    if (modalElement) {
+      modalElement.close();
+    }
+  };
+
+  const handleAddFeedback = async () => {
+    try {
+      const id: string | null = sessionStorage.getItem("idTask");
+      const data = {
+        task_id: id,
+        feedback: feedback,
+        student_id: idSiswa,
+      };
+      const response = await Task.editTaskDetail(token, idDetail, data);
+      console.log(response);
+      closeModal("add-feedback-detail");
+    } catch (error: any) {
+      closeModal("add-feedback-detail");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error?.message,
+      });
+    }
+  };
+  const downloadTugas = async (path: string) => {
+    try {
+      const response = await Task.downloadTugas(token, path);
+      const urlParts = path.split("/");
+      const fileName = urlParts.pop() || "";
+      const blobUrl = window.URL.createObjectURL(response.data);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.setAttribute("download", fileName);
+      link.style.display = "none";
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFeed = (idSiswa: string, idDetail: string, feed: string) => {
+    setIdDetail(idDetail);
+    setIdSiswa(idSiswa);
+    showModal("add-feedback-detail");
+    setFeedback(feed);
   };
 
   return (
@@ -94,12 +172,12 @@ const DetailTugasSswa = () => {
                     <tr>
                       <th>Mapel</th>
                       <td>:</td>
-                      <td>{task?.subject_id}</td>
+                      <td>{task?.subject.name}</td>
                     </tr>
                     <tr>
                       <th>Kelas</th>
                       <td>:</td>
-                      <td>{task?.class_id}</td>
+                      <td>{task?.class.class_name}</td>
                     </tr>
                     <tr>
                       <th>Tanggal Mulai</th>
@@ -114,13 +192,22 @@ const DetailTugasSswa = () => {
                     <tr>
                       <th>Jenis</th>
                       <td>:</td>
-                      <td>{task?.task_category_id}</td>
+                      <td>
+                        {task?.task_category_id == 1
+                          ? "WWP"
+                          : task?.task_category_id == 2
+                          ? "Project Kelompok"
+                          : "Prbadi"}
+                      </td>
                     </tr>
                     <tr>
                       <th>File Tugas</th>
                       <td>:</td>
                       <td>
-                        <button className="btn btn-sm btn-ghost bg-green-600 text-white text-xl join-item">
+                        <button
+                          className="btn btn-sm btn-ghost bg-green-600 text-white text-xl join-item"
+                          onClick={() => showModal("show-file")}
+                        >
                           <BsEye />
                         </button>
                       </td>
@@ -165,10 +252,24 @@ const DetailTugasSswa = () => {
                       </td>
                       <td>{formatDate(item?.createdAt)}</td>
                       <td className="join text-white">
-                        <button className="btn btn-sm btn-ghost bg-blue-600 text-xl join-item">
+                        <button
+                          className="btn btn-sm btn-ghost bg-blue-600 text-xl join-item tooltip"
+                          data-tip="Download"
+                          onClick={() => downloadTugas(item.task_file)}
+                        >
                           <BiDownload />
                         </button>
-                        <button className="btn btn-sm btn-ghost bg-green-600 text-xl join-item">
+                        <button
+                          className={`btn btn-sm btn-ghost ${item.feedback ? 'bg-green-600' : 'bg-red-600'} text-xl join-item tooltip`}
+                          data-tip="Feedback"
+                          onClick={() => {
+                            handleFeed(
+                              item?.student.id,
+                              item?.id,
+                              item?.feedback
+                            );
+                          }}
+                        >
                           <VscTasklist />
                         </button>
                       </td>
@@ -180,6 +281,28 @@ const DetailTugasSswa = () => {
           </div>
         </div>
       </div>
+      <Modal id={"show-file"} width="w-11/12 max-w-5xl">
+        <div className="w-full flex flex-col items-center min-h-svh">
+          <iframe className="w-full min-h-svh mt-5" src={showFile} />
+        </div>
+      </Modal>
+      <Modal id={"add-feedback-detail"}>
+        <div className="w-full flex justify-center flex-col items-center">
+          <span className="text-xl font-bold mb-4">Feedback</span>
+          <textarea
+            className="textarea textarea-bordered w-full"
+            placeholder="Feedback"
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+          ></textarea>
+          <button
+            className="btn btn-ghost bg-green-500 text-white mt-5 w-full"
+            onClick={handleAddFeedback}
+          >
+            Submit
+          </button>
+        </div>
+      </Modal>
     </>
   );
 };

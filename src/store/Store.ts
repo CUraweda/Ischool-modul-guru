@@ -16,6 +16,10 @@ const Store = create<StoreState>((set: SetState<StoreState>) => ({
     set({ token: null });
   },
 
+  tanggalPekanan: new Date(),
+  setTanggalPekanan: (data) => set({ tanggalPekanan: data }),
+ 
+
   data: sessionStorage.getItem("data") ? JSON.parse(sessionStorage.getItem("data") as string) : null,
   setData: (data) => {
     if (data) {

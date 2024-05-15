@@ -55,10 +55,9 @@ interface Props {
 }
 
 const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
-  const { token } = useStore();
+  const { token, setTanggalPekanan, tanggalPekanan } = useStore();
   const [Dataappointment, setData] = useState<any[]>([]);
   const [trigger, setTrigger] = useState<boolean>(false);
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
   const getKalenderPendidikan = async () => {
     try {
@@ -179,12 +178,17 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
       }}
     />
   );
+
+  const handlePerubahanTanggal = (tanggal: any) => {
+    setTanggalPekanan(tanggal)
+  };
+
   return (
     <Paper>
       <Scheduler data={Dataappointment} height={650}>
         <ViewState
-          currentDate={currentDate}
-          onCurrentDateChange={setCurrentDate}
+          currentDate={tanggalPekanan}
+          onCurrentDateChange={handlePerubahanTanggal}
         />
         <EditingState onCommitChanges={commitChanges} />
         <IntegratedEditing />

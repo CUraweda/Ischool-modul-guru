@@ -19,7 +19,7 @@ const schema = Yup.object({
 });
 
 const jadwalMengajar = () => {
-  const { token } = useStore();
+  const { token, tanggalPekanan } = useStore();
   const [kelas, setKelas] = useState<any[]>([]);
   const [smt, setSmt] = useState<string>("1");
   const [idClass, setIdClass] = useState<string>("11");
@@ -96,11 +96,19 @@ const jadwalMengajar = () => {
     
   };
 
+ 
+  const getDate = () => {
+    const options: Intl.DateTimeFormatOptions = { month: "long", year: "numeric" };
+    const date = new Date(tanggalPekanan).toLocaleDateString("id-ID", options).toUpperCase();
+    return date;
+  };
+  
+
   return (
     <div className="my-10 w-full flex flex-col items-center">
       <div className=" flex flex-col items-center w-full text-3xl font-bold text-center">
         <span>RENCANA PEKANAN</span>
-        <span className="text-xl">Bulan Februari</span>
+        <span className="text-xl">Bulan {getDate()}</span>
       </div>
       <div className="w-full p-6">
         <div className="text-right">

@@ -22,7 +22,7 @@ interface propsColor {
   title: string;
 }
 const KalenderKegiatan = () => {
-  const { token } = useStore();
+  const { token , tanggalPekanan} = useStore();
   const [topik, setTopik] = useState<any[]>([]);
   const [Color, setColor] = useState<propsColor>({
     color: "bg-red-500",
@@ -162,7 +162,7 @@ const KalenderKegiatan = () => {
 
   const getDate = () => {
     const options: Intl.DateTimeFormatOptions = { month: "long", year: "numeric" };
-    const date = new Date().toLocaleDateString("id-ID", options).toUpperCase();
+    const date = new Date(tanggalPekanan).toLocaleDateString("id-ID", options).toUpperCase();
     return date;
   };
 

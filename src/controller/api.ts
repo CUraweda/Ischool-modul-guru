@@ -40,6 +40,19 @@ const Student = {
       },
       data,
     }),
+  UpdatePresensi: (
+    token: string | null,
+    id: string,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/student-attendance/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
   GetPresensiByClassDate: (
     token: string | null,
     id: number | null,
@@ -52,6 +65,18 @@ const Student = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  GetPresensiById: (
+    token: string | null,
+    id: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-attendance/show/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
   deletePresensi: (
     token: string | null,
     id: number | null
@@ -123,6 +148,45 @@ const Task = {
       },
       data,
     }),
+  editTask: (
+    token: string | null,
+    id: string | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/student-task/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  editTaskClass: (
+    token: string | null,
+    id: string | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/task/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  editTaskDetail: (
+    token: string | null,
+    id: string | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/task-detail/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
   createTaskClass: (token: string | null, data: any): AxiosPromise<any> =>
     instance({
       method: "POST",
@@ -161,7 +225,7 @@ const Task = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  getTaskById: (token: string | null, id: number | null): AxiosPromise<any> =>
+  getTaskById: (token: string | null, id: string | null): AxiosPromise<any> =>
     instance({
       method: "GET",
       url: `/api/task/show/${id}`,
@@ -169,16 +233,18 @@ const Task = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  downloadTugas: (token: string | null, path: string | null): AxiosPromise<any> =>
+  downloadTugas: (
+    token: string | null,
+    path: string | null
+  ): AxiosPromise<any> =>
     instance({
       method: "GET",
       url: `/api/student-task/download?filepath=${path}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      responseType: 'blob',
+      responseType: "blob",
     }),
-
 };
 
 const Kalender = {
@@ -190,6 +256,17 @@ const Kalender = {
     instance({
       method: "GET",
       url: `/api/edu-calendar-detail?search_query=&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  GetAllDetailById: (
+    token: string | null,
+    id: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/edu-calendar-detail/show/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -247,7 +324,10 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  deleteTimeTable: (token: string | null, id: number | null): AxiosPromise<any> =>
+  deleteTimeTable: (
+    token: string | null,
+    id: number | null
+  ): AxiosPromise<any> =>
     instance({
       method: "DELETE",
       url: `/api/timetable/delete/${id}`,
@@ -276,22 +356,60 @@ const Kalender = {
       },
       data,
     }),
-    EditTimeTable: (
-      token: string | null,
-      id: number | null,
-      data: any
-    ): AxiosPromise<any> =>
-      instance({
-        method: "PUT",
-        url: `/api/timetable/update/${id}`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        data,
-      }),
+  EditTimeTable: (
+    token: string | null,
+    id: number | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/timetable/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
 };
 
 const Raport = {
+  createStudentRaport: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/student-report/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  getAllStudentReport: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-report/show-by-class/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  // raport angka
+  getAllNumberReport: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/number-report/filter-by-params?academic=${data.tahun}&semester=${data.semester}&class_id=${data.class}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getByIdNumberReport: (token: string | null, id: string): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/number-report/show/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   createNumberRaport: (token: string | null, data: any): AxiosPromise<any> =>
     instance({
       method: "POST",
@@ -301,6 +419,94 @@ const Raport = {
       },
       data,
     }),
-}
+
+  deleteNumberReport: (token: string | null, id: string): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: `/api/number-report/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  editNumberRaport: (
+    token: string | null,
+    id: string,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/number-report/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+
+  // Raport Narasi
+  getKategoriNarasi: (token: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/narrative-category?search_query=&page=0&limit=100`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getDataNarasiSiswa: (
+    token: string | null,
+    id: string | null,
+    smt: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/narrative-report/show-by-student/${id}?semester=${smt}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  // Raport Portofolio
+  getPortofolioByRaport: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/portofolio-report/show-all-by-student-report/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  uploadPortofolio: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/portofolio-report/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+
+    createKomentar: (token: string | null, id: string |null ,data: any): AxiosPromise<any> =>
+      instance({
+        method: "PUT",
+        url: `/api/student-report/update/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data,
+      }),
+
+      mergePortofolio: (token: string | null, id: string | null): AxiosPromise<any> => 
+        instance({
+          method: "PUT",
+          url: `/api/portofolio-report/${id}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+         
+        }),
+};
 
 export { Auth, Task, Kalender, Student, Raport };

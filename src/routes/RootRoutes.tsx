@@ -22,7 +22,7 @@ import KaryawanLog from "../page/karyawan/admGuru"
 import KaryawanPresensi from "../page/karyawan/rekapKehadiran"
 import KaryawanPelatihan from "../page/karyawan/daftarPelatihan"
 import RaportSiswa from "../page/guru/raportSiswa";
-import RaportNarasi from "../page/guru/RaportNarasi";
+import RaportNarasi from "../page/guru/DetailRaportNarasi";
 import DetailTugasSswa from "../page/guru/detailTugasSswa";
 import KalenderKegiatan from "../page/guru/kalenderKegiatan";
 
