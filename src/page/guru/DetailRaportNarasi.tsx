@@ -1,16 +1,32 @@
-import { useState, useEffect } from "react";
-import { FaPencilAlt, FaPlus, FaRegTrashAlt } from "react-icons/fa";
+import { useState, useEffect, ChangeEvent } from "react";
+import {
+  FaCheckCircle,
+  FaPencilAlt,
+  FaPlus,
+  FaRegTrashAlt,
+} from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Modal from "../../component/modal";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { Raport } from "../../controller/api";
 import { useStore } from "../../store/Store";
+import Swal from "sweetalert2";
+import { PiNotePencilBold } from "react-icons/pi";
+import { BiTrash } from "react-icons/bi";
+import { AiFillCloseCircle } from "react-icons/ai";
 
 const RaportNarasi = () => {
   const { token } = useStore();
   const [kategori, setKategori] = useState<any[]>([]);
   const [selectKategori, setSelectKategori] = useState<any>();
-  const [data, setData] = useState<any>()
+  const [data, setData] = useState<any>();
+  const [trigerKet, settrigerKet] = useState<boolean>(false);
+  const [deskripsi, setDeskripsi] = useState<any>([]);
+  const [subKategori, setSubKategori] = useState<any>([]);
+  const [selectDeskripsi, setSelectDeskripsi] = useState<any>([]);
+  const [newDescripsi, setNewDeskripsi] = useState<string>("");
+  const [idSubKategori, setIdSubKategori] = useState<string>("");
+  const [trigerKomen, setTrigerKomen] = useState<boolean>(false);
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
@@ -18,31 +34,146 @@ const RaportNarasi = () => {
       modalElement.showModal();
     }
   };
+  const closeModal = (props: string) => {
+    let modalElement = document.getElementById(props) as HTMLDialogElement;
+    if (modalElement) {
+      modalElement.close();
+    }
+  };
 
   useEffect(() => {
     getKategori();
-    getDataNarasi()
+    getDataNarasi();
   }, []);
 
   const getKategori = async () => {
     try {
       const response = await Raport.getKategoriNarasi(token);
-      console.log(response.data.data.result);
+      // console.log(response.data.data.result);
       setKategori(response.data.data.result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getDeskripsi = async () => {
+    try {
+      if (!subKategori) {
+        closeModal("tambah-keterangan");
+        closeModal("tambah-narasi");
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "pilih Sub kategori terlebih dahulu!",
+        });
+        return;
+      } else {
+        // const id = selectKategori?.id;
+        const response = await Raport.getDeskripsiNarasi(token, idSubKategori);
+        // console.log(response);
+        setDeskripsi(response.data.data);
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
   const getDataNarasi = async () => {
-    const id = sessionStorage.getItem('idSiswa')
-    const smt = sessionStorage.getItem('smt')
-    const response = await Raport.getDataNarasiSiswa(token, id, smt)
-    console.log(response.data.data);
-    setData(response.data.data)
-    
-  }
+    const id = sessionStorage.getItem("idSiswa");
+    const smt = sessionStorage.getItem("smt");
+    const response = await Raport.getDataNarasiSiswa(token, id, smt);
+    console.log(response.data);
+    setData(response.data.data);
+  };
 
+  const getSubKategori = async () => {
+    try {
+      if (!selectKategori) {
+        closeModal("tambah-keterangan");
+        closeModal("tambah-narasi");
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "pilih Sub kategori terlebih dahulu!",
+        });
+        return;
+      } else {
+        const id = selectKategori?.id;
+        const response = await Raport.getSubCategoriNarasi(token, id);
+        // console.log(response.data.data);
+        setSubKategori(response.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const createDeskripsi = async () => {
+    try {
+      const data = {
+        narrative_sub_cat_id: idSubKategori,
+        desc: newDescripsi,
+      };
+      await Raport.createDeskripsi(token, data);
+      settrigerKet(false);
+      setNewDeskripsi("");
+      getDeskripsi();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDeleteDeskripsi = async (id: string) => {
+    try {
+      await Raport.deleteDeskripsiNarasi(token, id);
+
+      getDeskripsi();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const createNarasiReport = async () => {
+    try {
+      const idRaport = sessionStorage.getItem("idNar");
+      const smt = sessionStorage.getItem("smt");
+
+      if (selectDeskripsi) {
+        await Promise.all(
+          selectDeskripsi.map(async (item: any) => {
+            const dataRest = {
+              semester: smt ? smt : 1,
+              narrative_desc_id: item.id,
+              grade: item.nilai ? item.nilai : 1,
+              student_report_id: idRaport,
+            };
+            const response = await Raport.createRapotNarasi(token, dataRest);
+            return response;
+          })
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setSelectDeskripsi([]);
+      setSubKategori([]);
+      closeModal("tambah-narasi");
+      getDataNarasi();
+    }
+  };
+
+  const handleCheckboxChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const value = e.target.checked ? Number(e.target.value) : null;
+    setSelectDeskripsi((prevState: any) => {
+      const newState = [...prevState];
+      newState[index].nilai = value;
+      return newState;
+    });
+  };
+
+  
   return (
     <>
       <div className="p-5">
@@ -62,7 +193,7 @@ const RaportNarasi = () => {
           </ul>
         </div>
         <div className="w-full mt-10 ">
-          <div className="flex items-center w-full justify-end gap-3 mb-5 pr-10">
+          <div className="flex items-center w-full justify-start gap-3 mb-5 pr-10">
             <div className="join">
               <select
                 className="select w-32 max-w-md select-bordered join-item"
@@ -77,28 +208,10 @@ const RaportNarasi = () => {
                   </option>
                 ))}
               </select>
-
-              <button
-                className="btn join-item bg-green-500 text-white tooltip"
-                data-tip="tambah kategori"
-              >
-                <span className="text-xl">
-                  <FaPlus />
-                </span>
-              </button>
             </div>
-            <button
-              className="btn join-item bg-orange-500 text-white tooltip"
-              data-tip="tambah komentar"
-              // onClick={() => showModal("tambah-narasi")}
-            >
-              <span className="text-xl">
-                <IoChatboxEllipsesOutline />
-              </span>
-            </button>
           </div>
 
-          <div>
+          <div className="font-bold">
             <div className="flex gap-2 w-1/2">
               <div className="w-1/4">Nama</div>
               <div className="w-3/5">: {data?.full_name}</div>
@@ -112,11 +225,9 @@ const RaportNarasi = () => {
               <div className="w-3/5">: {selectKategori?.category}</div>
             </div>
           </div>
-          <div className="w-full flex justify-end">
-         
-          </div>
-          <div className="max-h-[600px] overflow-auto pb-10 ">
-            <div className="w-full p-2 mt-5 rounded-md shadow-lg bg-white">
+          <div className="w-full flex justify-end"></div>
+          <div className="max-h-[600px] overflow-auto  pb-10 ">
+            {/* <div className="w-full p-2 mt-5 rounded-md shadow-lg bg-white">
               <div className="sticky top-0 bg-white z-10 py-3">
                 <div className="divider divider-success text-2xl font-bold">
                   Al-Qur'an
@@ -297,11 +408,40 @@ const RaportNarasi = () => {
                   </tbody>
                 </table>
               </div>
+            </div> */}
+
+            <div className="flex w-full justify-center">
+              <button
+                className="w-1/2 btn bg-blue-500 mt-8 text-white"
+                onClick={() => {
+                  showModal("tambah-narasi"), getSubKategori();
+                }}
+              >
+                Tambah Sub Kategori
+              </button>
             </div>
-            
-            <button className="w-full btn bg-green-500 mt-8 text-white">
-              Tambah Sub Kategori
-            </button>
+            <div className="flex gap-3">
+              <span className="label-text text-md">Tambahkan Komentar ?</span>
+              <input
+                type="checkbox"
+                className="checkbox"
+                onChange={() => setTrigerKomen(!trigerKomen)}
+              />
+            </div>
+
+            <div
+              className={`w-full flex flex-col items-end mt-4 p-3 shadow-md rounded-md bg-white ${
+                trigerKomen ? "" : "hidden"
+              }`}
+            >
+              <textarea
+                className="textarea textarea-bordered h-24 w-full"
+                placeholder="Komentar Guru"
+              ></textarea>
+              <button className="w-32 btn bg-green-500 mt-2 text-white">
+                Tambah Komentar
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -328,31 +468,214 @@ const RaportNarasi = () => {
           </div>
         </div>
       </Modal>
-      <Modal id="tambah-narasi">
+      <Modal id="tambah-keterangan" width="w-full max-w-3xl">
         <div className="w-full flex flex-col items-center">
-          <span className="text-xl font-bold">Tambah Raport Narasi</span>
-          <div className="w-full mt-5 gap-2 flex flex-col">
-            <label className="mt-4 font-bold">Keterangan</label>
-            <input
-              type="text"
-              placeholder="Keterangan"
-              className="input input-bordered w-full"
-            />
+          <span className="text-xl font-bold">Deskripsi Narasi</span>
+          <div className="mt-10 flex justify-end w-full ">
+            <button
+              className="btn bg-blue-500 text-white"
+              onClick={() => {
+                settrigerKet(true), getDeskripsi();
+              }}
+            >
+              Tambah
+            </button>
           </div>
-          <div className="w-full gap-2 flex flex-col">
-            <label className="mt-4 font-bold">Nilai</label>
-            <select className="select join-item w-full select-bordered">
-              <option disabled selected>
-                Nilai
-              </option>
-              <option>Jayyid</option>
-              <option>Jayyid Jiddan</option>
-              <option>Mumtaz</option>
-            </select>
+          <div className="w-full max-h-[600px] mt-1 overflow-auto">
+            <table className="table shadow-lg">
+              <thead className="bg-blue-400 text-white">
+                <tr>
+                  <td className="w-12">
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectDeskripsi(deskripsi);
+                        } else {
+                          setSelectDeskripsi([]);
+                        }
+                      }}
+                    />
+                  </td>
+                  <td>Deskripsi</td>
+                  <td>Action</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className={`${trigerKet ? "" : "hidden"}`}>
+                  <td></td>
+                  <td className="flex justify-start items-center gap-3">
+                    <textarea
+                      className="textarea textarea-bordered w-full h-3"
+                      placeholder="Keterangan"
+                      value={newDescripsi}
+                      onChange={(e) => setNewDeskripsi(e.target.value)}
+                    />
+                  </td>
+                  <td>
+                    <div className="flex text-2xl gap-1">
+                      <span
+                        className="text-green-500 cursor-pointer"
+                        onClick={createDeskripsi}
+                      >
+                        <FaCheckCircle />
+                      </span>
+                      <span
+                        className="text-red-500 cursor-pointer"
+                        onClick={() => settrigerKet(false)}
+                      >
+                        <AiFillCloseCircle />
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+                {deskripsi?.map((item: any, index: number) => (
+                  <tr key={index}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        className="checkbox"
+                        checked={selectDeskripsi.some(
+                          (desc: any) => desc.id === item.id
+                        )}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectDeskripsi([...selectDeskripsi, item]);
+                          } else {
+                            setSelectDeskripsi(
+                              selectDeskripsi.filter(
+                                (desc: any) => desc.id !== item.id
+                              )
+                            );
+                          }
+                        }}
+                      />
+                    </td>
+                    <td>{item?.desc}</td>
+                    <td className="flex gap-1 text-2xl">
+                      {/* <span className="text-orange-500 cursor-pointer">
+                        <PiNotePencilBold />
+                      </span> */}
+                      <span
+                        className="text-red-500 cursor-pointer"
+                        onClick={() => handleDeleteDeskripsi(item.id)}
+                      >
+                        <BiTrash />
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
-          <div className="w-full flex justify-center mt-10 gap-2">
-            <button className="btn bg-green-500 text-white font-bold w-full">
+          <div className="w-full flex justify-end mt-10 gap-2">
+            <button
+              className="btn bg-green-500 text-white font-bold w-32"
+              onClick={() => closeModal("tambah-keterangan")}
+            >
+              Submit
+            </button>
+            {/* <button className="btn bg-green-500 text-white font-bold">Submit</button> */}
+          </div>
+        </div>
+      </Modal>
+      <Modal id="tambah-narasi" width="w-full max-w-7xl">
+        <div className="w-full flex flex-col items-center">
+          <span className="text-xl font-bold">Tambah Raport Narasi</span>
+
+          <div className="w-full gap-2 flex justify-end mt-5">
+            <div>
+              <select
+                className="select join-item w-32 select-bordered"
+                onChange={(e) => setIdSubKategori(e.target.value)}
+              >
+                <option disabled selected>
+                  Sub Kategori
+                </option>
+                {subKategori?.map((item: any, index: number) => (
+                  <option value={item.id} key={index}>
+                    {item?.sub_category}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="">
+              <button
+                className={`btn bg-green-500 text-white ${
+                  idSubKategori ? "" : "btn-disabled"
+                }`}
+                onClick={() => {
+                  showModal("tambah-keterangan"), getDeskripsi();
+                }}
+              >
+                Tambah
+              </button>
+            </div>
+          </div>
+          <div className="w-full max-h-[400px] mt-10 overflow-auto">
+            <table className="table shadow-lg">
+              <thead className="bg-blue-400 text-white">
+                <tr>
+                  <th rowSpan={2}>No</th>
+                  <th rowSpan={2}>Deskripsi</th>
+                  <th colSpan={3} className="text-center">
+                    Nilai
+                  </th>
+                </tr>
+                <tr>
+                  <th className="text-center">Sangat Baik</th>
+                  <th className="text-center">Baik</th>
+                  <th className="text-center">Cukup</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectDeskripsi?.map((item: any, index: number) => (
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td>{item?.desc}</td>
+                    <td className="text-center">
+                      <input
+                        type="radio"
+                        name={`item-${index}`}
+                        className="checkbox"
+                        value={1}
+                        checked={item?.nilai ? item.nilai === 1 : false}
+                        onChange={(e) => handleCheckboxChange(e, index)}
+                      />
+                    </td>
+                    <td className="text-center">
+                      <input
+                        type="radio"
+                        name={`item-${index}`}
+                        className="checkbox"
+                        value={2}
+                        checked={item?.nilai ? item.nilai === 2 : false}
+                        onChange={(e) => handleCheckboxChange(e, index)}
+                      />
+                    </td>
+                    <td className="text-center">
+                      <input
+                        type="radio"
+                        name={`item-${index}`}
+                        className="checkbox"
+                        value={3}
+                        checked={item?.nilai ? item.nilai === 3 : false}
+                        onChange={(e) => handleCheckboxChange(e, index)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="w-full flex justify-end mt-10 gap-2">
+            <button
+              className="btn bg-green-500 text-white font-bold w-32"
+              onClick={createNarasiReport}
+            >
               Submit
             </button>
             {/* <button className="btn bg-green-500 text-white font-bold">Submit</button> */}

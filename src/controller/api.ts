@@ -452,6 +452,48 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  getDeskripsiNarasi: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/narrative-desc/show-by-subcategory/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  createDeskripsi: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/narrative-desc/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  getSubCategoriNarasi: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/narrative-sub-category/show-by-category/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  deleteDeskripsiNarasi: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: `/api/narrative-desc/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   getDataNarasiSiswa: (
     token: string | null,
     id: string | null,
@@ -488,25 +530,43 @@ const Raport = {
       data,
     }),
 
-    createKomentar: (token: string | null, id: string |null ,data: any): AxiosPromise<any> =>
-      instance({
-        method: "PUT",
-        url: `/api/student-report/update/${id}`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        data,
-      }),
+  createKomentar: (
+    token: string | null,
+    id: string | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/student-report/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  createRapotNarasi: (
+    token: string | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/narrative-report/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
 
-      mergePortofolio: (token: string | null, id: string | null): AxiosPromise<any> => 
-        instance({
-          method: "PUT",
-          url: `/api/portofolio-report/${id}`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-         
-        }),
+  mergePortofolio: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/portofolio-report/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 export { Auth, Task, Kalender, Student, Raport };

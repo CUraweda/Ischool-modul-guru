@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import template from "./template.xlsx";
+import * as ExcelJS from "exceljs";
 
 const schema = Yup.object({
   classId: Yup.string().required("required"),
@@ -225,14 +226,18 @@ const RaportAngka = () => {
       const response = await fetch(template);
       const data = await response.arrayBuffer();
 
-      const workbook: XLSX.WorkBook = XLSX.read(new Uint8Array(data), {
-        type: "array",
-      });
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(data); // load existing workbook
+      const worksheet = workbook.getWorksheet(1); // get first worksheet
+
+      if (!worksheet) {
+        throw new Error("Worksheet not found");
+      }
 
       let dataPool: any = [];
-      DataSiswa.map((item: any) => {
+      DataSiswa.map((item, index) => {
         const rest = {
+          no: index + 1,
           idReport: item.id,
           idSiswa: item.studentclass.student.id,
           namaSiswa: item.studentclass.student.full_name,
@@ -244,25 +249,19 @@ const RaportAngka = () => {
 
       for (let i = 0; i < dataPool.length; i++) {
         const rowNumber = i + 2;
-        worksheet[`A${rowNumber}`].v = dataPool[i].idReport;
-        worksheet[`B${rowNumber}`].v = dataPool[i].idSiswa;
-        worksheet[`C${rowNumber}`].v = dataPool[i].namaSiswa;
-        worksheet[`D${rowNumber}`].v = dataPool[i].idMapel;
-        worksheet[`E${rowNumber}`].v = dataPool[i].mapel;
+        worksheet.getRow(rowNumber).values = [
+          dataPool[i].no,
+          dataPool[i].idReport,
+          dataPool[i].idSiswa,
+          dataPool[i].namaSiswa,
+          dataPool[i].idMapel,
+          dataPool[i].mapel,
+        ];
       }
 
-      const sheetStyles = workbook.Sheets[workbook.SheetNames[0]];
-      workbook.Sheets[workbook.SheetNames[0]] = sheetStyles;
-
-      const excelBuffer = XLSX.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
-      });
-      const dataRest = new Blob([excelBuffer], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
-      });
       const fileName = `${arrayMapel?.name}-${arrayKelas?.class_name}.xlsx`;
-      saveAs(dataRest, fileName);
+      const buffer = await workbook.xlsx.writeBuffer();
+      saveAs(new Blob([buffer]), fileName);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -277,8 +276,8 @@ const RaportAngka = () => {
       const worksheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[worksheetName];
       const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any;
-      const mapel = data[1][3];
-      const namaMapel = data[1][4];
+      const mapel = data[1][4];
+      const namaMapel = data[1][5];
 
       data.map((dataExcel: any) => {
         if (dataExcel[0] == " ") {
@@ -291,11 +290,23 @@ const RaportAngka = () => {
             text: `Silakan pilih pelajaran ${namaMapel} terlebih dahulu!`,
           });
           return;
-        } else if (parseInt(dataExcel[5])) {
+        } else if (parseInt(dataExcel[6])) {
           setDataSiswa((prevData) =>
             prevData.map((item) =>
-              item.id == dataExcel[0]
-                ? { ...item, nilai: dataExcel[5], terbilang: dataExcel[6] }
+              item.id == dataExcel[1]
+                ? {
+                    ...item,
+                    nilai: dataExcel[6]
+                      ? dataExcel[6] > 10
+                        ? 10
+                        : dataExcel[6]
+                      : 0,
+                    terbilang: dataExcel[7]
+                      ? dataExcel[6] > 10
+                        ? "sepuluh"
+                        : dataExcel[7]
+                      : "nol",
+                  }
                 : item
             )
           );
@@ -305,6 +316,7 @@ const RaportAngka = () => {
     reader.readAsBinaryString(file);
     setCekEror(true);
   };
+
   const handleInputChange = (id: string, field: string, value: string) => {
     setDataSiswa((prevData) =>
       prevData.map((item) =>
@@ -312,6 +324,7 @@ const RaportAngka = () => {
       )
     );
   };
+
   const handleCreateNumberUpload = async () => {
     await Promise.all(
       DataSiswa.map(async (item: any) => {
@@ -436,8 +449,8 @@ const RaportAngka = () => {
               <tr>
                 <th>{index + 1}</th>
 
-                <td>{item?.studentreport.studentclass.student.full_name}</td>
-                <td>{item?.subject.name}</td>
+                <td>{item?.studentreport?.studentclass?.student?.full_name}</td>
+                <td>{item?.subject?.name}</td>
                 {/* <td>75</td> */}
                 <td>{item?.grade}</td>
                 <td>{item?.grade_text}</td>
@@ -560,7 +573,7 @@ const RaportAngka = () => {
               </label>
               <input
                 type="number"
-                placeholder="75"
+                placeholder="7.5"
                 className={`input input-bordered w-full ${
                   parseInt(formik.values.nilai) > 10 ? "bg-red-300" : ""
                 }`}
@@ -584,7 +597,7 @@ const RaportAngka = () => {
               </label>
               <input
                 type="text"
-                placeholder="tujuh puluh lima"
+                placeholder="tujuh koma lima"
                 className="input input-bordered w-full"
                 value={formik.values.terbilang}
                 onChange={(e) =>
@@ -711,8 +724,12 @@ const RaportAngka = () => {
       </Modal>
       <Modal id="upload-angka" width="w-11/12 max-w-7xl">
         <div className="w-full flex flex-col items-center">
-          <span className="text-xl font-bold">Upload Raport Angka</span>
-          <div className="w-full mt-5 gap-2 flex flex-col">
+          <span className="text-xl font-bold mb-5">Upload Raport Angka</span>
+          <div
+            className={`w-full mt-5 gap-2  flex-col ${
+              !arrayKelas || !arrayMapel ? "hidden" : "flex"
+            }`}
+          >
             <button
               className={`btn btn-sm w-1/3 bg-green-300 ${
                 !arrayKelas || !arrayMapel ? "btn-disabled" : ""
@@ -722,7 +739,7 @@ const RaportAngka = () => {
               dowload template
             </button>
           </div>
-          <div className="flex justify-end w-full">
+          <div className="flex justify-end w-full mt-5">
             <div className="join flex">
               <select
                 className="select join-item w-full select-bordered"
@@ -808,7 +825,7 @@ const RaportAngka = () => {
                     <th>{index + 1}</th>
                     <td>{item?.studentclass.student.full_name}</td>
                     <td>{item?.studentclass.student.nis}</td>
-                    <td>{item?.studentclass.class.class_name}</td>
+                    <td>{arrayMapel?.name}</td>
                     <td>
                       <input
                         type="number"
