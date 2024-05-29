@@ -347,6 +347,19 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
+
+  GetTimetableById: (
+    token: string | null,
+    id: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/timetable/show/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
   createTimeTable: (token: string | null, data: any): AxiosPromise<any> =>
     instance({
       method: "POST",
@@ -356,9 +369,10 @@ const Kalender = {
       },
       data,
     }),
+
   EditTimeTable: (
     token: string | null,
-    id: number | null,
+    id: string | null,
     data: any
   ): AxiosPromise<any> =>
     instance({
@@ -398,6 +412,30 @@ const Raport = {
     instance({
       method: "GET",
       url: `/api/number-report/filter-by-params?academic=${data.tahun}&semester=${data.semester}&class_id=${data.class}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getNumberReportByStudent: (
+    token: string | null,
+    id: string | null,
+    smt: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/number-report/show-by-student/${id}?semester=${smt}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  generateNumberReport: (
+    token: string | null,
+    id: string | null,
+    smt: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/number-report/generate/${id}?semester=${smt}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -444,10 +482,13 @@ const Raport = {
     }),
 
   // Raport Narasi
-  getKategoriNarasi: (token: string | null): AxiosPromise<any> =>
+  getKategoriNarasi: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/narrative-category?search_query=&page=0&limit=100`,
+      url: `/api/narrative-category/show-by-class/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -467,6 +508,121 @@ const Raport = {
     instance({
       method: "POST",
       url: `/api/narrative-desc/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  createKategori: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/narrative-category/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  createKomentarKategori: (
+    token: string | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/narrative-comment/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  updateKomentarKategori: (
+    token: string | null,
+    id: string | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/narrative-comment/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  deleteKomentarNarasi: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: `/api/narrative-comment/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  deleteKategoriNarasi: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: `/api/narrative-category/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  deleteSubKategoriNarasi: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: `/api/narrative-sub-category/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  editKategori: (
+    token: string | null,
+    id: string | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/narrative-category/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  editSubKategori: (
+    token: string | null,
+    id: string | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/narrative-sub-category/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  editReportNarasi: (
+    token: string | null,
+    id: string | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/narrative-report/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  createSubKategori: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/narrative-sub-category/create`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -494,6 +650,7 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
+
   getDataNarasiSiswa: (
     token: string | null,
     id: string | null,
@@ -502,6 +659,29 @@ const Raport = {
     instance({
       method: "GET",
       url: `/api/narrative-report/show-by-student/${id}?semester=${smt}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  generatePdfNarasi: (
+    token: string | null,
+    id: string | null,
+    smt: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/narrative-report/generate/${id}?semester=${smt}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getKomentarNarasiSiswa: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/narrative-comment/show-by-student-report/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -543,10 +723,7 @@ const Raport = {
       },
       data,
     }),
-  createRapotNarasi: (
-    token: string | null,
-    data: any
-  ): AxiosPromise<any> =>
+  createRapotNarasi: (token: string | null, data: any): AxiosPromise<any> =>
     instance({
       method: "POST",
       url: `/api/narrative-report/create`,

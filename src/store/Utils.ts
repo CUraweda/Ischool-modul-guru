@@ -3,11 +3,29 @@ export interface StoreState {
   setToken: (token: string | null) => void;
   removeToken: () => void;
 
- tanggalPekanan: any;
+  tanggalPekanan: any;
   setTanggalPekanan: (tanggalPekanan: any) => void;
+
+  tanggalStartDate: Date;
+  setTanggalStartDate: (tanggalStartDate: any) => void;
+
  
 
   data: string | null;
   setData: (data: string | null) => void;
   removeData: () => void;
+}
+
+export interface StoreProps {
+  tahunProps: string;
+  setTahunProps: (tahunProps: string) => void;
+
+  semesterProps: string;
+  setSemesterProps: (semesterProps: string) => void;
+
+  kelasProps: string;
+  setKelasProps: (kelasProps: string) => void;
+
+  mapelProps: string;
+  setMapelProps: (mapelProps: string) => void;
 }

@@ -1,5 +1,5 @@
 import create, { SetState } from "zustand";
-import { StoreState } from "./Utils";
+import { StoreState , StoreProps} from "./Utils";
 
 const Store = create<StoreState>((set: SetState<StoreState>) => ({
   token: localStorage.getItem("token"),
@@ -18,6 +18,9 @@ const Store = create<StoreState>((set: SetState<StoreState>) => ({
 
   tanggalPekanan: new Date(),
   setTanggalPekanan: (data) => set({ tanggalPekanan: data }),
+
+  tanggalStartDate: new Date(),
+  setTanggalStartDate: (data) => set({ tanggalStartDate: data }),
  
 
   data: sessionStorage.getItem("data") ? JSON.parse(sessionStorage.getItem("data") as string) : null,
@@ -36,5 +39,18 @@ const Store = create<StoreState>((set: SetState<StoreState>) => ({
 
 }));
 
+const useProps = create<StoreProps>((set) => ({
+  tahunProps: '',
+  setTahunProps: (tahunProps: string) => set({ tahunProps }),
 
-export const useStore = Store;
+  semesterProps: '',
+  setSemesterProps: (semesterProps: string) => set({ semesterProps }),
+
+  kelasProps: '',
+  setKelasProps: (kelasProps: string) => set({ kelasProps }),
+
+  mapelProps: '',
+  setMapelProps: (mapelProps: string) => set({ mapelProps }),
+}));
+
+export { Store, useProps };

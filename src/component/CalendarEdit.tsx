@@ -12,8 +12,8 @@ import {
   DateNavigator,
   TodayButton,
 } from "@devexpress/dx-react-scheduler-material-ui";
-import { useStore } from "../store/Store";
-import { Kalender } from "../controller/api";
+import { Store } from "../store/Store";
+import { Kalender } from "../midleware/api";
 import { FaPencil } from "react-icons/fa6";
 import { BiTrash } from "react-icons/bi";
 import { CiClock2 } from "react-icons/ci";
@@ -67,7 +67,7 @@ interface propsColor {
 }
 
 const Demo: React.FC = () => {
-  const { token, setTanggalPekanan, tanggalPekanan } = useStore();
+  const { token, setTanggalPekanan, tanggalPekanan } = Store();
   const [Dataappointment, setData] = useState<any[]>([]);
   const [topik, setTopik] = useState<any[]>([]);
   const [idCal, setIdCal] = useState<number>(0);
@@ -211,6 +211,7 @@ const Demo: React.FC = () => {
       modalElement.showModal();
     }
   };
+
   const closeModal = (props: string) => {
     let modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {

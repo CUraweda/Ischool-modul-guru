@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { FaPencilAlt, FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import Modal from "../modal";
 import { MdCloudUpload } from "react-icons/md";
-import { useStore } from "../../store/Store";
-import { Task, Raport } from "../../controller/api";
+import { Store, useProps } from "../../store/Store";
+import { Task, Raport } from "../../midleware/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
@@ -11,8 +11,9 @@ import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import template from "./template.xlsx";
 import * as ExcelJS from "exceljs";
+import { FiFileText } from "react-icons/fi";
 
-const schema = Yup.object({
+const validationSchema = Yup.object({
   classId: Yup.string().required("required"),
   studentId: Yup.string().required("required"),
   semester: Yup.string().required("required"),
@@ -22,18 +23,31 @@ const schema = Yup.object({
 });
 
 const RaportAngka = () => {
-  const { token } = useStore();
+  const { token } = Store();
+  const {
+    setTahunProps,
+    setSemesterProps,
+    setKelasProps,
+    setMapelProps,
+    tahunProps,
+    semesterProps,
+    kelasProps,
+    mapelProps,
+  } = useProps();
+
   const [kelas, setKelas] = useState<any[]>([]);
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
   const [mapel, setMapel] = useState<any[]>([]);
   const [dataRaport, setDataRaport] = useState<any[]>([]);
   const [idNumber, setIdNumber] = useState<string>("");
-  const [tahun, setTahun] = useState<string>("");
-  const [semester, setSemester] = useState<string>("");
-  const [kelasId, setKelasId] = useState<string>("");
-  const [mapelId, setMapelId] = useState<string>("");
+  const [idSiswa, setIdSiswa] = useState<string>("");
+  const [tahun, setTahun] = useState<string>(tahunProps);
+  const [semester, setSemester] = useState<string>(semesterProps);
+  const [kelasId, setKelasId] = useState<string>(kelasProps);
+  const [mapelId, setMapelId] = useState<string>(mapelProps);
   const [arrayMapel, setarrayMapel] = useState<any>();
   const [arrayKelas, setarrayKelas] = useState<any>();
+  const [arrayNumber, setarrayNumber] = useState<any>();
   const [cekEror, setCekEror] = useState<boolean>(false);
 
   const formik = useFormik({
@@ -45,7 +59,7 @@ const RaportAngka = () => {
       nilai: "",
       terbilang: "",
     },
-    validationSchema: schema,
+    validationSchema,
     onSubmit: (values) => {
       console.log(values);
     },
@@ -58,6 +72,7 @@ const RaportAngka = () => {
   useEffect(() => {
     getMapel();
     getClass();
+    getNumberRaport();
   }, []);
 
   useEffect(() => {
@@ -89,7 +104,6 @@ const RaportAngka = () => {
     try {
       const response = await Raport.getAllStudentReport(token, idClass);
       setDataSiswa(response.data.data);
-      console.log(response.data.data);
     } catch (error) {
       console.log(error);
     }
@@ -102,16 +116,20 @@ const RaportAngka = () => {
 
   const getNumberRaport = async () => {
     const data = {
-      tahun,
-      semester,
-      class: kelasId,
+      tahun: tahun ? tahun : "2023/2024",
+      semester: semester ? semester : 1,
+      class: kelasId ? kelasId : "11",
     };
     const response = await Raport.getAllNumberReport(token, data);
     const dataRest = response.data.data;
-    const filteredData = dataRest.filter(
-      (item: any) => item.subject_id == mapelId
-    );
-    setDataRaport(filteredData);
+    if (mapelId) {
+      const filteredData = dataRest.filter(
+        (item: any) => item.subject_id == mapelId
+      );
+      setDataRaport(filteredData);
+    } else {
+      setDataRaport(dataRest);
+    }
   };
 
   const numberToWords = (number: string): string => {
@@ -301,11 +319,7 @@ const RaportAngka = () => {
                         ? 10
                         : dataExcel[6]
                       : 0,
-                    terbilang: dataExcel[7]
-                      ? dataExcel[6] > 10
-                        ? "sepuluh"
-                        : dataExcel[7]
-                      : "nol",
+                    terbilang: numberToWords(dataExcel[6]),
                   }
                 : item
             )
@@ -319,9 +333,14 @@ const RaportAngka = () => {
 
   const handleInputChange = (id: string, field: string, value: string) => {
     setDataSiswa((prevData) =>
-      prevData.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item
-      )
+      prevData.map((item) => {
+        if (item.id === id) {
+          return field === "terbilang"
+            ? { ...item, terbilang: value }
+            : { ...item, nilai: value, terbilang: numberToWords(value) };
+        }
+        return item;
+      })
     );
   };
 
@@ -350,15 +369,47 @@ const RaportAngka = () => {
     getNumberRaport();
   };
 
+  const getDataNumberByStudent = async (id: string) => {
+    showModal("view-angka");
+    setIdSiswa(id);
+    const response = await Raport.getNumberReportByStudent(token, id, semester);
+    const dataRest = response.data.data;
+    setarrayNumber(dataRest);
+  };
+
+  const generatePdf = async () => {
+    try {
+      await Raport.generateNumberReport(token, idSiswa, semester);
+      closeModal("view-angka");
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Your work has been saved",
+        showConfirmButton: false,
+        timer: 1000,
+      });
+    } catch (error) {
+      closeModal("view-angka");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
+    }
+  };
+
   return (
     <div>
       <div className="w-full flex justify-between gap-2">
         <div className="join">
           <select
             className="select select-sm join-item w-32 max-w-md select-bordered"
-            onChange={(e) => setTahun(e.target.value)}
+            value={tahun}
+            onChange={(e) => {
+              setTahun(e.target.value), setTahunProps(e.target.value);
+            }}
           >
-            <option disabled selected>
+            <option selected>
               Tahun Pelajaran
             </option>
             <option value={"2023/2024"}>2023/2024</option>
@@ -366,9 +417,12 @@ const RaportAngka = () => {
           </select>
           <select
             className="select select-sm join-item w-32 max-w-md select-bordered"
-            onChange={(e) => setSemester(e.target.value)}
+            value={semester}
+            onChange={(e) => {
+              setSemester(e.target.value), setSemesterProps(e.target.value);
+            }}
           >
-            <option disabled selected>
+            <option selected>
               Semester
             </option>
             <option value={"1"}>Ganjil</option>
@@ -376,9 +430,12 @@ const RaportAngka = () => {
           </select>
           <select
             className="select select-sm join-item w-32 max-w-md select-bordered"
-            onChange={(e) => setKelasId(e.target.value)}
+            onChange={(e) => {
+              setKelasId(e.target.value), setKelasProps(e.target.value);
+            }}
+            value={kelasId}
           >
-            <option disabled selected>
+            <option selected>
               pilih kelas
             </option>
             {kelas?.map((item: any, index: number) => (
@@ -390,9 +447,12 @@ const RaportAngka = () => {
           </select>
           <select
             className="select select-sm join-item w-32 max-w-md select-bordered"
-            onChange={(e) => setMapelId(e.target.value)}
+            value={mapelId}
+            onChange={(e) => {
+              setMapelId(e.target.value), setMapelProps(e.target.value);
+            }}
           >
-            <option disabled selected>
+            <option selected>
               Pelajaran
             </option>
             {mapel?.map((item: any, index: number) => (
@@ -404,12 +464,6 @@ const RaportAngka = () => {
         </div>
         <div>
           <div className="join">
-            {/* <button className="btn btn-sm join-item bg-green-500 text-white ">
-              <span className="text-xl">
-                <FaRegCheckSquare />
-              </span>
-              Selesai Semua
-            </button> */}
             <button
               className="btn btn-sm join-item bg-blue-500 text-white "
               onClick={() => showModal("add-angka")}
@@ -474,6 +528,19 @@ const RaportAngka = () => {
                         <FaRegTrashAlt />
                       </span>
                     </button>
+                    <button
+                      className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
+                      data-tip="detail raport"
+                      onClick={() =>
+                        getDataNumberByStudent(
+                          item?.studentreport?.studentclass?.student?.id
+                        )
+                      }
+                    >
+                      <span className="text-xl">
+                        <FiFileText />
+                      </span>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -485,134 +552,185 @@ const RaportAngka = () => {
         <div className="w-full flex justify-center flex-col items-center">
           <span className="text-xl font-bold">Tambah Raport Angka</span>
           <div className="mt-5 flex justify-start w-full flex-col gap-3">
-            <div className="flex flex-col w-full">
-              <label htmlFor="" className="font-bold">
-                Kelas
-              </label>
-              <select
-                className="select join-item w-full select-bordered"
-                value={formik.values.classId}
-                onChange={(e) =>
-                  formik.setFieldValue("classId", e.target.value)
-                }
-              >
-                <option disabled selected>
-                  pilih kelas
-                </option>
-                {kelas?.map((item: any, index: number) => (
-                  <option
-                    value={item.id}
-                    key={index}
-                  >{`${item.level}-${item.class_name}`}</option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-col w-full">
-              <label htmlFor="" className="font-bold">
-                Nama
-              </label>
-              <select
-                className="select join-item w-full select-bordered"
-                value={formik.values.studentId}
-                onChange={(e) =>
-                  formik.setFieldValue("studentId", e.target.value)
-                }
-              >
-                <option disabled selected>
-                  Siswa
-                </option>
-                {DataSiswa?.map((item: any, index: number) => (
-                  <option value={item?.id} key={index}>
-                    {item?.studentclass.student.full_name}
+            <form
+              onSubmit={formik.handleSubmit}
+              className="flex justify-start w-full flex-col gap-3"
+            >
+              <div className="flex flex-col w-full">
+                <label htmlFor="" className="font-bold">
+                  Kelas
+                </label>
+                <select
+                  className={`select join-item w-full select-bordered ${
+                    formik.touched.classId && formik.errors.classId
+                      ? "select-error"
+                      : ""
+                  }`}
+                  name="classId"
+                  value={formik.values.classId}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <option selected>
+                    pilih kelas
                   </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-col w-full">
-              <label htmlFor="" className="font-bold">
-                Semester
-              </label>
-              <select
-                className="select join-item w-full select-bordered"
-                value={formik.values.semester}
-                onChange={(e) =>
-                  formik.setFieldValue("semester", e.target.value)
-                }
-              >
-                <option disabled selected>
+                  {kelas?.map((item: any, index: number) => (
+                    <option
+                      value={item.id}
+                      key={index}
+                    >{`${item.level}-${item.class_name}`}</option>
+                  ))}
+                </select>
+                {formik.touched.classId && formik.errors.classId ? (
+                  <div className="text-red-500 text-xs">
+                    {formik.errors.classId}
+                  </div>
+                ) : null}
+              </div>
+              <div className="flex flex-col w-full">
+                <label htmlFor="" className="font-bold">
+                  Nama
+                </label>
+                <select
+                  className={`select join-item w-full select-bordered ${
+                    formik.touched.studentId && formik.errors.studentId
+                      ? "select-error"
+                      : ""
+                  }`}
+                  name="studentId"
+                  value={formik.values.studentId}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <option selected>
+                    pilih siswa
+                  </option>
+                  {DataSiswa?.map((item: any, index: number) => (
+                    <option value={item?.id} key={index}>
+                      {item?.studentclass.student.full_name}
+                    </option>
+                  ))}
+                </select>
+                {formik.touched.studentId && formik.errors.studentId ? (
+                  <div className="text-red-500 text-xs">
+                    {formik.errors.studentId}
+                  </div>
+                ) : null}
+              </div>
+              <div className="flex flex-col w-full">
+                <label htmlFor="" className="font-bold">
                   Semester
-                </option>
-                <option value={"1"}>Semester 1</option>
-                <option value={"2"}>Semester 2</option>
-              </select>
-            </div>
-            <div className="flex flex-col w-full">
-              <label htmlFor="" className="font-bold">
-                Mapel
-              </label>
-              <select
-                className="select join-item w-full select-bordered"
-                value={formik.values.subjectId}
-                onChange={(e) =>
-                  formik.setFieldValue("subjectId", e.target.value)
-                }
-              >
-                <option disabled selected>
-                  Pelajaran
-                </option>
-                {mapel?.map((item: any, index: number) => (
-                  <option value={item.id} key={index}>
-                    {item.name}
+                </label>
+                <select
+                  className={`select join-item w-full select-bordered ${
+                    formik.touched.semester && formik.errors.semester
+                      ? "select-error"
+                      : ""
+                  }`}
+                  name="semester"
+                  value={formik.values.semester}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <option selected>
+                    Semester
                   </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-col w-full">
-              <label htmlFor="" className="font-bold">
-                Nilai (1-10)
-              </label>
-              <input
-                type="number"
-                placeholder="7.5"
-                className={`input input-bordered w-full ${
-                  parseInt(formik.values.nilai) > 10 ? "bg-red-300" : ""
-                }`}
-                value={formik.values.nilai}
-                onChange={(e) => {
-                  formik.setFieldValue("nilai", e.target.value),
-                    numberToWords(e.target.value);
-                }}
-              />
-              <span
-                className={`text-red-500 text-xs ${
-                  parseInt(formik.values.nilai) > 10 ? "" : "hidden"
-                }`}
-              >
-                Nilai tidak boleh lebih dari 10
-              </span>
-            </div>
-            <div className="flex flex-col w-full">
-              <label htmlFor="" className="font-bold">
-                Terbilang
-              </label>
-              <input
-                type="text"
-                placeholder="tujuh koma lima"
-                className="input input-bordered w-full"
-                value={formik.values.terbilang}
-                onChange={(e) =>
-                  formik.setFieldValue("terbilang", e.target.value)
-                }
-              />
-            </div>
-            <div className="flex flex-col w-full mt-10">
-              <button
-                className="btn btn-ghost bg-green-500 w-full text-white"
-                onClick={handleCreateNumber}
-              >
-                Simpan
-              </button>
-            </div>
+                  <option value={"1"}>Semester 1</option>
+                  <option value={"2"}>Semester 2</option>
+                </select>
+                {formik.touched.semester && formik.errors.semester ? (
+                  <div className="text-red-500 text-xs">
+                    {formik.errors.semester}
+                  </div>
+                ) : null}
+              </div>
+              <div className="flex flex-col w-full">
+                <label htmlFor="" className="font-bold">
+                  Mapel
+                </label>
+                <select
+                  className={`select join-item w-full select-bordered ${
+                    formik.touched.subjectId && formik.errors.subjectId
+                      ? "select-error"
+                      : ""
+                  }`}
+                  name="subjectId"
+                  value={formik.values.subjectId}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <option selected>
+                    Pelajaran
+                  </option>
+                  {mapel?.map((item: any, index: number) => (
+                    <option value={item.id} key={index}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+                {formik.touched.subjectId && formik.errors.subjectId ? (
+                  <div className="text-red-500 text-xs">
+                    {formik.errors.subjectId}
+                  </div>
+                ) : null}
+              </div>
+              <div className="flex flex-col w-full">
+                <label htmlFor="" className="font-bold">
+                  Nilai (1-10)
+                </label>
+                <input
+                  type="number"
+                  placeholder="7.5"
+                  className={`input input-bordered w-full ${
+                    parseInt(formik.values.nilai) > 10 ? "input-error" : ""
+                  } ${
+                    formik.touched.nilai && formik.errors.nilai
+                      ? "input-error"
+                      : ""
+                  } `}
+                  name="nilai"
+                  value={formik.values.nilai}
+                  onBlur={formik.handleBlur}
+                  onChange={(e) => {
+                    formik.handleChange(e), numberToWords(e.target.value);
+                  }}
+                />
+                <span
+                  className={`text-red-500 text-xs ${
+                    parseInt(formik.values.nilai) > 10 ? "" : "hidden"
+                  }`}
+                >
+                  Nilai tidak boleh lebih dari 10
+                </span>
+                {formik.touched.nilai && formik.errors.nilai ? (
+                  <div className="text-red-500 text-xs">
+                    {formik.errors.nilai}
+                  </div>
+                ) : null}
+              </div>
+              <div className="flex flex-col w-full">
+                <label htmlFor="" className="font-bold">
+                  Terbilang
+                </label>
+                <input
+                  type="text"
+                  placeholder="tujuh koma lima"
+                  className="input input-bordered w-full"
+                  value={formik.values.terbilang}
+                  onChange={(e) =>
+                    formik.setFieldValue("terbilang", e.target.value)
+                  }
+                />
+              </div>
+              <div className="flex flex-col w-full mt-10">
+                <button
+                  className="btn btn-ghost bg-green-500 w-full text-white"
+                  onClick={handleCreateNumber}
+                >
+                  Simpan
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </Modal>
@@ -631,7 +749,7 @@ const RaportAngka = () => {
                   formik.setFieldValue("classId", e.target.value)
                 }
               >
-                <option disabled selected>
+                <option selected>
                   pilih kelas
                 </option>
                 {kelas?.map((item: any, index: number) => (
@@ -654,7 +772,7 @@ const RaportAngka = () => {
                   formik.setFieldValue("semester", e.target.value)
                 }
               >
-                <option disabled selected>
+                <option selected>
                   Semester
                 </option>
                 <option value={"1"}>Semester 1</option>
@@ -672,7 +790,7 @@ const RaportAngka = () => {
                   formik.setFieldValue("subjectId", e.target.value)
                 }
               >
-                <option disabled selected>
+                <option selected>
                   Pelajaran
                 </option>
                 {mapel?.map((item: any, index: number) => (
@@ -748,7 +866,7 @@ const RaportAngka = () => {
                   formik.setFieldValue("semester", e.target.value)
                 }
               >
-                <option disabled selected>
+                <option selected>
                   Semester
                 </option>
                 <option value={"1"}>Semester 1</option>
@@ -767,7 +885,7 @@ const RaportAngka = () => {
                   setarrayKelas(selectedKelas);
                 }}
               >
-                <option disabled selected>
+                <option selected>
                   pilih kelas
                 </option>
                 {kelas?.map((item: any, index: number) => (
@@ -787,7 +905,7 @@ const RaportAngka = () => {
                   setarrayMapel(selectedMapel);
                 }}
               >
-                <option disabled selected>
+                <option selected>
                   Pelajaran
                 </option>
                 {mapel?.map((item: any, index: number) => (
@@ -803,6 +921,7 @@ const RaportAngka = () => {
                 type="file"
                 className="file-input file-input-bordered"
                 onChange={handleFileUpload}
+                disabled={!arrayKelas || !arrayMapel}
               />
             </div>
           </div>
@@ -870,6 +989,52 @@ const RaportAngka = () => {
               Submit
             </button>
             {/* <button className="btn bg-green-500 text-white font-bold">Submit</button> */}
+          </div>
+        </div>
+      </Modal>
+      <Modal id="view-angka" width="w-11/12 max-w-7xl">
+        <div className="w-full flex flex-col items-center">
+          <span className="text-xl font-bold">Raport Angka</span>
+          <span className=" mb-5">{arrayNumber?.full_name}</span>
+
+          <div className="w-full max-h-[800px] mt-10 overflow-auto">
+            <div className="w-full flex justify-end">
+              <button
+                className="btn mb-4 bg-cyan-500 text-white"
+                onClick={generatePdf}
+              >
+                Generate PDF
+              </button>
+            </div>
+            <table className="table table-zebra table-xs shadow-lg">
+              <thead className="bg-blue-400 text-white">
+                <tr>
+                  <th rowSpan={2}>No</th>
+                  <th rowSpan={2}>Mata Pelajaran</th>
+                  <th rowSpan={2}>KKM</th>
+                  <th colSpan={2} className="text-center">
+                    Nilai
+                  </th>
+                </tr>
+                <tr>
+                  <th>Angka</th>
+                  <th>Huruf</th>
+                </tr>
+              </thead>
+              <tbody>
+                {arrayNumber?.number_reports?.map(
+                  (item: any, index: number) => (
+                    <tr key={index}>
+                      <td>{index + 1}</td>
+                      <td>{item?.subject_name}</td>
+                      <td>{item?.threshold}</td>
+                      <td>{item?.grade}</td>
+                      <td>{item?.grade_text}</td>
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </Modal>

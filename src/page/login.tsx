@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/sade.png";
 import bg from "../assets/bg2.png";
-import { Auth } from "../controller/api";
+import { Auth } from "../midleware/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useStore } from "../store/Store";
+import { Store } from "../store/Store";
 import Swal from "sweetalert2";
 
 const schema = Yup.object({
@@ -16,7 +16,7 @@ const schema = Yup.object({
 const login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
-  const { setToken } = useStore();
+  const { setToken } = Store();
 
   const formik = useFormik({
     initialValues: {

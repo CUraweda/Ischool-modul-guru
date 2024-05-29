@@ -3,24 +3,26 @@ import { FaFilePdf } from "react-icons/fa";
 import { MdCloudUpload } from "react-icons/md";
 import Modal from "../modal";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
-import { Task, Raport } from "../../controller/api";
-import { useStore } from "../../store/Store";
+import { Task, Raport } from "../../midleware/api";
+import { Store, useProps } from "../../store/Store";
 import { CiFolderOff } from "react-icons/ci";
 import Swal from "sweetalert2";
 
 const RaportPortofolio = () => {
-  const { token } = useStore();
+  const { token } = Store();
+  const { setSemesterProps, setKelasProps, semesterProps, kelasProps } =
+    useProps();
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
   const [kelas, setKelas] = useState<any[]>([]);
   const [porto, setPorto] = useState<any[]>([]);
-  const [idClass, setClass] = useState<string>("");
+  const [idClass, setClass] = useState<string>(kelasProps);
   const [reportId, setReportId] = useState<string>("");
   const [file, showFile] = useState<any>();
   const [fileUpload, setFile] = useState<any>(null);
   const [komen, setKomen] = useState<string>("");
 
   const [studentClass, setStudentClass] = useState<string>("");
-  const [smt, setSmt] = useState<string>("");
+  const [smt, setSmt] = useState<string>(semesterProps);
   const [merge, setMerge] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -52,7 +54,8 @@ const RaportPortofolio = () => {
 
   const getStudent = async () => {
     try {
-      const response = await Raport.getAllStudentReport(token, idClass);
+      const id = idClass ? idClass : '11'
+      const response = await Raport.getAllStudentReport(token, id);
 
       setDataSiswa(response.data.data);
     } catch (error) {
@@ -61,7 +64,7 @@ const RaportPortofolio = () => {
   };
 
   const getPortoByRapotId = async (id: string) => {
-    setReportId(id)
+    setReportId(id);
     showModal("show-portofolio");
     const response = await Raport.getPortofolioByRaport(token, id);
     const dataRest = response.data.data;
@@ -148,8 +151,6 @@ const RaportPortofolio = () => {
   };
 
   const handleMerge = async () => {
-    console.log({reportId});
-    
     try {
       setLoading(true);
       await Raport.mergePortofolio(token, reportId);
@@ -165,24 +166,31 @@ const RaportPortofolio = () => {
       <div className="w-full flex justify-between gap-2">
         <div className="join">
           <select className="select select-sm join-item w-32 max-w-md select-bordered">
-            <option disabled selected>
+            <option selected>
               Tahun Pelajaran
             </option>
             <option>2023/2024</option>
             <option>2024/2025</option>
           </select>
-          <select className="select select-sm join-item w-32 max-w-md select-bordered">
-            <option disabled selected>
+          <select
+            className="select select-sm join-item w-32 max-w-md select-bordered"
+            value={smt}
+            onChange={(e) => {
+              setSmt(e.target.value), setSemesterProps(e.target.value);
+            }}
+          >
+            <option selected>
               Semester
             </option>
-            <option>Ganjil</option>
-            <option>Genap</option>
+            <option value={"1"}>Ganjil</option>
+            <option value={"2"}>Genap</option>
           </select>
           <select
             className="select select-sm join-item w-32 max-w-md select-bordered"
-            onChange={(e) => setClass(e.target.value)}
+            value={idClass}
+            onChange={(e) => {setClass(e.target.value), setKelasProps(e.target.value)}}
           >
-            <option disabled selected>
+            <option selected>
               pilih kelas
             </option>
             {kelas?.map((item: any, index: number) => (

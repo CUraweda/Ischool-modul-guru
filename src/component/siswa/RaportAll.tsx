@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
 import Modal from "../modal";
 import { FaFilePdf } from "react-icons/fa";
-import { Task, Student, Raport } from "../../controller/api";
-import { useStore } from "../../store/Store";
+import { Task, Student, Raport } from "../../midleware/api";
+import { Store, useProps } from "../../store/Store";
 import Swal from "sweetalert2";
 
 const RaportAll = () => {
-  const { token } = useStore();
-  const [kelas, setKelas] = useState<any[]>([]);
+  const { token } = Store();
+  const { setKelasProps, kelasProps } = useProps();
+  const [Class, setClass] = useState<any[]>([]);
   const [siswa, setSiswa] = useState<any[]>([]);
-  const [idClass, setIdClass] = useState<string>("");
+  const [idClass, setIdClass] = useState<string>(kelasProps);
   const [semester, setSemester] = useState<string>("");
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
   const [dataRaport, setDataRaport] = useState<any>([]);
@@ -41,11 +42,12 @@ const RaportAll = () => {
 
   const getClass = async () => {
     const response = await Task.GetAllClass(token, 0, 20);
-    setKelas(response.data.data.result);
+    setClass(response.data.data.result);
   };
 
   const getStudent = async () => {
-    const id = parseInt(idClass);
+    const id = idClass ? parseInt(idClass) : 11;
+
     try {
       const response = await Student.GetStudentByClass(token, id, "2023/2024");
       setSiswa(response.data.data);
@@ -61,8 +63,8 @@ const RaportAll = () => {
 
   const getDataRaport = async () => {
     try {
-      const response = await Raport.getAllStudentReport(token, idClass);
-      console.log(response.data.data);
+      const id = idClass ? idClass : '11';
+      const response = await Raport.getAllStudentReport(token, id);
       setDataRaport(response.data.data);
     } catch (error) {
       console.log(error);
@@ -113,12 +115,15 @@ const RaportAll = () => {
         <div className="join">
           <select
             className="select select-bordered w-full"
-            onChange={(e) => setIdClass(e.target.value)}
+            value={idClass}
+            onChange={(e) => {
+              setIdClass(e.target.value), setKelasProps(e.target.value);
+            }}
           >
-            <option disabled selected>
+            <option selected>
               Kelas
             </option>
-            {kelas?.map((item: any, index: number) => (
+            {Class?.map((item: any, index: number) => (
               <option
                 value={item.id}
                 key={index}
@@ -191,7 +196,6 @@ const RaportAll = () => {
                   </button>
                 </td>
 
-
                 <td>
                   <button
                     className={`btn btn-sm join-item bg-green-500 text-white tooltip ${
@@ -236,7 +240,7 @@ const RaportAll = () => {
               <option disabled selected>
                 Kelas
               </option>
-              {kelas?.map((item: any, index: number) => (
+              {Class?.map((item: any, index: number) => (
                 <option
                   value={item.id}
                   key={index}

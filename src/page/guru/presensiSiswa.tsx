@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { FiPlus } from "react-icons/fi";
 import Modal from "../../component/modal";
 import { BiPencil, BiTrash } from "react-icons/bi";
-import { Task, Student } from "../../controller/api";
-import { useStore } from "../../store/Store";
+import { Task, Student } from "../../midleware/api";
+import { Store } from "../../store/Store";
 import Swal from "sweetalert2";
 
 const PresensiSiswa = () => {
-  const { token } = useStore();
+  const { token } = Store();
   const today = new Date();
   const [date, setDate] = useState<any>(today.toISOString().substr(0, 10));
   const [kelas, setKelas] = useState<any[]>([]);

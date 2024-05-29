@@ -7,16 +7,14 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Modal from "../../component/modal";
-import { IoChatboxEllipsesOutline } from "react-icons/io5";
-import { Raport } from "../../controller/api";
-import { useStore } from "../../store/Store";
+import { Raport } from "../../midleware/api";
+import { Store } from "../../store/Store";
 import Swal from "sweetalert2";
-import { PiNotePencilBold } from "react-icons/pi";
 import { BiTrash } from "react-icons/bi";
 import { AiFillCloseCircle } from "react-icons/ai";
 
 const RaportNarasi = () => {
-  const { token } = useStore();
+  const { token } = Store();
   const [kategori, setKategori] = useState<any[]>([]);
   const [selectKategori, setSelectKategori] = useState<any>();
   const [data, setData] = useState<any>();
@@ -26,8 +24,12 @@ const RaportNarasi = () => {
   const [selectDeskripsi, setSelectDeskripsi] = useState<any>([]);
   const [newDescripsi, setNewDeskripsi] = useState<string>("");
   const [idSubKategori, setIdSubKategori] = useState<string>("");
+  const [komentar, setKomentar] = useState<string>("");
+  const [idKomentar, setIdKomentar] = useState<string>("");
   const [trigerKomen, setTrigerKomen] = useState<boolean>(false);
 
+  const [dataRaport, setDataRaport] = useState<any>([]);
+  const [EditdataRaport, setEditDataRaport] = useState<any>();
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
     if (modalElement) {
@@ -44,17 +46,39 @@ const RaportNarasi = () => {
   useEffect(() => {
     getKategori();
     getDataNarasi();
-  }, []);
+    getKomentarKategori();
+  }, [selectKategori]);
 
   const getKategori = async () => {
     try {
-      const response = await Raport.getKategoriNarasi(token);
-      // console.log(response.data.data.result);
-      setKategori(response.data.data.result);
+      const idClass = sessionStorage.getItem("idClass");
+      const response = await Raport.getKategoriNarasi(token, idClass);
+      setKategori(response.data.data);
     } catch (error) {
       console.log(error);
     }
   };
+
+  const getKomentarKategori = async () => {
+    try {
+      const idRaport = sessionStorage.getItem("idNar");
+      const response = await Raport.getKomentarNarasiSiswa(token, idRaport);
+      const dataKomen = response.data?.data;
+      const idKategori = selectKategori?.id;
+      const filterKomenByKategori = dataKomen?.filter(
+        (item: any) => item.narrative_cat_id === idKategori
+      );
+      const komentar = filterKomenByKategori[0]?.comments;
+      setKomentar(komentar ? komentar : "");
+      setIdKomentar(
+        filterKomenByKategori[0]?.id ? filterKomenByKategori[0]?.id : ""
+      );
+      setTrigerKomen(filterKomenByKategori[0]?.id ? true : false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getDeskripsi = async () => {
     try {
       if (!subKategori) {
@@ -81,7 +105,17 @@ const RaportNarasi = () => {
     const id = sessionStorage.getItem("idSiswa");
     const smt = sessionStorage.getItem("smt");
     const response = await Raport.getDataNarasiSiswa(token, id, smt);
-    console.log(response.data);
+
+    if (selectKategori) {
+      const idKategori = selectKategori.id;
+      const dataRaportSiswa = response.data.data.narrative_categories;
+      const filteredData = dataRaportSiswa.filter(
+        (item: any) => item.id === idKategori
+      );
+      console.log(filteredData);
+
+      setDataRaport(filteredData[0]);
+    }
     setData(response.data.data);
   };
 
@@ -117,6 +151,36 @@ const RaportNarasi = () => {
       settrigerKet(false);
       setNewDeskripsi("");
       getDeskripsi();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const createKomentar = async () => {
+    try {
+      const idKategori = selectKategori.id;
+      const idRaport = sessionStorage.getItem("idNar");
+      const data = {
+        student_report_id: idRaport,
+        narrative_cat_id: idKategori,
+        comments: komentar,
+      };
+      if (!komentar) {
+        await Raport.deleteKomentarNarasi(token, idKomentar);
+      } else if (idKomentar) {
+        await Raport.updateKomentarKategori(token, idKomentar, data);
+      } else {
+        await Raport.createKomentarKategori(token, data);
+      }
+      
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Your work has been saved",
+        showConfirmButton: false,
+        timer: 1000,
+      });
+      getKomentarKategori();
     } catch (error) {
       console.log(error);
     }
@@ -173,7 +237,43 @@ const RaportNarasi = () => {
     });
   };
 
-  
+  const handleEditCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.checked ? Number(e.target.value) : null;
+    setEditDataRaport((prevState: any) => {
+      const newState = { ...prevState };
+      newState.grade = value;
+      return newState;
+    });
+  };
+  // const handleEditReport = async () => {
+  //   try {
+  //     const idRaport = sessionStorage.getItem("idNar");
+  //     const smt = sessionStorage.getItem("smt");
+
+  //     if (selectDeskripsi) {
+  //       await Promise.all(
+  //         selectDeskripsi.map(async (item: any) => {
+  //           const dataRest = {
+  //             semester: smt ? smt : 1,
+  //             narrative_desc_id: item.id,
+  //             grade: item.nilai ? item.nilai : 1,
+  //             student_report_id: idRaport,
+  //           };
+  //           const response = await Raport.createRapotNarasi(token, dataRest);
+  //           return response;
+  //         })
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setSelectDeskripsi([]);
+  //     setSubKategori([]);
+  //     closeModal("tambah-narasi");
+  //     getDataNarasi();
+  //   }
+  // };
+
   return (
     <>
       <div className="p-5">
@@ -225,202 +325,171 @@ const RaportNarasi = () => {
               <div className="w-3/5">: {selectKategori?.category}</div>
             </div>
           </div>
-          <div className="w-full flex justify-end"></div>
-          <div className="max-h-[600px] overflow-auto  pb-10 ">
-            {/* <div className="w-full p-2 mt-5 rounded-md shadow-lg bg-white">
-              <div className="sticky top-0 bg-white z-10 py-3">
-                <div className="divider divider-success text-2xl font-bold">
-                  Al-Qur'an
-                </div>
-                <div className="text-right">
-                  <button
-                    className="btn btn-sm join-item bg-blue-500 text-white"
-                    onClick={() => showModal("tambah-narasi")}
-                  >
-                    <span className="text-xl">
-                      <FaPlus />
-                    </span>
-                    Tambah
-                  </button>
-                </div>
-              </div>
-              <div className="overflow-x-auto mt-5">
-                <table className="table table-md">
-                  <thead>
-                    <tr className="bg-blue-300 ">
-                      <th>No</th>
-                      <th>Keterangan</th>
-                      <th className="text-center">Nilai</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th>1</th>
-                      <td className="max-w-96">
-                        Mampu melafadzkan ta’awudz dan basmallah dengan 3M
-                        (Mangap, meringis, monyong) dan mampu mengikuti intonasi
-                        nada bacaan yang di contohkan pembimbing
-                      </td>
-                      <td className="flex justify-center items-center">
-                        <div className="flex justify-between gap-1">
-                          <div className="form-control">
-                            <label className="label flex gap-1">
-                              <span className="label-text">Jayyid</span>
-                              <div className="w-5 h-5 bg-blue-200 rounded-full" />
-                            </label>
-                          </div>
-                          <div className="form-control">
-                            <label className="label flex gap-1">
-                              <span className="label-text">Jayyid Jiddan</span>
-                              <div className="w-5 h-5 bg-blue-800 rounded-full" />
-                            </label>
-                          </div>
-                          <div className="form-control">
-                            <label className="label flex gap-1">
-                              <span className="label-text">Mumtaz</span>
-                              <div className="w-5 h-5 bg-blue-200 rounded-full" />
-                            </label>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="join">
-                          <button
-                            className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
-                            data-tip="edit"
-                          >
-                            <span className="text-xl">
-                              <FaPencilAlt />
-                            </span>
-                          </button>
-                          <button
-                            className="btn btn-sm join-item bg-red-500 text-white tooltip"
-                            data-tip="hapus"
-                          >
-                            <span className="text-xl">
-                              <FaRegTrashAlt />
-                            </span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>1</th>
-                      <td className="max-w-96">
-                        Mampu melafadzkan ta’awudz dan basmallah dengan 3M
-                        (Mangap, meringis, monyong) dan mampu mengikuti intonasi
-                        nada bacaan yang di contohkan pembimbing
-                      </td>
-                      <td className="flex justify-center items-center">
-                        <div className="flex justify-between gap-1">
-                          <div className="form-control">
-                            <label className="label flex gap-1">
-                              <span className="label-text">Jayyid</span>
-                              <div className="w-5 h-5 bg-blue-200 rounded-full" />
-                            </label>
-                          </div>
-                          <div className="form-control">
-                            <label className="label flex gap-1">
-                              <span className="label-text">Jayyid Jiddan</span>
-                              <div className="w-5 h-5 bg-blue-800 rounded-full" />
-                            </label>
-                          </div>
-                          <div className="form-control">
-                            <label className="label flex gap-1">
-                              <span className="label-text">Mumtaz</span>
-                              <div className="w-5 h-5 bg-blue-200 rounded-full" />
-                            </label>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="join">
-                          <button
-                            className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
-                            data-tip="edit"
-                          >
-                            <span className="text-xl">
-                              <FaPencilAlt />
-                            </span>
-                          </button>
-                          <button
-                            className="btn btn-sm join-item bg-red-500 text-white tooltip"
-                            data-tip="hapus"
-                          >
-                            <span className="text-xl">
-                              <FaRegTrashAlt />
-                            </span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>1</th>
-                      <td className="max-w-96">
-                        Mampu melafadzkan ta’awudz dan basmallah dengan 3M
-                        (Mangap, meringis, monyong) dan mampu mengikuti intonasi
-                        nada bacaan yang di contohkan pembimbing
-                      </td>
-                      <td className="flex justify-center items-center">
-                        <div className="flex justify-between gap-1">
-                          <div className="form-control">
-                            <label className="label flex gap-1">
-                              <span className="label-text">Jayyid</span>
-                              <div className="w-5 h-5 bg-blue-200 rounded-full" />
-                            </label>
-                          </div>
-                          <div className="form-control">
-                            <label className="label flex gap-1">
-                              <span className="label-text">Jayyid Jiddan</span>
-                              <div className="w-5 h-5 bg-blue-800 rounded-full" />
-                            </label>
-                          </div>
-                          <div className="form-control">
-                            <label className="label flex gap-1">
-                              <span className="label-text">Mumtaz</span>
-                              <div className="w-5 h-5 bg-blue-200 rounded-full" />
-                            </label>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="join">
-                          <button
-                            className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
-                            data-tip="edit"
-                          >
-                            <span className="text-xl">
-                              <FaPencilAlt />
-                            </span>
-                          </button>
-                          <button
-                            className="btn btn-sm join-item bg-red-500 text-white tooltip"
-                            data-tip="hapus"
-                          >
-                            <span className="text-xl">
-                              <FaRegTrashAlt />
-                            </span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div> */}
 
-            <div className="flex w-full justify-center">
+          <div className="max-h-[600px] overflow-auto  pb-10 ">
+            <div
+              className={`${
+                dataRaport?.narrative_sub_categories?.length === 0 ||
+                !selectKategori
+                  ? ""
+                  : "hidden"
+              } w-full p-2 mt-5 rounded-md shadow-lg bg-white h-42 flex flex-col justify-center items-center`}
+            >
+              <img
+                src="https://t4.ftcdn.net/jpg/04/75/01/23/360_F_475012363_aNqXx8CrsoTfJP5KCf1rERd6G50K0hXw.jpg"
+                alt="no-data"
+              />
               <button
-                className="w-1/2 btn bg-blue-500 mt-8 text-white"
+                className="btn btn-sm join-item bg-blue-500 text-white"
                 onClick={() => {
                   showModal("tambah-narasi"), getSubKategori();
                 }}
               >
-                Tambah Sub Kategori
+                <span className="text-xl">
+                  <FaPlus />
+                </span>
+                Tambah
               </button>
             </div>
-            <div className="flex gap-3">
+            <div
+              className={`${
+                dataRaport?.narrative_sub_categories?.length === 0
+                  ? "hidden"
+                  : ""
+              }`}
+            >
+              {dataRaport?.narrative_sub_categories?.map(
+                (item: any, index: number) => (
+                  <div
+                    key={index}
+                    className={` w-full p-2 mt-5 rounded-md shadow-lg bg-white`}
+                  >
+                    <div className="sticky top-0 bg-white z-10 py-3">
+                      <div className="divider divider-success text-2xl font-bold">
+                        {item?.sub_category}
+                      </div>
+                      <div className="text-right">
+                        <button
+                          className="btn btn-sm join-item bg-blue-500 text-white"
+                          onClick={() => {
+                            showModal("tambah-narasi"), getSubKategori();
+                          }}
+                        >
+                          <span className="text-xl">
+                            <FaPlus />
+                          </span>
+                          Tambah
+                        </button>
+                      </div>
+                    </div>
+                    <div className="overflow-x-auto mt-5">
+                      <table className="table table-md table-zebra-zebra">
+                        <thead className="text-white">
+                          <tr className="bg-blue-300 ">
+                            <th rowSpan={2} className="w-10">No</th>
+                            <th rowSpan={2}>Keterangan</th>
+                            <th className="text-center" colSpan={3}>
+                              Nilai
+                            </th>
+                            {/* <th className="text-center"></th> */}
+
+                            <th rowSpan={2} className="text-center">
+                              Action
+                            </th>
+                          </tr>
+                          <tr className="bg-blue-300 ">
+                            <th className="text-center max-w-10">
+                              <div className=" flex flex-wrap whitespace-normal text-center justify-center">
+                                Membutuhkan Banyak Latihan
+                              </div>
+                            </th>
+                            <th className="text-center max-w-10">
+                              <div className="flex flex-wrap whitespace-normal text-center justify-center">
+                                Berkembang
+                              </div>
+                            </th>
+                            <th className="text-center max-w-10">
+                              <div className="flex flex-wrap whitespace-normal text-center justify-center">
+                                Mandiri
+                              </div>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {item?.narrative_reports?.map(
+                            (nilai: any, index: number) => (
+                              <tr key={index}>
+                                <th>{index + 1}</th>
+                                <td className="max-w-96">{nilai.desc}</td>
+                                <td className="">
+                                  <div className="flex justify-center ">
+                                    <div
+                                      className={`w-5 h-5 ${
+                                        nilai.grade === 3
+                                          ? "bg-blue-800"
+                                          : "bg-blue-200"
+                                      } rounded-full`}
+                                    />
+                                  </div>
+                                </td>
+                                <td>
+                                  <div className="flex justify-center ">
+                                    <div
+                                      className={`w-5 h-5 ${
+                                        nilai.grade === 2
+                                          ? "bg-blue-800"
+                                          : "bg-blue-200"
+                                      } rounded-full`}
+                                    />
+                                  </div>
+                                </td>
+                                <td>
+                                  <div className="flex justify-center ">
+                                    <div
+                                      className={`w-5 h-5 ${
+                                        nilai.grade === 1
+                                          ? "bg-blue-800"
+                                          : "bg-blue-200"
+                                      } rounded-full`}
+                                    />
+                                  </div>
+                                </td>
+                                <td>
+                                  <div className="join w-full flex justify-center">
+                                    <button
+                                      className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
+                                      data-tip="edit"
+                                      onClick={() => {
+                                        showModal("edit-narasi"),
+                                          setEditDataRaport(nilai);
+                                      }}
+                                    >
+                                      <span className="text-xl">
+                                        <FaPencilAlt />
+                                      </span>
+                                    </button>
+                                    <button
+                                      className="btn btn-sm join-item bg-red-500 text-white tooltip"
+                                      data-tip="hapus"
+                                    >
+                                      <span className="text-xl">
+                                        <FaRegTrashAlt />
+                                      </span>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
+
+            <div className={`flex gap-3 mt-5 ${idKomentar ? "hidden" : ""}`}>
               <span className="label-text text-md">Tambahkan Komentar ?</span>
               <input
                 type="checkbox"
@@ -437,34 +506,72 @@ const RaportNarasi = () => {
               <textarea
                 className="textarea textarea-bordered h-24 w-full"
                 placeholder="Komentar Guru"
+                value={komentar}
+                onChange={(e) => setKomentar(e.target.value)}
               ></textarea>
-              <button className="w-32 btn bg-green-500 mt-2 text-white">
-                Tambah Komentar
+              <button
+                className="w-32 btn bg-green-500 mt-2 text-white"
+                onClick={createKomentar}
+              >
+                Simpan
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <Modal id="upload-narasi">
+      <Modal id="edit-narasi">
         <div className="w-full flex flex-col items-center">
-          <span className="text-xl font-bold">Upload Raport Narasi</span>
+          <span className="text-xl font-bold">Edit Raport Narasi</span>
           <div className="w-full mt-5 gap-2 flex flex-col">
-            <button className="btn btn-sm w-1/3 bg-green-300">
-              dowload template
-            </button>
-            <label className="mt-4 font-bold">Upload File</label>
-            <input
-              type="file"
-              className="file-input file-input-bordered w-full"
-            />
+            <div className="flex flex-col gap-2">
+              <span className="font-bold">Keterangan</span>
+              <span>{EditdataRaport?.desc}</span>
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="font-bold">Grade</span>
+              <div className="flex w-full justify-between">
+                <div className="flex items-center gap-1">
+                  <label htmlFor="">Mandiri</label>
+                  <input
+                    type="radio"
+                    name={`item-1`}
+                    className="checkbox"
+                    value={1}
+                    checked={EditdataRaport?.grade === 1 ? true : false}
+                    onChange={handleEditCheckboxChange}
+                  />
+                </div>
+                <div className="flex items-center gap-1">
+                  <label htmlFor="">Berkembang</label>
+                  <input
+                    type="radio"
+                    name={`item-1`}
+                    className="checkbox"
+                    value={2}
+                    checked={EditdataRaport?.grade === 2 ? true : false}
+                    onChange={handleEditCheckboxChange}
+                  />
+                </div>
+                <div className="flex items-center gap-1">
+                  <label htmlFor="">Membutuhkan Banyak Latihan</label>
+                  <input
+                    type="radio"
+                    name={`item-1`}
+                    className="checkbox"
+                    value={3}
+                    checked={EditdataRaport?.grade === 3 ? true : false}
+                    onChange={handleEditCheckboxChange}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="w-full flex justify-center mt-10 gap-2">
             <button className="btn bg-green-500 text-white font-bold w-full">
               Submit
             </button>
-            {/* <button className="btn bg-green-500 text-white font-bold">Submit</button> */}
           </div>
         </div>
       </Modal>
@@ -625,9 +732,9 @@ const RaportNarasi = () => {
                   </th>
                 </tr>
                 <tr>
-                  <th className="text-center">Sangat Baik</th>
-                  <th className="text-center">Baik</th>
-                  <th className="text-center">Cukup</th>
+                  <th className="text-center">Mandiri</th>
+                  <th className="text-center">Berkembang</th>
+                  <th className="text-center">Membutuhkan Banyak Latihan</th>
                 </tr>
               </thead>
               <tbody>

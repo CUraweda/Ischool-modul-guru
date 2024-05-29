@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { BiDownload } from "react-icons/bi";
 import { VscTasklist } from "react-icons/vsc";
 import { Link } from "react-router-dom";
-import { useStore } from "../../store/Store";
-import { Task } from "../../controller/api";
+import { Store } from "../../store/Store";
+import { Task } from "../../midleware/api";
 import { BsEye } from "react-icons/bs";
 import Modal from "../../component/modal";
 import Swal from "sweetalert2";
 
 const DetailTugasSswa = () => {
-  const { token } = useStore();
+  const { token } = Store();
   const [taskList, setTaskList] = useState<any>([]);
   const [task, setTask] = useState<any>();
   const [showFile, setShowFile] = useState<any>();

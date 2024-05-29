@@ -5,8 +5,8 @@ import Modal from "../../component/modal";
 import "react-day-picker/dist/style.css";
 import { FaListCheck, FaPenClip } from "react-icons/fa6";
 import { BiDownload, BiTrash } from "react-icons/bi";
-import { Task, Student } from "../../controller/api";
-import { useStore } from "../../store/Store";
+import { Task, Student } from "../../midleware/api";
+import { Store } from "../../store/Store";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
@@ -26,7 +26,7 @@ const schema = Yup.object({
 });
 
 const AdmSiswa = () => {
-  const { token } = useStore();
+  const { token } = Store();
   const navigate = useNavigate();
 
   const [task, setTask] = useState<any>([]);

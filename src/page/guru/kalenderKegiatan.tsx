@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import Demo from "../../component/CalendarEdit";
 import Modal from "../../component/modal";
-import { useStore } from "../../store/Store";
-import { Kalender } from "../../controller/api";
+import { Store } from "../../store/Store";
+import { Kalender } from "../../midleware/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
@@ -22,7 +22,7 @@ interface propsColor {
   title: string;
 }
 const KalenderKegiatan = () => {
-  const { token , tanggalPekanan} = useStore();
+  const { token , tanggalPekanan} = Store();
   const [topik, setTopik] = useState<any[]>([]);
   const [Color, setColor] = useState<propsColor>({
     color: "bg-red-500",
