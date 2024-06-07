@@ -51,6 +51,12 @@ const useProps = create<StoreProps>((set) => ({
 
   mapelProps: '',
   setMapelProps: (mapelProps: string) => set({ mapelProps }),
+
+  inArea: false,
+  setInareaProps: (inArea: boolean) => set({ inArea }),
+
+  distance: 0,
+  setDistanceProps: (distance: number) => set({ distance }),
 }));
 
 export { Store, useProps };

@@ -5,6 +5,8 @@ import { FaChartSimple, FaGear, FaMoneyBillTransfer, FaPersonCircleCheck } from 
 import { VscServerProcess } from "react-icons/vsc";
 import { MdOutlineMessage, MdOutlineTableChart } from "react-icons/md";
 import { GrGroup } from "react-icons/gr";
+import { CiMoneyCheck1 } from "react-icons/ci";
+import { GoTasklist } from "react-icons/go";
 // tambahkan import untuk ikon lainnya di sini
 
 export const iconMapping: { [key: string]: JSX.Element } = {
@@ -23,5 +25,7 @@ export const iconMapping: { [key: string]: JSX.Element } = {
   "<IoPersonOutline />" : <IoPersonOutline />,
   "<FaRegStar />" : <FaRegStar />,
   "<MdOutlineMessage />" : <MdOutlineMessage />,
+  "<CiMoneyCheck1 />" : <CiMoneyCheck1 />,
+  "<GoTasklist />" : <GoTasklist />,
   // tambahkan pemetaan untuk ikon lainnya di sini
 };

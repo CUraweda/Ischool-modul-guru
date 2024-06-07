@@ -7,28 +7,13 @@
         "subtitle": []
     },
     {
-        "submenu": false,
-        "title": "Rencana Pekanan",
-        "icon": "<MdOutlineTableChart />",
-        "url": "/guru/jadwal-guru",
-        "subtitle": []
-    },
-   
-    {
-        "submenu": false,
-        "title": "Kalender Kegiatan",
-        "icon": "<BsTable />",
-        "url": "/guru/kalender-kegiatan",
-        "subtitle": []
-    },
-    {
         "submenu": true,
         "title": "Kehadiran",
         "icon": "<FaPersonCircleCheck />",
         "url": "/guru/invenstment",
         "subtitle": [
             {
-                "name": "Rekap Kehadiran",
+                "name": "Kehadiran",
                 "url": "/guru/rekap-kehadiran"
             },
             {
@@ -44,6 +29,18 @@
         "icon": "<GrGroup />",
         "url": "",
         "subtitle": [
+            {
+                "name": "Dashboard Siswa",
+                "url": "/guru/dashboard/siswa"
+            },
+            {
+                "name": "Rencana Pekanan",
+                "url": "/guru/jadwal-guru"
+            },
+            {
+                "name": "Kalender Kegiatan",
+                "url": "/guru/kalender-kegiatan"
+            },
             {
                 "name": "Tugas",
                 "url": "/guru/adm-siswa"
@@ -68,12 +65,9 @@
         "icon": "<IoPersonOutline />",
         "url": "",
         "subtitle": [
+           
             {
-                "name": "Administrasi",
-                "url": "/guru/adm-guru"
-            },
-            {
-                "name": "Bahan Ajar",
+                "name": "Lesson Plan",
                 "url": "/guru/bahan-ajar"
             },
            
@@ -88,6 +82,20 @@
         "title": "Pelatihan",
         "icon": "<FaRegStar />",
         "url": "/guru/pelatihan",
+        "subtitle": []
+    },
+    {
+        "submenu": false,
+        "title": "Penilaian",
+        "icon": "<GoTasklist />",
+        "url": "/guru/pelatihans",
+        "subtitle": []
+    },
+    {
+        "submenu": false,
+        "title": "Gaji & Bonus",
+        "icon": "<CiMoneyCheck1 />",
+        "url": "/guru/gaji",
         "subtitle": []
     },
     {

@@ -105,6 +105,7 @@ const PresensiSiswa = () => {
               att_date: new Date(date).setHours(0, 0, 0, 0),
               status: item.presensi ? item.presensi : "Hadir",
               remark: item.transportasi ? item.transportasi : "🚗antar jemput",
+              semester: 1
             };
 
             const isExist = dataSiswa.some(
@@ -187,6 +188,7 @@ const PresensiSiswa = () => {
         status: presensi,
         remark: presensi === 'Hadir' ? transport : '',
         att_date: new Date(date).setHours(0, 0, 0, 0),
+        semester: 1
       };
       console.log(data);
       

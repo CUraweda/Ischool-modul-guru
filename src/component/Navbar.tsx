@@ -26,6 +26,8 @@ const Navbar = () => {
           </label>
         </div>
         <div className="mr-3 ">
+          
+        
           <button className="btn btn-ghost btn-circle text-xl">
             <FaBell />
           </button>

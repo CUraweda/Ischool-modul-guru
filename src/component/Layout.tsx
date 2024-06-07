@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-
+import bg from "../assets/bg2.png";
 interface Props {
   children?: React.ReactNode;
   name?: string;
@@ -10,20 +10,20 @@ const Layout: FC<Props> = ({ children }) => {
   return (
     <>
       <div className="flex flex-col min-h-screen" data-theme="light">
-        <main className="flex flex-grow">
-          <div className="top-0 sticky z-10">
+        <div className="flex flex-grow ">
+          <div className="z-50">
             <Sidebar />
           </div>
-          <div className="w-full bg-blue-200">
-            <div className="top-0 sticky z-10">
+          <div
+            className="w-full"
+            style={{ backgroundImage: `url('${bg}')`, backgroundSize: "cover" }}
+          >
+            <div className="">
               <Navbar />
             </div>
-            <div className="">
-
-            {children}
-            </div>
+            <div className="">{children}</div>
           </div>
-        </main>
+        </div>
       </div>
     </>
   );

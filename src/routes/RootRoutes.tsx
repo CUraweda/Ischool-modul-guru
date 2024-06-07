@@ -1,236 +1,234 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "../page/login";
-import Layout from "../component/Layout";
-// import GuruRoutes from "./GuruRoutes";
-import Dashboard from "../page/guru/Dashboard";
-import JadwalMengajar from "../page/guru/jadwalMengajar";
-import JadwalDinas from "../page/guru/jadwalDinas";
-import RekapKehadiran from "../page/guru/rekapKehadiran";
-import PengajuanCuti from "../page/guru/pengajuanCuti";
-import AdmSiswa from "../page/guru/admSiswa";
-import PresensiSiswa from "../page/guru/presensiSiswa";
-import NilaiSiswa from "../page/guru/nilaiSiswa";
-import BahanAjar from "../page/guru/bahanAjar";
-import AgendaKegiatan from "../page/guru/agendaKegiatan";
-import AdmGuru from "../page/guru/admGuru";
-import DaftarPelatihan from "../page/guru/daftarPelatihan";
-import PesanCs from "../page/guru/pesanCs";
+import Loading from "../component/Loading";
 
-import KaryawanDashboard from "../page/karyawan/Dashboard"
-import KaryawanRapat from "../page/karyawan/agendaKegiatan"
-import KaryawanLog from "../page/karyawan/admGuru"
-import KaryawanPresensi from "../page/karyawan/rekapKehadiran"
-import KaryawanPelatihan from "../page/karyawan/daftarPelatihan"
-import RaportSiswa from "../page/guru/raportSiswa";
-import RaportNarasi from "../page/guru/DetailRaportNarasi";
-import DetailTugasSswa from "../page/guru/detailTugasSswa";
-import KalenderKegiatan from "../page/guru/kalenderKegiatan";
+const Home = lazy(() => import("../page/login"));
+const Layout = lazy(() => import("../component/Layout"));
+const Dashboard = lazy(() => import("../page/guru/Dashboard"));
+const JadwalMengajar = lazy(() => import("../page/guru/jadwalMengajar"));
+const JadwalDinas = lazy(() => import("../page/guru/jadwalDinas"));
+const RekapKehadiran = lazy(() => import("../page/guru/rekapKehadiran"));
+const PengajuanCuti = lazy(() => import("../page/guru/pengajuanCuti"));
+const AdmSiswa = lazy(() => import("../page/guru/admSiswa"));
+const PresensiSiswa = lazy(() => import("../page/guru/presensiSiswa"));
+const NilaiSiswa = lazy(() => import("../page/guru/nilaiSiswa"));
+const BahanAjar = lazy(() => import("../page/guru/bahanAjar"));
+const AgendaKegiatan = lazy(() => import("../page/guru/agendaKegiatan"));
+const AdmGuru = lazy(() => import("../page/guru/admGuru"));
+const DaftarPelatihan = lazy(() => import("../page/guru/daftarPelatihan"));
+const PesanCs = lazy(() => import("../page/guru/pesanCs"));
+const RaportSiswa = lazy(() => import("../page/guru/raportSiswa"));
+const RaportNarasi = lazy(() => import("../page/guru/DetailRaportNarasi"));
+const DetailTugasSswa = lazy(() => import("../page/guru/detailTugasSswa"));
+const KalenderKegiatan = lazy(() => import("../page/guru/kalenderKegiatan"));
+const OverviewSiswa = lazy(() => import("../page/guru/DashboardSiswa"));
+
+const AbsenKaryawan = lazy(() => import("../page/admin/AbsenKaryawan"));
 
 const RootRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route
+          path="/"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Home />
+            </Suspense>
+          }
+        />
         <Route
           path="/guru/dashboard"
           element={
-            <Layout>
-              <Dashboard />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <Dashboard />
+              </Layout>
+            </Suspense>
           }
         />
-        
+
         <Route
           path="/guru/jadwal-guru"
           element={
-            <Layout>
-              <JadwalMengajar />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <JadwalMengajar />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
           path="/guru/jadwal-dinas"
           element={
-            <Layout>
-              <JadwalDinas />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <JadwalDinas />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
           path="/guru/rekap-kehadiran"
           element={
-            <Layout>
-              <RekapKehadiran />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <RekapKehadiran />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
           path="/guru/pengajuan-cuti"
           element={
-            <Layout>
-              <PengajuanCuti />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <PengajuanCuti />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
           path="/guru/adm-siswa"
           element={
-            <Layout>
-              <AdmSiswa />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <AdmSiswa />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
           path="/guru/presensi-siswa"
           element={
-            <Layout>
-              <PresensiSiswa />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <PresensiSiswa />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
           path="/guru/daftar-nilai-siswa"
           element={
-            <Layout>
-              <NilaiSiswa />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <NilaiSiswa />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
           path="/guru/bahan-ajar"
           element={
-            <Layout>
-              <BahanAjar />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <BahanAjar />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
           path="/guru/agenda-kegiatan"
           element={
-            <Layout>
-              <AgendaKegiatan />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <AgendaKegiatan />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
           path="/guru/adm-guru"
           element={
-            <Layout>
-              <AdmGuru />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <AdmGuru />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
           path="/guru/kalender-kegiatan"
           element={
-            <Layout>
-              <KalenderKegiatan />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <KalenderKegiatan />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
           path="/guru/task/siswa"
           element={
-            <Layout>
-              <DetailTugasSswa />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <DetailTugasSswa />
+              </Layout>
+            </Suspense>
           }
         />
-        <Route
-          path="/guru/kpi"
-          element={
-            <Layout>
-              <AdmGuru />
-            </Layout>
-          }
-        />
+
         <Route
           path="/guru/pelatihan"
           element={
-            <Layout>
-              <DaftarPelatihan />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <DaftarPelatihan />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
           path="/guru/rapor-siswa"
           element={
-            <Layout>
-              <RaportSiswa />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <RaportSiswa />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
           path="/guru/rapor-siswa/narasi"
           element={
-            <Layout>
-              <RaportNarasi />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <RaportNarasi />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
           path="/guru/cs"
           element={
-            <Layout>
-              <PesanCs />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <PesanCs />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
-          path="/karyawan/dashboard"
+          path="/guru/dashboard/siswa"
           element={
-            <Layout>
-              <KaryawanDashboard />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <OverviewSiswa />
+              </Layout>
+            </Suspense>
           }
         />
         <Route
-          path="/karyawan/rapat"
+          path="/admin/absen-karyawan"
           element={
-            <Layout>
-              <KaryawanRapat />
-            </Layout>
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <AbsenKaryawan />
+              </Layout>
+            </Suspense>
           }
         />
-        <Route
-          path="/karyawan/loogbook-harian"
-          element={
-            <Layout>
-              <KaryawanLog />
-            </Layout>
-          }
-        />
-        <Route
-          path="/karyawan/presensi"
-          element={
-            <Layout>
-              <KaryawanPresensi />
-            </Layout>
-          }
-        />
-        <Route
-          path="/karyawan/pelatihan"
-          element={
-            <Layout>
-              <KaryawanPelatihan />
-            </Layout>
-          }
-        />
-        <Route
-          path="/karyawan/adm"
-          element={
-            <Layout>
-            </Layout>
-          }
-        />
-        <Route
-          path="/karyawan/kpi"
-          element={
-            <Layout>
-            </Layout>
-          }
-        />
-        
       </Routes>
     </BrowserRouter>
   );

@@ -134,7 +134,7 @@ const RaportNarasi = () => {
   };
 
   const CreateSubKategori = async () => {
-    const { idKategori, kode, subKategori } = formik.values;
+    const { idKategori,  subKategori } = formik.values;
 
     const data = {
       code: 'sub-kategori',

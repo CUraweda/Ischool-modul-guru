@@ -28,4 +28,10 @@ export interface StoreProps {
 
   mapelProps: string;
   setMapelProps: (mapelProps: string) => void;
+
+  inArea: boolean;
+  setInareaProps: (inArea: boolean) => void;
+
+  distance: number;
+  setDistanceProps: (distance: number) => void;
 }
