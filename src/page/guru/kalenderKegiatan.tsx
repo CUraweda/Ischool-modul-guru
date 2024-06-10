@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import Demo from "../../component/CalendarEdit";
 import Modal from "../../component/modal";
-import { useStore } from "../../store/Store";
-import { Kalender } from "../../controller/api";
+import { Store } from "../../store/Store";
+import { Kalender } from "../../midleware/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
@@ -19,13 +19,15 @@ const schema = Yup.object({
 interface propsColor {
   color: string;
   value: string;
+  title: string;
 }
 const KalenderKegiatan = () => {
-  const { token } = useStore();
+  const { token , tanggalPekanan} = Store();
   const [topik, setTopik] = useState<any[]>([]);
   const [Color, setColor] = useState<propsColor>({
     color: "bg-red-500",
     value: "#dc2626_red",
+    title: "Libur"
   });
 
   const getTopik = async () => {
@@ -52,51 +54,67 @@ const KalenderKegiatan = () => {
   });
 
   const dataColor = [
+    // {
+    //   color: "bg-slate-300",
+    //   value: "#cbd5e1_grey-4",
+    //   title: "Hari Biasa"
+    // },
     {
       color: "bg-red-500",
       value: "#dc2626_red",
+      title: "Libur"
     },
     {
       color: "bg-orange-500",
       value: "#f97316_orange",
+       title: "Sosialisai/Parenting"
     },
-    {
-      color: "bg-yellow-500",
-      value: "#eab308_amber",
-    },
-    {
-      color: "bg-lime-500",
-      value: "#84cc16_lime",
-    },
+    // {
+    //   color: "bg-yellow-500",
+    //   value: "#eab308_amber",
+    //    title: "libur"
+    // },
+    // {
+    //   color: "bg-lime-500",
+    //   value: "#84cc16_lime",
+    //    title: "libur"
+    // },
     {
       color: "bg-green-500",
       value: "#22c55e_green",
+       title: "Ekskul"
     },
-    {
-      color: "bg-teal-500",
-      value: "#14b8a6_teal",
-    },
+    // {
+    //   color: "bg-teal-500",
+    //   value: "#14b8a6_teal",
+    //    title: "Kegiatan/Event"
+    // },
     {
       color: "bg-cyan-500",
       value: "#06b6d4_cyan",
+       title: "Kegiatan/Event"
     },
     {
       color: "bg-blue-500",
       value: "#3b82f6_blue",
+       title: "Konsultasi Rapot"
     },
-    {
-      color: "bg-violet-500",
-      value: "#8b5cf6_deep-purple",
-    },
-    {
-      color: "bg-purple-500",
-      value: "#a855f7_purple",
-    },
+    // {
+    //   color: "bg-violet-500",
+    //   value: "#8b5cf6_deep-purple",
+    //    title: "libur"
+    // },
+    // {
+    //   color: "bg-purple-500",
+    //   value: "#a855f7_purple",
+    //    title: "libur"
+    // },
 
-    {
-      color: "bg-rose-500",
-      value: "#f43f5e_pink",
-    },
+    // {
+    //   color: "bg-rose-500",
+    //   value: "#f43f5e_pink",
+    //    title: "libur"
+    // },
   ];
 
   const showModal = (props: string) => {
@@ -144,14 +162,15 @@ const KalenderKegiatan = () => {
 
   const getDate = () => {
     const options: Intl.DateTimeFormatOptions = { month: "long", year: "numeric" };
-    const date = new Date().toLocaleDateString("id-ID", options).toUpperCase();
+    const date = new Date(tanggalPekanan).toLocaleDateString("id-ID", options).toUpperCase();
     return date;
   };
 
   return (
     <div className="my-10 w-full flex flex-col items-center">
-      <div className=" flex flex-col items-center w-full text-3xl font-bold">
-      <span>KALENDER KEGIATAN {getDate()}</span>
+      <div className=" flex flex-col items-center w-full">
+      <span className="text-3xl font-bold">KALENDER KEGIATAN</span>
+      <span className="text-xl">BULAN {getDate()}</span>
       </div>
       <div className="w-full p-6">
         <Demo />
@@ -223,13 +242,14 @@ const KalenderKegiatan = () => {
               {dataColor.map((item: propsColor, index: number) => (
                 <span
                   key={index}
-                  className={`w-8 h-8 rounded-md ${
+                  className={`w-8 h-8 rounded-md tooltip ${
                     item.color
                   } cursor-pointer  ${
                     Color?.value === item.value
                       ? "ring ring-primary ring-offset-base-100 ring-offset-2"
                       : ""
                   }`}
+                  data-tip={item.title}
                   onClick={() => setColor(item)}
                 />
               ))}

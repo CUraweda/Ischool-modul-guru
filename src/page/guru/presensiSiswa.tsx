@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { FiPlus } from "react-icons/fi";
 import Modal from "../../component/modal";
-import { BiTrash } from "react-icons/bi";
-import { Task, Student } from "../../controller/api";
-import { useStore } from "../../store/Store";
+import { BiPencil, BiTrash } from "react-icons/bi";
+import { Task, Student } from "../../midleware/api";
+import { Store } from "../../store/Store";
 import Swal from "sweetalert2";
 
 const PresensiSiswa = () => {
-  const { token } = useStore();
+  const { token } = Store();
   const today = new Date();
   const [date, setDate] = useState<any>(today.toISOString().substr(0, 10));
   const [kelas, setKelas] = useState<any[]>([]);
@@ -17,6 +17,10 @@ const PresensiSiswa = () => {
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
   const [totalCreate, setTotalCreate] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [presensi, setPresensi] = useState<any>();
+  const [transport, setTransport] = useState<any>();
+  const [idPresensi, setIdPresensi] = useState<any>();
+  const [idSiswa, setIdSiswa] = useState<any>();
 
   useEffect(() => {
     getClass();
@@ -25,6 +29,7 @@ const PresensiSiswa = () => {
   useEffect(() => {
     getStudent();
     getPresensiData();
+    setSelectedStudents([]);
   }, [idClass, date]);
 
   const formattedDate = new Date(date).toLocaleDateString("id-ID", {
@@ -97,17 +102,23 @@ const PresensiSiswa = () => {
           const createPromises = selectedStudents.map((item: any) => {
             const dataRest = {
               student_class_id: item.student.id,
-              att_date: new Date(date),
-              status: item.presensi,
-              remark: item.presensi === "Hadir" ? item.transportasi : "",
+              att_date: new Date(date).setHours(0, 0, 0, 0),
+              status: item.presensi ? item.presensi : "Hadir",
+              remark: item.transportasi ? item.transportasi : "🚗antar jemput",
+              semester: 1
             };
-            return create(dataRest);
+
+            const isExist = dataSiswa.some(
+              (data) =>
+                data.studentclass.student.id === item.student.id &&
+                new Date(data.att_date).setHours(0, 0, 0, 0) ===
+                  new Date(date).setHours(0, 0, 0, 0)
+            );
+
+            return isExist ? null : create(dataRest);
           });
-
           await Promise.all(createPromises);
-
           closeModal("add-presensi");
-
           Swal.fire({
             position: "center",
             icon: "success",
@@ -116,7 +127,7 @@ const PresensiSiswa = () => {
             timer: 1500,
           });
           getPresensiData();
-          // Update your state here instead of reloading the page
+          setSelectedStudents([]);
         }
       } catch (error) {
         console.log(error);
@@ -129,6 +140,7 @@ const PresensiSiswa = () => {
   const create = async (data: any) => {
     await Student.CreatePresensi(token, data);
   };
+
   const deletePresensi = async (id: number) => {
     try {
       Swal.fire({
@@ -148,6 +160,7 @@ const PresensiSiswa = () => {
       console.log(error);
     }
   };
+
   const deletePresensiApi = async (id: number) => {
     await Student.deletePresensi(token, id);
     Swal.fire({
@@ -156,6 +169,36 @@ const PresensiSiswa = () => {
       icon: "success",
     });
     getPresensiData();
+  };
+
+  const handlePresensi = async (id: number) => {
+    showModal("edit-presensi");
+    const response = await Student.GetPresensiById(token, id);
+    const data = response.data.data[0];
+    setPresensi(data.status);
+    setTransport(data.remark);
+    setIdPresensi(id);
+    setIdSiswa(data.student_class_id)
+  };
+
+  const handleEditPresensi = async () => {
+    try {
+      const data = {
+        student_class_id: idSiswa,
+        status: presensi,
+        remark: presensi === 'Hadir' ? transport : '',
+        att_date: new Date(date).setHours(0, 0, 0, 0),
+        semester: 1
+      };
+      console.log(data);
+      
+      const response = await Student.UpdatePresensi(token, idPresensi, data);
+      console.log(response);
+      closeModal("edit-presensi");
+      getPresensiData();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -218,8 +261,14 @@ const PresensiSiswa = () => {
                     <td>{item?.studentclass?.student?.nis}</td>
                     <td>{item?.studentclass?.student?.class}</td>
                     <td>{item?.status}</td>
-                    <td>{item?.remark}</td>
+                    <td>{item?.remark ? item?.remark : '-'}</td>
                     <td className="join text-white">
+                      <button
+                        className="btn btn-sm btn-ghost bg-orange-600 text-xl join-item"
+                        onClick={() => handlePresensi(item.id)}
+                      >
+                        <BiPencil />
+                      </button>
                       <button
                         className="btn btn-sm btn-ghost bg-red-600 text-xl join-item"
                         onClick={() => deletePresensi(item.id)}
@@ -276,7 +325,19 @@ const PresensiSiswa = () => {
               {/* head */}
               <thead className="bg-blue-400 text-white">
                 <tr>
-                  <th></th>
+                  <th>
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedStudents(siswa);
+                        } else {
+                          setSelectedStudents([]);
+                        }
+                      }}
+                    />
+                  </th>
                   <th>Name</th>
                   <th>NIS</th>
                   <th>Kelas</th>
@@ -289,6 +350,9 @@ const PresensiSiswa = () => {
                     <th>
                       <input
                         type="checkbox"
+                        checked={selectedStudents.some(
+                          (student) => student.student.id === item.student.id
+                        )}
                         onChange={(e) => {
                           if (e.target.checked) {
                             setSelectedStudents([...selectedStudents, item]);
@@ -337,10 +401,9 @@ const PresensiSiswa = () => {
                           )
                         }
                       >
-                        <option disabled selected>
-                          Presensi
+                        <option value="Hadir" selected>
+                          Hadir
                         </option>
-                        <option value="Hadir">Hadir</option>
                         <option value="Izin">Izin</option>
                         <option value="Alfa">Alfa</option>
                         <option value="Sakit">Sakit</option>
@@ -371,15 +434,14 @@ const PresensiSiswa = () => {
                         disabled={
                           !selectedStudents.some(
                             (student) => student.student.id === item.student.id
-                          ) || item.presensi !== "Hadir"
+                          )
                         }
                       >
-                        <option disabled selected>
-                          Transportasi
-                        </option>
                         <option value="🚶‍♂️jalan kaki">Jalan Kaki</option>
                         <option value="🚌kendaraan umum">Kendaraan Umum</option>
-                        <option value="🚗antar jemput">Antar Jemput</option>
+                        <option value="🚗antar jemput" selected>
+                          Antar Jemput
+                        </option>
                         <option value="🚲sepeda">Sepeda</option>
                       </select>
                     </td>
@@ -416,6 +478,61 @@ const PresensiSiswa = () => {
               </button>
             </div>
           </div>
+        </div>
+      </Modal>
+      <Modal id="edit-presensi">
+        <div className="flex justify-center w-full ">
+          <span className="text-xl font-bold">Edit Presensi</span>
+        </div>
+        <div className="w-full flex flex-col gap-2">
+          <label className="mt-4 font-bold">Tangal Presensi</label>
+          <input
+            type="date"
+            placeholder="Type here"
+            className="input input-bordered  join-item"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </div>
+        <div className="w-full flex flex-col gap-2">
+          <label className="mt-4 font-bold">Presensi</label>
+          <select
+            className={`select select-bordered w-full join-item`}
+            value={presensi}
+            onChange={(e) => setPresensi(e.target.value)}
+          >
+            <option value="Hadir" selected>
+              Hadir
+            </option>
+            <option value="Izin">Izin</option>
+            <option value="Alfa">Alfa</option>
+            <option value="Sakit">Sakit</option>
+          </select>
+        </div>
+        <div className="w-full flex flex-col gap-2">
+          <label className="mt-4 font-bold">Transportasi</label>
+          <select
+            className={`select select-bordered w-full join-item`}
+            value={transport}
+            onChange={(e) => setTransport(e.target.value)}
+           disabled={presensi !== 'Hadir'}
+          >
+            <option value="🚶‍♂️jalan kaki">Jalan Kaki</option>
+            <option value="🚌kendaraan umum">Kendaraan Umum</option>
+            <option value="🚗antar jemput" selected>
+              Antar Jemput
+            </option>
+            <option value="🚲sepeda">Sepeda</option>
+          </select>
+        </div>
+
+        <div className="mt-5 w-full">
+          <button
+            className="btn bg-green-500 w-full text-white"
+            onClick={handleEditPresensi}
+          >
+            Simpan
+          </button>
         </div>
       </Modal>
     </>

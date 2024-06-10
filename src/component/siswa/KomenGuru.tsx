@@ -1,16 +1,16 @@
 
 import Modal from "../modal";
 import Pdf from "../../assets/SM7_Portofolio_ Semester 1_TA 2020-2021_Aisha Mahya Nataneila.pdf";
-import { FaFilePdf } from "react-icons/fa";
+// import { FaFilePdf } from "react-icons/fa";
 import { BiPencil, BiTrash } from "react-icons/bi";
 
 const KomenGuru = () => {
-  const showModal = (props: string) => {
-    let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
-    if (modalElement) {
-      modalElement.showModal();
-    }
-  };
+  // const showModal = (props: string) => {
+  //   let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
+  //   if (modalElement) {
+  //     modalElement.showModal();
+  //   }
+  // };
   return (
     <div>
       <div className="w-full flex justify-between gap-2">

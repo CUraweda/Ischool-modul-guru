@@ -10,7 +10,7 @@ const modal: FC<Props> = ({ id, children, width }) => {
   return (
     <div>
       <dialog id={id} className="modal modal-middle">
-        <div className={`modal-box bg-white ${width} scrollbar-hide`}>
+        <div className={`modal-box bg-white ${width} `}>
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕ 

@@ -5,6 +5,7 @@ import { iconMapping } from "../component/icon/icon";
 import logo from "../assets/sade.png";
 import { Link } from "react-router-dom";
 import menu from "../data/menu.json";
+// import karywan from "../data/karyawan.json"
 
 interface Menu {
   title: string;
@@ -30,20 +31,21 @@ const Sidebar = () => {
     sessionStorage.setItem("side", name);
   };
   let data = []
+  // data = role === 'guru' ? karywan : karywan
   data = role === 'guru' ? menu : menu
 
   return (
     <div>
-      <div className="drawer lg:drawer-open top-0 sticky z-10">
+      <div className="drawer lg:drawer-open">
         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-        <div className="drawer-side shadow-lg">
+        <div className="drawer-side">
           <label
             htmlFor="my-drawer-2"
             aria-label="close sidebar"
             className="drawer-overlay"
           />
-          <ul className="menu p-4 w-80 min-h-full bg-base-100 ">
-            <div className="w-full flex justify-between mb-10 items-center  bg-white pb-6">
+          <ul className="menu p-4 w-80 bg-base-100 min-h-screen">
+            <div className="w-full flex justify-between mb-10 items-center  pb-6">
               <div className="flex justify-center items-center gap-1">
                 <img src={logo} alt="logo" className="w-20" />
                 <p className="sm:text-xl text-xl font-bold">

@@ -36,42 +36,7 @@ const AdmGuru = () => {
     <>
       <div className="w-full flex flex-col items-center">
         
-        <div className="flex justify-between w-full flex-wrap">
-          <div className="p-3 sm:w-1/3 w-full">
-            <div className="bg-green-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
-              <span className="text-xl font-bold">Open</span>
-              <div className="flex justify-center w-full">
-                <div className="w-full my-4 flex justify-center items-center">
-                  <span className="text-8xl md:text-8xl font-bold">12</span>
-                  <span className="text-xl font-bold">Task</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="p-3 sm:w-1/3 w-full">
-            <div className="bg-blue-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
-              <span className="text-xl font-bold">Complete</span>
-              <div className="flex justify-center w-full">
-                <div className="w-full my-4 flex justify-center items-center">
-                  <span className="text-8xl md:text-8xl font-bold">12</span>
-                  <span className="text-xl font-bold">Task</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="p-3 sm:w-1/3 w-full">
-            <div className="bg-red-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">
-              <span className="text-xl font-bold">Total task</span>
-              <div className="flex justify-center w-full">
-                <div className="w-full my-4 flex justify-center items-center">
-                  <span className="text-8xl md:text-8xl font-bold">12</span>
-                  <span className="text-xl font-bold">Task</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-        </div>
+      
         <div className="overflow-x-auto w-full flex flex-col p-5 my-10 justify-center">
           <div className="w-full justify-between bg-red flex">
             <span className="text-2xl font-bold">Task List</span>

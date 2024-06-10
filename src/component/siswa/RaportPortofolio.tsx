@@ -1,13 +1,163 @@
-import { FaFilePdf, FaRegCheckSquare, FaRegWindowClose } from "react-icons/fa";
+import { useState, useEffect, ChangeEvent } from "react";
+import { FaFilePdf } from "react-icons/fa";
 import { MdCloudUpload } from "react-icons/md";
 import Modal from "../modal";
-import Pdf from "../../assets/SM7_Portofolio_ Semester 1_TA 2020-2021_Aisha Mahya Nataneila.pdf";
+import { IoChatboxEllipsesOutline } from "react-icons/io5";
+import { Task, Raport } from "../../midleware/api";
+import { Store, useProps } from "../../store/Store";
+import { CiFolderOff } from "react-icons/ci";
+import Swal from "sweetalert2";
 
 const RaportPortofolio = () => {
+  const { token } = Store();
+  const { setSemesterProps, setKelasProps, semesterProps, kelasProps } =
+    useProps();
+  const [DataSiswa, setDataSiswa] = useState<any[]>([]);
+  const [kelas, setKelas] = useState<any[]>([]);
+  const [porto, setPorto] = useState<any[]>([]);
+  const [idClass, setClass] = useState<string>(kelasProps);
+  const [reportId, setReportId] = useState<string>("");
+  const [file, showFile] = useState<any>();
+  const [fileUpload, setFile] = useState<any>(null);
+  const [komen, setKomen] = useState<string>("");
+
+  const [studentClass, setStudentClass] = useState<string>("");
+  const [smt, setSmt] = useState<string>(semesterProps);
+  const [merge, setMerge] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
+    }
+  };
+  const closeModal = (props: string) => {
+    let modalElement = document.getElementById(props) as HTMLDialogElement;
+    if (modalElement) {
+      modalElement.close();
+    }
+  };
+
+  useEffect(() => {
+    getClass();
+  }, []);
+
+  useEffect(() => {
+    getStudent();
+  }, [idClass]);
+
+  const getClass = async () => {
+    const response = await Task.GetAllClass(token, 0, 20);
+    setKelas(response.data.data.result);
+  };
+
+  const getStudent = async () => {
+    try {
+      const id = idClass ? idClass : '11'
+      const response = await Raport.getAllStudentReport(token, id);
+
+      setDataSiswa(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getPortoByRapotId = async (id: string) => {
+    setReportId(id);
+    showModal("show-portofolio");
+    const response = await Raport.getPortofolioByRaport(token, id);
+    const dataRest = response.data.data;
+    const type = dataRest?.map((item: any) => item.type);
+    if (type.length === 2 && type.includes("Guru") && type.includes("Ortu")) {
+      setMerge(true);
+    } else {
+      setMerge(false);
+    }
+    setPorto(response.data.data);
+    showFile(undefined);
+  };
+
+  const showFilePortofolio = async (path: string) => {
+    try {
+      const response = await Task.downloadTugas(token, path);
+      const blob = new Blob([response.data], { type: "application/pdf" }); //
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      showFile(blobUrl);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFile = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    setFile(file || null);
+  };
+
+  const CreatePortofolio = async (type: string) => {
+    const formData = new FormData();
+    formData.append("student_report_id", reportId);
+    formData.append("type", type);
+    formData.append("file", fileUpload);
+
+    try {
+      await Raport.uploadPortofolio(token, formData);
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "success upload portofolio",
+        showConfirmButton: false,
+        timer: 1000,
+      });
+      getStudent();
+      closeModal("upload-portofolio");
+      setFile(null);
+    } catch (error: any) {
+      closeModal("upload-portofolio");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error.message,
+      });
+      console.log(error);
+    }
+  };
+
+  const CreateKomenGuru = async () => {
+    const data = {
+      student_class_id: studentClass,
+      semester: smt,
+      por_teacher_comments: komen,
+    };
+
+    await Raport.createKomentar(token, reportId, data);
+    getStudent();
+    closeModal("komen-guru-porto");
+    setKomen("");
+  };
+
+  const handleKomen = (
+    komen: string,
+    kelas: string,
+    id: string,
+    smt: string
+  ) => {
+    showModal("komen-guru-porto");
+    setKomen(komen);
+    setReportId(id);
+    setStudentClass(kelas);
+    setSmt(smt);
+  };
+
+  const handleMerge = async () => {
+    try {
+      setLoading(true);
+      await Raport.mergePortofolio(token, reportId);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -16,51 +166,42 @@ const RaportPortofolio = () => {
       <div className="w-full flex justify-between gap-2">
         <div className="join">
           <select className="select select-sm join-item w-32 max-w-md select-bordered">
-            <option disabled selected>
+            <option selected>
               Tahun Pelajaran
             </option>
             <option>2023/2024</option>
             <option>2024/2025</option>
           </select>
-          <select className="select select-sm join-item w-32 max-w-md select-bordered">
-            <option disabled selected>
+          <select
+            className="select select-sm join-item w-32 max-w-md select-bordered"
+            value={smt}
+            onChange={(e) => {
+              setSmt(e.target.value), setSemesterProps(e.target.value);
+            }}
+          >
+            <option selected>
               Semester
             </option>
-            <option>Ganjil</option>
-            <option>Genap</option>
+            <option value={"1"}>Ganjil</option>
+            <option value={"2"}>Genap</option>
           </select>
-          <select className="select select-sm join-item w-32 max-w-md select-bordered">
-            <option disabled selected>
-              Kelas
+          <select
+            className="select select-sm join-item w-32 max-w-md select-bordered"
+            value={idClass}
+            onChange={(e) => {setClass(e.target.value), setKelasProps(e.target.value)}}
+          >
+            <option selected>
+              pilih kelas
             </option>
-            <option>VII</option>
-            <option>VIII</option>
-            <option>IX</option>
-          </select>
-          <select className="select select-sm join-item w-32 max-w-xs select-bordered">
-            <option disabled selected>
-              Siswa
-            </option>
-            <option>Aldi</option>
-            <option>Damar</option>
-            <option>beni</option>
-            <option>jono</option>
+            {kelas?.map((item: any, index: number) => (
+              <option
+                value={item.id}
+                key={index}
+              >{`${item.level}-${item.class_name}`}</option>
+            ))}
           </select>
         </div>
-        <div>
-          <div className="join">
-            <button
-              className="btn btn-sm join-item bg-green-500 text-white "
-             
-            >
-              <span className="text-xl">
-                <FaRegCheckSquare />
-              </span>
-              Selesai Semua
-            </button>
-           
-          </div>
-        </div>
+        <div></div>
       </div>
       <div className="overflow-x-auto mt-5">
         <table className="table table-md table-zebra">
@@ -73,306 +214,56 @@ const RaportPortofolio = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th>1</th>
-              <td>anwar</td>
-              <td className="max-w-md">VII</td>
-              <td className="flex items-center">
-                <div className="join">
-                  <button
-                    className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
-                    data-tip="Upload portofolio"
-                    onClick={() => showModal("upload-portofolio")}
-                  >
-                    <span className="text-2xl">
-                      <MdCloudUpload />
-                    </span>
-                  </button>
-                  
-                  <button
-                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
-                    data-tip="lihat portofolio"
-                    onClick={() => showModal("show-portofolio")}
-                  >
-                    <span className="text-xl">
-                      <FaFilePdf />
-                    </span>
-                  </button>
-                  <button
-                    className="btn btn-sm join-item bg-green-500 text-white tooltip"
-                    data-tip="tandai selesai"
-                    
-                  >
-                    <span className="text-xl">
-                    <FaRegCheckSquare />
-                    </span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <th>2</th>
-              <td>bayu</td>
-              <td className="max-w-md">VII</td>
-              <td className="flex items-center">
-                <div className="join">
-                  <button
-                    className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
-                    data-tip="Upload portofolio"
-                    onClick={() => showModal("upload-portofolio")}
-                    disabled
-                  >
-                    <span className="text-2xl">
-                      <MdCloudUpload />
-                    </span>
-                  </button>
-                 
-                  <button
-                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
-                    data-tip="lihat portofolio"
-                    onClick={() => showModal("show-portofolio")}
-                  >
-                    <span className="text-xl">
-                      <FaFilePdf />
-                    </span>
-                  </button>
-                  <button
-                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
-                    data-tip="tandai belum selesai"
-                    
-                  >
-                    <span className="text-xl">
-                    <FaRegWindowClose />
-                    </span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <th>3</th>
-              <td>melisa</td>
-              <td className="max-w-md">VII</td>
-              <td className="flex items-center">
-                <div className="join">
-                  <button
-                    className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
-                    data-tip="Upload portofolio"
-                    onClick={() => showModal("upload-portofolio")}
-                  >
-                    <span className="text-2xl">
-                      <MdCloudUpload />
-                    </span>
-                  </button>
-                  
-                  <button
-                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
-                    data-tip="lihat portofolio"
-                    onClick={() => showModal("show-portofolio")}
-                  >
-                    <span className="text-xl">
-                      <FaFilePdf />
-                    </span>
-                  </button>
-                  <button
-                    className="btn btn-sm join-item bg-green-500 text-white tooltip"
-                    data-tip="tandai selesai"
-                    
-                  >
-                    <span className="text-xl">
-                    <FaRegCheckSquare />
-                    </span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <th>3</th>
-              <td>ratih</td>
-              <td className="max-w-md">VII</td>
-              <td className="flex items-center">
-                <div className="join">
-                  <button
-                    className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
-                    data-tip="Upload portofolio"
-                    onClick={() => showModal("upload-portofolio")}
-                    disabled
-                  >
-                    <span className="text-2xl">
-                      <MdCloudUpload />
-                    </span>
-                  </button>
-                 
-                  <button
-                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
-                    data-tip="lihat portofolio"
-                    onClick={() => showModal("show-portofolio")}
-                  >
-                    <span className="text-xl">
-                      <FaFilePdf />
-                    </span>
-                  </button>
-                  <button
-                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
-                    data-tip="tandai belum selesai"
-                    
-                  >
-                    <span className="text-xl">
-                    <FaRegWindowClose />
-                    </span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <th>4</th>
-              <td>stiven</td>
-              <td className="max-w-md">VII</td>
-              <td className="flex items-center">
-                <div className="join">
-                  <button
-                    className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
-                    data-tip="Upload portofolio"
-                    onClick={() => showModal("upload-portofolio")}
-                  >
-                    <span className="text-2xl">
-                      <MdCloudUpload />
-                    </span>
-                  </button>
-                  
-                  <button
-                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
-                    data-tip="lihat portofolio"
-                    onClick={() => showModal("show-portofolio")}
-                  >
-                    <span className="text-xl">
-                      <FaFilePdf />
-                    </span>
-                  </button>
-                  <button
-                    className="btn btn-sm join-item bg-green-500 text-white tooltip"
-                    data-tip="tandai selesai"
-                    
-                  >
-                    <span className="text-xl">
-                    <FaRegCheckSquare />
-                    </span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <th>5</th>
-              <td>aldi</td>
-              <td className="max-w-md">VII</td>
-              <td className="flex items-center">
-                <div className="join">
-                  <button
-                    className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
-                    data-tip="Upload portofolio"
-                    onClick={() => showModal("upload-portofolio")}
-                    disabled
-                  >
-                    <span className="text-2xl">
-                      <MdCloudUpload />
-                    </span>
-                  </button>
-                 
-                  <button
-                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
-                    data-tip="lihat portofolio"
-                    onClick={() => showModal("show-portofolio")}
-                  >
-                    <span className="text-xl">
-                      <FaFilePdf />
-                    </span>
-                  </button>
-                  <button
-                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
-                    data-tip="tandai belum selesai"
-                    
-                  >
-                    <span className="text-xl">
-                    <FaRegWindowClose />
-                    </span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <th>6</th>
-              <td>diki</td>
-              <td className="max-w-md">VII</td>
-              <td className="flex items-center">
-                <div className="join">
-                  <button
-                    className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
-                    data-tip="Upload portofolio"
-                    onClick={() => showModal("upload-portofolio")}
-                  >
-                    <span className="text-2xl">
-                      <MdCloudUpload />
-                    </span>
-                  </button>
-                  
-                  <button
-                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
-                    data-tip="lihat portofolio"
-                    onClick={() => showModal("show-portofolio")}
-                  >
-                    <span className="text-xl">
-                      <FaFilePdf />
-                    </span>
-                  </button>
-                  <button
-                    className="btn btn-sm join-item bg-green-500 text-white tooltip"
-                    data-tip="tandai selesai"
-                    
-                  >
-                    <span className="text-xl">
-                    <FaRegCheckSquare />
-                    </span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <th>7</th>
-              <td>jani</td>
-              <td className="max-w-md">VII</td>
-              <td className="flex items-center">
-                <div className="join">
-                  <button
-                    className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
-                    data-tip="Upload portofolio"
-                    onClick={() => showModal("upload-portofolio")}
-                    disabled
-                  >
-                    <span className="text-2xl">
-                      <MdCloudUpload />
-                    </span>
-                  </button>
-                 
-                  <button
-                    className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
-                    data-tip="lihat portofolio"
-                    onClick={() => showModal("show-portofolio")}
-                  >
-                    <span className="text-xl">
-                      <FaFilePdf />
-                    </span>
-                  </button>
-                  <button
-                    className="btn btn-sm join-item bg-red-500 text-white tooltip"
-                    data-tip="tandai belum selesai"
-                    
-                  >
-                    <span className="text-xl">
-                    <FaRegWindowClose />
-                    </span>
-                  </button>
-                </div>
-              </td>
-            </tr>
+            {DataSiswa?.map((item: any, index: number) => (
+              <tr key={index}>
+                <th>{index + 1}</th>
+                <td>{item?.studentclass?.student.full_name}</td>
+                <td>{item?.studentclass?.class?.class_name}</td>
+                <td className="flex items-center">
+                  <div className="join">
+                    <button
+                      className="btn btn-sm join-item bg-cyan-500 text-white tooltip"
+                      data-tip="Upload portofolio"
+                      onClick={() => {
+                        showModal("upload-portofolio"), setReportId(item.id);
+                      }}
+                    >
+                      <span className="text-2xl">
+                        <MdCloudUpload />
+                      </span>
+                    </button>
+
+                    <button
+                      className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
+                      data-tip="lihat portofolio"
+                      onClick={() => getPortoByRapotId(item?.id)}
+                    >
+                      <span className="text-xl">
+                        <FaFilePdf />
+                      </span>
+                    </button>
+                    <button
+                      className={`btn join-item btn-ghost btn-sm text-xl text-white tooltip ${
+                        item.por_teacher_comments
+                          ? "bg-green-500"
+                          : "bg-gray-400"
+                      }`}
+                      data-tip="Komentar Guru"
+                      onClick={() =>
+                        handleKomen(
+                          item.por_teacher_comments,
+                          item.student_class_id,
+                          item.id,
+                          item.semester
+                        )
+                      }
+                    >
+                      <IoChatboxEllipsesOutline />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -387,25 +278,83 @@ const RaportPortofolio = () => {
             <label className="mt-4 font-bold">Upload File</label>
             <input
               type="file"
+              onChange={handleFile}
               className="file-input file-input-bordered w-full"
             />
           </div>
 
           <div className="w-full flex justify-center mt-10 gap-2">
-            <button className="btn bg-green-500 text-white font-bold w-full">
+            <button
+              className="btn bg-green-500 text-white font-bold w-full"
+              onClick={() => CreatePortofolio("Guru")}
+            >
               Submit
             </button>
-            {/* <button className="btn bg-green-500 text-white font-bold">Submit</button> */}
           </div>
         </div>
       </Modal>
+
       <Modal id="show-portofolio" width="w-11/12 max-w-5xl">
-        <div className="join ">
-          <button className="btn btn-sm join-item bg-blue-500 text-white">portofolio</button>
-          <button className="btn btn-sm join-item bg-blue-700 text-white">merge portofolio</button>
+        <div className="join">
+          {porto?.map((item: any, index: number) => (
+            <button
+              className="btn join-item bg-blue-500 text-white flex items-center"
+              key={index}
+              onClick={() => showFilePortofolio(item?.file_path)}
+            >
+              <span className="text-xl">
+                <FaFilePdf />
+              </span>
+              {item?.type}
+            </button>
+          ))}
+          <button
+            className={`btn join-item bg-red-500 text-white flex items-center ${
+              merge ? "" : "hidden"
+            }`}
+            onClick={handleMerge}
+          >
+            <span className="text-xl">
+              <FaFilePdf />
+            </span>
+            {loading ? (
+              <span className="loading loading-infinity loading-lg"></span>
+            ) : (
+              "Merge"
+            )}
+          </button>
         </div>
-        <div className="w-full flex flex-col items-center min-h-svh">
-          <iframe className="w-full min-h-svh mt-5" src={Pdf} />
+        <div className="w-full flex flex-col items-center justify-center min-h-svh">
+          {file ? (
+            <iframe className="w-full min-h-svh mt-5" src={file} />
+          ) : (
+            <>
+              <span className="text-6xl font-bold">
+                <CiFolderOff />
+              </span>
+              <span className="text-xl">Tidak Ada Data</span>
+            </>
+          )}
+        </div>
+      </Modal>
+      <Modal id="komen-guru-porto" width="w-11/12 max-w-5xl">
+        <div className="w-full flex justify-center flex-col items-center">
+          <p className="text-xl font-bold">Komentar Guru</p>
+          <textarea
+            className="textarea textarea-bordered w-full min-h-96 mt-5"
+            placeholder="Komentar"
+            value={komen}
+            onChange={(e) => setKomen(e.target.value)}
+          />
+
+          <div className="w-full justify-end flex mt-5">
+            <button
+              className="btn btn-ghost bg-green-500 text-white"
+              onClick={CreateKomenGuru}
+            >
+              Submit
+            </button>
+          </div>
         </div>
       </Modal>
     </div>
