@@ -1,17 +1,43 @@
+import { useState } from "react";
 import bg from "../../assets/bg2.png";
 import ApexChart from "../../component/ApexChart";
+import FaceDetection from "../../component/FaceRegocnition";
+
 import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
+
 import Modal from "../../component/modal";
 import { useProps } from "../../store/Store";
 
-
 const Dashboard = () => {
+  const [camera, setCamera] = useState<boolean>(false);
   const { inArea, distance } = useProps();
+
   const showModalAdd = (props: string) => {
     let modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
+      kamera();
     }
+  };
+  const closeModalAdd = (props: string) => {
+    let modalElement = document.getElementById(props) as HTMLDialogElement;
+    if (modalElement) {
+      modalElement.close();
+      setCamera(false);
+    }
+  };
+  const kamera = () => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then(function (stream) {
+        setCamera(true);
+        console.log("Izin kamera telah diberikan");
+        stream.getTracks().forEach((track) => track.stop());
+      })
+      .catch(function (err) {
+        setCamera(false);
+        console.log("Izin kamera ditolak atau tidak diberikan");
+      });
   };
 
   return (
@@ -137,8 +163,7 @@ const Dashboard = () => {
               <span className="text-xl font-bold">Pengumuman</span>
               <div className="h-52 w-full bg-white rounded-md flex justify-center items-center">
                 <span className="text-gray-300 font-bold">
-
-                tidak ada pengumuman
+                  tidak ada pengumuman
                 </span>
               </div>
             </div>
@@ -146,13 +171,37 @@ const Dashboard = () => {
         </div>
       </div>
       <Modal id="modal-absen">
-        <div className="mt-4">
-          <MapWithTwoRadiusPins />
+        <div className={`mt-4 flex justify-center`}>
+          {camera ? (
+            <>
+            <MapWithTwoRadiusPins />
+            <FaceDetection />
+            </>
+          ) : (
+            <img
+              src="https://png.pngtree.com/png-clipart/20230917/original/pngtree-flat-vector-illustration-of-photo-camera-icon-and-no-image-available-png-image_12324435.png"
+              alt=""
+            />
+          )}
+
         </div>
         <div className="my-3 w-full flex flex-col justify-center items-center">
-          <span className={` text-bold`}>Jarak anda ke area presensi terdekat adalah {distance} meter </span>
-          <span className={`${inArea ? 'hidden' : ''} text-bold text-red-500`}>Anda Berada Diluar Area ! </span>
-          <button className={`btn bg-green-500 w-full text-white ${inArea ? '' : 'btn-disabled'}`}>Presensi</button>
+          <img src="" alt="" />
+          <span className={` text-bold`}>
+            Jarak anda ke area presensi terdekat adalah {distance} meter{" "}
+          </span>
+          <span className={`${inArea ? "hidden" : ""} text-bold text-red-500`}>
+            Anda Berada Diluar Area !{" "}
+          </span>
+          <div className="w-full flex gap-2">
+           
+            <button
+              className={`btn bg-gray-500 w-full text-white `}
+              onClick={() => closeModalAdd("modal-absen")}
+            >
+              Close
+            </button>
+          </div>
         </div>
       </Modal>
     </div>
