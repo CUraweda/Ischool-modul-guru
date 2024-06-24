@@ -746,4 +746,121 @@ const Raport = {
     }),
 };
 
-export { Auth, Task, Kalender, Student, Raport };
+const Pengumuman = {
+  createPengumuman: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/announcement/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  UpdatePengumuman: (
+    token: string | null,
+    id: string | number | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/announcement/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+
+  getAllPengumuman: (
+    token: string | null,
+    start: string | null,
+    end: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/announcement/show-between?start=${start}&end=${end}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getByIdPengumuman: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/announcement/show/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  DeletePengumuman: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: `/api/announcement/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
+const DashboardSiswa = {
+  getAllOverView: (token: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/overview?search_query=&page=0&limit=100`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getByIdOverView: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/overview/show/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  createOverview: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/overview/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+
+  UpdateOverview: (
+    token: string | null,
+    id: string | number | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/overview/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+    DeleteOverview: (
+      token: string | null,
+      id: string | null
+    ): AxiosPromise<any> =>
+      instance({
+        method: "DELETE",
+        url: `/api/overview/delete/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
+};
+
+export { Auth, Task, Kalender, Student, Raport, Pengumuman, DashboardSiswa };

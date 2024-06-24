@@ -65,51 +65,53 @@ const MapWithTwoRadiusPins: React.FC = () => {
   }, []);
 
   return (
-    <MapContainer
-      center={Location[0] || { lat: 0, lng: 0 }}
-      zoom={13}
-      style={{ height: "30vh", width: "100%" }}
-    >
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      {Location &&
-        Location.map((item: Position, index: number) => (
-          <React.Fragment key={index}>
-            <Marker
-              position={item || { lat: 0, lng: 0 }}
-              icon={
-                new L.Icon({
-                  iconUrl: marker1,
-                  iconSize: [50, 50],
-                  iconAnchor: [25, 48],
-                })
-              }
-            />
-            <Circle
-              center={item || { lat: 0, lng: 0 }}
-              radius={item?.radius || 1}
-              color="blue"
-            />
-          </React.Fragment>
-        ))}
-      {position2 && (
-        <>
-          <Marker
-            position={position2}
-            icon={
-              new L.Icon({
-                iconUrl: marker2,
-                iconSize: [50, 50],
-                iconAnchor: [25, 48],
-              })
-            }
-          />
-          <Circle center={position2} radius={5} color="red" />
-        </>
-      )}
-      {Location && position2 && nearestLocation && (
-        <Polyline positions={[nearestLocation, position2]} color="green" />
-      )}
-    </MapContainer>
+    <>
+    </>
+    // <MapContainer
+    //   center={Location[0] || { lat: 0, lng: 0 }}
+    //   zoom={13}
+    //   style={{ height: "30vh", width: "100%" }}
+    // >
+    //   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+    //   {Location &&
+    //     Location.map((item: Position, index: number) => (
+    //       <React.Fragment key={index}>
+    //         <Marker
+    //           position={item || { lat: 0, lng: 0 }}
+    //           icon={
+    //             new L.Icon({
+    //               iconUrl: marker1,
+    //               iconSize: [50, 50],
+    //               iconAnchor: [25, 48],
+    //             })
+    //           }
+    //         />
+    //         <Circle
+    //           center={item || { lat: 0, lng: 0 }}
+    //           radius={item?.radius || 1}
+    //           color="blue"
+    //         />
+    //       </React.Fragment>
+    //     ))}
+    //   {position2 && (
+    //     <>
+    //       <Marker
+    //         position={position2}
+    //         icon={
+    //           new L.Icon({
+    //             iconUrl: marker2,
+    //             iconSize: [50, 50],
+    //             iconAnchor: [25, 48],
+    //           })
+    //         }
+    //       />
+    //       <Circle center={position2} radius={5} color="red" />
+    //     </>
+    //   )}
+    //   {Location && position2 && nearestLocation && (
+    //     <Polyline positions={[nearestLocation, position2]} color="green" />
+    //   )}
+    // </MapContainer>
   );
 };
 

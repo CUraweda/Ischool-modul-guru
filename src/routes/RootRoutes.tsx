@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Loading from "../component/Loading";
+import Test from "../page/guru/Test";
 
 const Home = lazy(() => import("../page/login"));
 const Layout = lazy(() => import("../component/Layout"));
@@ -22,6 +23,7 @@ const RaportNarasi = lazy(() => import("../page/guru/DetailRaportNarasi"));
 const DetailTugasSswa = lazy(() => import("../page/guru/detailTugasSswa"));
 const KalenderKegiatan = lazy(() => import("../page/guru/kalenderKegiatan"));
 const OverviewSiswa = lazy(() => import("../page/guru/DashboardSiswa"));
+const ODFYC = lazy(() => import("../page/guru/ODFYC"));
 
 const AbsenKaryawan = lazy(() => import("../page/admin/AbsenKaryawan"));
 
@@ -35,6 +37,12 @@ const RootRoutes = () => {
             <Suspense fallback={<Loading />}>
               <Home />
             </Suspense>
+          }
+        />
+        <Route
+          path="/test"
+          element={
+            <Test/>
           }
         />
         <Route
@@ -215,6 +223,16 @@ const RootRoutes = () => {
             <Suspense fallback={<Loading />}>
               <Layout>
                 <OverviewSiswa />
+              </Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/guru/one-day"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <ODFYC />
               </Layout>
             </Suspense>
           }
