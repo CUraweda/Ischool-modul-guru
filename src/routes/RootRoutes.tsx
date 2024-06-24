@@ -23,6 +23,7 @@ const RaportNarasi = lazy(() => import("../page/guru/DetailRaportNarasi"));
 const DetailTugasSswa = lazy(() => import("../page/guru/detailTugasSswa"));
 const KalenderKegiatan = lazy(() => import("../page/guru/kalenderKegiatan"));
 const OverviewSiswa = lazy(() => import("../page/guru/DashboardSiswa"));
+const ODFYC = lazy(() => import("../page/guru/ODFYC"));
 
 const AbsenKaryawan = lazy(() => import("../page/admin/AbsenKaryawan"));
 
@@ -222,6 +223,16 @@ const RootRoutes = () => {
             <Suspense fallback={<Loading />}>
               <Layout>
                 <OverviewSiswa />
+              </Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/guru/one-day"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <ODFYC />
               </Layout>
             </Suspense>
           }

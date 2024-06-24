@@ -1,10 +1,11 @@
 import React from 'react'
-import FaceDetection from '../../component/FaceRegocnition'
+
+import FaceDetectionFull from '../../component/FaceRegocnitionFull'
 
 const Test = () => {
   return (
     <div>
-        <FaceDetection/>
+        <FaceDetectionFull/>
     </div>
   )
 }
