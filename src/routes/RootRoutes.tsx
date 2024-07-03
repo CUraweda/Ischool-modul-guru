@@ -25,6 +25,15 @@ const KalenderKegiatan = lazy(() => import("../page/guru/kalenderKegiatan"));
 const OverviewSiswa = lazy(() => import("../page/guru/DashboardSiswa"));
 const ODFYC = lazy(() => import("../page/guru/ODFYC"));
 
+
+const Ke_Dashbaord = lazy(() => import("../page/keuangan/Dashboard"));
+const Ke_DataSiswa = lazy(() => import("../page/keuangan/DataSiswa"));
+const Ke_PosKeuangan = lazy(() => import("../page/keuangan/PosKeuangan"));
+const Ke_JenisPembayaran = lazy(() => import("../page/keuangan/JenisPembayaran"));
+const Ke_DetailJenisPembayaran = lazy(() => import("../page/keuangan/DetailJenisPembayaran"));
+const Ke_DaftarTunggakan = lazy(() => import("../page/keuangan/DaftarTunggakan"));
+const Ke_Laporan = lazy(() => import("../page/keuangan/Laporan"));
+
 const AbsenKaryawan = lazy(() => import("../page/admin/AbsenKaryawan"));
 
 const RootRoutes = () => {
@@ -243,6 +252,76 @@ const RootRoutes = () => {
             <Suspense fallback={<Loading />}>
               <Layout>
                 <AbsenKaryawan />
+              </Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/keuangan/"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <Ke_Dashbaord />
+              </Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/keuangan/data-siswa"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <Ke_DataSiswa />
+              </Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/keuangan/pos-pembayaran"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <Ke_PosKeuangan />
+              </Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/keuangan/jenis-pembayaran"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <Ke_JenisPembayaran />
+              </Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/keuangan/jenis-pembayaran/detail"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <Ke_DetailJenisPembayaran />
+              </Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/keuangan/daftar-tunggakan"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <Ke_DaftarTunggakan />
+              </Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/keuangan/Laporan"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <Ke_Laporan />
               </Layout>
             </Suspense>
           }

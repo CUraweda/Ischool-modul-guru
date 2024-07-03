@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Circle,
-  Polyline,
-} from "react-leaflet";
+// import {
+//   MapContainer,
+//   TileLayer,
+//   Marker,
+//   Circle,
+//   Polyline,
+// } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useProps } from "../store/Store";
-import marker1 from "../assets/marker1.png";
-import marker2 from "../assets/marker2.png";
+// import marker1 from "../assets/marker1.png";
+// import marker2 from "../assets/marker2.png";
 import Location from "../data/location.json";
 
 
@@ -30,6 +30,8 @@ const MapWithTwoRadiusPins: React.FC = () => {
     return null;
   };
 
+  console.log(position2, nearestLocation);
+  
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       (position) => {

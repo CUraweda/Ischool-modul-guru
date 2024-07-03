@@ -16,7 +16,7 @@ const schema = Yup.object({
 const login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
-  const { setToken } = Store();
+  const { setToken , setRole} = Store();
 
   const formik = useFormik({
     initialValues: {
@@ -44,17 +44,23 @@ const login = () => {
       const emailLower = email.toLowerCase();
       const response = await Auth.Login(emailLower, password);
       const role = response.data.data.role_id;
+      setRole(role.toString())
 
-      if (role !== 6) {
+      if (role === 6) {
+        setToken(response.data.tokens.access.token);
+        navigate("/guru/dashboard");
+      } else if (role === 2) {
+        setToken(response.data.tokens.access.token);
+        navigate("/keuangan/");
+      } else {
         Swal.fire({
           icon: "error",
           title: "Failed",
           text: "akun anda tidak memiliki akses!",
         });
-      } else {
-        setToken(response.data.tokens.access.token);
-        navigate("/guru/dashboard");
       }
+
+     
     } catch (error) {
       Swal.fire({
         icon: "error",

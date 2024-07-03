@@ -16,6 +16,16 @@ const Store = create<StoreState>((set: SetState<StoreState>) => ({
     set({ token: null });
   },
 
+  role: sessionStorage.getItem("role"),
+  setRole: (role) => {
+    if (role) {
+      sessionStorage.setItem("role", role);
+    } else {
+      sessionStorage.removeItem("role");
+    }
+    set({ role });
+  },
+
   tanggalPekanan: new Date(),
   setTanggalPekanan: (data) => set({ tanggalPekanan: data }),
 

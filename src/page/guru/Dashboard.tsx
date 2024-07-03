@@ -35,6 +35,8 @@ const Dashboard = () => {
         stream.getTracks().forEach((track) => track.stop());
       })
       .catch(function (err) {
+        console.log(err);
+        
         setCamera(false);
         console.log("Izin kamera ditolak atau tidak diberikan");
       });

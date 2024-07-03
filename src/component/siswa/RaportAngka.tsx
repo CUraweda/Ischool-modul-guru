@@ -69,7 +69,7 @@ const RaportAngka = () => {
     },
     validationSchema,
     onSubmit: (values) => {
-      console.log("values");
+      console.log(values);
     },
   });
 
