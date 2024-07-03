@@ -3,13 +3,15 @@ export interface StoreState {
   setToken: (token: string | null) => void;
   removeToken: () => void;
 
+  role: string | null;
+  setRole: (role: string | null) => void;
+
   tanggalPekanan: any;
   setTanggalPekanan: (tanggalPekanan: any) => void;
 
   tanggalStartDate: Date;
   setTanggalStartDate: (tanggalStartDate: any) => void;
 
- 
 
   data: string | null;
   setData: (data: string | null) => void;

@@ -20,7 +20,7 @@ interface Detection {
 const FaceDetectionFull: React.FC = () => {
   const webcamRef = useRef<Webcam | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [triger, setTriger] = useState<boolean>(false);
+  const [triger] = useState<boolean>(false);
 
   useEffect(() => {
     const loadModels = async () => {

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BsListNested } from "react-icons/bs";
-import { useState } from "react";
 import { iconMapping } from "../component/icon/icon";
 import logo from "../assets/sade.png";
 import { Link } from "react-router-dom";
 import menu from "../data/menu.json";
+import menuKeuangan from "../data/keuangan.json";
+import { Store } from "../store/Store";
 // import karywan from "../data/karyawan.json"
 
 interface Menu {
@@ -21,18 +22,25 @@ type subtitle = {
 };
 
 const Sidebar = () => {
-  const role = sessionStorage.getItem("role")
-  const Side = sessionStorage.getItem("side");
-  const [activeMenuItem, setActiveMenuItem] = useState<string>(
-    Side ? Side : "/"
-  );
+  const Side = sessionStorage.getItem('side') || '/';
+  const [data, setData] = useState<Menu[]>([]);
+  const [activeMenuItem, setActiveMenuItem] = useState<string>(Side);
+  const { role } = Store();
+
   const handleMenuItemClick = (name: string) => {
     setActiveMenuItem(name);
-    sessionStorage.setItem("side", name);
+    sessionStorage.setItem('side', name);
   };
-  let data = []
-  // data = role === 'guru' ? karywan : karywan
-  data = role === 'guru' ? menu : menu
+
+  const Role = role ? parseInt(role, 10) : 0;
+  
+  useEffect(() => {
+    if (Role === 6) {
+      setData(menu);
+    } else if (Role === 2) {
+      setData(menuKeuangan);
+    }
+  }, [Role]); 
 
   return (
     <div>

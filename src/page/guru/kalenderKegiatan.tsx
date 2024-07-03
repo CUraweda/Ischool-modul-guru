@@ -5,6 +5,7 @@ import { Store } from "../../store/Store";
 import { Kalender } from "../../midleware/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import Swal from "sweetalert2";
 
 const schema = Yup.object({
   edu_id: Yup.string().required("required"),
@@ -22,12 +23,12 @@ interface propsColor {
   title: string;
 }
 const KalenderKegiatan = () => {
-  const { token , tanggalPekanan} = Store();
+  const { token, tanggalPekanan } = Store();
   const [topik, setTopik] = useState<any[]>([]);
   const [Color, setColor] = useState<propsColor>({
     color: "bg-red-500",
     value: "#dc2626_red",
-    title: "Libur"
+    title: "Libur",
   });
 
   const getTopik = async () => {
@@ -62,12 +63,12 @@ const KalenderKegiatan = () => {
     {
       color: "bg-red-500",
       value: "#dc2626_red",
-      title: "Libur"
+      title: "Libur",
     },
     {
       color: "bg-orange-500",
       value: "#f97316_orange",
-       title: "Sosialisai/Parenting"
+      title: "Sosialisai/Parenting",
     },
     // {
     //   color: "bg-yellow-500",
@@ -82,7 +83,7 @@ const KalenderKegiatan = () => {
     {
       color: "bg-green-500",
       value: "#22c55e_green",
-       title: "Ekskul"
+      title: "Ekskul",
     },
     // {
     //   color: "bg-teal-500",
@@ -92,12 +93,12 @@ const KalenderKegiatan = () => {
     {
       color: "bg-cyan-500",
       value: "#06b6d4_cyan",
-       title: "Kegiatan/Event"
+      title: "Kegiatan/Event",
     },
     {
       color: "bg-blue-500",
       value: "#3b82f6_blue",
-       title: "Konsultasi Rapot"
+      title: "Konsultasi Rapot",
     },
     // {
     //   color: "bg-violet-500",
@@ -134,17 +135,33 @@ const KalenderKegiatan = () => {
   const createAgenda = async () => {
     const { edu_id, start_date, end_date, agenda } = formik.values;
     const color = Color.value;
-    const dataRest = {
-      edu_id: parseInt(edu_id),
-      start_date,
-      end_date,
-      agenda,
-      color,
-    };
 
-    await Kalender.createDetail(token, dataRest);
-    closeModal("add-kalender");
-    window.location.reload();
+    const startDate = new Date(start_date);
+    let endDate = new Date(end_date);
+
+    if (
+      startDate.getDate() === endDate.getDate() &&
+      startDate.getTime() === endDate.getTime()
+    ) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Waktu minimal selisih 1 Menit",
+      });
+      closeModal("add-kalender");
+    } else {
+      const dataRest = {
+        edu_id: parseInt(edu_id),
+        start_date,
+        end_date,
+        agenda,
+        color,
+      };
+
+      await Kalender.createDetail(token, dataRest);
+      closeModal("add-kalender");
+      window.location.reload();
+    }
   };
 
   const createTopikEdu = async () => {
@@ -161,16 +178,21 @@ const KalenderKegiatan = () => {
   };
 
   const getDate = () => {
-    const options: Intl.DateTimeFormatOptions = { month: "long", year: "numeric" };
-    const date = new Date(tanggalPekanan).toLocaleDateString("id-ID", options).toUpperCase();
+    const options: Intl.DateTimeFormatOptions = {
+      month: "long",
+      year: "numeric",
+    };
+    const date = new Date(tanggalPekanan)
+      .toLocaleDateString("id-ID", options)
+      .toUpperCase();
     return date;
   };
 
   return (
     <div className="my-10 w-full flex flex-col items-center">
       <div className=" flex flex-col items-center w-full">
-      <span className="text-3xl font-bold">KALENDER KEGIATAN</span>
-      <span className="text-xl">BULAN {getDate()}</span>
+        <span className="text-3xl font-bold">KALENDER KEGIATAN</span>
+        <span className="text-xl">BULAN {getDate()}</span>
       </div>
       <div className="w-full p-6">
         <Demo />

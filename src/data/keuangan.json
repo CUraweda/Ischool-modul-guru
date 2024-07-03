@@ -1,0 +1,53 @@
+[
+    {
+        "submenu": false,
+        "title": "Dashboard",
+        "icon": "<BsFillHouseFill />",
+        "url": "/keuangan",
+        "subtitle": []
+    },
+    {
+        "submenu": false,
+        "title": "Data Siswa",
+        "icon": "<FaPersonCircleCheck />",
+        "url": "/keuangan/data-siswa",
+        "subtitle": []
+    },
+  
+    {
+        "submenu": true,
+        "title": "Pembayaran",
+        "icon": "<CiMoneyCheck1 />",
+        "url": "",
+        "subtitle": [
+            {
+                "name": "Pos Pembayaran",
+                "url": "/keuangan/pos-pembayaran"
+            },
+            {
+                "name": "Jenis Pembayaran",
+                "url": "/keuangan/jenis-pembayaran"
+            },
+           
+            {
+                "name": "Daftar Tunggakan Siswa",
+                "url": "/keuangan/daftar-tunggakan"
+            }
+        ]
+    },
+    {
+        "submenu": false,
+        "title": "Laporan",
+        "icon": "<GoTasklist />",
+        "url": "/keuangan/Laporan",
+        "subtitle": []
+    },
+   
+    {
+        "submenu": false,
+        "title": "Customer Care",
+        "icon": "<MdOutlineMessage />",
+        "url": "/guru/cs",
+        "subtitle": []
+    }
+]

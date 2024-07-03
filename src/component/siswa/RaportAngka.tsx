@@ -3,7 +3,7 @@ import { FaPencilAlt, FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import Modal from "../modal";
 import { MdCloudUpload } from "react-icons/md";
 import { Store, useProps } from "../../store/Store";
-import { Task, Raport } from "../../midleware/api";
+import { Task, Raport, KepribadianSiswa, Kepribadian } from "../../midleware/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
@@ -12,6 +12,7 @@ import * as XLSX from "xlsx";
 import template from "./template.xlsx";
 import * as ExcelJS from "exceljs";
 import { FiFileText } from "react-icons/fi";
+import { BsPersonLinesFill } from "react-icons/bs";
 
 const validationSchema = Yup.object({
   classId: Yup.string().required("required"),
@@ -20,6 +21,13 @@ const validationSchema = Yup.object({
   subjectId: Yup.string().required("required"),
   nilai: Yup.string().required("required"),
   terbilang: Yup.string().required("required"),
+});
+
+const validationPersonalitySchema = Yup.object({
+  id: Yup.string().optional(),
+  classId: Yup.string().required('required'),
+  personalityId: Yup.string().required('Kepribadiaan harus diisi'),
+  grade: Yup.string().required('Nilai harus diisi')
 });
 
 const RaportAngka = () => {
@@ -222,6 +230,85 @@ const RaportAngka = () => {
 
     showModal("edit-angka");
   };
+
+  const formikPersonality = useFormik({
+    initialValues: {
+      id: "",
+      classId: "",
+      personalityId: "",
+      grade: ""
+    },
+    validationSchema: validationPersonalitySchema,  
+    onSubmit: () => {}      
+  });
+
+  const [personalities, setPersonalities] = useState<any[]>([])
+  const [studentpersonalities, setStudentPersonalities] = useState<any[]>([]);
+  const [studentInEditPersonality, setStudentInEditPersonality] = useState<any>({})
+
+  const getStudentPersonalities = async () => {
+    const res = await KepribadianSiswa.showAll(token, studentInEditPersonality.nis, 0, 100);
+    const data = res.data.data.result
+  
+    setStudentPersonalities(data.filter((dat: any) => dat.student_class_id == studentInEditPersonality.classId))
+  }
+  const showStudentPersonalities = async (studentClass?: Record<string, any>) => {
+    setStudentPersonalities([])
+    setStudentInEditPersonality({
+			name: studentClass?.student?.full_name ?? '-',
+			nis: studentClass?.student?.nis ?? '-',
+			academic_year: studentClass?.academic_year ?? '-',
+      classId: studentClass?.id ?? ''
+		});
+
+    formikPersonality.setValues(v => {
+      return {
+        ...v,
+        classId: studentClass?.id
+      }
+    })
+    showModal('edit-kepribadian')
+  } 
+
+  useEffect(() => {
+    getStudentPersonalities()
+    getPersonalities()
+  }, [studentInEditPersonality])
+
+  const handleSubmitStudentPersonality = async () => {
+    const {classId, personalityId, grade, id} = formikPersonality.values
+
+    let res;
+    if (id) {
+      res = await KepribadianSiswa.update(token, id, {
+        student_class_id: classId,
+        personality_id: personalityId,
+        grade
+      })
+    } else {
+      res = await KepribadianSiswa.add(token, {
+        student_class_id: classId,
+        personality_id: personalityId,
+        grade
+      })
+    }
+
+    if (res) {
+      getStudentPersonalities()
+    }
+  }
+
+  const handleDeleteStudentPersonality = async (id: string) => {
+    const res = await KepribadianSiswa.delete(token, id)
+
+    if (res.status == 200) getStudentPersonalities()
+  }
+
+  const getPersonalities = async () => {
+    const res = await Kepribadian.showAll(token)
+    const data = res.data.data.result
+    setPersonalities(data)
+  }
 
   const handleEdit = async () => {
     const { subjectId, nilai, semester, terbilang, studentId } = formik.values;
@@ -541,6 +628,17 @@ const RaportAngka = () => {
                         <FiFileText />
                       </span>
                     </button>
+                    <button
+                      className="btn btn-sm join-item bg-lime-600 text-white tooltip"
+                      data-tip="edit kepribadian"
+                      onClick={() => {
+                        showStudentPersonalities(item?.studentreport?.studentclass)
+                      }}
+                    >
+                      <span className="text-xl">
+                        <BsPersonLinesFill />
+                      </span>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -548,6 +646,114 @@ const RaportAngka = () => {
           </tbody>
         </table>
       </div>
+      <Modal id="edit-kepribadian" width="w-11/12 max-w-4xl">
+        <h3 className="text-xl mb-6">Edit Kepribadian</h3>
+        <div className="mb-6 grid grid-cols-3">
+          <div className="font-bold col-span-1">Nama siswa</div>
+          <div className="col-span-2">:{' '}
+            {studentInEditPersonality['name']}
+          </div>
+          <div className="font-bold col-span-1">NIS</div>
+          <div className="col-span-2">:{' '}
+            {studentInEditPersonality['nis']}
+          </div>
+          <div className="font-bold col-span-1">Tahun pelajaran</div>
+          <div className="col-span-2">:{' '}
+            {studentInEditPersonality['academic_year']}
+          </div>
+        </div>
+        <form onSubmit={formikPersonality.handleSubmit} className="mb-6 flex items-start gap-3">
+          <label className="form-control grow">
+            <div className="label">
+              <span className="label-text">Kepribadian</span>
+            </div>
+            <select 
+              name="personalityId" 
+              onChange={formikPersonality.handleChange} 
+              value={formikPersonality.values.personalityId}
+              className="select select-bordered"
+            >
+              <option disabled selected>- Pilih -</option>
+              {
+                personalities.map((personality, i) => (
+                  <option key={i} value={personality.id}>{personality.desc}</option>
+                ))
+              }
+            </select>
+            <div className="label">
+              {formikPersonality.touched.personalityId && formikPersonality.errors.personalityId && (
+                <div className="text-red-500 text-xs">
+                  {formikPersonality.errors.personalityId}
+                </div>
+              )}
+            </div>
+          </label>
+          <label className="form-control grow">
+            <div className="label">
+              <span className="label-text">Nilai</span>
+            </div>
+            <select 
+              name="grade"  
+              onChange={formikPersonality.handleChange} 
+              value={formikPersonality.values.grade} 
+              className="select select-bordered"
+            >
+              <option disabled selected>- Pilih -</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option value="E">E</option>
+              <option value="F">F</option>
+            </select>
+            <div className="label">
+              {formikPersonality.touched.grade && formikPersonality.errors.grade && (
+                <div className="text-red-500 text-xs">
+                  {formikPersonality.errors.grade}
+                </div>
+              )}
+            </div>
+          </label>
+          <button onClick={() => handleSubmitStudentPersonality()} type="submit" className="btn mt-9 btn-primary">Tambah</button>
+        </form>
+        <div className="overflow-x-auto w-full">
+          <table className="table min-w-full">
+            {/* head */}
+            <thead>
+              <tr>
+                <th></th>
+                <th>Kepribadian</th>
+                <th>Nilai</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                studentpersonalities.map((item, i) => (
+                  <tr key={i}>
+                    <th>{i + 1}</th>
+                    <td>{item?.personality?.desc ?? '-'}</td>
+                    <td>{item?.grade ?? '-'}</td>
+                    <td>
+                      <div className="join">
+                        <button
+                          className="btn btn-sm join-item bg-red-500 text-white tooltip"
+                          data-tip="hapus"
+                          onClick={() => handleDeleteStudentPersonality(item?.id)}
+                        >
+                          <span className="text-xl">
+                            <FaRegTrashAlt />
+                          </span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </Modal>
       <Modal id="add-angka">
         <div className="w-full flex justify-center flex-col items-center">
           <span className="text-xl font-bold">Tambah Raport Angka</span>

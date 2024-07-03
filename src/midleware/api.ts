@@ -863,4 +863,52 @@ const DashboardSiswa = {
       }),
 };
 
-export { Auth, Task, Kalender, Student, Raport, Pengumuman, DashboardSiswa };
+const KepribadianSiswa = {
+	add: (token: string | null, data: any) =>
+		instance({
+			method: 'POST',
+			url: '/api/student-personality/create',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+			data,
+		}),
+	showAll: (token: string | null, search?: string, page: number = 0, limit: number = 10): AxiosPromise<any> =>
+		instance({
+			method: 'GET',
+			url: `/api/student-personality?search_query=${search}&page=${page}&limit=${limit}`,
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		}),
+	update: (token: string | null, id: string | number | null, data: any): AxiosPromise<any> =>
+		instance({
+			method: 'PUT',
+			url: '/api/student-personality/update/' + id,
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+			data,
+		}),
+	delete: (token: string | null, id: string | number | null): AxiosPromise<any> =>
+		instance({
+			method: 'DELETE',
+			url: '/api/student-personality/delete/' + id,
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		}),
+};
+
+const Kepribadian = {
+  showAll: (token: string | null, search: string = '', page: number = 0, limit: number = 10): AxiosPromise<any> =>
+		instance({
+			method: 'GET',
+			url: `/api/personality?search_query=${search}&page=${page}&limit=${limit}`,
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		}),
+}
+
+export { Auth, Task, Kalender, Student, Raport, Pengumuman, DashboardSiswa, KepribadianSiswa, Kepribadian };
