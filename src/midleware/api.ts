@@ -426,6 +426,14 @@ const Raport = {
       },
       data,
     }),
+  updateStudentReportAccess: (token: string | null, id: string | null): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/student-report/update-access/${id}` ,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   getAllStudentReport: (
     token: string | null,
     id: string | null

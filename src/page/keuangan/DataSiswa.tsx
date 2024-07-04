@@ -1,9 +1,16 @@
 // import React from "react";
 import { useEffect, useState } from 'react';
-import { FaLock, FaLockOpen, FaRegFileAlt, FaSearch } from 'react-icons/fa';
-import { Class, Student } from '../../midleware/api';
+import { FaFileAlt, FaLock, FaLockOpen, FaSearch } from 'react-icons/fa';
+import { Class, Raport, Student } from '../../midleware/api';
 import { Store } from '../../store/Store';
 import Swal from 'sweetalert2';
+import { getAcademicYears, getCurrentAcademicYear } from '../../utils/common';
+import { FaMoneyBill1Wave } from 'react-icons/fa6';
+
+const getReport = (arr: any[], semester: any) => {
+	const filt = arr.filter((ar) => ar.semester == semester);
+	return filt.length ? filt[0] : null;
+};
 
 const DataSiswa = () => {
 	const { token } = Store();
@@ -15,7 +22,7 @@ const DataSiswa = () => {
 	const [filter, setFilter] = useState({
 		search: '',
 		classId: '',
-		academicYear: '',
+		academicYear: getCurrentAcademicYear(),
 		page: 0,
 	});
 
@@ -55,6 +62,27 @@ const DataSiswa = () => {
 		} catch {}
 	};
 
+	const updateReportLockStatus = async (id: string, state: boolean) => {
+		try {
+			await Raport.updateStudentReportAccess(token, id);
+			getStudents();
+
+			Swal.fire({
+				icon: 'success',
+				title: 'Sukses',
+				text: `Sukses ${state ? 'membuka kunci' : 'mengunci'} rapot`,
+				showConfirmButton: false,
+			});
+		} catch {
+			Swal.fire({
+				icon: 'error',
+				title: 'Gagal',
+				text: `Gagal ${state ? 'membuka kunci' : 'mengunci'} rapot`,
+				showConfirmButton: false,
+			});
+		}
+	};
+
 	// entry point
 	useEffect(() => {
 		getStudents();
@@ -84,10 +112,11 @@ const DataSiswa = () => {
 							onChange={(e) => handleFilter('academicYear', e.target.value)}
 							className="select select-bordered w-32"
 						>
-							<option value={''}>Pilih Tahun Ajar</option>
-							<option value={'2023/2024'}>2023/2024</option>
-							<option value={'2024/2025'}>2024/2025</option>
-							<option value={'2025/2026'}>2025/2026</option>
+							{getAcademicYears().map((val, i) => (
+								<option value={val} key={i}>
+									{val}
+								</option>
+							))}
 						</select>
 						<div className="join">
 							<input
@@ -128,14 +157,60 @@ const DataSiswa = () => {
 													className="btn btn-ghost btn-sm join-item bg-blue-500 text-white tooltip"
 													data-tip="Detail Pembayaran"
 												>
-													<FaRegFileAlt />
+													<FaMoneyBill1Wave />
 												</button>
-												<button
-													className="btn btn-ghost btn-sm join-item bg-red-500 text-white tooltip"
-													data-tip="Buka Kunci Raport"
-												>
-													<FaLock />
-												</button>
+
+												<div className="dropdown dropdown-left dropdown-end">
+													<button
+														className="btn btn-ghost btn-sm join-item bg-cyan-500 text-white tooltip"
+														data-tip="Kelola Rapot"
+													>
+														<FaFileAlt />
+													</button>
+													<ul
+														tabIndex={0}
+														className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+													>
+														{[1, 2].map((smt) => {
+															const report = getReport(dat.studentreports, smt);
+															return (
+																// <li>
+																// 	<button
+																<div className="form-control">
+																	<label
+																		onClick={() => {
+																			updateReportLockStatus(report.id, !report.student_access);
+																		}}
+																		className={
+																			'flex justify-between label !font-bold items-center ' +
+																			(!report ? 'text-gray-400 !cursor-not-allowed' : '')
+																		}
+																	>
+																		Semester {smt}
+																		{report ? (
+																			<div
+																				className="tooltip"
+																				data-tip={report.student_access ? 'Kunci rapot' : 'Buka kunci rapot'}
+																			>
+																				<button className="btn btn-square btn-sm">
+																					{report.student_access ? (
+																						<FaLockOpen className="swap-on text-success text-lg" />
+																					) : (
+																						<FaLock className="swap-off text-error text-lg" />
+																					)}
+																				</button>
+																			</div>
+																		) : (
+																			''
+																		)}
+																	</label>
+																</div>
+																// 	</button>
+																// </li>
+															);
+														})}
+													</ul>
+												</div>
 											</div>
 										</td>
 									</tr>
