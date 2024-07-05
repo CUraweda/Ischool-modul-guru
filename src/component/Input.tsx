@@ -5,16 +5,18 @@ interface Props {
 	hint?: string;
 	errorMessage?: string;
 	placeholder?: string;
+	helpMessage?: string;
 }
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement>, Props {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-	({ className, type, label, hint, errorMessage, placeholder = 'Ketik disini', ...props }, ref) => {
+	({ className, type, label, hint, errorMessage, helpMessage, placeholder = 'Ketik disini', ...props }, ref) => {
 		return (
 			<label className="form-control w-full">
 				<div className="label">
 					<span className="label-text font-bold">{label}</span>
+					<span className="label-text-alt">{helpMessage}</span>
 				</div>
 				<input
 					type={type}
@@ -36,11 +38,12 @@ Input.displayName = 'Input';
 interface TextareaProps extends React.InputHTMLAttributes<HTMLTextAreaElement>, Props {}
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-	({ className, label, hint, errorMessage, placeholder = 'Ketik disini', ...props }, ref) => {
+	({ className, label, hint, errorMessage, helpMessage, placeholder = 'Ketik disini', ...props }, ref) => {
 		return (
 			<label className="form-control w-full">
 				<div className="label">
 					<span className="label-text font-bold">{label}</span>
+					<span className="label-text-alt">{helpMessage}</span>
 				</div>
 				<textarea
 					placeholder={placeholder}
@@ -66,13 +69,25 @@ interface SelectProps<T> extends React.InputHTMLAttributes<HTMLSelectElement>, P
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps<any>>(
 	(
-		{ className, label, hint, errorMessage, placeholder = '- Pilih -', options, keyValue, keyDisplay, ...props },
+		{
+			className,
+			label,
+			hint,
+			errorMessage,
+			helpMessage,
+			placeholder = '- Pilih -',
+			options,
+			keyValue,
+			keyDisplay,
+			...props
+		},
 		ref
 	) => {
 		return (
 			<label className="form-control w-full">
 				<div className="label">
 					<span className="label-text font-bold">{label}</span>
+					<span className="label-text-alt">{helpMessage}</span>
 				</div>
 				<select className={'text-small select select-bordered w-full ' + className} ref={ref} {...props}>
 					<option value="">{placeholder}</option>

@@ -12,6 +12,7 @@ const JenisPembayaran = () => {
 	const navigate = useNavigate();
 	const modalForm = 'form-jenis-pembayaran';
 
+	// data state
 	const [dataIdxInForm, setDataIdxInForm] = useState<any>(null);
 	const [dataList, setDataList] = useState<any[]>([
 		{
@@ -71,17 +72,38 @@ const JenisPembayaran = () => {
 
 					<Select label="Pos pembayaran" name="payment_post_id" options={['SPP', 'Asuransi']} />
 
-					<Input type="number" label="Total" name="total" />
-
 					<Input type="date" label="Jatuh tempo" name="due_date" />
 
 					<Select label="Tahun pembelajaran" name="academic_year" options={getAcademicYears()} />
 
+					<Input type="number" label="Total" name="total" />
+
 					<Select label="Jenjang" name="level" options={['TK', 'SD', 'SMP']} />
 
-					<Select label="Kelas" name="class_id" options={['TK A', 'TK B', 'SD A', 'SD B', 'SMP A', 'SMP B']} />
+					<div className="divider">Khusus</div>
 
-					<Select label="Siswa" name="student_id" options={['Kak Gem', 'Ivan Gunawan', 'Genjot Wak']} />
+					<Select
+						label="Kelas"
+						name="class_id"
+						helpMessage="Opsional"
+						options={['TK A', 'TK B', 'SD A', 'SD B', 'SMP A', 'SMP B']}
+					/>
+
+					<Select
+						label="Siswa"
+						name="student_id"
+						helpMessage="Opsional"
+						options={['Kak Gem', 'Ivan Gunawan', 'Genjot Wak']}
+					/>
+
+					<div className="modal-action">
+						<button className="btn" type="button">
+							Atur ulang
+						</button>
+						<button className="btn btn-primary" type="submit">
+							Simpan
+						</button>
+					</div>
 				</form>
 			</Modal>
 
@@ -126,7 +148,6 @@ const JenisPembayaran = () => {
 											<div className="flex flex-wrap gap-2 max-w-40">
 												<div className="badge badge-primary">{dat.level}</div>
 												{dat.class && <div className="badge badge-secondary">{dat.class.name}</div>}
-												{dat.student && <div className="badge badge-accent">{dat.student.name}</div>}
 											</div>
 										</td>
 										<td>
