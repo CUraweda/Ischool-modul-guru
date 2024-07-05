@@ -1,6 +1,7 @@
 import axios, { AxiosPromise } from "axios";
 import { LoginResponse } from "./Utils";
-const instance = axios.create({ baseURL: "https://api-dev.curaweda.com:7000" });
+// const instance = axios.create({ baseURL: "https://api-dev.curaweda.com:7000" });
+const instance = axios.create({ baseURL: "http://localhost:5000" });
 
 const Auth = {
   Login: (
@@ -26,6 +27,21 @@ const Student = {
     instance({
       method: "GET",
       url: `/api/student-class/show-by-class/${id}?academic=${tahun}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  GetStudents: (
+    token: string | null,
+    search: string | null,
+    class_id: string | null,
+    tahun: string | null,
+    page: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-class?search_query=${search}&academic=${tahun}&class_id=${class_id}&page=${page}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -89,6 +105,21 @@ const Student = {
       },
     }),
 };
+
+const Class = {
+  showAll: (
+    token: string | null,
+    page: number | null,
+    limit: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/classes?search_query=&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+}
 
 const Task = {
   GetAll: (
@@ -394,6 +425,14 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
       data,
+    }),
+  updateStudentReportAccess: (token: string | null, id: string | null): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/student-report/update-access/${id}` ,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     }),
   getAllStudentReport: (
     token: string | null,
@@ -911,4 +950,4 @@ const Kepribadian = {
 		}),
 }
 
-export { Auth, Task, Kalender, Student, Raport, Pengumuman, DashboardSiswa, KepribadianSiswa, Kepribadian };
+export { Auth, Task, Kalender, Student, Raport, Pengumuman, DashboardSiswa, KepribadianSiswa, Kepribadian, Class };
