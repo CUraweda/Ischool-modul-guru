@@ -25,3 +25,10 @@ export const getCurrentAcademicYear = () => {
 
 	return found.length ? found[0] : years[1];
 };
+
+export const moneyFormat = (number: number, locale = 'id-ID', currency = 'IDR') => {
+	return new Intl.NumberFormat(locale, {
+		style: 'currency',
+		currency: currency,
+	}).format(number);
+};
