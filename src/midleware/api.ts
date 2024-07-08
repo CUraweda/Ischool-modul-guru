@@ -1,6 +1,6 @@
 import axios, { AxiosPromise } from "axios";
 import { LoginResponse } from "./Utils";
-const instance = axios.create({ baseURL: "https://api-dev.curaweda.com:7000" });
+const instance = axios.create({ baseURL: import.meta.env.VITE_REACT_API_URL });
 
 const Auth = {
   Login: (
@@ -26,6 +26,21 @@ const Student = {
     instance({
       method: "GET",
       url: `/api/student-class/show-by-class/${id}?academic=${tahun}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  GetStudents: (
+    token: string | null,
+    search: string | null,
+    class_id: string | null,
+    tahun: string | null,
+    page: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-class?search_query=${search}&academic=${tahun}&class_id=${class_id}&page=${page}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -89,6 +104,21 @@ const Student = {
       },
     }),
 };
+
+const Class = {
+  showAll: (
+    token: string | null,
+    page: number | null,
+    limit: number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/classes?search_query=&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+}
 
 const Task = {
   GetAll: (
@@ -394,6 +424,14 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
       data,
+    }),
+  updateStudentReportAccess: (token: string | null, id: string | null): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/student-report/update-access/${id}` ,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     }),
   getAllStudentReport: (
     token: string | null,
@@ -900,6 +938,51 @@ const KepribadianSiswa = {
 		}),
 };
 
+const PosPembayaran = {
+	create: (token: string | null, data: any) =>
+		instance({
+			method: 'POST',
+			url: '/api/payment-post/create',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+			data,
+		}),
+	showAll: (token: string | null, search?: string, page: number = 0, limit: number = 10): AxiosPromise<any> =>
+		instance({
+			method: 'GET',
+			url: `/api/payment-post?search_query=${search}&page=${page}&limit=${limit}`,
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		}),
+	showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+		instance({
+			method: 'GET',
+			url: `/api/payment-post/show/${id}`,
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		}),
+	update: (token: string | null, id: string | number | null, data: any): AxiosPromise<any> =>
+		instance({
+			method: 'PUT',
+			url: '/api/payment-post/update/' + id,
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+			data,
+		}),
+	delete: (token: string | null, id: string | number | null): AxiosPromise<any> =>
+		instance({
+			method: 'DELETE',
+			url: '/api/payment-post/delete/' + id,
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		}),
+};
+
 const Kepribadian = {
   showAll: (token: string | null, search: string = '', page: number = 0, limit: number = 10): AxiosPromise<any> =>
 		instance({
@@ -911,4 +994,4 @@ const Kepribadian = {
 		}),
 }
 
-export { Auth, Task, Kalender, Student, Raport, Pengumuman, DashboardSiswa, KepribadianSiswa, Kepribadian };
+export { Auth, Task, Kalender, Student, Raport, Pengumuman, DashboardSiswa, KepribadianSiswa, Kepribadian, Class, PosPembayaran };
