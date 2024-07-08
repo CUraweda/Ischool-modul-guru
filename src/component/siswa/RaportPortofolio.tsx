@@ -69,7 +69,9 @@ const RaportPortofolio = () => {
     const response = await Raport.getPortofolioByRaport(token, id);
     const dataRest = response.data.data;
     const type = dataRest?.map((item: any) => item.type);
-    if (type.length === 2 && type.includes("Guru") && type.includes("Ortu")) {
+    console.log(type);
+    
+    if (type.length === 2 && type.includes("Guru") && type.includes("Orang Tua")) {
       setMerge(true);
     } else {
       setMerge(false);
