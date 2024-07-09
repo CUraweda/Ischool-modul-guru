@@ -10,10 +10,8 @@ import { Input, Select } from "../../component/Input";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
-  Class,
   PosJenisPembayaran,
   PosPembayaran,
-  Student,
 } from "../../midleware/api";
 import { Store } from "../../store/Store";
 import Swal from "sweetalert2";
@@ -328,7 +326,7 @@ const JenisPembayaran = () => {
                         <Link
                           className="btn flex btn-ghost btn-sm join-item bg-blue-500 text-white tooltip"
                           data-tip="Detail"
-                          to={"/keuangan/jenis-pembayaran/detail"}
+                          to={"/keuangan/jenis-pembayaran/" + dat.id}
                         >
                           <FaRegFileAlt />
                         </Link>
