@@ -78,7 +78,7 @@ function PosKeuangan() {
           : await PosPembayaran.update(
               token,
               dataList[dataIdxInForm].id,
-              values
+              values,
             );
 
         closeModal("form-pos-pembayaran");
