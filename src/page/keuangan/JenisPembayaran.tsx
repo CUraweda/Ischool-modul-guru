@@ -22,13 +22,8 @@ const jenisPembayaranSchema = Yup.object().shape({
   name: Yup.string().required("Keterangan harus diisi"),
   payment_post_id: Yup.number().required("Pos pembayaran harus dipilih satu"),
   due_date: Yup.date().required("Tanggal jatuh tempo harus diisi"),
-  academic_year: Yup.string().required("Tahun pembelajaran harus dipilih"),
   total: Yup.number().required("Total bayar harus ditentukan"),
-  level: Yup.string()
-    .oneOf(["SD", "SM", "TK"])
-    .required("Jenjang pendidikan harus dipilih satu"),
-  class_id: Yup.number().optional(),
-  student_id: Yup.number().optional(),
+  academic_year: Yup.string().required("Tahun pembelajaran harus dipilih"),
 });
 
 const JenisPembayaran = () => {
@@ -74,9 +69,7 @@ const JenisPembayaran = () => {
   }, [filter]);
 
   // state in modal form
-  const [students, setStudents] = useState<any[]>([]);
   const [postPayments, setPostPayments] = useState<any[]>([]);
-  const [classes, setClasses] = useState<any[]>([]);
 
   const jenisPembayaranForm = useFormik({
     initialValues: {
@@ -85,9 +78,6 @@ const JenisPembayaran = () => {
       due_date: "",
       academic_year: "",
       total: "",
-      level: "",
-      class_id: 0,
-      student_id: 0,
     },
     validateOnChange: false,
     validationSchema: jenisPembayaranSchema,
@@ -131,55 +121,6 @@ const JenisPembayaran = () => {
     } catch {}
   };
 
-  const getClasses = async () => {
-    setClasses([]);
-    try {
-      const res = await Class.showAll(token, 0, 1000);
-      const classByLevel: any[] = res.data.data.result.filter(
-        (dat: any) => dat.level == jenisPembayaranForm.values.level
-      );
-      if (
-        !classByLevel.find((c) => c.id == jenisPembayaranForm.values.class_id)
-      ) {
-        jenisPembayaranForm.setFieldValue("class_id", 0);
-        jenisPembayaranForm.setFieldValue("student_id", 0);
-      }
-
-      setClasses(classByLevel);
-    } catch {}
-  };
-
-  const getStudents = async () => {
-    setStudents([]);
-    try {
-      const { academic_year, class_id } = jenisPembayaranForm.values;
-      if (!class_id || !academic_year) return;
-      const res = await Student.GetStudentByClass(
-        token,
-        class_id,
-        academic_year
-      );
-      const studentList: any[] = res.data.data.map((dat: any) => dat.student);
-      if (
-        !studentList.find((d) => d.id == jenisPembayaranForm.values.student_id)
-      )
-        jenisPembayaranForm.setFieldValue("student_id", 0);
-
-      setStudents(studentList);
-    } catch {}
-  };
-
-  useEffect(() => {
-    getStudents();
-  }, [
-    jenisPembayaranForm.values.class_id,
-    jenisPembayaranForm.values.academic_year,
-  ]);
-
-  useEffect(() => {
-    getClasses();
-  }, [jenisPembayaranForm.values.level]);
-
   const handleOpenForm = () => {
     getPostPayments();
     openModal(modalFormId);
@@ -202,23 +143,13 @@ const JenisPembayaran = () => {
       setLoadingGetOne(true);
       try {
         const { data } = await PosJenisPembayaran.showOne(token, dataIdInForm);
-        jenisPembayaranForm.setFieldValue("name", data.data.name);
-        jenisPembayaranForm.setFieldValue(
-          "payment_post_id",
-          data.data.payment_post_id
-        );
-        jenisPembayaranForm.setFieldValue(
-          "due_date",
-          moment(data.data.due_date).format("YYYY-MM-DD")
-        );
-        jenisPembayaranForm.setFieldValue(
-          "academic_year",
-          data.data.academic_year
-        );
-        jenisPembayaranForm.setFieldValue("total", data.data.total);
-        jenisPembayaranForm.setFieldValue("level", data.data.level);
-        jenisPembayaranForm.setFieldValue("class_id", data.data.class_id);
-        jenisPembayaranForm.setFieldValue("student_id", data.data.student_id);
+        jenisPembayaranForm.setValues({
+          name: data.data.name,
+          payment_post_id: data.data.payment_post_id,
+          due_date: moment(data.data.due_date).format("YYYY-MM-DD"),
+          academic_year: data.data.academic_year,
+          total: data.data.total,
+        });
 
         handleOpenForm();
       } catch (error) {
@@ -317,48 +248,6 @@ const JenisPembayaran = () => {
             errorMessage={jenisPembayaranForm.errors.total}
           />
 
-          <Select
-            label="Jenjang"
-            name="level"
-            options={["TK", "SD", "SM"]}
-            value={jenisPembayaranForm.values.level}
-            onChange={jenisPembayaranForm.handleChange}
-            errorMessage={jenisPembayaranForm.errors.level}
-          />
-
-          <div className="divider">Khusus</div>
-
-          <Select
-            label="Kelas"
-            name="class_id"
-            type="number"
-            helpMessage="Opsional"
-            options={classes}
-            keyValue="id"
-            keyDisplay="class_name"
-            disabled={!jenisPembayaranForm.values.level}
-            value={jenisPembayaranForm.values.class_id}
-            onChange={parseHandleChange}
-            errorMessage={jenisPembayaranForm.errors.class_id}
-          />
-
-          <Select
-            label="Siswa"
-            name="student_id"
-            type="number"
-            helpMessage="Opsional"
-            options={students}
-            keyValue="id"
-            keyDisplay="full_name"
-            disabled={
-              !jenisPembayaranForm.values.academic_year ||
-              !jenisPembayaranForm.values.class_id
-            }
-            value={jenisPembayaranForm.values.student_id}
-            onChange={parseHandleChange}
-            errorMessage={jenisPembayaranForm.errors.student_id}
-          />
-
           <div className="modal-action">
             <button
               disabled={jenisPembayaranForm.isSubmitting}
@@ -408,7 +297,6 @@ const JenisPembayaran = () => {
                   <th>Keterangan</th>
                   <th>POS</th>
                   <th>Jatuh Tempo</th>
-                  <th>Siswa</th>
                   <th>Total</th>
                   <th>Action</th>
                 </tr>
@@ -428,16 +316,6 @@ const JenisPembayaran = () => {
                       {dat.due_date
                         ? moment(dat.due_date).format("DD MMMM YYYY")
                         : "-"}
-                    </td>
-                    <td>
-                      <div className="flex flex-wrap gap-2 max-w-40">
-                        <div className="badge badge-primary">{dat.level}</div>
-                        {dat.class && (
-                          <div className="badge badge-secondary">
-                            {dat.class.class_name}
-                          </div>
-                        )}
-                      </div>
                     </td>
                     <td>
                       <p className="text-xl font-bold">
