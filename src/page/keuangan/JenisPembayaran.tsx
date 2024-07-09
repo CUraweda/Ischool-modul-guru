@@ -7,10 +7,26 @@ import moment from 'moment';
 import { getAcademicYears, moneyFormat } from '../../utils/common';
 import Modal, { openModal, closeModal } from '../../component/modal';
 import { Input, Select } from '../../component/Input';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { PosPembayaran } from '../../midleware/api';
+import { Store } from '../../store/Store';
+
+const jenisPembayaranSchema = Yup.object().shape({
+	name: Yup.string().required('Keterangan harus diisi'),
+	payment_post_id: Yup.number().required('Pos pembayaran harus dipilih satu'),
+	due_date: Yup.date().required('Tanggal jatuh tempo harus diisi'),
+	academic_year: Yup.string().required('Tahun pembelajaran harus dipilih'),
+	total: Yup.number().required('Total bayar harus ditentukan'),
+	level: Yup.string().oneOf(['SD', 'SMP', 'TK']).required('Jenjang pendidikan harus dipilih satu'),
+	class_id: Yup.number().optional(),
+	student_id: Yup.number().optional(),
+});
 
 const JenisPembayaran = () => {
-	const navigate = useNavigate();
-	const modalForm = 'form-jenis-pembayaran';
+	const {token} = Store(),
+		navigate = useNavigate(),
+		modalForm = 'form-jenis-pembayaran';
 
 	// data state
 	const [dataIdxInForm, setDataIdxInForm] = useState<any>(null);
@@ -58,27 +74,105 @@ const JenisPembayaran = () => {
 		setFilter(obj);
 	};
 
+	// state in modal form
+	const [student, setStudent] = useState<any[]>([]);
+	const [postPayments, setPostPayments] = useState<any[]>([]);
+	const [classes, setClasses] = useState<any[]>([]);
+
+	const jenisPembayaranForm = useFormik({
+		initialValues: {
+			name: '',
+			payment_post_id: '',
+			due_date: '',
+			academic_year: '',
+			total: '',
+			level: '',
+			class_id: '',
+			student_id: '',
+		},
+		validateOnChange: false,
+		validationSchema: jenisPembayaranSchema,
+		onSubmit: async (values, {}) => {
+			console.log(values);
+		},
+	});
+
+	const getPostPayments = async () => {
+		try {
+			const res = await PosPembayaran.showAll(token, '', 0, 1000);
+			if (res.data?.data?.result) setPostPayments(res.data.data.result)
+		} catch {}
+	};
+
 	const handleDetail = () => {
 		navigate('/keuangan/jenis-pembayaran/detail');
 	};
 
+	const handleOpenForm = () => {
+		getPostPayments()
+		openModal(modalForm);
+	}
+
 	return (
 		<>
 			<Modal id={modalForm}>
-				<form action="">
+				<form onSubmit={jenisPembayaranForm.handleSubmit}>
 					<h3 className="text-xl font-bold mb-6">{dataIdxInForm ? 'Edit' : 'Tambah'} Jenis Pembayaran</h3>
 
-					<Input label="Keterangan" name="name" />
+					<Input
+						label="Keterangan"
+						name="name"
+						value={jenisPembayaranForm.values.name}
+						onChange={jenisPembayaranForm.handleChange}
+						errorMessage={jenisPembayaranForm.errors.name}
+					/>
 
-					<Select label="Pos pembayaran" name="payment_post_id" options={['SPP', 'Asuransi']} />
+					<Select
+						label="Pos pembayaran"
+						name="payment_post_id"
+						options={postPayments}
+						keyValue="id"
+						keyDisplay="name"
+						value={jenisPembayaranForm.values.payment_post_id}
+						onChange={jenisPembayaranForm.handleChange}
+						errorMessage={jenisPembayaranForm.errors.payment_post_id}
+					/>
 
-					<Input type="date" label="Jatuh tempo" name="due_date" />
+					<Input
+						type="date"
+						label="Jatuh tempo"
+						name="due_date"
+						value={jenisPembayaranForm.values.due_date}
+						onChange={jenisPembayaranForm.handleChange}
+						errorMessage={jenisPembayaranForm.errors.due_date}
+					/>
 
-					<Select label="Tahun pembelajaran" name="academic_year" options={getAcademicYears()} />
+					<Select
+						label="Tahun pembelajaran"
+						name="academic_year"
+						options={getAcademicYears()}
+						value={jenisPembayaranForm.values.academic_year}
+						onChange={jenisPembayaranForm.handleChange}
+						errorMessage={jenisPembayaranForm.errors.academic_year}
+					/>
 
-					<Input type="number" label="Total" name="total" />
+					<Input
+						type="number"
+						label="Total"
+						name="total"
+						value={jenisPembayaranForm.values.total}
+						onChange={jenisPembayaranForm.handleChange}
+						errorMessage={jenisPembayaranForm.errors.total}
+					/>
 
-					<Select label="Jenjang" name="level" options={['TK', 'SD', 'SMP']} />
+					<Select
+						label="Jenjang"
+						name="level"
+						options={['TK', 'SD', 'SMP']}
+						value={jenisPembayaranForm.values.level}
+						onChange={jenisPembayaranForm.handleChange}
+						errorMessage={jenisPembayaranForm.errors.level}
+					/>
 
 					<div className="divider">Khusus</div>
 
@@ -116,7 +210,7 @@ const JenisPembayaran = () => {
 							<option>Han Solo</option>
 							<option>Greedo</option>
 						</select>
-						<button onClick={() => openModal(modalForm)} className="btn btn-ghost bg-blue-500 text-white">
+						<button onClick={handleOpenForm} className="btn btn-ghost bg-blue-500 text-white">
 							Tambah
 						</button>
 					</div>

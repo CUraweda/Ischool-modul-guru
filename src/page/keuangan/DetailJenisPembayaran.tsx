@@ -7,6 +7,7 @@ import { Class } from '../../midleware/api';
 import { Store } from '../../store/Store';
 import Modal, { openModal } from '../../component/modal';
 import { Select } from '../../component/Input';
+import { Link } from 'react-router-dom';
 
 const DetailJenisPembayaran = () => {
 	const { token } = Store(),
@@ -91,12 +92,12 @@ const DetailJenisPembayaran = () => {
 					<div className="breadcrumbs text-sm">
 						<ul>
 							<li>
-								<a>Home</a>
+								<Link to={'/keuangan'}>Home</Link>
 							</li>
+							<li>Pembayaran</li>
 							<li>
-								<a>Pembayaran</a>
+								<Link to={'/keuangan/jenis-pembayaran'}>Jenis Pembayaran</Link>
 							</li>
-							<li>Jenis Pembayaran</li>
 							<li>Detail Jenis Pembayaran</li>
 						</ul>
 					</div>
