@@ -109,15 +109,21 @@ const DetailJenisPembayaran = () => {
         getDataList();
         const lenCreated = res.data.data.length;
 
-        Swal.fire({
-          icon: "success",
-          title: "Sip Mantap",
-          text:
-            `Berhasil menambahkan ${lenCreated} siswa` +
-            (lenCreated < studentsToAdd.length
-              ? ` dengan ${studentsToAdd.length - lenCreated} siswa sudah terdaftar`
-              : ""),
-        });
+        lenCreated == 0
+          ? Swal.fire({
+              icon: "warning",
+              title: "Peringatan",
+              text: `Semua siswa sudah terdaftar`,
+            })
+          : Swal.fire({
+              icon: "success",
+              title: "Sip Mantap",
+              text:
+                `Berhasil menambahkan ${lenCreated} siswa` +
+                (lenCreated < studentsToAdd.length
+                  ? ` dengan ${studentsToAdd.length - lenCreated} siswa sudah terdaftar`
+                  : ""),
+            });
       } catch {
         Swal.fire({
           icon: "error",
