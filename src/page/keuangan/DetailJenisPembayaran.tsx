@@ -11,8 +11,10 @@ import { Link, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import { getAcademicYears, getCurrentAcademicYear } from "../../utils/common";
 
 const tambahSiswaSchema = Yup.object().shape({
+  academic_year: Yup.string().oneOf(getAcademicYears()).optional(),
   level: Yup.string()
     .oneOf(["TK", "SD", "SM"], "Pilih antara TK, SD, atau SM")
     .required("Pilih antara TK, SD, atau SM"),
@@ -91,6 +93,7 @@ const DetailJenisPembayaran = () => {
       level: "",
       class_id: 0,
       student_id: 0,
+      academic_year: getCurrentAcademicYear(),
     },
     validateOnChange: false,
     validationSchema: tambahSiswaSchema,
@@ -140,13 +143,17 @@ const DetailJenisPembayaran = () => {
     let result;
 
     try {
-      const { class_id, level } = tambahSiswaForm.values;
+      const { class_id, level, academic_year } = tambahSiswaForm.values;
 
       if (class_id) {
-        result = await Student.GetStudentByClass(token, class_id, "2023/2024");
+        result = await Student.GetStudentByClass(
+          token,
+          class_id,
+          academic_year
+        );
         tambahSiswaForm.setFieldValue("student_id", 0);
       } else if (level) {
-        result = await Student.GetStudentByLevel(token, level, "2023/2024");
+        result = await Student.GetStudentByLevel(token, level, academic_year);
         tambahSiswaForm.setFieldValue("student_id", 0);
         tambahSiswaForm.setFieldValue("class_id", 0);
       }
@@ -182,7 +189,11 @@ const DetailJenisPembayaran = () => {
 
   useEffect(() => {
     getStudentsToAdd();
-  }, [tambahSiswaForm.values.level, tambahSiswaForm.values.class_id]);
+  }, [
+    tambahSiswaForm.values.level,
+    tambahSiswaForm.values.class_id,
+    tambahSiswaForm.values.academic_year,
+  ]);
 
   useEffect(() => {
     selectOneStudent();
@@ -217,6 +228,15 @@ const DetailJenisPembayaran = () => {
       <Modal id={modalFormTambah} onClose={() => tambahSiswaForm.resetForm()}>
         <form onSubmit={tambahSiswaForm.handleSubmit}>
           <h3 className="text-xl font-bold mb-6">Tambah Siswa</h3>
+          <Select
+            label="Tahun pembelajaran"
+            name="academic_year"
+            options={getAcademicYears()}
+            value={tambahSiswaForm.values.academic_year}
+            onChange={tambahSiswaForm.handleChange}
+            errorMessage={tambahSiswaForm.errors.academic_year}
+          />
+
           <Select
             label="Jenjang"
             name="level"
