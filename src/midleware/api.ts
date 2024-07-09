@@ -1,7 +1,6 @@
 import axios, { AxiosPromise } from "axios";
 import { LoginResponse } from "./Utils";
-// const instance = axios.create({ baseURL: "https://api-dev.curaweda.com:7000" });
-const instance = axios.create({ baseURL: "http://localhost:5000" });
+const instance = axios.create({ baseURL: import.meta.env.VITE_REACT_API_URL });
 
 const Auth = {
   Login: (

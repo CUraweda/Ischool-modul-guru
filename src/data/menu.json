@@ -49,10 +49,7 @@
                 "name": "Presensi",
                 "url": "/guru/presensi-siswa"
             },
-            {
-                "name": "Daftar Nilai",
-                "url": "/guru/daftar-nilai-siswa"
-            },
+           
             {
                 "name": "Raport Siswa",
                 "url": "/guru/rapor-siswa"
