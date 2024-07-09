@@ -188,6 +188,30 @@ const DetailJenisPembayaran = () => {
     selectOneStudent();
   }, [tambahSiswaForm.values.student_id]);
 
+  const [loadingDel, setLoadingDel] = useState(false);
+  const handleDelete = async (id: any) => {
+    setLoadingDel(true);
+    try {
+      await TagihanSiswa.delete(token, id);
+
+      Swal.fire({
+        icon: "success",
+        title: "Sip Mantap",
+        text: "Berhasil menghapus siswa",
+      });
+
+      getDataList();
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Gagal menghapus siswa",
+      });
+    } finally {
+      setLoadingDel(false);
+    }
+  };
+
   return (
     <>
       <Modal id={modalFormTambah} onClose={() => tambahSiswaForm.resetForm()}>
@@ -365,6 +389,8 @@ const DetailJenisPembayaran = () => {
                         <button
                           className="btn btn-ghost btn-sm join-item bg-red-500 text-white tooltip"
                           data-tip="Hapus"
+                          disabled={loadingDel}
+                          onClick={() => handleDelete(dat.id)}
                         >
                           <FaTrash />
                         </button>
