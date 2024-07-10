@@ -1150,6 +1150,17 @@ const TagihanSiswa = {
       },
       data,
     }),
+  confirmEvidence: (
+    token: string | null,
+    id: string | number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: "/api/student-bills/confirm-evidence/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   delete: (
     token: string | null,
     id: string | number | null

@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
+  @apply !bg-primary min-w-24;
+}
+
+div:where(.swal2-container) button:where(.swal2-styled).swal2-cancel {
+  @apply !bg-neutral-content !text-neutral min-w-24;
+}
