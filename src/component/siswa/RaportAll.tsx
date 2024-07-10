@@ -63,7 +63,7 @@ const RaportAll = () => {
 
   const getDataRaport = async () => {
     try {
-      const id = idClass ? idClass : '11';
+      const id = idClass ? idClass : "11";
       const response = await Raport.getAllStudentReport(token, id);
       setDataRaport(response.data.data);
     } catch (error) {
@@ -104,8 +104,13 @@ const RaportAll = () => {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      if (error.response?.status == 403)
+        Swal.fire({
+          icon: "warning",
+          title: "Akses Ditolak",
+          text: "Rapot dikunci sementara. Coba hubungi guru atau admin keuangan.",
+        });
     }
   };
 
@@ -120,9 +125,7 @@ const RaportAll = () => {
               setIdClass(e.target.value), setKelasProps(e.target.value);
             }}
           >
-            <option selected>
-              Kelas
-            </option>
+            <option selected>Kelas</option>
             {Class?.map((item: any, index: number) => (
               <option
                 value={item.id}
