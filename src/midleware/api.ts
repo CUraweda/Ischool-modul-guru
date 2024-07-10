@@ -31,6 +31,19 @@ const Student = {
       },
     }),
 
+  GetStudentByLevel: (
+    token: string | null,
+    level: string | null,
+    tahun: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-class/show-by-level/${level}?academic=${tahun}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
   GetStudents: (
     token: string | null,
     search: string | null,
@@ -118,7 +131,7 @@ const Class = {
         Authorization: `Bearer ${token}`,
       },
     }),
-}
+};
 
 const Task = {
   GetAll: (
@@ -425,10 +438,13 @@ const Raport = {
       },
       data,
     }),
-  updateStudentReportAccess: (token: string | null, id: string | null): AxiosPromise<any> =>
+  updateStudentReportAccess: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
     instance({
       method: "PUT",
-      url: `/api/student-report/update-access/${id}` ,
+      url: `/api/student-report/update-access/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -888,110 +904,277 @@ const DashboardSiswa = {
       },
       data,
     }),
-    DeleteOverview: (
-      token: string | null,
-      id: string | null
-    ): AxiosPromise<any> =>
-      instance({
-        method: "DELETE",
-        url: `/api/overview/delete/${id}`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }),
+  DeleteOverview: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: `/api/overview/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 const KepribadianSiswa = {
-	add: (token: string | null, data: any) =>
-		instance({
-			method: 'POST',
-			url: '/api/student-personality/create',
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-			data,
-		}),
-	showAll: (token: string | null, search?: string, page: number = 0, limit: number = 10): AxiosPromise<any> =>
-		instance({
-			method: 'GET',
-			url: `/api/student-personality?search_query=${search}&page=${page}&limit=${limit}`,
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		}),
-	update: (token: string | null, id: string | number | null, data: any): AxiosPromise<any> =>
-		instance({
-			method: 'PUT',
-			url: '/api/student-personality/update/' + id,
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-			data,
-		}),
-	delete: (token: string | null, id: string | number | null): AxiosPromise<any> =>
-		instance({
-			method: 'DELETE',
-			url: '/api/student-personality/delete/' + id,
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		}),
+  add: (token: string | null, data: any) =>
+    instance({
+      method: "POST",
+      url: "/api/student-personality/create",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  showAll: (
+    token: string | null,
+    search?: string,
+    page: number = 0,
+    limit: number = 10
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-personality?search_query=${search}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  update: (
+    token: string | null,
+    id: string | number | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: "/api/student-personality/update/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  delete: (
+    token: string | null,
+    id: string | number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: "/api/student-personality/delete/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 const PosPembayaran = {
-	create: (token: string | null, data: any) =>
-		instance({
-			method: 'POST',
-			url: '/api/payment-post/create',
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-			data,
-		}),
-	showAll: (token: string | null, search?: string, page: number = 0, limit: number = 10): AxiosPromise<any> =>
-		instance({
-			method: 'GET',
-			url: `/api/payment-post?search_query=${search}&page=${page}&limit=${limit}`,
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		}),
-	showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
-		instance({
-			method: 'GET',
-			url: `/api/payment-post/show/${id}`,
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		}),
-	update: (token: string | null, id: string | number | null, data: any): AxiosPromise<any> =>
-		instance({
-			method: 'PUT',
-			url: '/api/payment-post/update/' + id,
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-			data,
-		}),
-	delete: (token: string | null, id: string | number | null): AxiosPromise<any> =>
-		instance({
-			method: 'DELETE',
-			url: '/api/payment-post/delete/' + id,
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		}),
+  create: (token: string | null, data: any) =>
+    instance({
+      method: "POST",
+      url: "/api/payment-post/create",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  showAll: (
+    token: string | null,
+    search?: string,
+    page: number = 0,
+    limit: number = 10
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/payment-post?search_query=${search}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/payment-post/show/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  update: (
+    token: string | null,
+    id: string | number | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: "/api/payment-post/update/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  delete: (
+    token: string | null,
+    id: string | number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: "/api/payment-post/delete/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 const Kepribadian = {
-  showAll: (token: string | null, search: string = '', page: number = 0, limit: number = 10): AxiosPromise<any> =>
-		instance({
-			method: 'GET',
-			url: `/api/personality?search_query=${search}&page=${page}&limit=${limit}`,
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		}),
-}
+  showAll: (
+    token: string | null,
+    search: string = "",
+    page: number = 0,
+    limit: number = 10
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/personality?search_query=${search}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
 
-export { Auth, Task, Kalender, Student, Raport, Pengumuman, DashboardSiswa, KepribadianSiswa, Kepribadian, Class, PosPembayaran };
+const PosJenisPembayaran = {
+  create: (token: string | null, data: any) =>
+    instance({
+      method: "POST",
+      url: "/api/student-payment-bills/create",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  showAll: (
+    token: string | null,
+    search?: string,
+    page: number = 0,
+    limit: number = 10
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-payment-bills?search_query=${search}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-payment-bills/get-by-id/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  update: (
+    token: string | null,
+    id: string | number | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: "/api/student-payment-bills/update/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  delete: (
+    token: string | null,
+    id: string | number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: "/api/student-payment-bills/delete/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
+const TagihanSiswa = {
+  create: (token: string | null, data: any) =>
+    instance({
+      method: "POST",
+      url: "/api/student-bills/create",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  bulkCreate: (token: string | null, data: any) =>
+    instance({
+      method: "POST",
+      url: "/api/student-bills/bulk-create",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  showAll: (
+    token: string | null,
+    search?: string,
+    billId?: string,
+    page: number = 0,
+    limit: number = 10
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-bills?search_query=${search}&bill_id=${billId}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-bills/get-by-id/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  update: (
+    token: string | null,
+    id: string | number | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: "/api/student-bills/update/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  delete: (
+    token: string | null,
+    id: string | number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: "/api/student-bills/delete/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
+export {
+  Auth,
+  Task,
+  Kalender,
+  Student,
+  Raport,
+  Pengumuman,
+  DashboardSiswa,
+  KepribadianSiswa,
+  Kepribadian,
+  Class,
+  PosPembayaran,
+  PosJenisPembayaran,
+  TagihanSiswa,
+};

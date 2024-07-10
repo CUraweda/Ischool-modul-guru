@@ -74,7 +74,7 @@ function PosKeuangan() {
 
       try {
         dataIdxInForm == null
-          ? PosPembayaran.create(token, values)
+          ? await PosPembayaran.create(token, values)
           : await PosPembayaran.update(
               token,
               dataList[dataIdxInForm].id,
