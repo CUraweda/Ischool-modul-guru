@@ -439,7 +439,12 @@ const DetailJenisPembayaran = () => {
                 {dataList.map((dat, i) => (
                   <tr key={i}>
                     <th>{i + 1}</th>
-                    <td>{dat.student?.full_name ?? "-"}</td>
+                    <td>
+                      <p className="text-lg">{dat.student?.full_name ?? "-"}</p>
+                      <p className="text-xs text-gray-400">
+                        {dat.academic_year}
+                      </p>
+                    </td>
                     <td>{dat.student?.nis ?? "-"}</td>
                     <td>{dat.studentpaymentbill?.name ?? "-"}</td>
                     <td>
