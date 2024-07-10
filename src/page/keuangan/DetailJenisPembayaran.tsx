@@ -13,6 +13,8 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { getAcademicYears, getCurrentAcademicYear } from "../../utils/common";
 
+const apiAssets = import.meta.env.VITE_REACT_API_URL + "/";
+
 const tambahSiswaSchema = Yup.object().shape({
   academic_year: Yup.string().oneOf(getAcademicYears()).optional(),
   level: Yup.string()
@@ -25,7 +27,8 @@ const tambahSiswaSchema = Yup.object().shape({
 const DetailJenisPembayaran = () => {
   const { token } = Store(),
     { id: billId } = useParams(),
-    modalFormTambah = "form-tambah-siswa";
+    modalFormTambah = "form-tambah-siswa",
+    modalBuktiBayar = "form-bukti-bayar";
 
   // data state
   const [classes, setClasses] = useState<any[]>([]);
@@ -206,31 +209,96 @@ const DetailJenisPembayaran = () => {
   }, [tambahSiswaForm.values.student_id]);
 
   const [loadingDel, setLoadingDel] = useState(false);
-  const handleDelete = async (id: any) => {
+  const handleDelete = async (id: any, student_name = "") => {
     setLoadingDel(true);
     try {
-      await TagihanSiswa.delete(token, id);
-
       Swal.fire({
-        icon: "success",
-        title: "Sip Mantap",
-        text: "Berhasil menghapus siswa",
-      });
+        icon: "question",
+        title: "Anda Yakin?",
+        text: `Aksi ini akan menghapus data pembayaran ${student_name}`,
+        showCancelButton: true,
+        confirmButtonText: "Sip, Yakin",
+        cancelButtonText: "Batalkan",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          await TagihanSiswa.delete(token, id);
 
-      getDataList();
+          Swal.fire({
+            icon: "success",
+            title: "Sip Mantap",
+            text: "Berhasil menghapus pembayaran siswa",
+          });
+
+          getDataList();
+        }
+      });
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "Gagal menghapus siswa",
+        text: "Gagal menghapus pembayaran siswa",
       });
     } finally {
       setLoadingDel(false);
     }
   };
 
+  const [evidenceInModal, setEvidenceInModal] = useState("");
+
+  useEffect(() => {
+    if (evidenceInModal) openModal(modalBuktiBayar);
+  }, [evidenceInModal]);
+
+  const [loadingConfirm, setLoadingConfirm] = useState(false);
+  const handleConfirm = async (id: any, student_name: string = "") => {
+    setLoadingConfirm(true);
+
+    try {
+      Swal.fire({
+        icon: "question",
+        title: "Anda Yakin?",
+        text: `Yakin sudah mengecek dananya? aksi ini akan menandai status pembayaran ${student_name} sudah lunas`,
+        showCancelButton: true,
+        confirmButtonText: "Sip, Yakin",
+        cancelButtonText: "Batalkan",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          await TagihanSiswa.confirmEvidence(token, id);
+
+          Swal.fire({
+            icon: "success",
+            title: "Sip Mantap",
+            text: "Berhasil menerima pembayaran",
+          });
+
+          getDataList();
+        }
+      });
+    } catch {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Gagal menerima pembayaran",
+      });
+    } finally {
+      setLoadingConfirm(false);
+    }
+  };
+
   return (
     <>
+      <Modal id={modalBuktiBayar} onClose={() => setEvidenceInModal("")}>
+        <h3 className="text-xl font-bold mb-3">Bukti Bayar</h3>
+        <div className="avatar">
+          <div className="w-full rounded">
+            <img src={apiAssets + evidenceInModal} alt="" />
+          </div>
+        </div>
+        <form className="modal-action" method="dialog">
+          <button className="btn w-full btn-outline btn-primary">Tutup</button>
+        </form>
+      </Modal>
+
       <Modal id={modalFormTambah} onClose={() => tambahSiswaForm.resetForm()}>
         <form onSubmit={tambahSiswaForm.handleSubmit}>
           <h3 className="text-xl font-bold mb-6">Tambah Siswa</h3>
@@ -393,22 +461,31 @@ const DetailJenisPembayaran = () => {
                       <button
                         disabled={dat.evidence_path == null}
                         className="btn btn-ghost btn-sm text-2xl "
+                        onClick={() => setEvidenceInModal(dat.evidence_path)}
                       >
                         <MdInsertPhoto />
                       </button>
                     </td>
                     <td>
                       {dat.paidoff_at
-                        ? moment(dat.paidoff_at).format("DD MMMM YYYY")
+                        ? moment(dat.paidoff_at).format("DD MMMM YYYY hh:mm")
                         : "-"}
                     </td>
 
                     <td>
                       <div className="join">
                         <button
-                          disabled={dat.status == "LUNAS"}
                           className="btn btn-ghost btn-sm join-item bg-success text-white tooltip"
                           data-tip="Terima"
+                          disabled={
+                            (dat.evidence_path == null &&
+                              dat.paidoff_at == null) ||
+                            dat.status?.toLowerCase() == "lunas" ||
+                            loadingConfirm
+                          }
+                          onClick={() =>
+                            handleConfirm(dat.id, dat.student?.full_name ?? "")
+                          }
                         >
                           <FaCheck />
                         </button>
@@ -416,7 +493,9 @@ const DetailJenisPembayaran = () => {
                           className="btn btn-ghost btn-sm join-item bg-red-500 text-white tooltip"
                           data-tip="Hapus"
                           disabled={loadingDel}
-                          onClick={() => handleDelete(dat.id)}
+                          onClick={() =>
+                            handleDelete(dat.id, dat.student?.full_name ?? "")
+                          }
                         >
                           <FaTrash />
                         </button>
