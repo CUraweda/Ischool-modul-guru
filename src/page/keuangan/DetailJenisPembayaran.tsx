@@ -3,46 +3,37 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { FaCheck, FaSearch, FaTrash } from "react-icons/fa";
 import { MdInsertPhoto } from "react-icons/md";
-import { Class } from "../../midleware/api";
+import { Class, Student, TagihanSiswa } from "../../midleware/api";
 import { Store } from "../../store/Store";
-import Modal, { openModal } from "../../component/modal";
+import Modal, { closeModal, openModal } from "../../component/modal";
 import { Select } from "../../component/Input";
+import { Link, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
+import * as Yup from "yup";
+import { useFormik } from "formik";
+import { getAcademicYears, getCurrentAcademicYear } from "../../utils/common";
+
+const tambahSiswaSchema = Yup.object().shape({
+  academic_year: Yup.string().oneOf(getAcademicYears()).optional(),
+  level: Yup.string()
+    .oneOf(["TK", "SD", "SM"], "Pilih antara TK, SD, atau SM")
+    .required("Pilih antara TK, SD, atau SM"),
+  class_id: Yup.number().optional(),
+  student_id: Yup.number().optional(),
+});
 
 const DetailJenisPembayaran = () => {
   const { token } = Store(),
+    { id: billId } = useParams(),
     modalFormTambah = "form-tambah-siswa";
 
   // data state
   const [classes, setClasses] = useState<any[]>([]);
-  const [dataList, setDataList] = useState<any[]>([
-    {
-      student: {
-        name: "Kak Gem",
-        nis: "123.123.123",
-      },
-      payment_bill: {
-        name: "Asuransi Juli 2024",
-      },
-      status: "LUNAS",
-      evidence_path: "/gambar.png",
-      paidoff_at: "2023-12-04 12:43:24",
-    },
-    {
-      student: {
-        name: "Ivan Gunawan",
-        nis: "321.2121.21",
-      },
-      payment_bill: {
-        name: "Asuransi Juli 2024",
-      },
-      status: "BELUM LUNAS",
-      evidence_path: null,
-      paidoff_at: null,
-    },
-  ]);
+  const [dataList, setDataList] = useState<any[]>([]);
   const [pageMeta, setPageMeta] = useState<any>({ page: 0 });
   const [filter, setFilter] = useState({
     page: 0,
+    search: "",
     classId: "",
   });
 
@@ -58,6 +49,30 @@ const DetailJenisPembayaran = () => {
     setFilter(obj);
   };
 
+  const getDataList = async () => {
+    try {
+      const res = await TagihanSiswa.showAll(
+        token,
+        filter.search,
+        billId,
+        filter.page
+      );
+      const { result, ...meta } = res.data.data;
+      setDataList(result);
+      setPageMeta(meta);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Gagal Mengambil data pos pembayaran, silakan refresh halaman!",
+      });
+    }
+  };
+
+  useEffect(() => {
+    getDataList();
+  }, [filter]);
+
   const getClasses = async () => {
     try {
       const res = await Class.showAll(token, 0, 1000);
@@ -69,24 +84,212 @@ const DetailJenisPembayaran = () => {
     getClasses();
   }, []);
 
+  const [studentsToAdd, setStudentsToAdd] = useState([]);
+  const [studentsToAddShow, setStudentsToAddShow] = useState([]);
+  const [classesInForm, setClassesInForm] = useState([]);
+
+  const tambahSiswaForm = useFormik({
+    initialValues: {
+      level: "",
+      class_id: 0,
+      student_id: 0,
+      academic_year: getCurrentAcademicYear(),
+    },
+    validateOnChange: false,
+    validationSchema: tambahSiswaSchema,
+    onSubmit: async (_, { setSubmitting }) => {
+      setSubmitting(true);
+
+      try {
+        const res = await TagihanSiswa.bulkCreate(token, {
+          student_ids: studentsToAdd.map((dat: any) => dat.id),
+          payment_bill_id: billId,
+        });
+
+        getDataList();
+        const lenCreated = res.data.data.length;
+
+        lenCreated == 0
+          ? Swal.fire({
+              icon: "warning",
+              title: "Peringatan",
+              text: `Semua siswa sudah terdaftar`,
+            })
+          : Swal.fire({
+              icon: "success",
+              title: "Sip Mantap",
+              text:
+                `Berhasil menambahkan ${lenCreated} siswa` +
+                (lenCreated < studentsToAdd.length
+                  ? ` dengan ${studentsToAdd.length - lenCreated} siswa sudah terdaftar`
+                  : ""),
+            });
+      } catch {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `Gagal menambahkan ${studentsToAdd.length} siswa`,
+        });
+      } finally {
+        setSubmitting(false);
+        closeModal(modalFormTambah);
+      }
+    },
+  });
+
+  const parseHandleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    tambahSiswaForm.setFieldValue(
+      name,
+      value == "" ? undefined : parseInt(value)
+    );
+  };
+
+  const getStudentsToAdd = async () => {
+    let result;
+
+    try {
+      const { class_id, level, academic_year } = tambahSiswaForm.values;
+
+      if (class_id) {
+        result = await Student.GetStudentByClass(
+          token,
+          class_id,
+          academic_year
+        );
+        tambahSiswaForm.setFieldValue("student_id", 0);
+      } else if (level) {
+        result = await Student.GetStudentByLevel(token, level, academic_year);
+        tambahSiswaForm.setFieldValue("student_id", 0);
+        tambahSiswaForm.setFieldValue("class_id", 0);
+      }
+
+      if (!result) return;
+
+      const students = result.data.data.map((dat: any) => dat.student);
+      setStudentsToAdd(students);
+      setStudentsToAddShow(students);
+    } catch {}
+  };
+
+  const getClassesInForm = async () => {
+    try {
+      const res = await Class.showAll(token, 0, 1000);
+      setClassesInForm(
+        res.data.data.result.filter(
+          (dat: any) => dat.level == tambahSiswaForm.values.level
+        )
+      );
+    } catch {}
+  };
+
+  const selectOneStudent = () => {
+    const { student_id } = tambahSiswaForm.values;
+    if (!student_id) return;
+    setStudentsToAdd(studentsToAdd.filter((dat: any) => dat.id == student_id));
+  };
+
+  useEffect(() => {
+    getClassesInForm();
+  }, [tambahSiswaForm.values.level]);
+
+  useEffect(() => {
+    getStudentsToAdd();
+  }, [
+    tambahSiswaForm.values.level,
+    tambahSiswaForm.values.class_id,
+    tambahSiswaForm.values.academic_year,
+  ]);
+
+  useEffect(() => {
+    selectOneStudent();
+  }, [tambahSiswaForm.values.student_id]);
+
+  const [loadingDel, setLoadingDel] = useState(false);
+  const handleDelete = async (id: any) => {
+    setLoadingDel(true);
+    try {
+      await TagihanSiswa.delete(token, id);
+
+      Swal.fire({
+        icon: "success",
+        title: "Sip Mantap",
+        text: "Berhasil menghapus siswa",
+      });
+
+      getDataList();
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Gagal menghapus siswa",
+      });
+    } finally {
+      setLoadingDel(false);
+    }
+  };
+
   return (
     <>
-      <Modal id={modalFormTambah}>
-        <form action="">
+      <Modal id={modalFormTambah} onClose={() => tambahSiswaForm.resetForm()}>
+        <form onSubmit={tambahSiswaForm.handleSubmit}>
           <h3 className="text-xl font-bold mb-6">Tambah Siswa</h3>
+          <Select
+            label="Tahun pembelajaran"
+            name="academic_year"
+            options={getAcademicYears()}
+            value={tambahSiswaForm.values.academic_year}
+            onChange={tambahSiswaForm.handleChange}
+            errorMessage={tambahSiswaForm.errors.academic_year}
+          />
+
+          <Select
+            label="Jenjang"
+            name="level"
+            options={["TK", "SD", "SM"]}
+            value={tambahSiswaForm.values.level}
+            onChange={tambahSiswaForm.handleChange}
+            errorMessage={tambahSiswaForm.errors.level}
+          />
+
+          <Select
+            label="Kelas"
+            name="class_id"
+            disabled={!tambahSiswaForm.values.level}
+            options={classesInForm}
+            keyValue="id"
+            keyDisplay="class_name"
+            value={tambahSiswaForm.values.class_id}
+            onChange={parseHandleChange}
+            errorMessage={tambahSiswaForm.errors.class_id}
+          />
+
+          <Select
+            label="Siswa"
+            name="student_id"
+            disabled={!tambahSiswaForm.values.class_id}
+            options={studentsToAddShow}
+            keyValue="id"
+            keyDisplay="full_name"
+            value={tambahSiswaForm.values.student_id}
+            onChange={parseHandleChange}
+            errorMessage={tambahSiswaForm.errors.student_id}
+          />
+
+          <div className="modal-action">
+            <button
+              disabled={studentsToAdd.length == 0}
+              className="btn btn-primary"
+              type="submit"
+            >
+              {tambahSiswaForm.isSubmitting ? (
+                <span className="loading loading-dots loading-md mx-auto"></span>
+              ) : (
+                `Tambahkan ${studentsToAdd.length} Siswa`
+              )}
+            </button>
+          </div>
         </form>
-
-        <Select
-          label="Siswa"
-          name="student_id"
-          options={["Kak Gem", "Ivan Gunawan", "Genjot Wak"]}
-        />
-
-        <div className="modal-action">
-          <button className="btn btn-primary" type="submit">
-            Simpan
-          </button>
-        </div>
       </Modal>
 
       <div className="w-full flex justify-center flex-col items-center p-3">
@@ -95,12 +298,12 @@ const DetailJenisPembayaran = () => {
           <div className="breadcrumbs text-sm">
             <ul>
               <li>
-                <a>Home</a>
+                <Link to={"/keuangan"}>Home</Link>
               </li>
+              <li>Pembayaran</li>
               <li>
-                <a>Pembayaran</a>
+                <Link to={"/keuangan/jenis-pembayaran"}>Jenis Pembayaran</Link>
               </li>
-              <li>Jenis Pembayaran</li>
               <li>Detail Jenis Pembayaran</li>
             </ul>
           </div>
@@ -110,6 +313,7 @@ const DetailJenisPembayaran = () => {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
+                handleFilter("search", search);
               }}
               className="join"
             >
@@ -167,18 +371,22 @@ const DetailJenisPembayaran = () => {
                 {dataList.map((dat, i) => (
                   <tr key={i}>
                     <th>{i + 1}</th>
-                    <td>{dat.student?.name ?? "-"}</td>
+                    <td>{dat.student?.full_name ?? "-"}</td>
                     <td>{dat.student?.nis ?? "-"}</td>
-                    <td>{dat.payment_bill?.name ?? "-"}</td>
+                    <td>{dat.studentpaymentbill?.name ?? "-"}</td>
                     <td>
                       <p
                         className={
                           "font-extrabold " +
-                          (dat.status == "LUNAS" ? "text-success" : "") +
-                          (dat.status == "BELUM LUNAS" ? "text-error" : "")
+                          (dat.status.toLowerCase() == "lunas"
+                            ? "text-success"
+                            : "") +
+                          (dat.status.toLowerCase() == "belum lunas"
+                            ? "text-error"
+                            : "")
                         }
                       >
-                        {dat.status ?? "-"}
+                        {dat.status?.toUpperCase() ?? "-"}
                       </p>
                     </td>
                     <td>
@@ -207,6 +415,8 @@ const DetailJenisPembayaran = () => {
                         <button
                           className="btn btn-ghost btn-sm join-item bg-red-500 text-white tooltip"
                           data-tip="Hapus"
+                          disabled={loadingDel}
+                          onClick={() => handleDelete(dat.id)}
                         >
                           <FaTrash />
                         </button>

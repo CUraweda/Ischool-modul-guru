@@ -5,4 +5,14 @@ export default {
     extend: {},
   },
   plugins: [require("daisyui"), require("tailwind-scrollbar-hide")],
+  daisyui: {
+    themes: [
+      {
+        light: {
+          ...require("daisyui/src/theming/themes")["light"],
+          primary: "#416AC0",
+        },
+      },
+    ],
+  },
 };

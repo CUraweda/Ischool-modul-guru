@@ -297,7 +297,7 @@ const RootRoutes = () => {
           }
         />
         <Route
-          path="/keuangan/jenis-pembayaran/detail"
+          path="/keuangan/jenis-pembayaran/:id"
           element={
             <Suspense fallback={<Loading />}>
               <Layout>
