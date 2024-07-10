@@ -172,7 +172,7 @@ const RaportNarasi = () => {
       } else {
         await Raport.createKomentarKategori(token, data);
       }
-      
+
       Swal.fire({
         position: "center",
         icon: "success",
@@ -192,6 +192,13 @@ const RaportNarasi = () => {
 
       getDeskripsi();
     } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
+      closeModal("tambah-keterangan");
+      closeModal("tambah-narasi");
       console.log(error);
     }
   };
@@ -242,37 +249,53 @@ const RaportNarasi = () => {
     setEditDataRaport((prevState: any) => {
       const newState = { ...prevState };
       newState.grade = value;
+
       return newState;
     });
+    console.log(EditdataRaport.id);
   };
-  // const handleEditReport = async () => {
-  //   try {
-  //     const idRaport = sessionStorage.getItem("idNar");
-  //     const smt = sessionStorage.getItem("smt");
 
-  //     if (selectDeskripsi) {
-  //       await Promise.all(
-  //         selectDeskripsi.map(async (item: any) => {
-  //           const dataRest = {
-  //             semester: smt ? smt : 1,
-  //             narrative_desc_id: item.id,
-  //             grade: item.nilai ? item.nilai : 1,
-  //             student_report_id: idRaport,
-  //           };
-  //           const response = await Raport.createRapotNarasi(token, dataRest);
-  //           return response;
-  //         })
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     setSelectDeskripsi([]);
-  //     setSubKategori([]);
-  //     closeModal("tambah-narasi");
-  //     getDataNarasi();
-  //   }
-  // };
+  const handleEditReport = async () => {
+    try {
+      const idRaportNarasi = EditdataRaport.id;
+      const idRaport = sessionStorage.getItem("idNar") || "0";
+      const smt = sessionStorage.getItem("smt");
+
+      if (EditdataRaport) {
+        const dataRest = {
+          semester: smt ? smt : 1,
+          narrative_desc_id: EditdataRaport.id,
+          grade: EditdataRaport.nilai ? EditdataRaport.nilai : 1,
+          student_report_id: parseInt(idRaport),
+        };
+        await Raport.editReportNarasi(
+          token,
+          idRaportNarasi,
+          dataRest
+        );
+       
+      }
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Your work has been saved",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
+      console.log(error);
+    } finally {
+      setSelectDeskripsi([]);
+      setSubKategori([]);
+      closeModal("edit-narasi");
+      getDataNarasi();
+    }
+  };
 
   return (
     <>
@@ -386,7 +409,9 @@ const RaportNarasi = () => {
                       <table className="table table-md table-zebra-zebra">
                         <thead className="text-white">
                           <tr className="bg-blue-300 ">
-                            <th rowSpan={2} className="w-10">No</th>
+                            <th rowSpan={2} className="w-10">
+                              No
+                            </th>
                             <th rowSpan={2}>Keterangan</th>
                             <th className="text-center" colSpan={3}>
                               Nilai
@@ -569,7 +594,10 @@ const RaportNarasi = () => {
           </div>
 
           <div className="w-full flex justify-center mt-10 gap-2">
-            <button className="btn bg-green-500 text-white font-bold w-full">
+            <button
+              className="btn bg-green-500 text-white font-bold w-full"
+              onClick={handleEditReport}
+            >
               Submit
             </button>
           </div>

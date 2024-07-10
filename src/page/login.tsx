@@ -7,6 +7,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Store } from "../store/Store";
 import Swal from "sweetalert2";
+import { Input } from "../component/Input";
 
 const schema = Yup.object({
   email: Yup.string().required("email required"),
@@ -84,6 +85,7 @@ const login = () => {
           </div>
           <span className="my-10 text-3xl text-black font-bold">Login</span>
           <div className="w-full flex flex-col gap-3 ">
+            
             <div className="w-full flex justify-center flex-col items-center">
               <label htmlFor="" className="w-5/6 font-bold text-black">
                 Username
