@@ -7,7 +7,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Store } from "../store/Store";
 import Swal from "sweetalert2";
-import { Input } from "../component/Input";
+// import { Input } from "../component/Input";
 
 const schema = Yup.object({
   email: Yup.string().required("email required"),
