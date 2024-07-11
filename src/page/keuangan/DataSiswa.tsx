@@ -1,11 +1,13 @@
 // import React from "react";
 import { useEffect, useState } from "react";
 import { FaFileAlt, FaLock, FaLockOpen, FaSearch } from "react-icons/fa";
-import { Class, Raport, Student } from "../../midleware/api";
+import { Class, Raport, Student, TagihanSiswa } from "../../midleware/api";
 import { Store } from "../../store/Store";
 import Swal from "sweetalert2";
 import { getAcademicYears, getCurrentAcademicYear } from "../../utils/common";
 import { FaMoneyBill1Wave } from "react-icons/fa6";
+import Modal, { openModal } from "../../component/modal";
+import moment from "moment";
 
 const getReport = (arr: any[], semester: any) => {
   const filt = arr.filter((ar) => ar.semester == semester);
@@ -13,7 +15,8 @@ const getReport = (arr: any[], semester: any) => {
 };
 
 const DataSiswa = () => {
-  const { token } = Store();
+  const { token } = Store(),
+    modalDetailPembayaranId = "modal-detail-pembayaran";
 
   // page states
   const [classes, setClasses] = useState<any[]>([]);
@@ -45,7 +48,7 @@ const DataSiswa = () => {
         filter.search,
         filter.classId,
         filter.academicYear,
-        filter.page,
+        filter.page
       );
 
       const { result, ...meta } = res.data.data;
@@ -95,8 +98,96 @@ const DataSiswa = () => {
     getClasses();
   }, [filter]);
 
+  const [studentInModal, setStudentInModal] = useState<any>(null);
+  const [studentPayments, setStudentPayments] = useState<any[]>([]);
+  const [loadingStudentPaymentList, setLoadingStudentPaymentList] =
+    useState(false);
+
+  const getStudentPaymentList = async () => {
+    setLoadingStudentPaymentList(true);
+    setStudentPayments([]);
+
+    try {
+      const res = await TagihanSiswa.showByStudentId(token, studentInModal?.id);
+      setStudentPayments(res.data.data);
+      openModal(modalDetailPembayaranId);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Gagal mendapatkan detail pembayaran ${studentInModal.student.full_name}`,
+        showConfirmButton: false,
+      });
+      setStudentInModal(null);
+    } finally {
+      setLoadingStudentPaymentList(false);
+    }
+  };
+
+  useEffect(() => {
+    if (studentInModal) getStudentPaymentList();
+  }, [studentInModal]);
+
   return (
     <>
+      <Modal
+        id={modalDetailPembayaranId}
+        onClose={() => setStudentInModal(null)}
+      >
+        <h3 className="text-xl font-bold mb-6">Daftar Pembayaran</h3>
+
+        {studentPayments.map((dat, i) => (
+          <>
+            <div key={i} className="flex mb-3 items-center justify-between">
+              <div>
+                <p className="text-lg">{dat.studentpaymentbill.name}</p>
+                <p className="text-xs text-gray-400">
+                  {`${dat.studentpaymentbill?.paymentpost?.name ?? "-"} • ${dat.studentpaymentbill?.paymentpost?.billing_cycle ?? "-"} • ${dat.studentpaymentbill?.academic_year ?? "-"}`}
+                </p>
+              </div>
+              <div>
+                <p
+                  className={
+                    "font-extrabold text-end " +
+                    (dat.status.toLowerCase() == "lunas"
+                      ? "text-success"
+                      : "") +
+                    (dat.status.toLowerCase() == "belum lunas"
+                      ? "text-error"
+                      : "")
+                  }
+                >
+                  {dat.status?.toUpperCase() ?? "-"}
+                </p>
+                <p className="text-xs text-gray-400 text-end">
+                  {dat.status.toLowerCase() == "lunas"
+                    ? `Lunas pada ${
+                        dat.paidoff_at
+                          ? moment(dat.paidoff_at).format("DD MMMM YYYY hh:mm")
+                          : "-"
+                      }`
+                    : `Jatuh tempo pada ${
+                        dat.due_date
+                          ? moment(dat.due_date).format("DD MMMM YYYY")
+                          : "-"
+                      }`}
+                </p>
+              </div>
+            </div>
+            <div className="divider"></div>
+          </>
+        ))}
+
+        <form className="modal-action items-center" method="dialog">
+          <p className="text-xs text-gray-500">
+            Masih ada yang belum lunas? Konfirmasi pembayaran pada laman Daftar
+            Tunggakan Siswa {">"} cari{" "}
+            {`"${studentInModal?.student?.full_name ?? ""}"`}{" "}
+          </p>
+          <button className="btn btn-outline btn-primary">Tutup</button>
+        </form>
+      </Modal>
+
       <div className="w-full flex justify-center flex-col items-center p-3">
         <span className="font-bold text-xl">DATA SISWA</span>
         <div className="w-full p-3 bg-white">
@@ -164,6 +255,8 @@ const DataSiswa = () => {
                         <button
                           className="btn btn-ghost btn-sm join-item bg-blue-500 text-white tooltip"
                           data-tip="Detail Pembayaran"
+                          disabled={loadingStudentPaymentList}
+                          onClick={() => setStudentInModal(dat)}
                         >
                           <FaMoneyBill1Wave />
                         </button>
@@ -189,7 +282,7 @@ const DataSiswa = () => {
                                     onClick={() => {
                                       updateReportLockStatus(
                                         report.id,
-                                        !report.student_access,
+                                        !report.student_access
                                       );
                                     }}
                                     className={

@@ -1129,6 +1129,17 @@ const TagihanSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  showByStudentId: (
+    token: string | null,
+    studentId?: string | null,
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-bills/get-by-student-id/${studentId}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
     instance({
       method: "GET",
