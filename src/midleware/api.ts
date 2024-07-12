@@ -1119,12 +1119,13 @@ const TagihanSiswa = {
     token: string | null,
     search?: string,
     billId?: string,
+    classId?: string,
     page: number = 0,
     limit: number = 10
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-bills?search_query=${search}&bill_id=${billId}&page=${page}&limit=${limit}`,
+      url: `/api/student-bills?search_query=${search}&bill_id=${billId}&class_id=${classId}&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

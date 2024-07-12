@@ -58,6 +58,7 @@ const DetailJenisPembayaran = () => {
         token,
         filter.search,
         billId,
+        filter.classId,
         filter.page
       );
       const { result, ...meta } = res.data.data;
