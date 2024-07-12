@@ -1130,6 +1130,20 @@ const TagihanSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  showAllArrears: (
+      token: string | null,
+      search?: string,
+      classId?: string,
+      page: number = 0,
+      limit: number = 10
+    ): AxiosPromise<any> =>
+      instance({
+        method: "GET",
+        url: `/api/student-arrears?search_query=${search}&class_id=${classId}&page=${page}&limit=${limit}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
   showByStudentId: (
     token: string | null,
     studentId?: string | null,
