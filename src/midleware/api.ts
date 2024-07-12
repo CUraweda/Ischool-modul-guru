@@ -1130,23 +1130,41 @@ const TagihanSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  showAllReports: (
+    token: string | null,
+    postId?: string,
+    classId?: string,
+    studentId?: string,
+    startDue?: string,
+    endDue?: string,
+    status?: string,
+    page: number = 0,
+    limit: number = 10
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-payment-report?post_id=${postId}&class_id=${classId}&student_id=${studentId}&start_due=${startDue}&end_due=${endDue}status=${status}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   showAllArrears: (
-      token: string | null,
-      search?: string,
-      classId?: string,
-      page: number = 0,
-      limit: number = 10
-    ): AxiosPromise<any> =>
-      instance({
-        method: "GET",
-        url: `/api/student-arrears?search_query=${search}&class_id=${classId}&page=${page}&limit=${limit}`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }),
+    token: string | null,
+    search?: string,
+    classId?: string,
+    page: number = 0,
+    limit: number = 10
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-arrears?search_query=${search}&class_id=${classId}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   showByStudentId: (
     token: string | null,
-    studentId?: string | null,
+    studentId?: string | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",

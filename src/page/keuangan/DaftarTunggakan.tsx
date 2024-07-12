@@ -58,7 +58,7 @@ const DaftarTunggakan = () => {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "Gagal Mengambil data pos pembayaran, silakan refresh halaman!",
+        text: "Gagal Mengambil data tunggakan, silakan refresh halaman!",
       });
     }
   };
