@@ -212,15 +212,15 @@ const DetailJenisPembayaran = () => {
   const [loadingDel, setLoadingDel] = useState(false);
   const handleDelete = async (id: any, student_name = "") => {
     setLoadingDel(true);
-    try {
-      Swal.fire({
-        icon: "question",
-        title: "Anda Yakin?",
-        text: `Aksi ini akan menghapus data pembayaran ${student_name}`,
-        showCancelButton: true,
-        confirmButtonText: "Sip, Yakin",
-        cancelButtonText: "Batalkan",
-      }).then(async (result) => {
+    Swal.fire({
+      icon: "question",
+      title: "Anda Yakin?",
+      text: `Aksi ini akan menghapus data pembayaran ${student_name}`,
+      showCancelButton: true,
+      confirmButtonText: "Sip, Yakin",
+      cancelButtonText: "Batalkan",
+    }).then(async (result) => {
+      try {
         if (result.isConfirmed) {
           await TagihanSiswa.delete(token, id);
 
@@ -232,16 +232,16 @@ const DetailJenisPembayaran = () => {
 
           getDataList();
         }
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Gagal menghapus pembayaran siswa",
-      });
-    } finally {
-      setLoadingDel(false);
-    }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Gagal menghapus pembayaran siswa",
+        });
+      } finally {
+        setLoadingDel(false);
+      }
+    });
   };
 
   const [evidenceInModal, setEvidenceInModal] = useState("");
@@ -254,15 +254,15 @@ const DetailJenisPembayaran = () => {
   const handleConfirm = async (id: any, student_name: string = "") => {
     setLoadingConfirm(true);
 
-    try {
-      Swal.fire({
-        icon: "question",
-        title: "Anda Yakin?",
-        text: `Yakin sudah mengecek dananya? aksi ini akan menandai status pembayaran ${student_name} sudah lunas`,
-        showCancelButton: true,
-        confirmButtonText: "Sip, Yakin",
-        cancelButtonText: "Batalkan",
-      }).then(async (result) => {
+    Swal.fire({
+      icon: "question",
+      title: "Anda Yakin?",
+      text: `Yakin sudah mengecek dananya? aksi ini akan menandai status pembayaran ${student_name} sudah lunas`,
+      showCancelButton: true,
+      confirmButtonText: "Sip, Yakin",
+      cancelButtonText: "Batalkan",
+    }).then(async (result) => {
+      try {
         if (result.isConfirmed) {
           await TagihanSiswa.confirmEvidence(token, id);
 
@@ -274,16 +274,16 @@ const DetailJenisPembayaran = () => {
 
           getDataList();
         }
-      });
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Gagal menerima pembayaran",
-      });
-    } finally {
-      setLoadingConfirm(false);
-    }
+      } catch {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Gagal menerima pembayaran",
+        });
+      } finally {
+        setLoadingConfirm(false);
+      }
+    });
   };
 
   return (
