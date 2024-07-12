@@ -1136,15 +1136,15 @@ const TagihanSiswa = {
     postId?: string,
     classId?: string,
     studentId?: string,
-    startDue?: string,
-    endDue?: string,
+    startPaid?: string,
+    endPaid?: string,
     status?: string,
     page: number = 0,
     limit: number = 10
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-payment-report?post_id=${postId}&class_id=${classId}&student_id=${studentId}&start_due=${startDue}&end_due=${endDue}status=${status}&page=${page}&limit=${limit}`,
+      url: `/api/student-payment-report?post_id=${postId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}status=${status}&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

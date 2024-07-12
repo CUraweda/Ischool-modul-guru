@@ -1,14 +1,21 @@
-import { FaFileExcel } from "react-icons/fa";
+import { FaFileExcel, FaLongArrowAltRight } from "react-icons/fa";
 import Modal, { openModal } from "../../component/modal";
 import { Store } from "../../store/Store";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { TagihanSiswa } from "../../midleware/api";
+import {
+  Class,
+  PosJenisPembayaran,
+  Student,
+  TagihanSiswa,
+} from "../../midleware/api";
 import moment from "moment";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
+import { Input, Select } from "../../component/Input";
+import { getAcademicYears } from "../../utils/common";
 
 const Laporan = () => {
   const { token } = Store(),
@@ -19,11 +26,12 @@ const Laporan = () => {
   const [filter, setFilter] = useState({
     page: 0,
     limit: 10,
+    academicYear: "",
     postId: "",
     classId: "",
     studentId: "",
-    startDue: "",
-    endDue: "",
+    startPaid: "",
+    endPaid: "",
     status: "",
   });
 
@@ -36,6 +44,44 @@ const Laporan = () => {
     setFilter(obj);
   };
 
+  const [classes, setClasses] = useState<any[]>([]);
+  const getClasses = async () => {
+    try {
+      const res = await Class.showAll(token, 0, 1000);
+      setClasses(res.data.data.result);
+      handleFilter("studentId", "");
+    } catch {}
+  };
+
+  const [students, setStudents] = useState<any[]>([]);
+  const getStudents = async () => {
+    try {
+      const res = await Student.GetStudentByClass(
+        token,
+        parseInt(filter.classId),
+        filter.academicYear
+      );
+      setStudents(res.data.data.map((dat: any) => dat.student));
+    } catch {}
+  };
+
+  useEffect(() => {
+    if (filter.classId) getStudents();
+  }, [filter.classId, filter.academicYear]);
+
+  const [paymentTypes, setPaymentTypes] = useState<any[]>([]);
+  const getPaymentTypes = async () => {
+    try {
+      const res = await PosJenisPembayaran.showAll(token, "", 0, 1000);
+      setPaymentTypes(res.data.data.result);
+    } catch {}
+  };
+
+  useEffect(() => {
+    getClasses();
+    getPaymentTypes();
+  }, []);
+
   // main
   const [dataList, setDataList] = useState<any[]>([]);
 
@@ -46,8 +92,8 @@ const Laporan = () => {
         filter.postId,
         filter.classId,
         filter.studentId,
-        filter.startDue,
-        filter.endDue,
+        filter.startPaid,
+        filter.endPaid,
         filter.status,
         filter.page,
         filter.limit
@@ -66,7 +112,7 @@ const Laporan = () => {
 
   useEffect(() => {
     getDataList();
-  }, [filter]);
+  }, []);
 
   return (
     <>
@@ -147,63 +193,75 @@ const Laporan = () => {
       <Modal id={modalFilterId}>
         <div className="w-full flex justify-center flex-col items-center">
           <span className="text-xl font-bold ">Filter</span>
-          <div className="w-full flex flex-col gap-2 mt-3">
-            <label className="font-bold">Kelas</label>
-            <select className="select select-bordered w-full">
-              <option disabled selected>
-                Semua Kelas
-              </option>
-              <option>Han Solo</option>
-              <option>Greedo</option>
-            </select>
-          </div>
-          <div className="w-full flex flex-col gap-2 mt-3">
-            <label className="font-bold">Siswa</label>
-            <select className="select select-bordered w-full">
-              <option disabled selected>
-                Semua Siswa
-              </option>
-              <option>Han Solo</option>
-              <option>Greedo</option>
-            </select>
-          </div>
-          <div className="w-full flex flex-col gap-2 mt-3">
-            <label className="font-bold">Tanggal</label>
-            <div className="w-full flex justify-center items-center gap-1">
-              <input
+
+          <Select
+            label="Tahun ajar"
+            placeholder="Semua"
+            options={getAcademicYears()}
+            value={filter.academicYear}
+            onChange={(e) => handleFilter("academicYear", e.target.value)}
+          />
+
+          <Select
+            label="Kelas"
+            placeholder="Semua"
+            keyValue="id"
+            keyDisplay="class_name"
+            options={classes}
+            value={filter.classId}
+            onChange={(e) => handleFilter("classId", e.target.value)}
+          />
+
+          <Select
+            label="Siswa"
+            placeholder="Semua"
+            keyValue="id"
+            keyDisplay="full_name"
+            disabled={!filter.classId}
+            options={students}
+            value={filter.studentId}
+            onChange={(e) => handleFilter("studentId", e.target.value)}
+          />
+
+          <Select
+            label="Pembayaran"
+            placeholder="Semua"
+            keyValue="id"
+            keyDisplay="name"
+            options={paymentTypes}
+            value={filter.postId}
+            onChange={(e) => handleFilter("postId", e.target.value)}
+          />
+
+          <Select
+            label="Status"
+            placeholder="Semua"
+            options={["Lunas", "Belum Lunas"]}
+            value={filter.status}
+            onChange={(e) => handleFilter("status", e.target.value)}
+          />
+
+          <div className="flex  w-full items-end gap-3">
+            <div className="grow">
+              <Input
+                label="Tanggal bayar"
                 type="date"
-                placeholder="Type here"
-                className="input input-bordered w-full"
+                value={filter.startPaid}
+                onChange={(e) => handleFilter("startPaid", e.target.value)}
               />
-              <span> - </span>
-              <input
+            </div>
+            <FaLongArrowAltRight className="text-neutral-500 relative top-2 self-center" />
+            <div className="grow">
+              <Input
+                label=""
                 type="date"
-                placeholder="Type here"
-                className="input input-bordered w-full"
+                value={filter.endPaid}
+                onChange={(e) => handleFilter("endPaid", e.target.value)}
               />
             </div>
           </div>
-          <div className="w-full flex flex-col gap-2 mt-3">
-            <label className="font-bold">Jenis Pembayaran</label>
-            <select className="select select-bordered w-full">
-              <option disabled selected>
-                Semua Jenis Pembayaran
-              </option>
-              <option>Han Solo</option>
-              <option>Greedo</option>
-            </select>
-          </div>
-          <div className="w-full flex flex-col gap-2 mt-3">
-            <label className="font-bold">Status</label>
-            <select className="select select-bordered w-full">
-              <option disabled selected>
-                Semua Status
-              </option>
-              <option>Lunas</option>
-              <option>Menunggak</option>
-            </select>
-          </div>
-          <button className="btn btn-ghost bg-green-500 text-white mt-5 w-full">
+
+          <button className="btn btn-primary text-white w-full">
             Terapkan
           </button>
         </div>
