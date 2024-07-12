@@ -8,6 +8,10 @@ import { getAcademicYears, getCurrentAcademicYear } from "../../utils/common";
 import { FaMoneyBill1Wave } from "react-icons/fa6";
 import Modal, { openModal } from "../../component/modal";
 import moment from "moment";
+import {
+  IpageMeta,
+  PaginationControl,
+} from "../../component/PaginationControl";
 
 const getReport = (arr: any[], semester: any) => {
   const filt = arr.filter((ar) => ar.semester == semester);
@@ -21,18 +25,19 @@ const DataSiswa = () => {
   // page states
   const [classes, setClasses] = useState<any[]>([]);
   const [students, setStudents] = useState<any[]>([]);
-  const [pageMeta, setPageMeta] = useState<any>({ page: 0 });
+  const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
     search: "",
     classId: "",
     academicYear: getCurrentAcademicYear(),
     page: 0,
+    limit: 10,
   });
 
   // UI states
   const [search, setSearch] = useState<string>("");
 
-  const handleFilter = (key: string, value: string) => {
+  const handleFilter = (key: string, value: any) => {
     const obj = {
       ...filter,
       [key]: value,
@@ -48,7 +53,8 @@ const DataSiswa = () => {
         filter.search,
         filter.classId,
         filter.academicYear,
-        filter.page
+        filter.page,
+        filter.limit
       );
 
       const { result, ...meta } = res.data.data;
@@ -328,31 +334,14 @@ const DataSiswa = () => {
               </tbody>
             </table>
           </div>
-          <div className="w-full justify-end flex mt-3">
-            <div className="join">
-              <button
-                className="join-item btn"
-                onClick={() =>
-                  handleFilter("page", (pageMeta.page - 1).toString())
-                }
-                disabled={pageMeta.page == 0}
-              >
-                «
-              </button>
-              <button className="join-item btn">
-                Page {pageMeta.page + 1}
-              </button>
-              <button
-                className="join-item btn"
-                onClick={() =>
-                  handleFilter("page", (pageMeta.page + 1).toString())
-                }
-                disabled={pageMeta.page + 1 == pageMeta.totalPage}
-              >
-                »
-              </button>
-            </div>
-          </div>
+
+          <PaginationControl
+            meta={pageMeta}
+            onPrevClick={() => handleFilter("page", pageMeta.page - 1)}
+            onNextClick={() => handleFilter("page", pageMeta.page + 1)}
+            onJumpPageClick={(val) => handleFilter("page", val)}
+            onLimitChange={(val) => handleFilter("limit", val)}
+          />
         </div>
       </div>
     </>
