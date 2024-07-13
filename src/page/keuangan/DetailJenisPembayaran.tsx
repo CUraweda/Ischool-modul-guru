@@ -1,5 +1,4 @@
 // import React from "react";
-import moment from "moment";
 import { useEffect, useState } from "react";
 import { FaCheck, FaSearch, FaTrash } from "react-icons/fa";
 import { MdInsertPhoto } from "react-icons/md";
@@ -16,6 +15,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
+import { formatTime } from "../../utils/date";
 
 const apiAssets = import.meta.env.VITE_REACT_API_URL + "/";
 
@@ -480,7 +480,7 @@ const DetailJenisPembayaran = () => {
                     </td>
                     <td>
                       {dat.paidoff_at
-                        ? moment(dat.paidoff_at).format("DD MMMM YYYY hh:mm")
+                        ? formatTime(dat.paidoff_at, "DD MMMM YYYY HH:mm")
                         : "-"}
                     </td>
 

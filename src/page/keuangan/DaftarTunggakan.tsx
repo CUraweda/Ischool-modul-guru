@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 import { Class, TagihanSiswa } from "../../midleware/api";
 import { Select } from "../../component/Input";
 import Swal from "sweetalert2";
-import moment from "moment";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
+import { formatTime } from "../../utils/date";
 
 const DaftarTunggakan = () => {
   const { token } = Store();
@@ -154,7 +154,8 @@ const DaftarTunggakan = () => {
                     </td>
                     <td>
                       {dat.studentpaymentbill?.due_date
-                        ? moment(dat.studentpaymentbill.due_date).format(
+                        ? formatTime(
+                            dat.studentpaymentbill.due_date,
                             "DD MMMM YYYY"
                           )
                         : "-"}

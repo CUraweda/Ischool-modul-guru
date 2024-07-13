@@ -7,11 +7,11 @@ import Swal from "sweetalert2";
 import { getAcademicYears, getCurrentAcademicYear } from "../../utils/common";
 import { FaMoneyBill1Wave } from "react-icons/fa6";
 import Modal, { openModal } from "../../component/modal";
-import moment from "moment";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
+import { formatTime } from "../../utils/date";
 
 const getReport = (arr: any[], semester: any) => {
   const filt = arr.filter((ar) => ar.semester == semester);
@@ -169,12 +169,15 @@ const DataSiswa = () => {
                   {dat.status.toLowerCase() == "lunas"
                     ? `Lunas pada ${
                         dat.paidoff_at
-                          ? moment(dat.paidoff_at).format("DD MMMM YYYY hh:mm")
+                          ? formatTime(dat.paidoff_at, "DD MMMM YYYY HH:mm")
                           : "-"
                       }`
                     : `Jatuh tempo pada ${
-                        dat.due_date
-                          ? moment(dat.due_date).format("DD MMMM YYYY")
+                        dat.studentpaymentbill?.due_date
+                          ? formatTime(
+                              dat.studentpaymentbill.due_date,
+                              "DD MMMM YYYY"
+                            )
                           : "-"
                       }`}
                 </p>

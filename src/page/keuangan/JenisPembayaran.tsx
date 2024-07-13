@@ -3,7 +3,6 @@ import { FaRegFileAlt, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaPencil } from "react-icons/fa6";
 import { useEffect, useState } from "react";
-import moment from "moment";
 import { getAcademicYears, moneyFormat } from "../../utils/common";
 import Modal, { openModal, closeModal } from "../../component/modal";
 import { Input, Select } from "../../component/Input";
@@ -16,6 +15,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
+import { formatTime } from "../../utils/date";
 
 const jenisPembayaranSchema = Yup.object().shape({
   name: Yup.string().required("Keterangan harus diisi"),
@@ -151,7 +151,7 @@ const JenisPembayaran = () => {
         jenisPembayaranForm.setValues({
           name: data.data.name,
           payment_post_id: data.data.payment_post_id,
-          due_date: moment(data.data.due_date).format("YYYY-MM-DD"),
+          due_date: formatTime(data.data.due_date, "YYYY-MM-DD"),
           academic_year: data.data.academic_year,
           total: data.data.total,
         });
@@ -319,7 +319,7 @@ const JenisPembayaran = () => {
                     <td>{dat.paymentpost?.name ?? "-"}</td>
                     <td>
                       {dat.due_date
-                        ? moment(dat.due_date).format("DD MMMM YYYY")
+                        ? formatTime(dat.due_date, "DD MMMM YYYY")
                         : "-"}
                     </td>
                     <td>
