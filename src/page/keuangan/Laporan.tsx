@@ -1,5 +1,5 @@
 import { FaFileExcel, FaLongArrowAltRight } from "react-icons/fa";
-import Modal, { openModal } from "../../component/modal";
+import Modal, { closeModal, openModal } from "../../component/modal";
 import { Store } from "../../store/Store";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -9,13 +9,13 @@ import {
   Student,
   TagihanSiswa,
 } from "../../midleware/api";
-import moment from "moment";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
 import { Input, Select } from "../../component/Input";
 import { getAcademicYears } from "../../utils/common";
+import { formatTime } from "../../utils/date";
 
 const Laporan = () => {
   const { token } = Store(),
@@ -26,14 +26,49 @@ const Laporan = () => {
   const [filter, setFilter] = useState({
     page: 0,
     limit: 10,
-    academicYear: "",
-    postId: "",
+    paymentCatId: "",
     classId: "",
     studentId: "",
     startPaid: "",
     endPaid: "",
     status: "",
   });
+  const [filterInForm, setFilterInForm] = useState({
+    academicYear: "",
+    paymentCatId: "",
+    classId: "",
+    studentId: "",
+    startPaid: "",
+    endPaid: "",
+    status: "",
+  });
+
+  const applyFilterInForm = () => {
+    setFilter({
+      ...filter,
+      ...filterInForm,
+      page: 0,
+    });
+  };
+
+  const resetFilterInForm = () => {
+    setFilterInForm({
+      academicYear: "",
+      paymentCatId: "",
+      classId: "",
+      studentId: "",
+      startPaid: "",
+      endPaid: "",
+      status: "",
+    });
+  };
+
+  const handleFilterInForm = (key: string, value: any) => {
+    setFilterInForm({
+      ...filterInForm,
+      [key]: value,
+    });
+  };
 
   const handleFilter = (key: string, value: any) => {
     const obj = {
@@ -49,7 +84,7 @@ const Laporan = () => {
     try {
       const res = await Class.showAll(token, 0, 1000);
       setClasses(res.data.data.result);
-      handleFilter("studentId", "");
+      handleFilterInForm("studentId", "");
     } catch {}
   };
 
@@ -58,28 +93,28 @@ const Laporan = () => {
     try {
       const res = await Student.GetStudentByClass(
         token,
-        parseInt(filter.classId),
-        filter.academicYear
+        parseInt(filterInForm.classId),
+        filterInForm.academicYear
       );
       setStudents(res.data.data.map((dat: any) => dat.student));
     } catch {}
   };
 
   useEffect(() => {
-    if (filter.classId) getStudents();
-  }, [filter.classId, filter.academicYear]);
+    if (filterInForm.classId) getStudents();
+  }, [filterInForm.classId, filterInForm.academicYear]);
 
-  const [paymentTypes, setPaymentTypes] = useState<any[]>([]);
-  const getPaymentTypes = async () => {
+  const [paymentCats, setPaymentCats] = useState<any[]>([]);
+  const getPaymentCats = async () => {
     try {
       const res = await PosJenisPembayaran.showAll(token, "", 0, 1000);
-      setPaymentTypes(res.data.data.result);
+      setPaymentCats(res.data.data.result);
     } catch {}
   };
 
   useEffect(() => {
     getClasses();
-    getPaymentTypes();
+    getPaymentCats();
   }, []);
 
   // main
@@ -89,7 +124,7 @@ const Laporan = () => {
     try {
       const res = await TagihanSiswa.showAllReports(
         token,
-        filter.postId,
+        filter.paymentCatId,
         filter.classId,
         filter.studentId,
         filter.startPaid,
@@ -112,7 +147,7 @@ const Laporan = () => {
 
   useEffect(() => {
     getDataList();
-  }, []);
+  }, [filter]);
 
   return (
     <>
@@ -170,7 +205,7 @@ const Laporan = () => {
                     </td>
                     <td>
                       {dat.paidoff_at
-                        ? moment(dat.paidoff_at).format("DD MMMM YYYY hh:mm")
+                        ? formatTime(dat.paidoff_at, "DD MMMM YYYY HH:mm")
                         : "-"}
                     </td>
                   </tr>
@@ -191,15 +226,22 @@ const Laporan = () => {
       </div>
 
       <Modal id={modalFilterId}>
-        <div className="w-full flex justify-center flex-col items-center">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            applyFilterInForm();
+            closeModal(modalFilterId);
+          }}
+          className="w-full flex justify-center flex-col items-center"
+        >
           <span className="text-xl font-bold ">Filter</span>
 
           <Select
             label="Tahun ajar"
             placeholder="Semua"
             options={getAcademicYears()}
-            value={filter.academicYear}
-            onChange={(e) => handleFilter("academicYear", e.target.value)}
+            value={filterInForm.academicYear}
+            onChange={(e) => handleFilterInForm("academicYear", e.target.value)}
           />
 
           <Select
@@ -208,8 +250,8 @@ const Laporan = () => {
             keyValue="id"
             keyDisplay="class_name"
             options={classes}
-            value={filter.classId}
-            onChange={(e) => handleFilter("classId", e.target.value)}
+            value={filterInForm.classId}
+            onChange={(e) => handleFilterInForm("classId", e.target.value)}
           />
 
           <Select
@@ -217,10 +259,10 @@ const Laporan = () => {
             placeholder="Semua"
             keyValue="id"
             keyDisplay="full_name"
-            disabled={!filter.classId}
+            disabled={!filterInForm.classId}
             options={students}
-            value={filter.studentId}
-            onChange={(e) => handleFilter("studentId", e.target.value)}
+            value={filterInForm.studentId}
+            onChange={(e) => handleFilterInForm("studentId", e.target.value)}
           />
 
           <Select
@@ -228,17 +270,17 @@ const Laporan = () => {
             placeholder="Semua"
             keyValue="id"
             keyDisplay="name"
-            options={paymentTypes}
-            value={filter.postId}
-            onChange={(e) => handleFilter("postId", e.target.value)}
+            options={paymentCats}
+            value={filterInForm.paymentCatId}
+            onChange={(e) => handleFilterInForm("paymentCatId", e.target.value)}
           />
 
           <Select
             label="Status"
             placeholder="Semua"
             options={["Lunas", "Belum Lunas"]}
-            value={filter.status}
-            onChange={(e) => handleFilter("status", e.target.value)}
+            value={filterInForm.status}
+            onChange={(e) => handleFilterInForm("status", e.target.value)}
           />
 
           <div className="flex  w-full items-end gap-3">
@@ -246,8 +288,10 @@ const Laporan = () => {
               <Input
                 label="Tanggal bayar"
                 type="date"
-                value={filter.startPaid}
-                onChange={(e) => handleFilter("startPaid", e.target.value)}
+                value={filterInForm.startPaid}
+                onChange={(e) =>
+                  handleFilterInForm("startPaid", e.target.value)
+                }
               />
             </div>
             <FaLongArrowAltRight className="text-neutral-500 relative top-2 self-center" />
@@ -255,16 +299,25 @@ const Laporan = () => {
               <Input
                 label=""
                 type="date"
-                value={filter.endPaid}
-                onChange={(e) => handleFilter("endPaid", e.target.value)}
+                value={filterInForm.endPaid}
+                onChange={(e) => handleFilterInForm("endPaid", e.target.value)}
               />
             </div>
           </div>
 
-          <button className="btn btn-primary text-white w-full">
-            Terapkan
-          </button>
-        </div>
+          <div className="modal-action w-full">
+            <button
+              type="reset"
+              onClick={resetFilterInForm}
+              className="btn grow"
+            >
+              Atur ulang
+            </button>
+            <button type="submit" className="btn btn-primary grow">
+              Terapkan
+            </button>
+          </div>
+        </form>
       </Modal>
     </>
   );
