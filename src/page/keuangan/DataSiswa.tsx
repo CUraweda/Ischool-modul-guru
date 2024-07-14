@@ -4,6 +4,7 @@ import { FaFileAlt, FaLock, FaLockOpen, FaSearch } from "react-icons/fa";
 import { Class, Raport, Student, TagihanSiswa } from "../../midleware/api";
 import { Store } from "../../store/Store";
 import Swal from "sweetalert2";
+import ilusNoData from "../../assets/ilus/no-data.svg";
 import { getAcademicYears, getCurrentAcademicYear } from "../../utils/common";
 import { FaMoneyBill1Wave } from "react-icons/fa6";
 import Modal, { openModal } from "../../component/modal";
@@ -139,58 +140,71 @@ const DataSiswa = () => {
       <Modal
         id={modalDetailPembayaranId}
         onClose={() => setStudentInModal(null)}
+        width="w-11/12 max-w-2xl"
       >
         <h3 className="text-xl font-bold mb-6">Daftar Pembayaran</h3>
 
-        {studentPayments.map((dat, i) => (
-          <>
-            <div key={i} className="flex mb-3 items-center justify-between">
-              <div>
-                <p className="text-lg">{dat.studentpaymentbill.name}</p>
-                <p className="text-xs text-gray-400">
-                  {`${dat.studentpaymentbill?.paymentpost?.name ?? "-"} • ${dat.studentpaymentbill?.paymentpost?.billing_cycle ?? "-"} • ${dat.studentpaymentbill?.academic_year ?? "-"}`}
-                </p>
+        {studentPayments.length ? (
+          studentPayments.map((dat, i) => (
+            <>
+              <div key={i} className="flex items-center justify-between">
+                <div>
+                  <p className="text-lg">{dat.studentpaymentbill.name}</p>
+                  <p className="text-sm text-gray-500">
+                    {`${dat.studentpaymentbill?.paymentpost?.name ?? "-"} • ${dat.studentpaymentbill?.paymentpost?.billing_cycle ?? "-"} • ${dat.studentpaymentbill?.academic_year ?? "-"}`}
+                  </p>
+                </div>
+                <div>
+                  <p
+                    className={
+                      "font-extrabold text-end " +
+                      (dat.status.toLowerCase() == "lunas"
+                        ? "text-success"
+                        : "") +
+                      (dat.status.toLowerCase() == "belum lunas"
+                        ? "text-error"
+                        : "")
+                    }
+                  >
+                    {dat.status?.toUpperCase() ?? "-"}
+                  </p>
+                  <p className="text-sm text-gray-500 text-end">
+                    {dat.status.toLowerCase() == "lunas"
+                      ? `Lunas pada ${
+                          dat.paidoff_at
+                            ? formatTime(dat.paidoff_at, "DD MMMM YYYY HH:mm")
+                            : "-"
+                        }`
+                      : `Jatuh tempo pada ${
+                          dat.studentpaymentbill?.due_date
+                            ? formatTime(
+                                dat.studentpaymentbill.due_date,
+                                "DD MMMM YYYY"
+                              )
+                            : "-"
+                        }`}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p
-                  className={
-                    "font-extrabold text-end " +
-                    (dat.status.toLowerCase() == "lunas"
-                      ? "text-success"
-                      : "") +
-                    (dat.status.toLowerCase() == "belum lunas"
-                      ? "text-error"
-                      : "")
-                  }
-                >
-                  {dat.status?.toUpperCase() ?? "-"}
-                </p>
-                <p className="text-xs text-gray-400 text-end">
-                  {dat.status.toLowerCase() == "lunas"
-                    ? `Lunas pada ${
-                        dat.paidoff_at
-                          ? formatTime(dat.paidoff_at, "DD MMMM YYYY HH:mm")
-                          : "-"
-                      }`
-                    : `Jatuh tempo pada ${
-                        dat.studentpaymentbill?.due_date
-                          ? formatTime(
-                              dat.studentpaymentbill.due_date,
-                              "DD MMMM YYYY"
-                            )
-                          : "-"
-                      }`}
-                </p>
-              </div>
-            </div>
-            <div className="divider"></div>
-          </>
-        ))}
+              <div className="divider my-3"></div>
+            </>
+          ))
+        ) : (
+          <div className="w-full max-w-52 mx-auto my-12">
+            <img src={ilusNoData} alt="" className="max-w-32 mx-auto mb-3" />
+            <h4 className="text-center text-lg">
+              Siswa belum memiliki pembayaran
+            </h4>
+          </div>
+        )}
 
-        <form className="modal-action items-center" method="dialog">
-          <p className="text-xs text-gray-500">
-            Masih ada yang belum lunas? Konfirmasi pembayaran pada laman Daftar
-            Tunggakan Siswa {">"} cari{" "}
+        <form
+          className="modal-action items-center justify-between"
+          method="dialog"
+        >
+          <p className="text-xs text-gray-500 max-w-96">
+            Masih ada yang belum lunas? Konfirmasi pembayaran pada laman Jenis
+            Pembayaran {">"} Action Detail {">"} cari{" "}
             {`"${studentInModal?.student?.full_name ?? ""}"`}{" "}
           </p>
           <button className="btn btn-outline btn-primary">Tutup</button>
