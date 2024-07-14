@@ -1149,6 +1149,23 @@ const TagihanSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  exportReports: (
+    token: string | null,
+    paymentCatId?: string,
+    classId?: string,
+    studentId?: string,
+    startPaid?: string,
+    endPaid?: string,
+    status?: string
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-payment-report/export-all?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    }),
   showAllArrears: (
     token: string | null,
     search?: string,

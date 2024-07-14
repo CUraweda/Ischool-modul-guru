@@ -140,7 +140,7 @@ const Laporan = () => {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "Gagal Mengambil data laporan, silakan refresh halaman!",
+        text: "Gagal mengambil data laporan, silakan refresh halaman!",
       });
     }
   };
@@ -148,6 +148,34 @@ const Laporan = () => {
   useEffect(() => {
     getDataList();
   }, [filter]);
+
+  const handleExport = async () => {
+    try {
+      const res = await TagihanSiswa.exportReports(
+        token,
+        filter.paymentCatId,
+        filter.classId,
+        filter.studentId,
+        filter.startPaid,
+        filter.endPaid,
+        filter.status
+      );
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.setAttribute("download", "laporan.xlsx");
+      document.body.appendChild(link);
+
+      link.click();
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Gagal mengekspor data laporan",
+      });
+    }
+  };
 
   return (
     <>
@@ -161,7 +189,10 @@ const Laporan = () => {
             >
               Filter
             </button>
-            <button className="btn bg-[#1d6f42] text-white">
+            <button
+              onClick={handleExport}
+              className="btn bg-[#1d6f42] text-white"
+            >
               <FaFileExcel size={18} />
               Export
             </button>
