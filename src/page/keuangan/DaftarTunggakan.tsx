@@ -73,6 +73,30 @@ const DaftarTunggakan = () => {
     getDataList();
   }, [filter]);
 
+  const handleExport = async () => {
+    try {
+      const res = await TagihanSiswa.exportArrears(
+        token,
+        filter.search,
+        filter.classId
+      );
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.setAttribute("download", "Daftar Tunggakan Siswa.xlsx");
+      document.body.appendChild(link);
+
+      link.click();
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Gagal mengekspor data tunggakan",
+      });
+    }
+  };
+
   return (
     <>
       <div className="w-full flex justify-center flex-col items-center p-3">
@@ -110,7 +134,10 @@ const DaftarTunggakan = () => {
             </div>
 
             {/* export action  */}
-            <button className="btn bg-[#1d6f42] text-white">
+            <button
+              onClick={handleExport}
+              className="btn bg-[#1d6f42] text-white"
+            >
               <FaFileExcel size={18} />
               Export
             </button>

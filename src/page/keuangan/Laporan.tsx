@@ -164,7 +164,7 @@ const Laporan = () => {
       const link = document.createElement("a");
 
       link.href = url;
-      link.setAttribute("download", "laporan.xlsx");
+      link.setAttribute("download", "Laporan Pembayaran Siswa.xlsx");
       document.body.appendChild(link);
 
       link.click();

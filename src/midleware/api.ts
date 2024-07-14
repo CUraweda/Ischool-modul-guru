@@ -1180,6 +1180,19 @@ const TagihanSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  exportArrears: (
+    token: string | null,
+    search?: string,
+    classId?: string
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-arrears/export-all?search_query=${search}&class_id=${classId}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    }),
   showByStudentId: (
     token: string | null,
     studentId?: string | null
