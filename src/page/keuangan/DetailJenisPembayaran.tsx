@@ -368,7 +368,7 @@ const DetailJenisPembayaran = () => {
       </Modal>
 
       <div className="w-full flex justify-center flex-col items-center p-3">
-        <div className="w-full p-3 bg-white">
+        <div className="w-full p-3 bg-white rounded-lg">
           {/* breadcrumbs  */}
           <div className="breadcrumbs text-sm">
             <ul>
@@ -447,9 +447,8 @@ const DetailJenisPembayaran = () => {
                   <tr key={i}>
                     <th>{i + 1}</th>
                     <td>
-                      <p className="text-lg">{dat.student?.full_name ?? "-"}</p>
-                      <p className="text-xs text-gray-400">
-                        {dat.academic_year}
+                      <p className="text-lg line-clamp-2">
+                        {dat.student?.full_name ?? "-"}
                       </p>
                     </td>
                     <td>{dat.student?.nis ?? "-"}</td>
@@ -457,7 +456,7 @@ const DetailJenisPembayaran = () => {
                     <td>
                       <p
                         className={
-                          "font-extrabold " +
+                          "font-extrabold whitespace-nowrap " +
                           (dat.status.toLowerCase() == "lunas"
                             ? "text-success"
                             : "") +
@@ -478,7 +477,7 @@ const DetailJenisPembayaran = () => {
                         <MdInsertPhoto />
                       </button>
                     </td>
-                    <td>
+                    <td className="whitespace-nowrap">
                       {dat.paidoff_at
                         ? formatTime(dat.paidoff_at, "DD MMMM YYYY HH:mm")
                         : "-"}

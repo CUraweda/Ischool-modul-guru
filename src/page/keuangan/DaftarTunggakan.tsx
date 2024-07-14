@@ -101,7 +101,7 @@ const DaftarTunggakan = () => {
     <>
       <div className="w-full flex justify-center flex-col items-center p-3">
         <span className="font-bold text-xl">DAFTAR TUNGGAKAN</span>
-        <div className="w-full p-3 bg-white">
+        <div className="w-full p-3 bg-white rounded-lg">
           <div className="w-full flex justify-end my-3 gap-2">
             {/* search  */}
             <form
@@ -161,13 +161,17 @@ const DaftarTunggakan = () => {
                 {dataList.map((dat, i) => (
                   <tr key={i}>
                     <th>{i + 1}</th>
-                    <td>{dat.student?.full_name ?? ""}</td>
+                    <td>
+                      <p className="line-clamp-2">
+                        {dat.student?.full_name ?? ""}
+                      </p>
+                    </td>
                     <td>{dat.student?.nis ?? ""}</td>
                     <td>{dat.studentpaymentbill?.name ?? ""}</td>
                     <td>
                       <p
                         className={
-                          "font-extrabold " +
+                          "font-extrabold whitespace-nowrap " +
                           (dat.status.toLowerCase() == "lunas"
                             ? "text-success"
                             : "") +
@@ -179,7 +183,7 @@ const DaftarTunggakan = () => {
                         {dat.status?.toUpperCase() ?? "-"}
                       </p>
                     </td>
-                    <td>
+                    <td className="whitespace-nowrap">
                       {dat.studentpaymentbill?.due_date
                         ? formatTime(
                             dat.studentpaymentbill.due_date,

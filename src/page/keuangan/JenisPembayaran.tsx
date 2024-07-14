@@ -279,7 +279,7 @@ const JenisPembayaran = () => {
 
       <div className="w-full flex justify-center flex-col items-center p-3">
         <span className="font-bold text-xl">JENIS PEMBAYARAN</span>
-        <div className="w-full p-3 bg-white">
+        <div className="w-full p-3 bg-white rounded-lg">
           <div className="w-full flex justify-end my-3 gap-2">
             <select className="select select-bordered w-32">
               <option>Filter</option>
@@ -311,13 +311,13 @@ const JenisPembayaran = () => {
                   <tr key={i}>
                     <th>{i + 1}</th>
                     <td>
-                      <p className="text-lg">{dat.name}</p>
+                      <p className="text-lg whitespace-nowrap">{dat.name}</p>
                       <p className="text-xs text-gray-400">
                         {dat.academic_year}
                       </p>
                     </td>
                     <td>{dat.paymentpost?.name ?? "-"}</td>
-                    <td>
+                    <td className="whitespace-nowrap">
                       {dat.due_date
                         ? formatTime(dat.due_date, "DD MMMM YYYY")
                         : "-"}

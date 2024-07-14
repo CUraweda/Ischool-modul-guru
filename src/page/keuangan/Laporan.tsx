@@ -181,7 +181,7 @@ const Laporan = () => {
     <>
       <div className="w-full flex justify-center flex-col items-center p-3">
         <span className="font-bold text-xl">LAPORAN</span>
-        <div className="w-full p-3 bg-white">
+        <div className="w-full p-3 bg-white rounded-lg">
           <div className="w-full flex justify-end my-3 gap-2">
             <button
               className="btn btn-primary text-white"
@@ -216,13 +216,17 @@ const Laporan = () => {
                 {dataList.map((dat, i) => (
                   <tr key={i}>
                     <th>{i + 1}</th>
-                    <td>{dat.student?.full_name ?? ""}</td>
+                    <td>
+                      <p className="line-clamp-2">
+                        {dat.student?.full_name ?? ""}
+                      </p>
+                    </td>
                     <td>{dat.student?.nis ?? ""}</td>
                     <td>{dat.studentpaymentbill?.name ?? ""}</td>
                     <td>
                       <p
                         className={
-                          "font-extrabold " +
+                          "font-extrabold whitespace-nowrap " +
                           (dat.status.toLowerCase() == "lunas"
                             ? "text-success"
                             : "") +
@@ -234,7 +238,7 @@ const Laporan = () => {
                         {dat.status?.toUpperCase() ?? "-"}
                       </p>
                     </td>
-                    <td>
+                    <td className="whitespace-nowrap">
                       {dat.paidoff_at
                         ? formatTime(dat.paidoff_at, "DD MMMM YYYY HH:mm")
                         : "-"}
