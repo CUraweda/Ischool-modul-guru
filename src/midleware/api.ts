@@ -49,11 +49,12 @@ const Student = {
     search: string | null,
     class_id: string | null,
     tahun: string | null,
-    page: number | null
+    page: number | null,
+    limit: number | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-class?search_query=${search}&academic=${tahun}&class_id=${class_id}&page=${page}`,
+      url: `/api/student-class?search_query=${search}&academic=${tahun}&class_id=${class_id}&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1119,19 +1120,82 @@ const TagihanSiswa = {
     token: string | null,
     search?: string,
     billId?: string,
+    classId?: string,
     page: number = 0,
     limit: number = 10
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-bills?search_query=${search}&bill_id=${billId}&page=${page}&limit=${limit}`,
+      url: `/api/student-bills?search_query=${search}&bill_id=${billId}&class_id=${classId}&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }),
+  showAllReports: (
+    token: string | null,
+    paymentCatId?: string,
+    classId?: string,
+    studentId?: string,
+    startPaid?: string,
+    endPaid?: string,
+    status?: string,
+    page: number = 0,
+    limit: number = 10
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-payment-report?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  exportReports: (
+    token: string | null,
+    paymentCatId?: string,
+    classId?: string,
+    studentId?: string,
+    startPaid?: string,
+    endPaid?: string,
+    status?: string
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-payment-report/export-all?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    }),
+  showAllArrears: (
+    token: string | null,
+    search?: string,
+    classId?: string,
+    page: number = 0,
+    limit: number = 10
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-arrears?search_query=${search}&class_id=${classId}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  exportArrears: (
+    token: string | null,
+    search?: string,
+    classId?: string
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-arrears/export-all?search_query=${search}&class_id=${classId}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    }),
   showByStudentId: (
     token: string | null,
-    studentId?: string | null,
+    studentId?: string | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",

@@ -43,3 +43,16 @@ export const moneyFormat = (
 
   return formatted;
 };
+
+export const getReversedNumbersByLen = (length: number) => {
+  if (typeof length !== "number" || length <= 0 || !Number.isInteger(length)) {
+    return [];
+  }
+
+  let result = [];
+  for (let i = length; i >= 1; i--) {
+    result.push(i);
+  }
+
+  return result;
+};

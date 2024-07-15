@@ -9,6 +9,10 @@ import Modal, { closeModal, openModal } from "../../component/modal";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Input, Select, Textarea } from "../../component/Input";
+import {
+  IpageMeta,
+  PaginationControl,
+} from "../../component/PaginationControl";
 
 const posPembayaranSchema = Yup.object().shape({
   name: Yup.string().required("Nama pos pembayaran harus diisi"),
@@ -24,12 +28,13 @@ function PosKeuangan() {
   // page states
   const [dataIdxInForm, setDataIdxInForm] = useState<any>(null);
   const [dataList, setDataList] = useState<any[]>([]);
-  const [pageMeta, setPageMeta] = useState<any>({ page: 0 });
+  const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
     page: 0,
+    limit: 10,
   });
 
-  const handleFilter = (key: string, value: string) => {
+  const handleFilter = (key: string, value: any) => {
     const obj = {
       ...filter,
       [key]: value,
@@ -40,7 +45,12 @@ function PosKeuangan() {
 
   const getDataList = async () => {
     try {
-      const res = await PosPembayaran.showAll(token, "", filter.page);
+      const res = await PosPembayaran.showAll(
+        token,
+        "",
+        filter.page,
+        filter.limit
+      );
 
       const { result, ...meta } = res.data.data;
 
@@ -208,7 +218,7 @@ function PosKeuangan() {
 
       <div className="w-full flex justify-center flex-col items-center p-3">
         <span className="font-bold text-xl">POS PEMBAYARAN SISWA</span>
-        <div className="w-full p-3 bg-white">
+        <div className="w-full p-3 bg-white rounded-lg">
           <div className="w-full flex justify-end my-3 gap-3">
             <button
               onClick={() => {
@@ -263,31 +273,13 @@ function PosKeuangan() {
             </table>
           </div>
 
-          <div className="w-full justify-end flex mt-3">
-            <div className="join">
-              <button
-                className="join-item btn"
-                onClick={() =>
-                  handleFilter("page", (pageMeta.page - 1).toString())
-                }
-                disabled={pageMeta.page == 0}
-              >
-                «
-              </button>
-              <button className="join-item btn">
-                Page {pageMeta.page + 1}
-              </button>
-              <button
-                className="join-item btn"
-                onClick={() =>
-                  handleFilter("page", (pageMeta.page + 1).toString())
-                }
-                disabled={pageMeta.page + 1 == pageMeta.totalPage}
-              >
-                »
-              </button>
-            </div>
-          </div>
+          <PaginationControl
+            meta={pageMeta}
+            onPrevClick={() => handleFilter("page", pageMeta.page - 1)}
+            onNextClick={() => handleFilter("page", pageMeta.page + 1)}
+            onJumpPageClick={(val) => handleFilter("page", val)}
+            onLimitChange={(val) => handleFilter("limit", val)}
+          />
         </div>
       </div>
     </>

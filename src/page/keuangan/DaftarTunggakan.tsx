@@ -1,39 +1,149 @@
 // import React from 'react'
-import { FaSearch } from 'react-icons/fa'
+import { FaFileExcel, FaSearch } from "react-icons/fa";
+import { Store } from "../../store/Store";
+import { useEffect, useState } from "react";
+import { Class, TagihanSiswa } from "../../midleware/api";
+import { Select } from "../../component/Input";
+import Swal from "sweetalert2";
+import {
+  IpageMeta,
+  PaginationControl,
+} from "../../component/PaginationControl";
+import { formatTime } from "../../utils/date";
 
 const DaftarTunggakan = () => {
+  const { token } = Store();
+
+  // FILTERING
+  const [classes, setClasses] = useState<any[]>([]);
+  const [search, setSearch] = useState<string>("");
+  const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
+  const [filter, setFilter] = useState({
+    page: 0,
+    limit: 10,
+    search: "",
+    classId: "",
+  });
+
+  const getClasses = async () => {
+    try {
+      const res = await Class.showAll(token, 0, 1000);
+      setClasses(res.data.data.result);
+    } catch {}
+  };
+
+  const handleFilter = (key: string, value: any) => {
+    const obj = {
+      ...filter,
+      [key]: value,
+    };
+    if (key != "page") obj["page"] = 0;
+    setFilter(obj);
+  };
+
+  useEffect(() => {
+    getClasses();
+  }, []);
+
+  // MAIN BUSINESS
+  const [dataList, setDataList] = useState<any[]>([]);
+
+  const getDataList = async () => {
+    try {
+      const res = await TagihanSiswa.showAllArrears(
+        token,
+        filter.search,
+        filter.classId,
+        filter.page,
+        filter.limit
+      );
+      const { result, ...meta } = res.data.data;
+      setDataList(result);
+      setPageMeta(meta);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Gagal Mengambil data tunggakan, silakan refresh halaman!",
+      });
+    }
+  };
+
+  useEffect(() => {
+    getDataList();
+  }, [filter]);
+
+  const handleExport = async () => {
+    try {
+      const res = await TagihanSiswa.exportArrears(
+        token,
+        filter.search,
+        filter.classId
+      );
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.setAttribute("download", "Daftar Tunggakan Siswa.xlsx");
+      document.body.appendChild(link);
+
+      link.click();
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Gagal mengekspor data tunggakan",
+      });
+    }
+  };
+
   return (
     <>
-         <div className="w-full flex justify-center flex-col items-center p-3">
-         <span className="font-bold text-xl">DAFTAR TUNGGAKAN</span>
-        <div className="w-full p-3 bg-white">
-         
+      <div className="w-full flex justify-center flex-col items-center p-3">
+        <span className="font-bold text-xl">DAFTAR TUNGGAKAN</span>
+        <div className="w-full p-3 bg-white rounded-lg">
           <div className="w-full flex justify-end my-3 gap-2">
-            <div className="join">
-              <input
-                type="text"
-                placeholder="Cari Siswa"
-                className="input input-bordered w-full max-w-xs join-item"
-              />
-
-              <button className="btn btn-ghost bg-blue-500 join-item text-white">
+            {/* search  */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleFilter("search", search);
+              }}
+            >
+              <label className="input input-bordered flex items-center gap-2">
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="grow"
+                  placeholder="Cari..."
+                />
                 <FaSearch />
-              </button>
+              </label>
+            </form>
+
+            {/* filter class  */}
+            <div>
+              <Select
+                placeholder="Pilih kelas"
+                options={classes}
+                keyValue="id"
+                keyDisplay="class_name"
+                onChange={(e) => handleFilter("classId", e.target.value)}
+              />
             </div>
-            <select className="select select-bordered w-32">
-              <option>Pilih Kelas</option>
-              <option>Han Solo</option>
-              <option>Greedo</option>
-            </select>
-            <select className="select select-bordered w-32">
-              <option>Pilih Siswa</option>
-              <option>Han Solo</option>
-              <option>Greedo</option>
-            </select>
-            <button className="btn btn-ghost bg-blue-500 text-white">
+
+            {/* export action  */}
+            <button
+              onClick={handleExport}
+              className="btn bg-[#1d6f42] text-white"
+            >
+              <FaFileExcel size={18} />
               Export
             </button>
           </div>
+
+          {/* data list  */}
           <div className="overflow-x-auto">
             <table className="table table-zebra">
               {/* head */}
@@ -45,33 +155,59 @@ const DaftarTunggakan = () => {
                   <th>Pembayaran</th>
                   <th>Status</th>
                   <th>Jatuh Tempo</th>
-                 
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th>1</th>
-                  <td>Aldi</td>
-                  <td>2093424</td>
-                  <td>Spp Juni 2024</td>
-                  <td>Belum Lunas</td>
-                  <td>30 Juni 2024</td>
-
-                </tr>
+                {dataList.map((dat, i) => (
+                  <tr key={i}>
+                    <th>{i + 1}</th>
+                    <td>
+                      <p className="line-clamp-2">
+                        {dat.student?.full_name ?? ""}
+                      </p>
+                    </td>
+                    <td>{dat.student?.nis ?? ""}</td>
+                    <td>{dat.studentpaymentbill?.name ?? ""}</td>
+                    <td>
+                      <p
+                        className={
+                          "font-extrabold whitespace-nowrap " +
+                          (dat.status.toLowerCase() == "lunas"
+                            ? "text-success"
+                            : "") +
+                          (dat.status.toLowerCase() == "belum lunas"
+                            ? "text-error"
+                            : "")
+                        }
+                      >
+                        {dat.status?.toUpperCase() ?? "-"}
+                      </p>
+                    </td>
+                    <td className="whitespace-nowrap">
+                      {dat.studentpaymentbill?.due_date
+                        ? formatTime(
+                            dat.studentpaymentbill.due_date,
+                            "DD MMMM YYYY"
+                          )
+                        : "-"}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
-          <div className="w-full justify-end flex mt-3">
-            <div className="join">
-              <button className="join-item btn">«</button>
-              <button className="join-item btn">Page 1</button>
-              <button className="join-item btn">»</button>
-            </div>
-          </div>
+
+          <PaginationControl
+            meta={pageMeta}
+            onPrevClick={() => handleFilter("page", pageMeta.page - 1)}
+            onNextClick={() => handleFilter("page", pageMeta.page + 1)}
+            onJumpPageClick={(val) => handleFilter("page", val)}
+            onLimitChange={(val) => handleFilter("limit", val)}
+          />
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default DaftarTunggakan
+export default DaftarTunggakan;

@@ -1,5 +1,4 @@
 // import React from "react";
-import moment from "moment";
 import { useEffect, useState } from "react";
 import { FaCheck, FaSearch, FaTrash } from "react-icons/fa";
 import { MdInsertPhoto } from "react-icons/md";
@@ -12,6 +11,11 @@ import Swal from "sweetalert2";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { getAcademicYears, getCurrentAcademicYear } from "../../utils/common";
+import {
+  IpageMeta,
+  PaginationControl,
+} from "../../component/PaginationControl";
+import { formatTime } from "../../utils/date";
 
 const apiAssets = import.meta.env.VITE_REACT_API_URL + "/";
 
@@ -33,9 +37,10 @@ const DetailJenisPembayaran = () => {
   // data state
   const [classes, setClasses] = useState<any[]>([]);
   const [dataList, setDataList] = useState<any[]>([]);
-  const [pageMeta, setPageMeta] = useState<any>({ page: 0 });
+  const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 70 });
   const [filter, setFilter] = useState({
     page: 0,
+    limit: 10,
     search: "",
     classId: "",
   });
@@ -43,7 +48,7 @@ const DetailJenisPembayaran = () => {
   // UI states
   const [search, setSearch] = useState<string>("");
 
-  const handleFilter = (key: string, value: string) => {
+  const handleFilter = (key: string, value: any) => {
     const obj = {
       ...filter,
       [key]: value,
@@ -58,7 +63,9 @@ const DetailJenisPembayaran = () => {
         token,
         filter.search,
         billId,
-        filter.page
+        filter.classId,
+        filter.page,
+        filter.limit
       );
       const { result, ...meta } = res.data.data;
       setDataList(result);
@@ -211,15 +218,15 @@ const DetailJenisPembayaran = () => {
   const [loadingDel, setLoadingDel] = useState(false);
   const handleDelete = async (id: any, student_name = "") => {
     setLoadingDel(true);
-    try {
-      Swal.fire({
-        icon: "question",
-        title: "Anda Yakin?",
-        text: `Aksi ini akan menghapus data pembayaran ${student_name}`,
-        showCancelButton: true,
-        confirmButtonText: "Sip, Yakin",
-        cancelButtonText: "Batalkan",
-      }).then(async (result) => {
+    Swal.fire({
+      icon: "question",
+      title: "Anda Yakin?",
+      text: `Aksi ini akan menghapus data pembayaran ${student_name}`,
+      showCancelButton: true,
+      confirmButtonText: "Sip, Yakin",
+      cancelButtonText: "Batalkan",
+    }).then(async (result) => {
+      try {
         if (result.isConfirmed) {
           await TagihanSiswa.delete(token, id);
 
@@ -231,16 +238,16 @@ const DetailJenisPembayaran = () => {
 
           getDataList();
         }
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Gagal menghapus pembayaran siswa",
-      });
-    } finally {
-      setLoadingDel(false);
-    }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Gagal menghapus pembayaran siswa",
+        });
+      } finally {
+        setLoadingDel(false);
+      }
+    });
   };
 
   const [evidenceInModal, setEvidenceInModal] = useState("");
@@ -253,15 +260,15 @@ const DetailJenisPembayaran = () => {
   const handleConfirm = async (id: any, student_name: string = "") => {
     setLoadingConfirm(true);
 
-    try {
-      Swal.fire({
-        icon: "question",
-        title: "Anda Yakin?",
-        text: `Yakin sudah mengecek dananya? aksi ini akan menandai status pembayaran ${student_name} sudah lunas`,
-        showCancelButton: true,
-        confirmButtonText: "Sip, Yakin",
-        cancelButtonText: "Batalkan",
-      }).then(async (result) => {
+    Swal.fire({
+      icon: "question",
+      title: "Anda Yakin?",
+      text: `Yakin sudah mengecek dananya? aksi ini akan menandai status pembayaran ${student_name} sudah lunas`,
+      showCancelButton: true,
+      confirmButtonText: "Sip, Yakin",
+      cancelButtonText: "Batalkan",
+    }).then(async (result) => {
+      try {
         if (result.isConfirmed) {
           await TagihanSiswa.confirmEvidence(token, id);
 
@@ -273,16 +280,16 @@ const DetailJenisPembayaran = () => {
 
           getDataList();
         }
-      });
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Gagal menerima pembayaran",
-      });
-    } finally {
-      setLoadingConfirm(false);
-    }
+      } catch {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Gagal menerima pembayaran",
+        });
+      } finally {
+        setLoadingConfirm(false);
+      }
+    });
   };
 
   return (
@@ -361,7 +368,7 @@ const DetailJenisPembayaran = () => {
       </Modal>
 
       <div className="w-full flex justify-center flex-col items-center p-3">
-        <div className="w-full p-3 bg-white">
+        <div className="w-full p-3 bg-white rounded-lg">
           {/* breadcrumbs  */}
           <div className="breadcrumbs text-sm">
             <ul>
@@ -440,9 +447,8 @@ const DetailJenisPembayaran = () => {
                   <tr key={i}>
                     <th>{i + 1}</th>
                     <td>
-                      <p className="text-lg">{dat.student?.full_name ?? "-"}</p>
-                      <p className="text-xs text-gray-400">
-                        {dat.academic_year}
+                      <p className="text-lg line-clamp-2">
+                        {dat.student?.full_name ?? "-"}
                       </p>
                     </td>
                     <td>{dat.student?.nis ?? "-"}</td>
@@ -450,7 +456,7 @@ const DetailJenisPembayaran = () => {
                     <td>
                       <p
                         className={
-                          "font-extrabold " +
+                          "font-extrabold whitespace-nowrap " +
                           (dat.status.toLowerCase() == "lunas"
                             ? "text-success"
                             : "") +
@@ -471,9 +477,9 @@ const DetailJenisPembayaran = () => {
                         <MdInsertPhoto />
                       </button>
                     </td>
-                    <td>
+                    <td className="whitespace-nowrap">
                       {dat.paidoff_at
-                        ? moment(dat.paidoff_at).format("DD MMMM YYYY hh:mm")
+                        ? formatTime(dat.paidoff_at, "DD MMMM YYYY HH:mm")
                         : "-"}
                     </td>
 
@@ -512,32 +518,13 @@ const DetailJenisPembayaran = () => {
             </table>
           </div>
 
-          {/* pagination control  */}
-          <div className="w-full justify-end flex mt-3">
-            <div className="join">
-              <button
-                className="join-item btn"
-                onClick={() =>
-                  handleFilter("page", (pageMeta.page - 1).toString())
-                }
-                disabled={pageMeta.page == 0}
-              >
-                «
-              </button>
-              <button className="join-item btn">
-                Page {pageMeta.page + 1}
-              </button>
-              <button
-                className="join-item btn"
-                onClick={() =>
-                  handleFilter("page", (pageMeta.page + 1).toString())
-                }
-                disabled={pageMeta.page + 1 == pageMeta.totalPage}
-              >
-                »
-              </button>
-            </div>
-          </div>
+          <PaginationControl
+            meta={pageMeta}
+            onPrevClick={() => handleFilter("page", pageMeta.page - 1)}
+            onNextClick={() => handleFilter("page", pageMeta.page + 1)}
+            onJumpPageClick={(val) => handleFilter("page", val)}
+            onLimitChange={(val) => handleFilter("limit", val)}
+          />
         </div>
       </div>
     </>
