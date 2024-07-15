@@ -3,18 +3,19 @@ import { FaRegFileAlt, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaPencil } from "react-icons/fa6";
 import { useEffect, useState } from "react";
-import moment from "moment";
 import { getAcademicYears, moneyFormat } from "../../utils/common";
 import Modal, { openModal, closeModal } from "../../component/modal";
 import { Input, Select } from "../../component/Input";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import {
-  PosJenisPembayaran,
-  PosPembayaran,
-} from "../../midleware/api";
+import { PosJenisPembayaran, PosPembayaran } from "../../midleware/api";
 import { Store } from "../../store/Store";
 import Swal from "sweetalert2";
+import {
+  IpageMeta,
+  PaginationControl,
+} from "../../component/PaginationControl";
+import { formatTime } from "../../utils/date";
 
 const jenisPembayaranSchema = Yup.object().shape({
   name: Yup.string().required("Keterangan harus diisi"),
@@ -31,12 +32,13 @@ const JenisPembayaran = () => {
   // data state
   const [dataIdInForm, setDataIdInForm] = useState<any>(null);
   const [dataList, setDataList] = useState<any[]>([]);
-  const [pageMeta, setPageMeta] = useState<any>({ page: 0 });
+  const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
     page: 0,
+    limit: 10,
   });
 
-  const handleFilter = (key: string, value: string) => {
+  const handleFilter = (key: string, value: any) => {
     const obj = {
       ...filter,
       [key]: value,
@@ -47,7 +49,12 @@ const JenisPembayaran = () => {
 
   const getDataList = async () => {
     try {
-      const res = await PosJenisPembayaran.showAll(token, "", filter.page);
+      const res = await PosJenisPembayaran.showAll(
+        token,
+        "",
+        filter.page,
+        filter.limit
+      );
 
       const { result, ...meta } = res.data.data;
 
@@ -144,7 +151,7 @@ const JenisPembayaran = () => {
         jenisPembayaranForm.setValues({
           name: data.data.name,
           payment_post_id: data.data.payment_post_id,
-          due_date: moment(data.data.due_date).format("YYYY-MM-DD"),
+          due_date: formatTime(data.data.due_date, "YYYY-MM-DD"),
           academic_year: data.data.academic_year,
           total: data.data.total,
         });
@@ -272,7 +279,7 @@ const JenisPembayaran = () => {
 
       <div className="w-full flex justify-center flex-col items-center p-3">
         <span className="font-bold text-xl">JENIS PEMBAYARAN</span>
-        <div className="w-full p-3 bg-white">
+        <div className="w-full p-3 bg-white rounded-lg">
           <div className="w-full flex justify-end my-3 gap-2">
             <select className="select select-bordered w-32">
               <option>Filter</option>
@@ -304,15 +311,15 @@ const JenisPembayaran = () => {
                   <tr key={i}>
                     <th>{i + 1}</th>
                     <td>
-                      <p className="text-lg">{dat.name}</p>
+                      <p className="text-lg whitespace-nowrap">{dat.name}</p>
                       <p className="text-xs text-gray-400">
                         {dat.academic_year}
                       </p>
                     </td>
                     <td>{dat.paymentpost?.name ?? "-"}</td>
-                    <td>
+                    <td className="whitespace-nowrap">
                       {dat.due_date
-                        ? moment(dat.due_date).format("DD MMMM YYYY")
+                        ? formatTime(dat.due_date, "DD MMMM YYYY")
                         : "-"}
                     </td>
                     <td>
@@ -357,31 +364,13 @@ const JenisPembayaran = () => {
               </tbody>
             </table>
           </div>
-          <div className="w-full justify-end flex mt-3">
-            <div className="join">
-              <button
-                className="join-item btn"
-                onClick={() =>
-                  handleFilter("page", (pageMeta.page - 1).toString())
-                }
-                disabled={pageMeta.page == 0}
-              >
-                «
-              </button>
-              <button className="join-item btn">
-                Page {pageMeta.page + 1}
-              </button>
-              <button
-                className="join-item btn"
-                onClick={() =>
-                  handleFilter("page", (pageMeta.page + 1).toString())
-                }
-                disabled={pageMeta.page + 1 == pageMeta.totalPage}
-              >
-                »
-              </button>
-            </div>
-          </div>
+          <PaginationControl
+            meta={pageMeta}
+            onPrevClick={() => handleFilter("page", pageMeta.page - 1)}
+            onNextClick={() => handleFilter("page", pageMeta.page + 1)}
+            onJumpPageClick={(val) => handleFilter("page", val)}
+            onLimitChange={(val) => handleFilter("limit", val)}
+          />
         </div>
       </div>
     </>

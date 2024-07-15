@@ -1,7 +1,7 @@
 import React from "react";
 
 interface Props {
-  label: string;
+  label?: string;
   hint?: string;
   errorMessage?: string;
   placeholder?: string;
@@ -120,10 +120,14 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps<any>>(
   ) => {
     return (
       <label className="form-control w-full">
-        <div className="label">
-          <span className="label-text font-bold">{label}</span>
-          <span className="label-text-alt">{helpMessage}</span>
-        </div>
+        {label || helpMessage ? (
+          <div className="label">
+            <span className="label-text font-bold">{label}</span>
+            <span className="label-text-alt">{helpMessage}</span>
+          </div>
+        ) : (
+          ""
+        )}
         <select
           className={"text-small select select-bordered w-full " + className}
           ref={ref}
