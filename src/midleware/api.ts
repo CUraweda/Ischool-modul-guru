@@ -1249,6 +1249,54 @@ const TagihanSiswa = {
     }),
 };
 
+const ForCountryDetail = {
+  showAll: (
+    token: string | null,
+    search?: string,
+    page: number = 0,
+    limit: number = 10
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/for-country-detail?search_query=${search}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/for-country-detail/show/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  update: (
+    token: string | null,
+    id: string | number | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: "/api/for-country-detail/update/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  delete: (
+    token: string | null,
+    id: string | number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: "/api/for-country-detail/delete/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
 export {
   Auth,
   Task,
@@ -1263,4 +1311,5 @@ export {
   PosPembayaran,
   PosJenisPembayaran,
   TagihanSiswa,
+  ForCountryDetail,
 };
