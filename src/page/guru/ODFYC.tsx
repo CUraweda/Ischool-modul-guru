@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import { FaFileUpload, FaRegFileAlt, FaSearch, FaTrash } from "react-icons/fa";
+import {
+  FaCalendar,
+  FaFileUpload,
+  FaRegFileAlt,
+  FaSearch,
+  FaTrash,
+} from "react-icons/fa";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { Store } from "../../store/Store";
@@ -16,6 +22,8 @@ import { useFormik } from "formik";
 import { Input, Select, Textarea } from "../../component/Input";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+
+type TformNav = "data" | "schedule" | "certificate" | "profile";
 
 const activities = [
   "Library",
@@ -46,7 +54,6 @@ const editDetailSchema = Yup.object().shape({
 
 const ODFYC = () => {
   const { token } = Store(),
-    modalUpSertifikat = "form-upload-sertifikat",
     modalDetailEdit = "form-detail-edit";
 
   // main
@@ -95,6 +102,7 @@ const ODFYC = () => {
   }, [filter]);
 
   // handle detail edit
+  const [formNav, setFormNav] = useState<TformNav>("data");
   const [dataDetail, setDataDetail] = useState<any>({});
 
   const detailForm = useFormik({
@@ -134,7 +142,8 @@ const ODFYC = () => {
   });
 
   const [isLoadingDetailEdit, setIsLoadingDetailEdit] = useState(false);
-  const getDataDetail = async (id: any) => {
+  const getDataDetail = async (id: any, nav: TformNav = "data") => {
+    setFormNav(nav);
     setIsLoadingDetailEdit(true);
 
     try {
@@ -240,20 +249,70 @@ const ODFYC = () => {
   };
 
   // hanlde upload certiface
-  const [fileUrl, setFileUrl] = useState<string>("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [certFile, setCertFile] = useState<File | null>(null),
+    [certFilePreview, setCertFilePreview] = useState(""),
+    [isLoadingUpCertificate, setIsLoadingUpCertificate] = useState(false),
+    refInputCert = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCertFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const newFileUrl = URL.createObjectURL(file);
-      setFileUrl(newFileUrl);
+      setCertFile(file);
+      setCertFilePreview(URL.createObjectURL(file));
     }
   };
 
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
+  const handleUploadCertificate = async () => {
+    if (!certFile || !(certFile instanceof File)) return;
+
+    setIsLoadingUpCertificate(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", certFile);
+
+      await ForCountryDetail.uploadCertificate(token, dataDetail.id, formData);
+
+      setDataDetail({});
+      setCertFile(null);
+      setCertFilePreview("");
+      getDataList();
+      if (refInputCert.current) refInputCert.current.value = "";
+
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil",
+        text: "Berhasil mengunggah sertifikat",
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Gagal mengunggah sertifikat",
+      });
+    } finally {
+      closeModal(modalDetailEdit);
+      setIsLoadingUpCertificate(false);
+    }
   };
+
+  const handleDowloadCertificate = async () => {
+    console.log("MAsUK LE");
+    console.log(dataDetail);
+    if (!dataDetail.certificate_path) return;
+
+    try {
+      const response = await ForCountryDetail.downloadCertificate(
+        token,
+        dataDetail.certificate_path
+      );
+      const blob = new Blob([response.data], { type: "application/pdf" }); //
+      setCertFilePreview(URL.createObjectURL(blob));
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    handleDowloadCertificate();
+  }, [dataDetail]);
 
   return (
     <>
@@ -324,18 +383,26 @@ const ODFYC = () => {
                           className="join-item tooltip btn btn-primary btn-sm text-md"
                           data-tip="Detail"
                           disabled={isLoadingDetailEdit}
-                          onClick={() => getDataDetail(dat.id)}
+                          onClick={() => getDataDetail(dat.id, "data")}
                         >
                           <FaRegFileAlt />
                         </button>
                         <button
-                          className="join-item tooltip btn btn-success text-white btn-sm text-md"
+                          className="join-item tooltip btn btn-secondary text-white btn-sm text-md"
+                          data-tip="Atur jadwal"
+                          disabled={dat.is_date_approved}
+                          onClick={() => getDataDetail(dat.id, "schedule")}
+                        >
+                          <FaCalendar />
+                        </button>
+                        <button
+                          className="join-item tooltip btn btn-accent text-white btn-sm text-md"
                           data-tip="Unggah sertifikat"
                           disabled={
                             dat.status?.toLowerCase() != "selesai" ||
-                            dat.status?.toLowerCase() != "done"
+                            dat.certificate_path
                           }
-                          onClick={() => openModal(modalUpSertifikat)}
+                          onClick={() => getDataDetail(dat.id, "certificate")}
                         >
                           <FaFileUpload />
                         </button>
@@ -383,7 +450,8 @@ const ODFYC = () => {
             role="tab"
             className="tab"
             aria-label="Data"
-            defaultChecked
+            checked={formNav == "data"}
+            onClick={() => setFormNav("data")}
           />
           <div
             role="tabpanel"
@@ -447,6 +515,8 @@ const ODFYC = () => {
             role="tab"
             className="tab"
             aria-label="Jadwal"
+            checked={formNav == "schedule"}
+            onClick={() => setFormNav("schedule")}
           />
           <div
             role="tabpanel"
@@ -488,7 +558,65 @@ const ODFYC = () => {
             name="tabs_detail_odyfc"
             role="tab"
             className="tab"
+            aria-label="Sertifikat"
+            checked={formNav == "certificate"}
+            onClick={() => setFormNav("certificate")}
+          />
+          <div
+            role="tabpanel"
+            className="tab-content border-base-300 rounded-box p-6"
+          >
+            {!certFilePreview ? (
+              <div
+                className="w-full h-96 rounded-md flex flex-col justify-center items-center border-dashed border-2 border-gray-300"
+                onClick={() => refInputCert?.current?.click()}
+              >
+                <div className="flex gap-3 items-center text-gray-500">
+                  <IoDocumentTextOutline size={28} />
+                  Fail tidak tersedia
+                </div>
+              </div>
+            ) : (
+              <>
+                <iframe
+                  src={certFilePreview}
+                  frameBorder="0"
+                  width="100%"
+                  height="450px"
+                  className="mt-4"
+                />
+              </>
+            )}
+
+            <input
+              type="file"
+              ref={refInputCert}
+              className="file-input file-input-bordered w-full my-3"
+              onChange={handleCertFileChange}
+              accept=".pdf"
+            />
+
+            <button
+              onClick={handleUploadCertificate}
+              className="btn btn-primary w-full"
+              disabled={!certFile || isLoadingUpCertificate}
+            >
+              {isLoadingUpCertificate ? (
+                <span className="loading loading-dots loading-md mx-auto"></span>
+              ) : (
+                "Simpan"
+              )}
+            </button>
+          </div>
+
+          <input
+            type="radio"
+            name="tabs_detail_odyfc"
+            role="tab"
+            className="tab"
             aria-label="Profil"
+            checked={formNav == "profile"}
+            onClick={() => setFormNav("profile")}
           />
           <div
             role="tabpanel"
@@ -515,46 +643,6 @@ const ODFYC = () => {
               </tbody>
             </table>
           </div>
-        </div>
-      </Modal>
-
-      <Modal id={modalUpSertifikat}>
-        <div className="w-full flex justify-center flex-col items-center gap-3">
-          <span className="text-xl font-bold">Upload Sertifikat</span>
-          {!fileUrl && (
-            <div
-              className="w-full h-96 rounded-md flex flex-col justify-center items-center border-dashed border-2 border-sky-500 cursor-not-allowed"
-              onClick={triggerFileInput}
-            >
-              <span className="text-5xl">
-                <IoDocumentTextOutline />
-              </span>
-              <span>No preview Document</span>
-            </div>
-          )}
-
-          {fileUrl && (
-            <>
-              <iframe
-                src={fileUrl}
-                frameBorder="0"
-                width="100%"
-                height="450px"
-                className="mt-4"
-              />
-            </>
-          )}
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="file-input file-input-bordered w-full"
-            onChange={handleFileChange}
-            accept=".pdf"
-          />
-
-          <button className="btn btn-ghost bg-green-500 text-white w-full">
-            Simpan
-          </button>
         </div>
       </Modal>
     </>
