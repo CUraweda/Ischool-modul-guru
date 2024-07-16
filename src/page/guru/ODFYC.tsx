@@ -167,6 +167,43 @@ const ODFYC = () => {
     }
   };
 
+  // handle delete
+  const [isLoadingDelete, setIsLoadingDelete] = useState(false);
+  const handleDelete = async (id: any, full_name?: any) => {
+    setIsLoadingDelete(true);
+
+    Swal.fire({
+      icon: "question",
+      title: "Anda Yakin?",
+      text: `Aksi ini akan menghapus data One Day For Your Country ${full_name ?? ""}`,
+      showCancelButton: true,
+      confirmButtonText: "Yakin",
+      cancelButtonText: "Batalkan",
+    }).then(async (result) => {
+      try {
+        if (result.isConfirmed) {
+          await ForCountryDetail.delete(token, id);
+
+          Swal.fire({
+            icon: "success",
+            title: "Berhasil",
+            text: "Berhasil menghapus data One Day For Your Country",
+          });
+
+          getDataList();
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Gagal menghapus data One Day For Your Country",
+        });
+      } finally {
+        setIsLoadingDelete(false);
+      }
+    });
+  };
+
   // hanlde upload certiface
   const [fileUrl, setFileUrl] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -253,7 +290,7 @@ const ODFYC = () => {
                         <button
                           className="join-item tooltip btn btn-ghost bg-orange-500 text-white btn-sm text-md"
                           data-tip="Atur jadwal"
-                          disabled={dat.plan_date != null}
+                          disabled={dat.is_date_approved}
                           onClick={() => openModal(modalAturJadwal)}
                         >
                           <FaCalendar />
@@ -272,6 +309,10 @@ const ODFYC = () => {
                         <button
                           className="join-item tooltip btn btn-error text-white btn-sm text-md"
                           data-tip="Hapus"
+                          disabled={isLoadingDelete}
+                          onClick={() =>
+                            handleDelete(dat.id, dat.forcountry.user.full_name)
+                          }
                         >
                           <FaTrash />
                         </button>

@@ -1284,6 +1284,17 @@ const ForCountryDetail = {
       },
       data,
     }),
+  delete: (
+    token: string | null,
+    id: string | number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: "/api/for-country-detail/delete/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 export {
