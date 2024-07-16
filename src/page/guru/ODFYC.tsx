@@ -157,9 +157,6 @@ const ODFYC = () => {
         status: data.status ?? "",
       });
       setDataDetail(data);
-      setScheduleDates(
-        data.plan_date?.split(",").map((d: string) => new Date(d)) ?? []
-      );
 
       openModal(modalDetailEdit);
     } catch {
@@ -209,6 +206,10 @@ const ODFYC = () => {
 
   useEffect(() => {
     if (!Object.keys(dataDetail).length) setScheduleDates([]);
+    else
+      setScheduleDates(
+        dataDetail.plan_date?.split(",")?.map((d: string) => new Date(d)) ?? []
+      );
   }, [dataDetail]);
 
   // handle delete
@@ -296,8 +297,6 @@ const ODFYC = () => {
   };
 
   const handleDowloadCertificate = async () => {
-    console.log("MAsUK LE");
-    console.log(dataDetail);
     if (!dataDetail.certificate_path) return;
 
     try {
@@ -313,6 +312,15 @@ const ODFYC = () => {
   useEffect(() => {
     handleDowloadCertificate();
   }, [dataDetail]);
+
+  // reset
+  const handleResetForm = () => {
+    detailForm.resetForm();
+    console.log(scheduleDates);
+    setScheduleDates([]);
+    setCertFile(null);
+    setCertFilePreview("");
+  };
 
   return (
     <>
@@ -434,13 +442,7 @@ const ODFYC = () => {
         </div>
       </div>
 
-      <Modal
-        id={modalDetailEdit}
-        onClose={() => {
-          setDataDetail({});
-          detailForm.resetForm();
-        }}
-      >
+      <Modal id={modalDetailEdit} onClose={handleResetForm}>
         <h4 className="text-xl font-bold mb-6">Detail</h4>
 
         <div role="tablist" className="tabs tabs-lifted">
