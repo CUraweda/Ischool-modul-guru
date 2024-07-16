@@ -16,14 +16,19 @@ import {
 } from "../../component/PaginationControl";
 import Swal from "sweetalert2";
 import { ForCountryDetail } from "../../midleware/api";
-import { formatTime } from "../../utils/date";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Input, Select, Textarea } from "../../component/Input";
-import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+import { formatTime } from "../../utils/date";
 
 type TformNav = "data" | "schedule" | "certificate" | "profile";
+
+interface IscheduleDate {
+  date?: string;
+  start?: string;
+  end?: string;
+}
 
 const activities = [
   "Library",
@@ -50,6 +55,12 @@ const editDetailSchema = Yup.object().shape({
   status: Yup.string()
     .oneOf(statuses, "Pilihan status tidak sesuai")
     .required("Status tidak boleh kosong"),
+});
+
+const scheduleDateSchema = Yup.object().shape({
+  date: Yup.string().required("Tanggal tidak boleh kosong"),
+  start: Yup.string().required("Jam mulai tidak boleh kosong"),
+  end: Yup.string().required("Jam selesai tidak boleh kosong"),
 });
 
 const ODFYC = () => {
@@ -143,6 +154,7 @@ const ODFYC = () => {
 
   const [isLoadingDetailEdit, setIsLoadingDetailEdit] = useState(false);
   const getDataDetail = async (id: any, nav: TformNav = "data") => {
+    setSchedulesDatesError([]);
     setFormNav(nav);
     setIsLoadingDetailEdit(true);
 
@@ -171,17 +183,44 @@ const ODFYC = () => {
   };
 
   // handle atur jadwal
-  const [scheduleDates, setScheduleDates] = useState<any[]>([]);
+  const [scheduleDates, setScheduleDates] = useState<IscheduleDate[]>([{}]);
+  const [schedulesDatesError, setSchedulesDatesError] = useState<
+    IscheduleDate[]
+  >([]);
   const [isLoadingSetSchedule, setIsLoadingSetSchedule] = useState(false);
 
-  const handleSetSchedule = async () => {
+  const handleSaveSchedule = async () => {
     setIsLoadingSetSchedule(true);
+    setSchedulesDatesError([]);
 
-    const dates = scheduleDates.map((d) => formatTime(d, "YYYY-MM-DD"));
+    // validation
+    let isValidError = false;
+    const validErrors = [];
+    for (let i = 0; i < scheduleDates.length; i++) {
+      try {
+        await scheduleDateSchema.validate(scheduleDates[i], {
+          abortEarly: false,
+        });
+        validErrors.push({});
+      } catch (err: any) {
+        const obj: any = {};
+        err.inner.forEach((e: any) => {
+          obj[e.path] = e.message;
+        });
+        isValidError = true;
+        validErrors.push(obj);
+      }
+    }
+
+    setSchedulesDatesError(validErrors);
+    if (isValidError) {
+      setIsLoadingSetSchedule(false);
+      return;
+    }
 
     try {
       await ForCountryDetail.update(token, dataDetail.id, {
-        plan_date: dates.join(","),
+        plan_date: JSON.stringify(scheduleDates),
       });
 
       setDataDetail({});
@@ -204,12 +243,52 @@ const ODFYC = () => {
     }
   };
 
+  const handleChangeSchedule = (i: number, key: any, val: string) => {
+    setScheduleDates([
+      ...scheduleDates.map((dat, id) =>
+        id == i
+          ? {
+              ...dat,
+              [key]: val,
+            }
+          : dat
+      ),
+    ]);
+  };
+
+  const handleDeleteSchedule = (i: number) => {
+    setSchedulesDatesError([]);
+    setScheduleDates([...scheduleDates.filter((_, id) => id !== i)]);
+  };
+
+  const handleAddSchedule = () => {
+    setSchedulesDatesError([]);
+    setScheduleDates([...scheduleDates, {}]);
+  };
+
+  const renderDatesOnTable = (dat: any) => {
+    const dates = JSON.parse(dat.plan_date ?? "[]");
+    if (!Array.isArray(dates)) return <></>;
+
+    return dates.map((d: any, i: any) => (
+      <div
+        key={i}
+        className="badge tooltip cursor-default badge-secondary"
+        data-tip={`${d.start} - ${d.end}`}
+      >
+        {formatTime(d.date, "DD MMMM YYYY")}
+      </div>
+    ));
+  };
+
   useEffect(() => {
-    if (!Object.keys(dataDetail).length) setScheduleDates([]);
-    else
-      setScheduleDates(
-        dataDetail.plan_date?.split(",")?.map((d: string) => new Date(d)) ?? []
-      );
+    if (!Object.keys(dataDetail).length) setScheduleDates([{}]);
+    else {
+      try {
+        const dates = JSON.parse(dataDetail.plan_date ?? "[]");
+        if (Array.isArray(dates)) setScheduleDates(dates);
+      } catch {}
+    }
   }, [dataDetail]);
 
   // handle delete
@@ -310,17 +389,12 @@ const ODFYC = () => {
   };
 
   useEffect(() => {
+    if (!Object.keys(dataDetail).length) {
+      setCertFile(null);
+      setCertFilePreview("");
+    }
     handleDowloadCertificate();
   }, [dataDetail]);
-
-  // reset
-  const handleResetForm = () => {
-    detailForm.resetForm();
-    console.log(scheduleDates);
-    setScheduleDates([]);
-    setCertFile(null);
-    setCertFilePreview("");
-  };
 
   return (
     <>
@@ -374,13 +448,7 @@ const ODFYC = () => {
                     <td>{dat.activity ?? "-"}</td>
                     <td>
                       <div className="flex flex-wrap gap-2 max-w-72">
-                        {dat.plan_date
-                          ? dat.plan_date.split(",").map((d: any, i: any) => (
-                              <div key={i} className="badge badge-secondary">
-                                {formatTime(d, "DD MMMM YYYY")}
-                              </div>
-                            ))
-                          : "-"}
+                        {dat.plan_date ? renderDatesOnTable(dat) : "-"}
                       </div>
                     </td>
                     <td>{dat.duration ?? "-"}</td>
@@ -442,7 +510,11 @@ const ODFYC = () => {
         </div>
       </div>
 
-      <Modal id={modalDetailEdit} onClose={handleResetForm}>
+      <Modal
+        id={modalDetailEdit}
+        width="w-11/12 max-w-2xl"
+        onClose={() => detailForm.resetForm()}
+      >
         <h4 className="text-xl font-bold mb-6">Detail</h4>
 
         <div role="tablist" className="tabs tabs-lifted">
@@ -522,28 +594,85 @@ const ODFYC = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content border-base-300 rounded-box p-6"
+            className="tab-content border-base-300 w-full overflow-x-hidden rounded-box p-6"
           >
-            <DayPicker
-              className="!w-full !m-auto"
-              mode="multiple"
-              classNames={{
-                day_selected: "!bg-secondary",
-                months: "w-full",
-                table: "w-full",
-              }}
-              selected={scheduleDates}
-              onSelect={(dates) => setScheduleDates(dates || [])}
-            />
-            <div className="flex items-center">
+            <div className="overflow-x-auto">
+              <table className="table table-xs">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Jam mulai</th>
+                    <th>Jam selesai</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {scheduleDates.map((dat, i) => (
+                    <tr key={i}>
+                      <td>
+                        <Input
+                          type="date"
+                          value={dat.date ?? ""}
+                          onChange={(e) =>
+                            handleChangeSchedule(i, "date", e.target.value)
+                          }
+                          errorMessage={schedulesDatesError[i]?.date ?? ""}
+                        />
+                      </td>
+                      <td>
+                        <Input
+                          type="time"
+                          value={dat.start ?? ""}
+                          onChange={(e) =>
+                            handleChangeSchedule(i, "start", e.target.value)
+                          }
+                          errorMessage={schedulesDatesError[i]?.start ?? ""}
+                        />
+                      </td>
+                      <td>
+                        <Input
+                          type="time"
+                          value={dat.end ?? ""}
+                          onChange={(e) =>
+                            handleChangeSchedule(i, "end", e.target.value)
+                          }
+                          errorMessage={schedulesDatesError[i]?.end ?? ""}
+                        />
+                      </td>
+                      <td>
+                        <button
+                          onClick={() => handleDeleteSchedule(i)}
+                          type="button"
+                          disabled={
+                            isLoadingSetSchedule || dataDetail.is_date_approved
+                          }
+                          className="btn btn-ghost btn-sm text-error"
+                        >
+                          <FaTrash />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="overflow-x-auto mb-3"></div>
+            <div className="flex items-center gap-3">
               {dataDetail.is_date_approved && (
-                <p className="text-xs text-gray-500 max-w-96">
+                <p className="text-xs text-error max-w-96">
                   Tanggal sudah disetujui oleh pelaksana
                 </p>
               )}
               <button
-                onClick={handleSetSchedule}
-                className="btn btn-primary ms-auto"
+                className="btn ms-auto"
+                onClick={handleAddSchedule}
+                disabled={isLoadingSetSchedule || dataDetail.is_date_approved}
+              >
+                Tambah
+              </button>
+              <button
+                onClick={handleSaveSchedule}
+                className="btn btn-primary"
                 disabled={isLoadingSetSchedule || dataDetail.is_date_approved}
               >
                 {isLoadingSetSchedule ? (
