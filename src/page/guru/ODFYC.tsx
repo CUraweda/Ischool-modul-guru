@@ -1,12 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import {
-  FaCalendar,
-  FaFileUpload,
-  FaRegFileAlt,
-  FaSearch,
-  FaTrash,
-} from "react-icons/fa";
+import { FaFileUpload, FaRegFileAlt, FaSearch, FaTrash } from "react-icons/fa";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { Store } from "../../store/Store";
@@ -20,6 +14,8 @@ import { formatTime } from "../../utils/date";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Input, Select, Textarea } from "../../component/Input";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
 
 const activities = [
   "Library",
@@ -51,7 +47,6 @@ const editDetailSchema = Yup.object().shape({
 const ODFYC = () => {
   const { token } = Store(),
     modalUpSertifikat = "form-upload-sertifikat",
-    modalAturJadwal = "form-atur-jadwal",
     modalDetailEdit = "form-detail-edit";
 
   // main
@@ -98,8 +93,6 @@ const ODFYC = () => {
   useEffect(() => {
     getDataList();
   }, [filter]);
-
-  // handle atur jadwal
 
   // handle detail edit
   const [dataDetail, setDataDetail] = useState<any>({});
@@ -155,6 +148,10 @@ const ODFYC = () => {
         status: data.status ?? "",
       });
       setDataDetail(data);
+      setScheduleDates(
+        data.plan_date?.split(",").map((d: string) => new Date(d)) ?? []
+      );
+
       openModal(modalDetailEdit);
     } catch {
       Swal.fire({
@@ -166,6 +163,44 @@ const ODFYC = () => {
       setIsLoadingDetailEdit(false);
     }
   };
+
+  // handle atur jadwal
+  const [scheduleDates, setScheduleDates] = useState<any[]>([]);
+  const [isLoadingSetSchedule, setIsLoadingSetSchedule] = useState(false);
+
+  const handleSetSchedule = async () => {
+    setIsLoadingSetSchedule(true);
+
+    const dates = scheduleDates.map((d) => formatTime(d, "YYYY-MM-DD"));
+
+    try {
+      await ForCountryDetail.update(token, dataDetail.id, {
+        plan_date: dates.join(","),
+      });
+
+      setDataDetail({});
+      getDataList();
+
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil",
+        text: "Berhasil memperbarui data jadwal One Day For Your Country",
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Gagal memperbarui data jadwal One Day For Your Country",
+      });
+    } finally {
+      closeModal(modalDetailEdit);
+      setIsLoadingSetSchedule(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!Object.keys(dataDetail).length) setScheduleDates([]);
+  }, [dataDetail]);
 
   // handle delete
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
@@ -271,9 +306,15 @@ const ODFYC = () => {
                     <td>{dat.forcountry?.user?.full_name ?? "-"}</td>
                     <td>{dat.activity ?? "-"}</td>
                     <td>
-                      {dat.plan_date
-                        ? formatTime(dat.plan_date, "DD MMMM YYYY")
-                        : "-"}
+                      <div className="flex flex-wrap gap-2 max-w-72">
+                        {dat.plan_date
+                          ? dat.plan_date.split(",").map((d: any, i: any) => (
+                              <div key={i} className="badge badge-secondary">
+                                {formatTime(d, "DD MMMM YYYY")}
+                              </div>
+                            ))
+                          : "-"}
+                      </div>
                     </td>
                     <td>{dat.duration ?? "-"}</td>
                     <td>{dat.status ?? "-"}</td>
@@ -286,14 +327,6 @@ const ODFYC = () => {
                           onClick={() => getDataDetail(dat.id)}
                         >
                           <FaRegFileAlt />
-                        </button>
-                        <button
-                          className="join-item tooltip btn btn-ghost bg-orange-500 text-white btn-sm text-md"
-                          data-tip="Atur jadwal"
-                          disabled={dat.is_date_approved}
-                          onClick={() => openModal(modalAturJadwal)}
-                        >
-                          <FaCalendar />
                         </button>
                         <button
                           className="join-item tooltip btn btn-success text-white btn-sm text-md"
@@ -350,6 +383,7 @@ const ODFYC = () => {
             role="tab"
             className="tab"
             aria-label="Data"
+            defaultChecked
           />
           <div
             role="tabpanel"
@@ -412,8 +446,49 @@ const ODFYC = () => {
             name="tabs_detail_odyfc"
             role="tab"
             className="tab"
+            aria-label="Jadwal"
+          />
+          <div
+            role="tabpanel"
+            className="tab-content border-base-300 rounded-box p-6"
+          >
+            <DayPicker
+              className="!w-full !m-auto"
+              mode="multiple"
+              classNames={{
+                day_selected: "!bg-secondary",
+                months: "w-full",
+                table: "w-full",
+              }}
+              selected={scheduleDates}
+              onSelect={(dates) => setScheduleDates(dates || [])}
+            />
+            <div className="flex items-center">
+              {dataDetail.is_date_approved && (
+                <p className="text-xs text-gray-500 max-w-96">
+                  Tanggal sudah disetujui oleh pelaksana
+                </p>
+              )}
+              <button
+                onClick={handleSetSchedule}
+                className="btn btn-primary ms-auto"
+                disabled={isLoadingSetSchedule || dataDetail.is_date_approved}
+              >
+                {isLoadingSetSchedule ? (
+                  <span className="loading loading-dots loading-md mx-auto"></span>
+                ) : (
+                  "Simpan"
+                )}
+              </button>
+            </div>
+          </div>
+
+          <input
+            type="radio"
+            name="tabs_detail_odyfc"
+            role="tab"
+            className="tab"
             aria-label="Profil"
-            defaultChecked
           />
           <div
             role="tabpanel"
