@@ -39,6 +39,7 @@ const AdmSiswa = () => {
   const [feedback, setFeedback] = useState<string>("");
   const [idTugas, setIdTugas] = useState<string>("");
   const [showFile, setShowFile] = useState<any>();
+  const [level, setLevel] = useState<string>("");
 
   const formik = useFormik({
     initialValues: {
@@ -59,6 +60,7 @@ const AdmSiswa = () => {
   });
   useEffect(() => {
     getStudent();
+    getClass()
   }, [formik.values.classId]);
 
   useEffect(() => {
@@ -66,12 +68,16 @@ const AdmSiswa = () => {
     getTaskClass();
   }, []);
 
+  useEffect(() => {
+    getMapel()
+  }, [level]);
+
   const showModal = (props: string) => {
     let modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
       getClass();
-      getMapel();
+      
     }
   };
 
@@ -101,12 +107,19 @@ const AdmSiswa = () => {
 
   const getClass = async () => {
     const response = await Task.GetAllClass(token, 0, 20);
-    setKelas(response.data.data.result);
+    const kelasData = response.data.data.result;
+    const kelasFilter = kelasData.filter((value: any) => value.id == formik.values.classId);
+    setLevel(kelasFilter[0]?.level)
+    console.log('level',kelasFilter[0]?.level);
+    
+    setKelas(kelasData);
   };
 
   const getMapel = async () => {
-    const response = await Task.GetAllMapel(token, 0, 20);
-    setMapel(response.data.data.result);
+    const response = await Task.GetAllMapel(token, 0, 100);
+    const mapelData = response.data.data.result
+    const mapelFilter = mapelData.filter((value: any) => value.level == level);
+    setMapel(mapelFilter);
   };
 
   const getStudent = async () => {
@@ -117,7 +130,6 @@ const AdmSiswa = () => {
       "2023/2024"
     );
     setDataSiswa(response.data.data);
-    console.log(response.data.data);
   };
 
   const formatDate = (date: string) => {
@@ -583,7 +595,7 @@ const AdmSiswa = () => {
                   formik.setFieldValue("classId", e.target.value)
                 }
               >
-                <option disabled selected>
+                <option selected>
                   Pick one
                 </option>
                 {kelas?.map((item: any, index: number) => (
@@ -618,7 +630,7 @@ const AdmSiswa = () => {
                   formik.setFieldValue("subjectId", e.target.value)
                 }
               >
-                <option disabled selected>
+                <option selected>
                   Pick one
                 </option>
                 {mapel?.map((item: any, index: number) => (
@@ -653,7 +665,7 @@ const AdmSiswa = () => {
                   formik.setFieldValue("semester", e.target.value)
                 }
               >
-                <option disabled selected>
+                <option selected>
                   Pick one
                 </option>
                 <option value={1}>1</option>
