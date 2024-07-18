@@ -12,7 +12,6 @@ import { Store } from "../../store/Store";
 import Swal from "sweetalert2";
 import { BiTrash } from "react-icons/bi";
 import { AiFillCloseCircle } from "react-icons/ai";
-import { number } from "yup";
 
 const RaportNarasi = () => {
   const { token } = Store();
