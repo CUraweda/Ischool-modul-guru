@@ -105,7 +105,7 @@ const PresensiSiswa = () => {
               att_date: new Date(date).setHours(0, 0, 0, 0),
               status: item.presensi ? item.presensi : "Hadir",
               remark: item.transportasi ? item.transportasi : "🚗antar jemput",
-              semester: 1
+              semester: 1,
             };
 
             const isExist = dataSiswa.some(
@@ -178,7 +178,7 @@ const PresensiSiswa = () => {
     setPresensi(data.status);
     setTransport(data.remark);
     setIdPresensi(id);
-    setIdSiswa(data.student_class_id)
+    setIdSiswa(data.student_class_id);
   };
 
   const handleEditPresensi = async () => {
@@ -186,12 +186,12 @@ const PresensiSiswa = () => {
       const data = {
         student_class_id: idSiswa,
         status: presensi,
-        remark: presensi === 'Hadir' ? transport : '',
+        remark: presensi === "Hadir" ? transport : "",
         att_date: new Date(date).setHours(0, 0, 0, 0),
-        semester: 1
+        semester: 1,
       };
       console.log(data);
-      
+
       const response = await Student.UpdatePresensi(token, idPresensi, data);
       console.log(response);
       closeModal("edit-presensi");
@@ -261,7 +261,7 @@ const PresensiSiswa = () => {
                     <td>{item?.studentclass?.student?.nis}</td>
                     <td>{item?.studentclass?.student?.class}</td>
                     <td>{item?.status}</td>
-                    <td>{item?.remark ? item?.remark : '-'}</td>
+                    <td>{item?.remark ? item?.remark : "-"}</td>
                     <td className="join text-white">
                       <button
                         className="btn btn-sm btn-ghost bg-orange-600 text-xl join-item"
@@ -378,6 +378,7 @@ const PresensiSiswa = () => {
                             ? "bg-red-400"
                             : ""
                         }`}
+                        value={item.presensi}
                         onChange={(e) => {
                           item.presensi = e.target.value;
                           if (
@@ -401,9 +402,7 @@ const PresensiSiswa = () => {
                           )
                         }
                       >
-                        <option value="Hadir" selected>
-                          Hadir
-                        </option>
+                        <option value="Hadir">Hadir</option>
                         <option value="Izin">Izin</option>
                         <option value="Alfa">Alfa</option>
                         <option value="Sakit">Sakit</option>
@@ -414,6 +413,7 @@ const PresensiSiswa = () => {
                             ? "bg-red-400"
                             : ""
                         }`}
+                        value={item.transportasi}
                         onChange={(e) => {
                           item.transportasi = e.target.value;
                           if (
@@ -434,14 +434,15 @@ const PresensiSiswa = () => {
                         disabled={
                           !selectedStudents.some(
                             (student) => student.student.id === item.student.id
-                          )
+                          ) ||
+                          item.presensi == "Alfa" ||
+                          item.presensi == "Sakit" ||
+                          item.presensi == "Izin"
                         }
                       >
                         <option value="🚶‍♂️jalan kaki">Jalan Kaki</option>
                         <option value="🚌kendaraan umum">Kendaraan Umum</option>
-                        <option value="🚗antar jemput" selected>
-                          Antar Jemput
-                        </option>
+                        <option value="🚗antar jemput">Antar Jemput</option>
                         <option value="🚲sepeda">Sepeda</option>
                       </select>
                     </td>
@@ -515,7 +516,7 @@ const PresensiSiswa = () => {
             className={`select select-bordered w-full join-item`}
             value={transport}
             onChange={(e) => setTransport(e.target.value)}
-           disabled={presensi !== 'Hadir'}
+            disabled={presensi !== "Hadir"}
           >
             <option value="🚶‍♂️jalan kaki">Jalan Kaki</option>
             <option value="🚌kendaraan umum">Kendaraan Umum</option>
