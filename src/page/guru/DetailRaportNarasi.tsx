@@ -569,31 +569,8 @@ const RaportNarasi = () => {
             </div>
             <div className="flex flex-col gap-2">
               <span className="font-bold">Grade</span>
-              <div className="flex w-full justify-between">
-                <div className="flex items-center gap-1">
-                  <label htmlFor="">Mandiri</label>
-                  <input
-                    type="radio"
-                    name={`item-1`}
-                    className="checkbox"
-                    value={1}
-                    checked={EditdataRaport?.grade === 1 ? true : false}
-                    onChange={handleEditCheckboxChange}
-                  />
-                </div>
-                <div className="flex items-center gap-1">
-                  <label htmlFor="">Berkembang</label>
-                  <input
-                    type="radio"
-                    name={`item-1`}
-                    className="checkbox"
-                    value={2}
-                    checked={EditdataRaport?.grade === 2 ? true : false}
-                    onChange={handleEditCheckboxChange}
-                  />
-                </div>
-                <div className="flex items-center gap-1">
-                  <label htmlFor="">Membutuhkan Banyak Latihan</label>
+              <div className="flex-row w-full justify-between">
+                <div className="flex items-center gap-1 my-2">
                   <input
                     type="radio"
                     name={`item-1`}
@@ -602,6 +579,29 @@ const RaportNarasi = () => {
                     checked={EditdataRaport?.grade === 3 ? true : false}
                     onChange={handleEditCheckboxChange}
                   />
+                  <label htmlFor="">Membutuhkan Banyak Latihan</label>
+                </div>
+                <div className="flex items-center gap-1 my-2">
+                  <input
+                    type="radio"
+                    name={`item-1`}
+                    className="checkbox"
+                    value={2}
+                    checked={EditdataRaport?.grade === 2 ? true : false}
+                    onChange={handleEditCheckboxChange}
+                  />
+                  <label htmlFor="">Berkembang</label>
+                </div>
+                <div className="flex items-center gap-1 my-2">
+                  <input
+                    type="radio"
+                    name={`item-1`}
+                    className="checkbox"
+                    value={1}
+                    checked={EditdataRaport?.grade === 1 ? true : false}
+                    onChange={handleEditCheckboxChange}
+                  />
+                  <label htmlFor="">Mandiri</label>
                 </div>
               </div>
             </div>
