@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ListCuti from "../../component/hrd/ListCuti";
+// import ListCuti from "../../component/hrd/ListCuti";
 import TestCuti from "../../../TestCuti.json";
 
 const pengajuanCutiPage = () => {
@@ -43,7 +43,7 @@ const pengajuanCutiPage = () => {
       </div>
 
       <div className="">
-        <ListCuti data={TestCuti} searchQuery={searchQuery} />
+        {/* <ListCuti data={TestCuti} searchQuery={searchQuery} /> */}
       </div>
     </div>
   );
