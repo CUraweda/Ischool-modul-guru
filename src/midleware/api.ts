@@ -674,14 +674,6 @@ const Raport = {
       },
       data,
     }),
-  deleteNarasi: (token: string | null, id: string | null): AxiosPromise<any> =>
-    instance({
-      method: "DELETE",
-      url: `/api/narrative-report/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
   createSubKategori: (token: string | null, data: any): AxiosPromise<any> =>
     instance({
       method: "POST",

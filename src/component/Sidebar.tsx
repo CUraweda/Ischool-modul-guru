@@ -40,10 +40,8 @@ const Sidebar = () => {
       setData(menu);
     } else if (Role === 2) {
       setData(menuKeuangan);
-    } else if (Role === 5) {
-      setData(menuHRD);
     } else {
-      setData(menu);
+      setData(menuHRD);
     }
   }, [Role]);
 
