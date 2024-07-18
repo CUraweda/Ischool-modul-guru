@@ -1131,7 +1131,7 @@ const TagihanSiswa = {
     }),
   showByStudentId: (
     token: string | null,
-    studentId?: string | null,
+    studentId?: string | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
