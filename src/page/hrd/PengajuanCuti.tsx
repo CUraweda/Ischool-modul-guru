@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 // import ListCuti from "../../component/hrd/ListCuti";
-import TestCuti from "../../../TestCuti.json";
+// import TestCuti from "../../../TestCuti.json";
 
 const pengajuanCutiPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
