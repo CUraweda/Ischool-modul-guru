@@ -1,109 +1,182 @@
 // import React from 'react'
 
-import ChartMap from "../../component/ChartMap"
+import { useEffect, useState } from "react";
+import ChartMap from "../../component/ChartMap";
+import {
+  FaChartPie,
+  FaExclamationTriangle,
+  FaMoneyBillWave,
+  FaWallet,
+} from "react-icons/fa";
+import { moneyFormat } from "../../utils/common";
+import { DashboardKeuangan } from "../../midleware/api";
+import { Store } from "../../store/Store";
+import moment from "moment";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
+  const { token } = Store();
+
+  // cards
+  const [totalIncome, setTotalIncome] = useState(0),
+    [monthIncome, setMonthIncome] = useState(0),
+    [todayIncome, setTodayIncome] = useState(0),
+    [inArrearCount, setInArrearCount] = useState(0),
+    [lunasPercentage, setLunasPercentage] = useState(0);
+
+  // recent data
+  const [recentPaidOff, setRecentPaidOff] = useState<any[]>([]);
+
+  const getCards = async () => {
+    try {
+      const res = await DashboardKeuangan.getCards(token);
+      const data = res.data;
+
+      setTotalIncome(data.income?.total?.sum ?? 0);
+      setMonthIncome(data.income?.this_month?.sum ?? 0);
+      setTodayIncome(data.income?.this_day?.sum ?? 0);
+      setLunasPercentage(data.bills?.success_percentage ?? 0);
+      setInArrearCount(data.bills?.in_arrears ?? 0);
+      setRecentPaidOff(data.bills?.recent_paidoff ?? []);
+    } catch {}
+  };
+
+  useEffect(() => {
+    getCards();
+  }, []);
+
   return (
     <>
-     <div className="w-full p-5">
-        <div className="w-full flex flex-wrap mt-3">
-          <div className="w-full sm:w-1/3  p-3 ">
-            <div className="w-full bg-white rounded-md shadow-lg flex justify-center items-center relative  overflow-hidden">
-              <div className="w-24 h-52 py-10">
-                <div className="w-full h-full bg-gradient-to-r from-orange-500 via-pink-500 to-yellow-500 rounded-full blur-xl"></div>
-              </div>
-              <div className="glass w-full h-52 absolute rounded-md p-4">
-                <div className="flex justify-center items-center flex-col">
-                  <span className="font-bold text-black">
-                    Pendapatan Bulan ini
-                  </span>
-                  <div className="flex items-end">
-                    <p>
-                      <span className="font-semibold">Rp. </span>
-                      <span className="text-[80px] font-bold">23.000</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
+      <div className="w-full p-5">
+        <div className="w-full grid grid-cols-2 xl:grid-cols-3 gap-3 mt-3">
+          <div className="stat bg-base-100 rounded-lg border">
+            <div className="stat-figure text-primary">
+              <FaWallet size={28} />
+            </div>
+            <div className="stat-title">Total pendapatan</div>
+            <div className="stat-value text-primary">
+              {moneyFormat(totalIncome)}
             </div>
           </div>
-          <div className="w-full sm:w-1/3  p-3 ">
-            <div className="w-full bg-white rounded-md shadow-lg flex justify-center items-center relative  overflow-hidden">
-              <div className="w-24 h-52 py-10">
-                <div className="w-full h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full blur-xl"></div>
-              </div>
-              <div className="glass w-full h-52 absolute rounded-md p-4">
-                <div className="flex justify-center items-center flex-col">
-                  <span className="font-bold text-black">
-                    Pendapatan Hari Ini
-                  </span>
-                  <div className="flex items-end">
-                    <p>
-                      <span className="font-semibold">Rp. </span>
-                      <span className="text-[80px] font-bold">23.000</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
+          <div className="stat bg-base-100 rounded-lg border">
+            <div className="stat-figure text-primary">
+              <FaMoneyBillWave size={28} />
+            </div>
+            <div className="stat-title">Pendapatan hari ini</div>
+            <div className="stat-value text-primary">
+              {moneyFormat(todayIncome)}
             </div>
           </div>
-          <div className="w-full sm:w-1/3  p-3 ">
-            <div className="w-full bg-white rounded-md shadow-lg flex justify-center items-center relative  overflow-hidden">
-              <div className="w-24 h-52 py-10">
-                <div className="w-full h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full blur-xl"></div>
-              </div>
-              <div className="glass w-full h-52 absolute rounded-md p-4">
-                <div className="flex justify-center items-center flex-col">
-                  <span className="font-bold text-black">
-                    Total Pendapatan
-                  </span>
-                  <div className="flex items-end">
-                    <p>
-                      <span className="font-semibold">Rp. </span>
-                      <span className="text-[80px] font-bold">23.000</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
+          <div className="stat bg-base-100 rounded-lg border">
+            <div className="stat-figure text-primary">
+              <FaMoneyBillWave size={28} />
             </div>
+            <div className="stat-title">Pendapatan bulan ini</div>
+            <div className="stat-value text-primary">
+              {moneyFormat(monthIncome)}
+            </div>
+          </div>
+          <div className="stat bg-base-100 rounded-lg border">
+            <div className="stat-figure text-success">
+              <FaChartPie size={28} />
+            </div>
+            <div className="stat-title">Persentase kelunasan</div>
+            <div className="stat-value text-success">
+              {lunasPercentage.toFixed(2)}%
+            </div>
+          </div>
+          <div className="stat bg-base-100 rounded-lg border">
+            <div className="stat-figure text-error">
+              <FaExclamationTriangle size={28} />
+            </div>
+            <div className="stat-title">Jumlah menunggak</div>
+            <div className="stat-value text-error">{inArrearCount}</div>
           </div>
         </div>
 
-        <div className="w-full flex justify-end gap-3 p-3 flex-wrap">
-          <select
-            className="select select-bordered bg-white w-40"
-            // onChange={(e) =>
-            //   formik.setFieldValue("semester", e.target.value)
-            // }
-          >
-            <option>Pos Keuangan</option>
-            <option value={1}>1</option>
-            <option value={2}>2</option>
-          </select>
+        <div className="divider"></div>
 
-          <div className="flex justify-center gap-2 items-center ">
-            <input
-              type="date"
-              placeholder="Type here"
-              className="input w-full"
-            />
-            -
-            <input
-              type="date"
-              placeholder="Type here"
-              className="input w-full"
-            />
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+          <div className="col-span-2">
+            {/* chart filter  */}
+            <div className="w-full flex items-center justify-end gap-3 flex-wrap mb-3">
+              <select
+                className="select select-bordered bg-white w-40"
+                // onChange={(e) =>
+                //   formik.setFieldValue("semester", e.target.value)
+                // }
+              >
+                <option>Pos Keuangan</option>
+                <option value={1}>1</option>
+                <option value={2}>2</option>
+              </select>
+
+              <div className="flex items-center gap-3 ">
+                <input
+                  type="date"
+                  placeholder="Type here"
+                  className="input w-full"
+                />
+                -
+                <input
+                  type="date"
+                  placeholder="Type here"
+                  className="input w-full"
+                />
+              </div>
+            </div>
+
+            {/* chart  */}
+
+            <div className="w-full bg-white p-3 rounded-md">
+              <ChartMap />
+            </div>
           </div>
-        </div>
 
-        <div className="w-full p-3 ">
-          <div className="w-full bg-white p-3 rounded-md">
-            <ChartMap />
+          {/* recent */}
+          <div className="col-span-1">
+            <div className="bg-base-100 p-3 rounded-lg">
+              <h4 className="text-lg font-bold mb-6">Pembayaran Terbaru</h4>
+
+              {recentPaidOff.map((item, i) => (
+                <div className="px-3" key={i}>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-lg">
+                        {item.student?.full_name ?? "-"}
+                      </p>
+                      <div className="flex gap-2 items-start">
+                        <p className="text-sm text-gray-500">
+                          {item.studentpaymentbill?.name ?? "-"}
+                        </p>
+                        <Link
+                          to={
+                            "/keuangan/jenis-pembayaran/" +
+                              item.studentpaymentbill?.id ?? ""
+                          }
+                          className="btn btn-link px-0 btn-xs relative -top-1"
+                        >
+                          Lihat
+                        </Link>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">
+                        {item.paidoff_at
+                          ? moment(item.paidoff_at).fromNow()
+                          : "-"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="divider"></div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;
