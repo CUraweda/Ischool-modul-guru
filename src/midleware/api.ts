@@ -1295,6 +1295,32 @@ const ForCountryDetail = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  uploadCertificate: (
+    token: string | null,
+    id: string | number | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: "/api/for-country-detail/update/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+      data,
+    }),
+  downloadCertificate: (
+    token: string | null,
+    path: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/for-country-detail/download?filepath=${path}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    }),
 };
 
 export {

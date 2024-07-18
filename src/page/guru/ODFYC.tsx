@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import { FaFileUpload, FaRegFileAlt, FaSearch, FaTrash } from "react-icons/fa";
+import {
+  FaCalendar,
+  FaFileUpload,
+  FaRegFileAlt,
+  FaSearch,
+  FaTrash,
+} from "react-icons/fa";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { Store } from "../../store/Store";
@@ -10,12 +16,19 @@ import {
 } from "../../component/PaginationControl";
 import Swal from "sweetalert2";
 import { ForCountryDetail } from "../../midleware/api";
-import { formatTime } from "../../utils/date";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Input, Select, Textarea } from "../../component/Input";
-import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+import { formatTime } from "../../utils/date";
+
+type TformNav = "data" | "schedule" | "certificate" | "profile";
+
+interface IscheduleDate {
+  date?: string;
+  start?: string;
+  end?: string;
+}
 
 const activities = [
   "Library",
@@ -44,9 +57,14 @@ const editDetailSchema = Yup.object().shape({
     .required("Status tidak boleh kosong"),
 });
 
+const scheduleDateSchema = Yup.object().shape({
+  date: Yup.string().required("Tanggal tidak boleh kosong"),
+  start: Yup.string().required("Jam mulai tidak boleh kosong"),
+  end: Yup.string().required("Jam selesai tidak boleh kosong"),
+});
+
 const ODFYC = () => {
   const { token } = Store(),
-    modalUpSertifikat = "form-upload-sertifikat",
     modalDetailEdit = "form-detail-edit";
 
   // main
@@ -95,6 +113,7 @@ const ODFYC = () => {
   }, [filter]);
 
   // handle detail edit
+  const [formNav, setFormNav] = useState<TformNav>("data");
   const [dataDetail, setDataDetail] = useState<any>({});
 
   const detailForm = useFormik({
@@ -134,7 +153,9 @@ const ODFYC = () => {
   });
 
   const [isLoadingDetailEdit, setIsLoadingDetailEdit] = useState(false);
-  const getDataDetail = async (id: any) => {
+  const getDataDetail = async (id: any, nav: TformNav = "data") => {
+    setSchedulesDatesError([]);
+    setFormNav(nav);
     setIsLoadingDetailEdit(true);
 
     try {
@@ -148,9 +169,6 @@ const ODFYC = () => {
         status: data.status ?? "",
       });
       setDataDetail(data);
-      setScheduleDates(
-        data.plan_date?.split(",").map((d: string) => new Date(d)) ?? []
-      );
 
       openModal(modalDetailEdit);
     } catch {
@@ -165,17 +183,44 @@ const ODFYC = () => {
   };
 
   // handle atur jadwal
-  const [scheduleDates, setScheduleDates] = useState<any[]>([]);
+  const [scheduleDates, setScheduleDates] = useState<IscheduleDate[]>([{}]);
+  const [schedulesDatesError, setSchedulesDatesError] = useState<
+    IscheduleDate[]
+  >([]);
   const [isLoadingSetSchedule, setIsLoadingSetSchedule] = useState(false);
 
-  const handleSetSchedule = async () => {
+  const handleSaveSchedule = async () => {
     setIsLoadingSetSchedule(true);
+    setSchedulesDatesError([]);
 
-    const dates = scheduleDates.map((d) => formatTime(d, "YYYY-MM-DD"));
+    // validation
+    let isValidError = false;
+    const validErrors = [];
+    for (let i = 0; i < scheduleDates.length; i++) {
+      try {
+        await scheduleDateSchema.validate(scheduleDates[i], {
+          abortEarly: false,
+        });
+        validErrors.push({});
+      } catch (err: any) {
+        const obj: any = {};
+        err.inner.forEach((e: any) => {
+          obj[e.path] = e.message;
+        });
+        isValidError = true;
+        validErrors.push(obj);
+      }
+    }
+
+    setSchedulesDatesError(validErrors);
+    if (isValidError) {
+      setIsLoadingSetSchedule(false);
+      return;
+    }
 
     try {
       await ForCountryDetail.update(token, dataDetail.id, {
-        plan_date: dates.join(","),
+        plan_date: JSON.stringify(scheduleDates),
       });
 
       setDataDetail({});
@@ -198,8 +243,52 @@ const ODFYC = () => {
     }
   };
 
+  const handleChangeSchedule = (i: number, key: any, val: string) => {
+    setScheduleDates([
+      ...scheduleDates.map((dat, id) =>
+        id == i
+          ? {
+              ...dat,
+              [key]: val,
+            }
+          : dat
+      ),
+    ]);
+  };
+
+  const handleDeleteSchedule = (i: number) => {
+    setSchedulesDatesError([]);
+    setScheduleDates([...scheduleDates.filter((_, id) => id !== i)]);
+  };
+
+  const handleAddSchedule = () => {
+    setSchedulesDatesError([]);
+    setScheduleDates([...scheduleDates, {}]);
+  };
+
+  const renderDatesOnTable = (dat: any) => {
+    const dates = JSON.parse(dat.plan_date ?? "[]");
+    if (!Array.isArray(dates)) return <></>;
+
+    return dates.map((d: any, i: any) => (
+      <div
+        key={i}
+        className="badge tooltip cursor-default badge-secondary"
+        data-tip={`${d.start} - ${d.end}`}
+      >
+        {formatTime(d.date, "DD MMMM YYYY")}
+      </div>
+    ));
+  };
+
   useEffect(() => {
-    if (!Object.keys(dataDetail).length) setScheduleDates([]);
+    if (!Object.keys(dataDetail).length) setScheduleDates([{}]);
+    else {
+      try {
+        const dates = JSON.parse(dataDetail.plan_date ?? "[]");
+        if (Array.isArray(dates)) setScheduleDates(dates);
+      } catch {}
+    }
   }, [dataDetail]);
 
   // handle delete
@@ -240,20 +329,72 @@ const ODFYC = () => {
   };
 
   // hanlde upload certiface
-  const [fileUrl, setFileUrl] = useState<string>("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [certFile, setCertFile] = useState<File | null>(null),
+    [certFilePreview, setCertFilePreview] = useState(""),
+    [isLoadingUpCertificate, setIsLoadingUpCertificate] = useState(false),
+    refInputCert = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCertFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const newFileUrl = URL.createObjectURL(file);
-      setFileUrl(newFileUrl);
+      setCertFile(file);
+      setCertFilePreview(URL.createObjectURL(file));
     }
   };
 
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
+  const handleUploadCertificate = async () => {
+    if (!certFile || !(certFile instanceof File)) return;
+
+    setIsLoadingUpCertificate(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", certFile);
+
+      await ForCountryDetail.uploadCertificate(token, dataDetail.id, formData);
+
+      setDataDetail({});
+      setCertFile(null);
+      setCertFilePreview("");
+      getDataList();
+      if (refInputCert.current) refInputCert.current.value = "";
+
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil",
+        text: "Berhasil mengunggah sertifikat",
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Gagal mengunggah sertifikat",
+      });
+    } finally {
+      closeModal(modalDetailEdit);
+      setIsLoadingUpCertificate(false);
+    }
   };
+
+  const handleDowloadCertificate = async () => {
+    if (!dataDetail.certificate_path) return;
+
+    try {
+      const response = await ForCountryDetail.downloadCertificate(
+        token,
+        dataDetail.certificate_path
+      );
+      const blob = new Blob([response.data], { type: "application/pdf" }); //
+      setCertFilePreview(URL.createObjectURL(blob));
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    if (!Object.keys(dataDetail).length) {
+      setCertFile(null);
+      setCertFilePreview("");
+    }
+    handleDowloadCertificate();
+  }, [dataDetail]);
 
   return (
     <>
@@ -307,13 +448,7 @@ const ODFYC = () => {
                     <td>{dat.activity ?? "-"}</td>
                     <td>
                       <div className="flex flex-wrap gap-2 max-w-72">
-                        {dat.plan_date
-                          ? dat.plan_date.split(",").map((d: any, i: any) => (
-                              <div key={i} className="badge badge-secondary">
-                                {formatTime(d, "DD MMMM YYYY")}
-                              </div>
-                            ))
-                          : "-"}
+                        {dat.plan_date ? renderDatesOnTable(dat) : "-"}
                       </div>
                     </td>
                     <td>{dat.duration ?? "-"}</td>
@@ -324,18 +459,26 @@ const ODFYC = () => {
                           className="join-item tooltip btn btn-primary btn-sm text-md"
                           data-tip="Detail"
                           disabled={isLoadingDetailEdit}
-                          onClick={() => getDataDetail(dat.id)}
+                          onClick={() => getDataDetail(dat.id, "data")}
                         >
                           <FaRegFileAlt />
                         </button>
                         <button
-                          className="join-item tooltip btn btn-success text-white btn-sm text-md"
+                          className="join-item tooltip btn btn-secondary text-white btn-sm text-md"
+                          data-tip="Atur jadwal"
+                          disabled={dat.is_date_approved}
+                          onClick={() => getDataDetail(dat.id, "schedule")}
+                        >
+                          <FaCalendar />
+                        </button>
+                        <button
+                          className="join-item tooltip btn btn-accent text-white btn-sm text-md"
                           data-tip="Unggah sertifikat"
                           disabled={
                             dat.status?.toLowerCase() != "selesai" ||
-                            dat.status?.toLowerCase() != "done"
+                            dat.certificate_path
                           }
-                          onClick={() => openModal(modalUpSertifikat)}
+                          onClick={() => getDataDetail(dat.id, "certificate")}
                         >
                           <FaFileUpload />
                         </button>
@@ -369,10 +512,8 @@ const ODFYC = () => {
 
       <Modal
         id={modalDetailEdit}
-        onClose={() => {
-          setDataDetail({});
-          detailForm.resetForm();
-        }}
+        width="w-11/12 max-w-2xl"
+        onClose={() => detailForm.resetForm()}
       >
         <h4 className="text-xl font-bold mb-6">Detail</h4>
 
@@ -383,7 +524,8 @@ const ODFYC = () => {
             role="tab"
             className="tab"
             aria-label="Data"
-            defaultChecked
+            checked={formNav == "data"}
+            onClick={() => setFormNav("data")}
           />
           <div
             role="tabpanel"
@@ -447,31 +589,90 @@ const ODFYC = () => {
             role="tab"
             className="tab"
             aria-label="Jadwal"
+            checked={formNav == "schedule"}
+            onClick={() => setFormNav("schedule")}
           />
           <div
             role="tabpanel"
-            className="tab-content border-base-300 rounded-box p-6"
+            className="tab-content border-base-300 w-full overflow-x-hidden rounded-box p-6"
           >
-            <DayPicker
-              className="!w-full !m-auto"
-              mode="multiple"
-              classNames={{
-                day_selected: "!bg-secondary",
-                months: "w-full",
-                table: "w-full",
-              }}
-              selected={scheduleDates}
-              onSelect={(dates) => setScheduleDates(dates || [])}
-            />
-            <div className="flex items-center">
+            <div className="overflow-x-auto">
+              <table className="table table-xs">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Jam mulai</th>
+                    <th>Jam selesai</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {scheduleDates.map((dat, i) => (
+                    <tr key={i}>
+                      <td>
+                        <Input
+                          type="date"
+                          value={dat.date ?? ""}
+                          onChange={(e) =>
+                            handleChangeSchedule(i, "date", e.target.value)
+                          }
+                          errorMessage={schedulesDatesError[i]?.date ?? ""}
+                        />
+                      </td>
+                      <td>
+                        <Input
+                          type="time"
+                          value={dat.start ?? ""}
+                          onChange={(e) =>
+                            handleChangeSchedule(i, "start", e.target.value)
+                          }
+                          errorMessage={schedulesDatesError[i]?.start ?? ""}
+                        />
+                      </td>
+                      <td>
+                        <Input
+                          type="time"
+                          value={dat.end ?? ""}
+                          onChange={(e) =>
+                            handleChangeSchedule(i, "end", e.target.value)
+                          }
+                          errorMessage={schedulesDatesError[i]?.end ?? ""}
+                        />
+                      </td>
+                      <td>
+                        <button
+                          onClick={() => handleDeleteSchedule(i)}
+                          type="button"
+                          disabled={
+                            isLoadingSetSchedule || dataDetail.is_date_approved
+                          }
+                          className="btn btn-ghost btn-sm text-error"
+                        >
+                          <FaTrash />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="overflow-x-auto mb-3"></div>
+            <div className="flex items-center gap-3">
               {dataDetail.is_date_approved && (
-                <p className="text-xs text-gray-500 max-w-96">
+                <p className="text-xs text-error max-w-96">
                   Tanggal sudah disetujui oleh pelaksana
                 </p>
               )}
               <button
-                onClick={handleSetSchedule}
-                className="btn btn-primary ms-auto"
+                className="btn ms-auto"
+                onClick={handleAddSchedule}
+                disabled={isLoadingSetSchedule || dataDetail.is_date_approved}
+              >
+                Tambah
+              </button>
+              <button
+                onClick={handleSaveSchedule}
+                className="btn btn-primary"
                 disabled={isLoadingSetSchedule || dataDetail.is_date_approved}
               >
                 {isLoadingSetSchedule ? (
@@ -488,7 +689,65 @@ const ODFYC = () => {
             name="tabs_detail_odyfc"
             role="tab"
             className="tab"
+            aria-label="Sertifikat"
+            checked={formNav == "certificate"}
+            onClick={() => setFormNav("certificate")}
+          />
+          <div
+            role="tabpanel"
+            className="tab-content border-base-300 rounded-box p-6"
+          >
+            {!certFilePreview ? (
+              <div
+                className="w-full h-96 rounded-md flex flex-col justify-center items-center border-dashed border-2 border-gray-300"
+                onClick={() => refInputCert?.current?.click()}
+              >
+                <div className="flex gap-3 items-center text-gray-500">
+                  <IoDocumentTextOutline size={28} />
+                  Fail tidak tersedia
+                </div>
+              </div>
+            ) : (
+              <>
+                <iframe
+                  src={certFilePreview}
+                  frameBorder="0"
+                  width="100%"
+                  height="450px"
+                  className="mt-4"
+                />
+              </>
+            )}
+
+            <input
+              type="file"
+              ref={refInputCert}
+              className="file-input file-input-bordered w-full my-3"
+              onChange={handleCertFileChange}
+              accept=".pdf"
+            />
+
+            <button
+              onClick={handleUploadCertificate}
+              className="btn btn-primary w-full"
+              disabled={!certFile || isLoadingUpCertificate}
+            >
+              {isLoadingUpCertificate ? (
+                <span className="loading loading-dots loading-md mx-auto"></span>
+              ) : (
+                "Simpan"
+              )}
+            </button>
+          </div>
+
+          <input
+            type="radio"
+            name="tabs_detail_odyfc"
+            role="tab"
+            className="tab"
             aria-label="Profil"
+            checked={formNav == "profile"}
+            onClick={() => setFormNav("profile")}
           />
           <div
             role="tabpanel"
@@ -515,46 +774,6 @@ const ODFYC = () => {
               </tbody>
             </table>
           </div>
-        </div>
-      </Modal>
-
-      <Modal id={modalUpSertifikat}>
-        <div className="w-full flex justify-center flex-col items-center gap-3">
-          <span className="text-xl font-bold">Upload Sertifikat</span>
-          {!fileUrl && (
-            <div
-              className="w-full h-96 rounded-md flex flex-col justify-center items-center border-dashed border-2 border-sky-500 cursor-not-allowed"
-              onClick={triggerFileInput}
-            >
-              <span className="text-5xl">
-                <IoDocumentTextOutline />
-              </span>
-              <span>No preview Document</span>
-            </div>
-          )}
-
-          {fileUrl && (
-            <>
-              <iframe
-                src={fileUrl}
-                frameBorder="0"
-                width="100%"
-                height="450px"
-                className="mt-4"
-              />
-            </>
-          )}
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="file-input file-input-bordered w-full"
-            onChange={handleFileChange}
-            accept=".pdf"
-          />
-
-          <button className="btn btn-ghost bg-green-500 text-white w-full">
-            Simpan
-          </button>
         </div>
       </Modal>
     </>
