@@ -1323,6 +1323,17 @@ const ForCountryDetail = {
     }),
 };
 
+const DashboardKeuangan = {
+  getCards: (token: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `api/dashboard/admin-keuangan`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
 export {
   Auth,
   Task,
@@ -1338,4 +1349,5 @@ export {
   PosJenisPembayaran,
   TagihanSiswa,
   ForCountryDetail,
+  DashboardKeuangan,
 };
