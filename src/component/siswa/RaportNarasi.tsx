@@ -223,7 +223,7 @@ const RaportNarasi = () => {
 
     setEdit("edit");
     formik.setFieldValue("kode", data.code);
-    formik.setFieldValue("idKategori", data.narrative_cat_id);
+    formik.setFieldValue("idKategori", data.narrative_cat_id ?? data.id);
     if (type === "kategori") {
       formik.setFieldValue("classId", data.class_id);
       formik.setFieldValue("kategori", data.category);
