@@ -1050,6 +1050,15 @@ const PosJenisPembayaran = {
       },
       data,
     }),
+  bulkCreate: (token: string | null, data: any) =>
+    instance({
+      method: "POST",
+      url: "/api/student-payment-bills/bulk-create",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
   showAll: (
     token: string | null,
     search?: string,
