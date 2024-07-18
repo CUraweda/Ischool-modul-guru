@@ -1,0 +1,87 @@
+[
+  {
+    "submenu": false,
+    "title": "Dashboard",
+    "icon": "<BsFillHouseFill />",
+    "url": "/hrd/dashboard",
+    "subtitle": []
+  },
+  {
+    "submenu": true,
+    "title": "Rekrutmen",
+    "icon": "<AiOutlineUsergroupAdd />",
+    "url": "",
+    "subtitle": [
+      {
+        "name": "Probation",
+        "url": "/hrd/rekrutmen"
+      }
+    ]
+  },
+  {
+    "submenu": true,
+    "title": "Presensi",
+    "icon": "<AiOutlineBook />",
+    "url": "",
+    "subtitle": [
+      {
+        "name": "Rekap Presensi",
+        "url": "/hrd/rekap-presensi"
+      },
+      {
+        "name": "Pengajuan Cuti",
+        "url": "/hrd/pengajuan-cuti"
+      },
+
+      {
+        "name": "Daftar Tunggakan Siswa",
+        "url": "/hrd/dinas-luar"
+      }
+    ]
+  },
+  {
+    "submenu": true,
+    "title": "Penilaian",
+    "icon": "<AiOutlineHdd />",
+    "url": "",
+    "subtitle": [
+      {
+        "name": "Daftar Assesor",
+        "url": "/hrd/daftar-assesor"
+      },
+      {
+        "name": "Jenis Pembayaran",
+        "url": "/hrd/daftar-penilaian"
+      },
+      {
+        "name": "Daftar Karyawan",
+        "url": "/hrd/daftar-karyawan"
+      },
+      {
+        "name": "Data Karayawan",
+        "url": "/hrd/data-karyawan"
+      }
+    ]
+  },
+  {
+    "submenu": false,
+    "title": "Rekap Penilaian",
+    "icon": "<AiOutlineTeam />",
+    "url": "/hrd/rekap-penilaian",
+    "subtitle": []
+  },
+  {
+    "submenu": false,
+    "title": "Pelatihan",
+    "icon": "<AiOutlineCalendar />",
+    "url": "/hrd/pelatihan",
+    "subtitle": []
+  },
+  {
+    "submenu": false,
+    "title": "Penggajian",
+    "icon": "<AiOutlineIdcard />",
+    "url": "/hrd/penggajian",
+    "subtitle": []
+  }
+]

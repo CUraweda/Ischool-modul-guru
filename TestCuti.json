@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "data": {
+      "nama": "Bagas Garut",
+      "tipe": "Izin",
+      "tanggal": "2024-06-13",
+      "deskripsi": "Ke Baghdad",
+      "status": "Menunggu",
+      "catatan": {
+        "image": "",
+        "hari": "Kamis",
+        "jam": "07.00"
+      }
+    }
+  },
+  {
+    "id": 2,
+    "data": {
+      "nama": "Bagas Cirebon",
+      "tipe": "Cuti",
+      "tanggal": "2024-06-14",
+      "deskripsi": "Timnas Main",
+      "status": "Tidak Disetujui",
+      "catatan": {
+        "image": "",
+        "hari": "Kamis",
+        "jam": "07.00"
+      }
+    }
+  },
+  {
+    "id": 3,
+    "data": {
+      "nama": "Bagas Dribble",
+      "tipe": "Izin",
+      "tanggal": "2024-06-10",
+      "deskripsi": "Ke Baghdad",
+      "status": "Disetujui",
+      "catatan": {
+        "image": "",
+        "hari": "Kamis",
+        "jam": "07.00"
+      }
+    }
+  }
+]

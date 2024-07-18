@@ -1,0 +1,184 @@
+[
+  {
+    "id": 1,
+    "data": {
+      "nama": "Bagas Garut",
+      "status": "Tepat Waktu",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Keluar",
+      "divisi": "Karyawan",
+      "keterangan": "Hadir"
+    }
+  },
+  {
+    "id": 2,
+    "data": {
+      "nama": "Bagas Dribble",
+      "status": "Terlambat",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Masuk",
+      "divisi": "Guru",
+      "keterangan": "Hadir"
+    }
+  },
+  {
+    "id": 3,
+    "data": {
+      "nama": "Bagas Sumedang",
+      "status": "Tepat Waktu",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Keluar",
+      "divisi": "Karyawan",
+      "keterangan": "Hadir"
+    }
+  },
+  {
+    "id": 4,
+    "data": {
+      "nama": "Bagas Saputra",
+      "status": "Terlambat",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Masuk",
+      "divisi": "Guru",
+      "keterangan": "Hadir"
+    }
+  },
+  {
+    "id": 5,
+    "data": {
+      "nama": "Bagas Vina",
+      "status": "Tepat Waktu",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Keluar",
+      "divisi": "Karyawan",
+      "keterangan": "Hadir"
+    }
+  },
+  {
+    "id": 6,
+    "data": {
+      "nama": "Bagas Gaming",
+      "status": "Terlambat",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Keluar",
+      "divisi": "Staf Presiden",
+      "keterangan": "Hadir"
+    }
+  },
+
+  {
+    "id": 7,
+    "data": {
+      "nama": "Bagas Gimang",
+      "status": "Terlambat",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Keluar",
+      "divisi": "Karyawan",
+      "keterangan": "Hadir"
+    }
+  },
+  {
+    "id": 8,
+    "data": {
+      "nama": "Bagas Baghdad",
+      "status": "Tepat Waktu",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Keluar",
+      "divisi": "Karyawan",
+      "keterangan": "Hadir"
+    }
+  },
+  {
+    "id": 9,
+    "data": {
+      "nama": "Bagas Gimang",
+      "status": "Tepat Waktu",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Keluar",
+      "divisi": "Karyawan",
+      "keterangan": "Hadir"
+    }
+  },
+  {
+    "id": 10,
+    "data": {
+      "nama": "Bagas Baghdad",
+      "status": "Tepat Waktu",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Keluar",
+      "divisi": "Karyawan",
+      "keterangan": "Hadir"
+    }
+  },
+  {
+    "id": 11,
+    "data": {
+      "nama": "Bagas Alya",
+      "status": "Terlambat",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Masuk",
+      "divisi": "Guru",
+      "keterangan": "Hadir"
+    }
+  },
+  {
+    "id": 12,
+    "data": {
+      "nama": "Bagas Vina",
+      "status": "Tepat Waktu",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Keluar",
+      "divisi": "Karyawan",
+      "keterangan": "Hadir"
+    }
+  },
+  {
+    "id": 13,
+    "data": {
+      "nama": "Bagas Gaming",
+      "status": "Tepat Waktu",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Keluar",
+      "divisi": "Staf Presiden",
+      "keterangan": "Hadir"
+    }
+  },
+
+  {
+    "id": 14,
+    "data": {
+      "nama": "Bagas Gimang",
+      "status": "Tepat Waktu",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Keluar",
+      "divisi": "Karyawan",
+      "keterangan": "Hadir"
+    }
+  },
+  {
+    "id": 15,
+    "data": {
+      "nama": "Bagas Baghdad",
+      "status": "Tepat Waktu",
+      "tanggal": "2024-06-12",
+      "pukul": "10:10:10",
+      "tipe": "Keluar",
+      "divisi": "Karyawan",
+      "keterangan": "Hadir"
+    }
+  }
+]

@@ -25,16 +25,23 @@ const KalenderKegiatan = lazy(() => import("../page/guru/kalenderKegiatan"));
 const OverviewSiswa = lazy(() => import("../page/guru/DashboardSiswa"));
 const ODFYC = lazy(() => import("../page/guru/ODFYC"));
 
-
 const Ke_Dashbaord = lazy(() => import("../page/keuangan/Dashboard"));
 const Ke_DataSiswa = lazy(() => import("../page/keuangan/DataSiswa"));
 const Ke_PosKeuangan = lazy(() => import("../page/keuangan/PosKeuangan"));
-const Ke_JenisPembayaran = lazy(() => import("../page/keuangan/JenisPembayaran"));
-const Ke_DetailJenisPembayaran = lazy(() => import("../page/keuangan/DetailJenisPembayaran"));
-const Ke_DaftarTunggakan = lazy(() => import("../page/keuangan/DaftarTunggakan"));
+const Ke_JenisPembayaran = lazy(
+  () => import("../page/keuangan/JenisPembayaran")
+);
+const Ke_DetailJenisPembayaran = lazy(
+  () => import("../page/keuangan/DetailJenisPembayaran")
+);
+const Ke_DaftarTunggakan = lazy(
+  () => import("../page/keuangan/DaftarTunggakan")
+);
 const Ke_Laporan = lazy(() => import("../page/keuangan/Laporan"));
 
 const AbsenKaryawan = lazy(() => import("../page/admin/AbsenKaryawan"));
+const RekapPresensi = lazy(() => import("../page/hrd/Presensi"));
+const PengajuanCutiHRD = lazy(() => import("../page/hrd/PengajuanCuti"));
 
 const RootRoutes = () => {
   return (
@@ -48,12 +55,7 @@ const RootRoutes = () => {
             </Suspense>
           }
         />
-        <Route
-          path="/test"
-          element={
-            <Test/>
-          }
-        />
+        <Route path="/test" element={<Test />} />
         <Route
           path="/guru/dashboard"
           element={
@@ -322,6 +324,26 @@ const RootRoutes = () => {
             <Suspense fallback={<Loading />}>
               <Layout>
                 <Ke_Laporan />
+              </Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/hrd/rekap-presensi"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <RekapPresensi />
+              </Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/hrd/pengajuan-cuti"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <PengajuanCutiHRD />
               </Layout>
             </Suspense>
           }

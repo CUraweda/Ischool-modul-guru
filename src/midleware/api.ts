@@ -794,7 +794,7 @@ const Raport = {
   ): AxiosPromise<any> =>
     instance({
       method: "PUT",
-      url: `/api/portofolio-report/${id}`,
+      url: `/api/portofolio-report/merge/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

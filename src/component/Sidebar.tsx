@@ -5,6 +5,7 @@ import logo from "../assets/sade.png";
 import { Link } from "react-router-dom";
 import menu from "../data/menu.json";
 import menuKeuangan from "../data/keuangan.json";
+import menuHRD from "../data/hrd.json";
 import { Store } from "../store/Store";
 // import karywan from "../data/karyawan.json"
 
@@ -22,25 +23,27 @@ type subtitle = {
 };
 
 const Sidebar = () => {
-  const Side = sessionStorage.getItem('side') || '/';
+  const Side = sessionStorage.getItem("side") || "/";
   const [data, setData] = useState<Menu[]>([]);
   const [activeMenuItem, setActiveMenuItem] = useState<string>(Side);
   const { role } = Store();
 
   const handleMenuItemClick = (name: string) => {
     setActiveMenuItem(name);
-    sessionStorage.setItem('side', name);
+    sessionStorage.setItem("side", name);
   };
 
   const Role = role ? parseInt(role, 10) : 0;
-  
+
   useEffect(() => {
     if (Role === 6) {
       setData(menu);
     } else if (Role === 2) {
       setData(menuKeuangan);
+    } else {
+      setData(menuHRD);
     }
-  }, [Role]); 
+  }, [Role]);
 
   return (
     <div>

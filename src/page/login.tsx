@@ -17,7 +17,7 @@ const schema = Yup.object({
 const login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
-  const { setToken , setRole} = Store();
+  const { setToken, setRole } = Store();
 
   const formik = useFormik({
     initialValues: {
@@ -45,7 +45,7 @@ const login = () => {
       const emailLower = email.toLowerCase();
       const response = await Auth.Login(emailLower, password);
       const role = response.data.data.role_id;
-      setRole(role.toString())
+      setRole(role.toString());
 
       if (role === 6) {
         setToken(response.data.tokens.access.token);
@@ -53,6 +53,9 @@ const login = () => {
       } else if (role === 2) {
         setToken(response.data.tokens.access.token);
         navigate("/keuangan/");
+      } else if (role === 5) {
+        setToken(response.data.tokens.access.token);
+        navigate("/hrd/rekap-presensi");
       } else {
         Swal.fire({
           icon: "error",
@@ -60,8 +63,6 @@ const login = () => {
           text: "akun anda tidak memiliki akses!",
         });
       }
-
-     
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -85,7 +86,6 @@ const login = () => {
           </div>
           <span className="my-10 text-3xl text-black font-bold">Login</span>
           <div className="w-full flex flex-col gap-3 ">
-            
             <div className="w-full flex justify-center flex-col items-center">
               <label htmlFor="" className="w-5/6 font-bold text-black">
                 Username
