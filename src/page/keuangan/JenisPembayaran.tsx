@@ -1,5 +1,5 @@
 // import React from "react";
-import { FaRegFileAlt, FaTrash } from "react-icons/fa";
+import { FaChevronDown, FaRegFileAlt, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaPencil } from "react-icons/fa6";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ import {
   PaginationControl,
 } from "../../component/PaginationControl";
 import { formatTime } from "../../utils/date";
+import ModalBulkCreateJenisPembayaran from "../../component/keuangan/ModalBulkCreateJenisPembayaran";
 
 const jenisPembayaranSchema = Yup.object().shape({
   name: Yup.string().required("Keterangan harus diisi"),
@@ -27,7 +28,8 @@ const jenisPembayaranSchema = Yup.object().shape({
 
 const JenisPembayaran = () => {
   const { token } = Store(),
-    modalFormId = "form-jenis-pembayaran";
+    modalFormId = "form-jenis-pembayaran",
+    modalBulkFormId = "form-bulk-jenis-pembayran";
 
   // data state
   const [dataIdInForm, setDataIdInForm] = useState<any>(null);
@@ -200,6 +202,11 @@ const JenisPembayaran = () => {
 
   return (
     <>
+      <ModalBulkCreateJenisPembayaran
+        modalId={modalBulkFormId}
+        postCreate={() => getDataList()}
+      />
+
       <Modal id={modalFormId} onClose={() => setDataIdInForm(null)}>
         <form onSubmit={jenisPembayaranForm.handleSubmit}>
           <h3 className="text-xl font-bold mb-6">
@@ -286,12 +293,28 @@ const JenisPembayaran = () => {
               <option>Han Solo</option>
               <option>Greedo</option>
             </select>
-            <button
-              onClick={handleOpenForm}
-              className="btn btn-ghost bg-blue-500 text-white"
-            >
-              Tambah
-            </button>
+            <div className="dropdown dropdown-end">
+              <button
+                tabIndex={0}
+                className="btn btn-ghost bg-blue-500 text-white"
+              >
+                Tambah
+                <FaChevronDown />
+              </button>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+              >
+                <li>
+                  <button onClick={handleOpenForm}>Tambah satu</button>
+                </li>
+                <li>
+                  <button onClick={() => openModal(modalBulkFormId)}>
+                    Tambah banyak
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="table table-zebra">
