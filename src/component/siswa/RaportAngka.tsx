@@ -143,7 +143,7 @@ const RaportAngka = () => {
   };
 
   const getMapel = async () => {
-    const response = await Task.GetAllMapel(token, 0, 20);
+    const response = await Task.GetAllMapel(token, 0, 100);
     const mapelData = response.data.data.result
     const mapelFilter = mapelData.filter((value: any) => value.level == level);
     setMapel(mapelFilter);
