@@ -3,7 +3,12 @@ import { FaPencilAlt, FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import Modal from "../modal";
 import { MdCloudUpload } from "react-icons/md";
 import { Store, useProps } from "../../store/Store";
-import { Task, Raport, KepribadianSiswa, Kepribadian } from "../../midleware/api";
+import {
+  Task,
+  Raport,
+  KepribadianSiswa,
+  Kepribadian,
+} from "../../midleware/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
@@ -25,9 +30,9 @@ const validationSchema = Yup.object({
 
 const validationPersonalitySchema = Yup.object({
   id: Yup.string().optional(),
-  classId: Yup.string().required('required'),
-  personalityId: Yup.string().required('Kepribadiaan harus diisi'),
-  grade: Yup.string().required('Nilai harus diisi')
+  classId: Yup.string().required("required"),
+  personalityId: Yup.string().required("Kepribadiaan harus diisi"),
+  grade: Yup.string().required("Nilai harus diisi"),
 });
 
 const RaportAngka = () => {
@@ -49,6 +54,7 @@ const RaportAngka = () => {
   const [dataRaport, setDataRaport] = useState<any[]>([]);
   const [idNumber, setIdNumber] = useState<string>("");
   const [idSiswa, setIdSiswa] = useState<string>("");
+  const [level, setLevel] = useState<string>("");
   const [tahun, setTahun] = useState<string>(tahunProps);
   const [semester, setSemester] = useState<string>(semesterProps);
   const [kelasId, setKelasId] = useState<string>(kelasProps);
@@ -57,6 +63,12 @@ const RaportAngka = () => {
   const [arrayKelas, setarrayKelas] = useState<any>();
   const [arrayNumber, setarrayNumber] = useState<any>();
   const [cekEror, setCekEror] = useState<boolean>(false);
+
+  const [personalities, setPersonalities] = useState<any[]>([]);
+  const [studentpersonalities, setStudentPersonalities] = useState<any[]>([]);
+  const [studentInEditPersonality, setStudentInEditPersonality] = useState<any>(
+    {}
+  );
 
   const formik = useFormik({
     initialValues: {
@@ -75,10 +87,14 @@ const RaportAngka = () => {
 
   useEffect(() => {
     getStudent();
+    getClass();
   }, [formik.values.classId, arrayKelas]);
 
   useEffect(() => {
-    getMapel();
+    getMapel()
+  }, [level]);
+
+  useEffect(() => {
     getClass();
     getNumberRaport();
   }, []);
@@ -87,12 +103,16 @@ const RaportAngka = () => {
     getNumberRaport();
   }, [tahun, semester, kelasId, mapelId, arrayKelas]);
 
+  useEffect(() => {
+    getStudentPersonalities();
+    getPersonalities();
+  }, [studentInEditPersonality]);
+
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
       getClass();
-      getMapel();
     }
   };
   const closeModal = (props: string) => {
@@ -104,7 +124,12 @@ const RaportAngka = () => {
 
   const getClass = async () => {
     const response = await Task.GetAllClass(token, 0, 20);
-    setKelas(response.data.data.result);
+    const kelasData = response.data.data.result;
+    const kelasFilter = kelasData.filter((value: any) => value.id == formik.values.classId);
+    setLevel(kelasFilter[0]?.level)
+    console.log(kelasFilter[0]?.level);
+    
+    setKelas(kelasData);
   };
 
   const getStudent = async () => {
@@ -118,8 +143,10 @@ const RaportAngka = () => {
   };
 
   const getMapel = async () => {
-    const response = await Task.GetAllMapel(token, 0, 20);
-    setMapel(response.data.data.result);
+    const response = await Task.GetAllMapel(token, 0, 100);
+    const mapelData = response.data.data.result
+    const mapelFilter = mapelData.filter((value: any) => value.level == level);
+    setMapel(mapelFilter);
   };
 
   const getNumberRaport = async () => {
@@ -236,79 +263,81 @@ const RaportAngka = () => {
       id: "",
       classId: "",
       personalityId: "",
-      grade: ""
+      grade: "",
     },
-    validationSchema: validationPersonalitySchema,  
-    onSubmit: () => {}      
+    validationSchema: validationPersonalitySchema,
+    onSubmit: () => {},
   });
 
-  const [personalities, setPersonalities] = useState<any[]>([])
-  const [studentpersonalities, setStudentPersonalities] = useState<any[]>([]);
-  const [studentInEditPersonality, setStudentInEditPersonality] = useState<any>({})
-
   const getStudentPersonalities = async () => {
-    const res = await KepribadianSiswa.showAll(token, studentInEditPersonality.nis, 0, 100);
-    const data = res.data.data.result
-  
-    setStudentPersonalities(data.filter((dat: any) => dat.student_class_id == studentInEditPersonality.classId))
-  }
-  const showStudentPersonalities = async (studentClass?: Record<string, any>) => {
-    setStudentPersonalities([])
-    setStudentInEditPersonality({
-			name: studentClass?.student?.full_name ?? '-',
-			nis: studentClass?.student?.nis ?? '-',
-			academic_year: studentClass?.academic_year ?? '-',
-      classId: studentClass?.id ?? ''
-		});
+    const res = await KepribadianSiswa.showAll(
+      token,
+      studentInEditPersonality.nis,
+      0,
+      100
+    );
+    const data = res.data.data.result;
 
-    formikPersonality.setValues(v => {
+    setStudentPersonalities(
+      data.filter(
+        (dat: any) => dat.student_class_id == studentInEditPersonality.classId
+      )
+    );
+  };
+  const showStudentPersonalities = async (
+    studentClass?: Record<string, any>
+  ) => {
+    setStudentPersonalities([]);
+    setStudentInEditPersonality({
+      name: studentClass?.student?.full_name ?? "-",
+      nis: studentClass?.student?.nis ?? "-",
+      academic_year: studentClass?.academic_year ?? "-",
+      classId: studentClass?.id ?? "",
+    });
+
+    formikPersonality.setValues((v) => {
       return {
         ...v,
-        classId: studentClass?.id
-      }
-    })
-    showModal('edit-kepribadian')
-  } 
-
-  useEffect(() => {
-    getStudentPersonalities()
-    getPersonalities()
-  }, [studentInEditPersonality])
+        classId: studentClass?.id,
+      };
+    });
+    showModal("edit-kepribadian");
+  };
 
   const handleSubmitStudentPersonality = async () => {
-    const {classId, personalityId, grade, id} = formikPersonality.values
+    const { classId, personalityId, grade, id } = formikPersonality.values;
 
     let res;
     if (id) {
       res = await KepribadianSiswa.update(token, id, {
         student_class_id: classId,
         personality_id: personalityId,
-        grade
-      })
+        grade,
+      });
     } else {
       res = await KepribadianSiswa.add(token, {
         student_class_id: classId,
         personality_id: personalityId,
-        grade
-      })
+        grade,
+      });
     }
 
     if (res) {
-      getStudentPersonalities()
+      getStudentPersonalities();
     }
-  }
+  };
 
   const handleDeleteStudentPersonality = async (id: string) => {
-    const res = await KepribadianSiswa.delete(token, id)
+    const res = await KepribadianSiswa.delete(token, id);
 
-    if (res.status == 200) getStudentPersonalities()
-  }
+    if (res.status == 200) getStudentPersonalities();
+  };
 
   const getPersonalities = async () => {
-    const res = await Kepribadian.showAll(token)
-    const data = res.data.data.result
-    setPersonalities(data)
-  }
+    const res = await Kepribadian.showAll(token);
+    const data = res.data.data.result;
+    setPersonalities(data);
+  };
 
   const handleEdit = async () => {
     const { subjectId, nilai, semester, terbilang, studentId } = formik.values;
@@ -496,9 +525,7 @@ const RaportAngka = () => {
               setTahun(e.target.value), setTahunProps(e.target.value);
             }}
           >
-            <option selected>
-              Tahun Pelajaran
-            </option>
+            <option selected>Tahun Pelajaran</option>
             <option value={"2023/2024"}>2023/2024</option>
             <option value={"2024/2025"}>2024/2025</option>
           </select>
@@ -509,22 +536,20 @@ const RaportAngka = () => {
               setSemester(e.target.value), setSemesterProps(e.target.value);
             }}
           >
-            <option selected>
-              Semester
-            </option>
+            <option selected>Semester</option>
             <option value={"1"}>Ganjil</option>
             <option value={"2"}>Genap</option>
           </select>
           <select
             className="select select-sm join-item w-32 max-w-md select-bordered"
             onChange={(e) => {
-              setKelasId(e.target.value), setKelasProps(e.target.value);
+              setKelasId(e.target.value),
+                setKelasProps(e.target.value),
+                formik.setFieldValue("classId", e.target.value);
             }}
             value={kelasId}
           >
-            <option selected>
-              pilih kelas
-            </option>
+            <option selected>pilih kelas</option>
             {kelas?.map((item: any, index: number) => (
               <option
                 value={item.id}
@@ -539,9 +564,7 @@ const RaportAngka = () => {
               setMapelId(e.target.value), setMapelProps(e.target.value);
             }}
           >
-            <option selected>
-              Pelajaran
-            </option>
+            <option selected>Pelajaran</option>
             {mapel?.map((item: any, index: number) => (
               <option value={item.id} key={index}>
                 {item.name}
@@ -632,7 +655,9 @@ const RaportAngka = () => {
                       className="btn btn-sm join-item bg-lime-600 text-white tooltip"
                       data-tip="edit kepribadian"
                       onClick={() => {
-                        showStudentPersonalities(item?.studentreport?.studentclass)
+                        showStudentPersonalities(
+                          item?.studentreport?.studentclass
+                        );
                       }}
                     >
                       <span className="text-xl">
@@ -650,55 +675,59 @@ const RaportAngka = () => {
         <h3 className="text-xl mb-6">Edit Kepribadian</h3>
         <div className="mb-6 grid grid-cols-3">
           <div className="font-bold col-span-1">Nama siswa</div>
-          <div className="col-span-2">:{' '}
-            {studentInEditPersonality['name']}
-          </div>
+          <div className="col-span-2">: {studentInEditPersonality["name"]}</div>
           <div className="font-bold col-span-1">NIS</div>
-          <div className="col-span-2">:{' '}
-            {studentInEditPersonality['nis']}
-          </div>
+          <div className="col-span-2">: {studentInEditPersonality["nis"]}</div>
           <div className="font-bold col-span-1">Tahun pelajaran</div>
-          <div className="col-span-2">:{' '}
-            {studentInEditPersonality['academic_year']}
+          <div className="col-span-2">
+            : {studentInEditPersonality["academic_year"]}
           </div>
         </div>
-        <form onSubmit={formikPersonality.handleSubmit} className="mb-6 flex items-start gap-3">
+        <form
+          onSubmit={formikPersonality.handleSubmit}
+          className="mb-6 flex items-start gap-3"
+        >
           <label className="form-control grow">
             <div className="label">
               <span className="label-text">Kepribadian</span>
             </div>
-            <select 
-              name="personalityId" 
-              onChange={formikPersonality.handleChange} 
+            <select
+              name="personalityId"
+              onChange={formikPersonality.handleChange}
               value={formikPersonality.values.personalityId}
               className="select select-bordered"
             >
-              <option disabled selected>- Pilih -</option>
-              {
-                personalities.map((personality, i) => (
-                  <option key={i} value={personality.id}>{personality.desc}</option>
-                ))
-              }
+              <option disabled selected>
+                - Pilih -
+              </option>
+              {personalities.map((personality, i) => (
+                <option key={i} value={personality.id}>
+                  {personality.desc}
+                </option>
+              ))}
             </select>
             <div className="label">
-              {formikPersonality.touched.personalityId && formikPersonality.errors.personalityId && (
-                <div className="text-red-500 text-xs">
-                  {formikPersonality.errors.personalityId}
-                </div>
-              )}
+              {formikPersonality.touched.personalityId &&
+                formikPersonality.errors.personalityId && (
+                  <div className="text-red-500 text-xs">
+                    {formikPersonality.errors.personalityId}
+                  </div>
+                )}
             </div>
           </label>
           <label className="form-control grow">
             <div className="label">
               <span className="label-text">Nilai</span>
             </div>
-            <select 
-              name="grade"  
-              onChange={formikPersonality.handleChange} 
-              value={formikPersonality.values.grade} 
+            <select
+              name="grade"
+              onChange={formikPersonality.handleChange}
+              value={formikPersonality.values.grade}
               className="select select-bordered"
             >
-              <option disabled selected>- Pilih -</option>
+              <option disabled selected>
+                - Pilih -
+              </option>
               <option value="A">A</option>
               <option value="B">B</option>
               <option value="C">C</option>
@@ -707,14 +736,21 @@ const RaportAngka = () => {
               <option value="F">F</option>
             </select>
             <div className="label">
-              {formikPersonality.touched.grade && formikPersonality.errors.grade && (
-                <div className="text-red-500 text-xs">
-                  {formikPersonality.errors.grade}
-                </div>
-              )}
+              {formikPersonality.touched.grade &&
+                formikPersonality.errors.grade && (
+                  <div className="text-red-500 text-xs">
+                    {formikPersonality.errors.grade}
+                  </div>
+                )}
             </div>
           </label>
-          <button onClick={() => handleSubmitStudentPersonality()} type="submit" className="btn mt-9 btn-primary">Tambah</button>
+          <button
+            onClick={() => handleSubmitStudentPersonality()}
+            type="submit"
+            className="btn mt-9 btn-primary"
+          >
+            Tambah
+          </button>
         </form>
         <div className="overflow-x-auto w-full">
           <table className="table min-w-full">
@@ -728,28 +764,26 @@ const RaportAngka = () => {
               </tr>
             </thead>
             <tbody>
-              {
-                studentpersonalities.map((item, i) => (
-                  <tr key={i}>
-                    <th>{i + 1}</th>
-                    <td>{item?.personality?.desc ?? '-'}</td>
-                    <td>{item?.grade ?? '-'}</td>
-                    <td>
-                      <div className="join">
-                        <button
-                          className="btn btn-sm join-item bg-red-500 text-white tooltip"
-                          data-tip="hapus"
-                          onClick={() => handleDeleteStudentPersonality(item?.id)}
-                        >
-                          <span className="text-xl">
-                            <FaRegTrashAlt />
-                          </span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              }
+              {studentpersonalities.map((item, i) => (
+                <tr key={i}>
+                  <th>{i + 1}</th>
+                  <td>{item?.personality?.desc ?? "-"}</td>
+                  <td>{item?.grade ?? "-"}</td>
+                  <td>
+                    <div className="join">
+                      <button
+                        className="btn btn-sm join-item bg-red-500 text-white tooltip"
+                        data-tip="hapus"
+                        onClick={() => handleDeleteStudentPersonality(item?.id)}
+                      >
+                        <span className="text-xl">
+                          <FaRegTrashAlt />
+                        </span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -777,9 +811,7 @@ const RaportAngka = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 >
-                  <option selected>
-                    pilih kelas
-                  </option>
+                  <option selected>pilih kelas</option>
                   {kelas?.map((item: any, index: number) => (
                     <option
                       value={item.id}
@@ -808,9 +840,7 @@ const RaportAngka = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 >
-                  <option selected>
-                    pilih siswa
-                  </option>
+                  <option selected>pilih siswa</option>
                   {DataSiswa?.map((item: any, index: number) => (
                     <option value={item?.id} key={index}>
                       {item?.studentclass.student.full_name}
@@ -838,9 +868,7 @@ const RaportAngka = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 >
-                  <option selected>
-                    Semester
-                  </option>
+                  <option selected>Semester</option>
                   <option value={"1"}>Semester 1</option>
                   <option value={"2"}>Semester 2</option>
                 </select>
@@ -865,9 +893,7 @@ const RaportAngka = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 >
-                  <option selected>
-                    Pelajaran
-                  </option>
+                  <option selected>Pelajaran</option>
                   {mapel?.map((item: any, index: number) => (
                     <option value={item.id} key={index}>
                       {item.name}
@@ -955,9 +981,7 @@ const RaportAngka = () => {
                   formik.setFieldValue("classId", e.target.value)
                 }
               >
-                <option selected>
-                  pilih kelas
-                </option>
+                <option selected>pilih kelas</option>
                 {kelas?.map((item: any, index: number) => (
                   <option
                     value={item.id}
@@ -978,9 +1002,7 @@ const RaportAngka = () => {
                   formik.setFieldValue("semester", e.target.value)
                 }
               >
-                <option selected>
-                  Semester
-                </option>
+                <option selected>Semester</option>
                 <option value={"1"}>Semester 1</option>
                 <option value={"2"}>Semester 2</option>
               </select>
@@ -996,9 +1018,7 @@ const RaportAngka = () => {
                   formik.setFieldValue("subjectId", e.target.value)
                 }
               >
-                <option selected>
-                  Pelajaran
-                </option>
+                <option selected>Pelajaran</option>
                 {mapel?.map((item: any, index: number) => (
                   <option value={item.id} key={index}>
                     {item.name}
@@ -1072,9 +1092,7 @@ const RaportAngka = () => {
                   formik.setFieldValue("semester", e.target.value)
                 }
               >
-                <option selected>
-                  Semester
-                </option>
+                <option selected>Semester</option>
                 <option value={"1"}>Semester 1</option>
                 <option value={"2"}>Semester 2</option>
               </select>
@@ -1091,9 +1109,7 @@ const RaportAngka = () => {
                   setarrayKelas(selectedKelas);
                 }}
               >
-                <option selected>
-                  pilih kelas
-                </option>
+                <option selected>pilih kelas</option>
                 {kelas?.map((item: any, index: number) => (
                   <option
                     value={item.id}
@@ -1111,9 +1127,7 @@ const RaportAngka = () => {
                   setarrayMapel(selectedMapel);
                 }}
               >
-                <option selected>
-                  Pelajaran
-                </option>
+                <option selected>Pelajaran</option>
                 {mapel?.map((item: any, index: number) => (
                   <option value={item.id} key={index}>
                     {item.name}

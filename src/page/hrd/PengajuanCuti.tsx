@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import ListCuti from "../../component/hrd/ListCuti";
-import TestCuti from "../../../TestCuti.json";
+// import ListCuti from "../../component/hrd/ListCuti";
+// import TestCuti from "../../../TestCuti.json";
 
 const pengajuanCutiPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,7 +43,7 @@ const pengajuanCutiPage = () => {
       </div>
 
       <div className="">
-        <ListCuti data={TestCuti} searchQuery={searchQuery} />
+        {/* <ListCuti data={TestCuti} searchQuery={searchQuery} /> */}
       </div>
     </div>
   );
