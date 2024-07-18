@@ -140,7 +140,22 @@ const RaportNarasi = () => {
       console.log(error);
     }
   };
-
+  const deleteNarasi = async (id: string) => {
+    try {
+      await Raport.deleteNarasi(token, id);
+      getKategori();
+      getDataNarasi();
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Your work has been saved",
+        showConfirmButton: false,
+        timer: 1000,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const createDeskripsi = async () => {
     try {
       const data = {
@@ -252,7 +267,7 @@ const RaportNarasi = () => {
 
       return newState;
     });
-    console.log(EditdataRaport.id);
+    console.log(EditdataRaport);
   };
 
   const handleEditReport = async () => {
@@ -264,16 +279,11 @@ const RaportNarasi = () => {
       if (EditdataRaport) {
         const dataRest = {
           semester: smt ? smt : 1,
-          narrative_desc_id: EditdataRaport.id,
-          grade: EditdataRaport.nilai ? EditdataRaport.nilai : 1,
+          narrative_desc_id: EditdataRaport.desc_id,
+          grade: EditdataRaport.grade ? EditdataRaport.grade : 1,
           student_report_id: parseInt(idRaport),
         };
-        await Raport.editReportNarasi(
-          token,
-          idRaportNarasi,
-          dataRest
-        );
-       
+        await Raport.editReportNarasi(token, idRaportNarasi, dataRest);
       }
       Swal.fire({
         position: "center",
@@ -496,6 +506,10 @@ const RaportNarasi = () => {
                                     <button
                                       className="btn btn-sm join-item bg-red-500 text-white tooltip"
                                       data-tip="hapus"
+                                      onClick={() => {
+                                        showModal("delete narasi"),
+                                          deleteNarasi(nilai.id);
+                                      }}
                                     >
                                       <span className="text-xl">
                                         <FaRegTrashAlt />
