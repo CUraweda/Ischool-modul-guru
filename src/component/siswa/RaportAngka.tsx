@@ -91,7 +91,7 @@ const RaportAngka = () => {
   }, [formik.values.classId, arrayKelas]);
 
   useEffect(() => {
-    getMapel()
+    getMapel();
   }, [level]);
 
   useEffect(() => {
@@ -125,10 +125,12 @@ const RaportAngka = () => {
   const getClass = async () => {
     const response = await Task.GetAllClass(token, 0, 20);
     const kelasData = response.data.data.result;
-    const kelasFilter = kelasData.filter((value: any) => value.id == formik.values.classId);
-    setLevel(kelasFilter[0]?.level)
+    const kelasFilter = kelasData.filter(
+      (value: any) => value.id == formik.values.classId
+    );
+    setLevel(kelasFilter[0]?.level);
     console.log(kelasFilter[0]?.level);
-    
+
     setKelas(kelasData);
   };
 
@@ -144,7 +146,7 @@ const RaportAngka = () => {
 
   const getMapel = async () => {
     const response = await Task.GetAllMapel(token, 0, 100);
-    const mapelData = response.data.data.result
+    const mapelData = response.data.data.result;
     const mapelFilter = mapelData.filter((value: any) => value.level == level);
     setMapel(mapelFilter);
   };
@@ -262,8 +264,8 @@ const RaportAngka = () => {
     initialValues: {
       id: "",
       classId: "",
-      personalityId: "",
-      grade: "",
+      personalityId: "1",
+      grade: "A",
     },
     validationSchema: validationPersonalitySchema,
     onSubmit: () => {},

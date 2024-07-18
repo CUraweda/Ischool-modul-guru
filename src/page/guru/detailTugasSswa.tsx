@@ -172,12 +172,12 @@ const DetailTugasSswa = () => {
                     <tr>
                       <th>Mapel</th>
                       <td>:</td>
-                      <td>{task?.subject.name}</td>
+                      <td>{task?.subject?.name}</td>
                     </tr>
                     <tr>
                       <th>Kelas</th>
                       <td>:</td>
-                      <td>{task?.class.class_name}</td>
+                      <td>{task?.class?.class_name}</td>
                     </tr>
                     <tr>
                       <th>Tanggal Mulai</th>
@@ -196,8 +196,8 @@ const DetailTugasSswa = () => {
                         {task?.task_category_id == 1
                           ? "WWP"
                           : task?.task_category_id == 2
-                          ? "Project Kelompok"
-                          : "Prbadi"}
+                            ? "Project Kelompok"
+                            : "Prbadi"}
                       </td>
                     </tr>
                     <tr>
@@ -247,8 +247,8 @@ const DetailTugasSswa = () => {
                         {item?.task?.task_category_id === 1
                           ? "WWP"
                           : item?.task?.task_category_id === 2
-                          ? "Project Kelompok"
-                          : "Mandiri"}
+                            ? "Project Kelompok"
+                            : "Mandiri"}
                       </td>
                       <td>{formatDate(item?.createdAt)}</td>
                       <td className="join text-white">
@@ -260,7 +260,7 @@ const DetailTugasSswa = () => {
                           <BiDownload />
                         </button>
                         <button
-                          className={`btn btn-sm btn-ghost ${item.feedback ? 'bg-green-600' : 'bg-red-600'} text-xl join-item tooltip`}
+                          className={`btn btn-sm btn-ghost ${item.feedback ? "bg-green-600" : "bg-red-600"} text-xl join-item tooltip`}
                           data-tip="Feedback"
                           onClick={() => {
                             handleFeed(
