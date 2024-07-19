@@ -526,6 +526,20 @@ const PresensiSiswa = () => {
           </select>
         </div>
         <div className="w-full flex flex-col gap-2">
+          <label className="mt-4 font-bold">Semester</label>
+          <select
+            className="select select-bordered w-full"
+            value={semester}
+            onChange={(e) => setSemester(e.target.value)}
+          >
+            <option disabled selected>
+              Semester
+            </option>
+            <option value="1">Ganjil</option>
+            <option value="2">Genap </option>
+          </select>
+        </div>
+        <div className="w-full flex flex-col gap-2">
           <label className="mt-4 font-bold">Transportasi</label>
           <select
             className={`select select-bordered w-full join-item`}
