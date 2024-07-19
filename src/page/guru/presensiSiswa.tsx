@@ -10,6 +10,7 @@ const PresensiSiswa = () => {
   const { token } = Store();
   const today = new Date();
   const [date, setDate] = useState<any>(today.toISOString().substr(0, 10));
+  const [semester, setSemester] = useState("");
   const [kelas, setKelas] = useState<any[]>([]);
   const [siswa, setSiswa] = useState<any[]>([]);
   const [dataSiswa, setDataSiswa] = useState<any[]>([]);
@@ -319,6 +320,20 @@ const PresensiSiswa = () => {
               value={date}
               onChange={(e) => setDate(e.target.value)}
             />
+          </div>
+          <div className="w-full flex flex-col gap-2">
+            <label className="mt-4 font-bold">Semester</label>
+            <select
+              className="select select-bordered w-full"
+              value={semester}
+              onChange={(e) => setSemester(e.target.value)}
+            >
+              <option disabled selected>
+                Semester
+              </option>
+              <option value="1">Ganjil</option>
+              <option value="2">Genap </option>
+            </select>
           </div>
           <div className="w-full max-h-[400px] mt-10 overflow-auto">
             <table className="table shadow-lg">
