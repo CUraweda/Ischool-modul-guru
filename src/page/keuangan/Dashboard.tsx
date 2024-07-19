@@ -54,7 +54,7 @@ const Dashboard = () => {
               <FaWallet size={28} />
             </div>
             <div className="stat-title">Total pendapatan</div>
-            <div className="stat-value text-primary">
+            <div className="stat-value overflow-hidden text-ellipsis text-primary">
               {moneyFormat(totalIncome)}
             </div>
           </div>
@@ -63,7 +63,7 @@ const Dashboard = () => {
               <FaMoneyBillWave size={28} />
             </div>
             <div className="stat-title">Pendapatan hari ini</div>
-            <div className="stat-value text-primary">
+            <div className="stat-value overflow-hidden text-ellipsis text-primary">
               {moneyFormat(todayIncome)}
             </div>
           </div>
@@ -72,7 +72,7 @@ const Dashboard = () => {
               <FaMoneyBillWave size={28} />
             </div>
             <div className="stat-title">Pendapatan bulan ini</div>
-            <div className="stat-value text-primary">
+            <div className="stat-value overflow-hidden text-ellipsis text-primary">
               {moneyFormat(monthIncome)}
             </div>
           </div>
@@ -81,7 +81,7 @@ const Dashboard = () => {
               <FaChartPie size={28} />
             </div>
             <div className="stat-title">Persentase kelunasan</div>
-            <div className="stat-value text-success">
+            <div className="stat-value overflow-hidden text-ellipsis text-success">
               {lunasPercentage.toFixed(2)}%
             </div>
           </div>
@@ -90,7 +90,9 @@ const Dashboard = () => {
               <FaExclamationTriangle size={28} />
             </div>
             <div className="stat-title">Jumlah menunggak</div>
-            <div className="stat-value text-error">{inArrearCount}</div>
+            <div className="stat-value overflow-hidden text-ellipsis text-error">
+              {inArrearCount}
+            </div>
           </div>
         </div>
 
@@ -111,7 +113,7 @@ const Dashboard = () => {
                 <option value={2}>2</option>
               </select>
 
-              <div className="flex items-center gap-3 ">
+              <div className="flex overflow-x-auto items-center gap-3 ">
                 <input
                   type="date"
                   placeholder="Type here"
@@ -142,7 +144,7 @@ const Dashboard = () => {
                 <div className="px-3" key={i}>
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="text-lg">
+                      <p className="text-base sm:text-lg">
                         {item.student?.full_name ?? "-"}
                       </p>
                       <div className="flex gap-2 items-start">
@@ -161,7 +163,7 @@ const Dashboard = () => {
                       </div>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-end text-gray-500">
                         {item.paidoff_at
                           ? moment(item.paidoff_at).fromNow()
                           : "-"}

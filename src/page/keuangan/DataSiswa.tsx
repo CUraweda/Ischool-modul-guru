@@ -214,7 +214,7 @@ const DataSiswa = () => {
       <div className="w-full flex justify-center flex-col items-center p-3">
         <span className="font-bold text-xl">DATA SISWA</span>
         <div className="w-full p-3 bg-white rounded-lg">
-          <div className="w-full gap-3 flex justify-end my-3">
+          <div className="w-full gap-3 flex flex-wrap justify-end my-3">
             <select
               value={filter.classId}
               onChange={(e) => handleFilter("classId", e.target.value)}
