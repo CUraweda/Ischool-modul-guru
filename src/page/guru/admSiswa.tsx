@@ -4,6 +4,7 @@ import { FiPlus } from "react-icons/fi";
 import Modal from "../../component/modal";
 import "react-day-picker/dist/style.css";
 import { FaListCheck, FaPenClip } from "react-icons/fa6";
+import { IoInformationCircleOutline } from "react-icons/io5";
 import { BiDownload, BiTrash } from "react-icons/bi";
 import { Task, Student } from "../../midleware/api";
 import { Store } from "../../store/Store";
@@ -60,7 +61,7 @@ const AdmSiswa = () => {
   });
   useEffect(() => {
     getStudent();
-    getClass()
+    getClass();
   }, [formik.values.classId]);
 
   useEffect(() => {
@@ -69,7 +70,7 @@ const AdmSiswa = () => {
   }, []);
 
   useEffect(() => {
-    getMapel()
+    getMapel();
   }, [level]);
 
   const showModal = (props: string) => {
@@ -77,7 +78,6 @@ const AdmSiswa = () => {
     if (modalElement) {
       modalElement.showModal();
       getClass();
-      
     }
   };
 
@@ -108,16 +108,18 @@ const AdmSiswa = () => {
   const getClass = async () => {
     const response = await Task.GetAllClass(token, 0, 20);
     const kelasData = response.data.data.result;
-    const kelasFilter = kelasData.filter((value: any) => value.id == formik.values.classId);
-    setLevel(kelasFilter[0]?.level)
-    console.log('level',kelasFilter[0]?.level);
-    
+    const kelasFilter = kelasData.filter(
+      (value: any) => value.id == formik.values.classId
+    );
+    setLevel(kelasFilter[0]?.level);
+    console.log("level", kelasFilter[0]?.level);
+
     setKelas(kelasData);
   };
 
   const getMapel = async () => {
     const response = await Task.GetAllMapel(token, 0, 100);
-    const mapelData = response.data.data.result
+    const mapelData = response.data.data.result;
     const mapelFilter = mapelData.filter((value: any) => value.level == level);
     setMapel(mapelFilter);
   };
@@ -153,13 +155,13 @@ const AdmSiswa = () => {
     formData.append("task_category_id", jenis);
     formData.append("start_date", startDate);
     formData.append("end_date", endDate);
-    formData.append("status", status == '1' ? 'Open' : "Close");
+    formData.append("status", status == "1" ? "Open" : "Close");
     formData.append("up_file", file);
 
     try {
       await Task.createTaskClass(token, formData);
       getTaskClass();
-      formik.resetForm({values: formik.initialValues})
+      formik.resetForm({ values: formik.initialValues });
       closeModal("add-task");
       Swal.fire({
         position: "center",
@@ -200,13 +202,13 @@ const AdmSiswa = () => {
     formData.append("characteristic", jenis);
     formData.append("start_date", startDate);
     formData.append("end_date", endDate);
-    formData.append("status", status == '1' ? 'Open' : "Close");
+    formData.append("status", status == "1" ? "Open" : "Close");
     formData.append("down_file", file);
 
     try {
       await Task.createTask(token, formData);
       getTask();
-      formik.resetForm({values: formik.initialValues})
+      formik.resetForm({ values: formik.initialValues });
       closeModal("add-task");
     } catch (error: any) {
       closeModal("add-task");
@@ -296,9 +298,9 @@ const AdmSiswa = () => {
     navigate("/guru/task/siswa");
   };
 
-  const handleEdit = async ( id: string) => {
+  const handleEdit = async (id: string) => {
     showModal("edit-task");
-    setIdTugas(id)
+    setIdTugas(id);
     getTaskById(id);
   };
 
@@ -313,10 +315,10 @@ const AdmSiswa = () => {
     formData.append("task_category_id", jenis);
     formData.append("start_date", startDate);
     formData.append("end_date", endDate);
-    formData.append("status", status == '1' ? 'Open' : "Close");
+    formData.append("status", status == "1" ? "Open" : "Close");
 
     try {
-      await Task.editTaskClass(token, idTugas, formData)
+      await Task.editTaskClass(token, idTugas, formData);
       closeModal("edit-task");
       Swal.fire({
         position: "center",
@@ -325,7 +327,7 @@ const AdmSiswa = () => {
         showConfirmButton: false,
         timer: 1500,
       });
-      formik.resetForm({values: formik.initialValues})
+      formik.resetForm({ values: formik.initialValues });
       getTaskClass();
     } catch (error: any) {
       closeModal("edit-task");
@@ -336,8 +338,7 @@ const AdmSiswa = () => {
       });
       console.log(error);
     }
-   
-  }
+  };
 
   const formatDateFormik = (date: any) => {
     const tanggal = new Date(date);
@@ -348,7 +349,7 @@ const AdmSiswa = () => {
     const minutes = ("0" + tanggal.getMinutes()).slice(-2);
 
     const formattedDate = `${year}-${bulan}-${day}T${hours}:${minutes}`;
-    return formattedDate
+    return formattedDate;
   };
 
   const getTaskById = async (id: string | null) => {
@@ -361,8 +362,7 @@ const AdmSiswa = () => {
       formik.setFieldValue("jenis", data.task_category_id);
       formik.setFieldValue("startDate", formatDateFormik(data.start_date));
       formik.setFieldValue("endDate", formatDateFormik(data.end_date));
-      formik.setFieldValue("status", data.status == 'Open' ? '1' : '2')
-     
+      formik.setFieldValue("status", data.status == "Open" ? "1" : "2");
     } catch (error) {
       console.log(error);
     }
@@ -425,7 +425,7 @@ const AdmSiswa = () => {
           <span className="text-4xl font-bold">Daftar Tugas</span>
           {/* <span>Kelas II</span> */}
         </div>
-       
+
         <div className="overflow-x-auto w-full flex flex-col p-5 my-10 justify-center bg-white">
           <div className="w-full justify-between bg-red flex">
             <span className="text-2xl font-bold">Tugas Siswa</span>
@@ -468,8 +468,8 @@ const AdmSiswa = () => {
                       {item?.task_category_id == 1
                         ? "WWP"
                         : item?.task_category_id == 2
-                        ? "Project Kelompok"
-                        : "Prbadi"}
+                          ? "Project Kelompok"
+                          : "Prbadi"}
                     </td>
                     <td>{item?.status}</td>
                     <td className="join text-white">
@@ -530,8 +530,8 @@ const AdmSiswa = () => {
                       {item?.characteristic == 1
                         ? "WWP"
                         : item?.characteristic == 2
-                        ? "Project Kelompok"
-                        : "Prbadi"}
+                          ? "Project Kelompok"
+                          : "Prbadi"}
                     </td>
                     <td>{item?.status}</td>
                     <td className="join text-white">
@@ -545,7 +545,6 @@ const AdmSiswa = () => {
                       <button
                         className={`btn btn-sm btn-ghost bg-orange-600 text-xl join-item tooltip`}
                         data-tip="download file Tugas"
-                       
                         onClick={() => {
                           showFileTugas(item?.up_file), showModal("show-file");
                         }}
@@ -590,14 +589,11 @@ const AdmSiswa = () => {
               <label className="mt-4 font-bold">Kelas</label>
               <select
                 className="select select-bordered bg-white"
-                
                 onChange={(e) =>
                   formik.setFieldValue("classId", e.target.value)
                 }
               >
-                <option selected>
-                  Pick one
-                </option>
+                <option selected>Pick one</option>
                 {kelas?.map((item: any, index: number) => (
                   <option
                     value={item.id}
@@ -625,14 +621,11 @@ const AdmSiswa = () => {
               <label className="mt-4 font-bold">Pelajaran</label>
               <select
                 className="select select-bordered bg-white"
-                
                 onChange={(e) =>
                   formik.setFieldValue("subjectId", e.target.value)
                 }
               >
-                <option selected>
-                  Pick one
-                </option>
+                <option selected>Pick one</option>
                 {mapel?.map((item: any, index: number) => (
                   <option value={item.id} key={index}>
                     {item.name}
@@ -665,9 +658,7 @@ const AdmSiswa = () => {
                   formik.setFieldValue("semester", e.target.value)
                 }
               >
-                <option selected>
-                  Pick one
-                </option>
+                <option selected>Pick one</option>
                 <option value={1}>1</option>
                 <option value={2}>2</option>
               </select>
@@ -677,7 +668,6 @@ const AdmSiswa = () => {
               <input
                 type="text"
                 className="input input-bordered w-full"
-               
                 onChange={(e) => formik.setFieldValue("topik", e.target.value)}
               />
             </div>
@@ -687,7 +677,6 @@ const AdmSiswa = () => {
               <label className="mt-4 font-bold">Kategori</label>
               <select
                 className="select select-bordered bg-white"
-               
                 onChange={(e) => formik.setFieldValue("jenis", e.target.value)}
               >
                 <option disabled selected>
@@ -702,7 +691,6 @@ const AdmSiswa = () => {
                 <input
                   type="datetime-local"
                   className="input input-bordered bg-white"
-                  
                   onChange={(e) =>
                     formik.setFieldValue("startDate", e.target.value)
                   }
@@ -723,7 +711,6 @@ const AdmSiswa = () => {
               <label className="mt-4 font-bold">Status</label>
               <select
                 className="select select-bordered bg-white"
-                
                 onChange={(e) => formik.setFieldValue("status", e.target.value)}
               >
                 <option disabled selected>
@@ -734,11 +721,17 @@ const AdmSiswa = () => {
               </select>
             </div>
             <div className="w-full mt-5 gap-2 flex flex-col">
-              <label className="mt-4 font-bold">Upload File</label>
+              <div className="flex items-center mt-4 gap-2">
+                <label className=" font-bold">Upload File</label>
+                <div className="tooltip" data-tip="Only PDF">
+                  <IoInformationCircleOutline />
+                </div>
+              </div>
               <input
                 type="file"
                 onChange={handleFile}
                 className="file-input file-input-bordered w-full"
+                accept=".pdf"
               />
             </div>
           </div>

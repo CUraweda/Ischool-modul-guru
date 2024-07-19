@@ -140,7 +140,22 @@ const RaportNarasi = () => {
       console.log(error);
     }
   };
-
+  const deleteNarasi = async (id: string) => {
+    try {
+      await Raport.deleteNarasi(token, id);
+      getKategori();
+      getDataNarasi();
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Your work has been saved",
+        showConfirmButton: false,
+        timer: 1000,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const createDeskripsi = async () => {
     try {
       const data = {
@@ -252,7 +267,7 @@ const RaportNarasi = () => {
 
       return newState;
     });
-    console.log(EditdataRaport.id);
+    console.log(EditdataRaport);
   };
 
   const handleEditReport = async () => {
@@ -264,16 +279,11 @@ const RaportNarasi = () => {
       if (EditdataRaport) {
         const dataRest = {
           semester: smt ? smt : 1,
-          narrative_desc_id: EditdataRaport.id,
-          grade: EditdataRaport.nilai ? EditdataRaport.nilai : 1,
+          narrative_desc_id: EditdataRaport.desc_id,
+          grade: EditdataRaport.grade ? EditdataRaport.grade : 1,
           student_report_id: parseInt(idRaport),
         };
-        await Raport.editReportNarasi(
-          token,
-          idRaportNarasi,
-          dataRest
-        );
-       
+        await Raport.editReportNarasi(token, idRaportNarasi, dataRest);
       }
       Swal.fire({
         position: "center",
@@ -496,6 +506,10 @@ const RaportNarasi = () => {
                                     <button
                                       className="btn btn-sm join-item bg-red-500 text-white tooltip"
                                       data-tip="hapus"
+                                      onClick={() => {
+                                        showModal("delete narasi"),
+                                          deleteNarasi(nilai.id);
+                                      }}
                                     >
                                       <span className="text-xl">
                                         <FaRegTrashAlt />
@@ -555,31 +569,8 @@ const RaportNarasi = () => {
             </div>
             <div className="flex flex-col gap-2">
               <span className="font-bold">Grade</span>
-              <div className="flex w-full justify-between">
-                <div className="flex items-center gap-1">
-                  <label htmlFor="">Mandiri</label>
-                  <input
-                    type="radio"
-                    name={`item-1`}
-                    className="checkbox"
-                    value={1}
-                    checked={EditdataRaport?.grade === 1 ? true : false}
-                    onChange={handleEditCheckboxChange}
-                  />
-                </div>
-                <div className="flex items-center gap-1">
-                  <label htmlFor="">Berkembang</label>
-                  <input
-                    type="radio"
-                    name={`item-1`}
-                    className="checkbox"
-                    value={2}
-                    checked={EditdataRaport?.grade === 2 ? true : false}
-                    onChange={handleEditCheckboxChange}
-                  />
-                </div>
-                <div className="flex items-center gap-1">
-                  <label htmlFor="">Membutuhkan Banyak Latihan</label>
+              <div className="flex-row w-full justify-between">
+                <div className="flex items-center gap-1 my-2">
                   <input
                     type="radio"
                     name={`item-1`}
@@ -588,6 +579,29 @@ const RaportNarasi = () => {
                     checked={EditdataRaport?.grade === 3 ? true : false}
                     onChange={handleEditCheckboxChange}
                   />
+                  <label htmlFor="">Membutuhkan Banyak Latihan</label>
+                </div>
+                <div className="flex items-center gap-1 my-2">
+                  <input
+                    type="radio"
+                    name={`item-1`}
+                    className="checkbox"
+                    value={2}
+                    checked={EditdataRaport?.grade === 2 ? true : false}
+                    onChange={handleEditCheckboxChange}
+                  />
+                  <label htmlFor="">Berkembang</label>
+                </div>
+                <div className="flex items-center gap-1 my-2">
+                  <input
+                    type="radio"
+                    name={`item-1`}
+                    className="checkbox"
+                    value={1}
+                    checked={EditdataRaport?.grade === 1 ? true : false}
+                    onChange={handleEditCheckboxChange}
+                  />
+                  <label htmlFor="">Mandiri</label>
                 </div>
               </div>
             </div>

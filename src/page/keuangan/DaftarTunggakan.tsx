@@ -102,7 +102,7 @@ const DaftarTunggakan = () => {
       <div className="w-full flex justify-center flex-col items-center p-3">
         <span className="font-bold text-xl">DAFTAR TUNGGAKAN</span>
         <div className="w-full p-3 bg-white rounded-lg">
-          <div className="w-full flex justify-end my-3 gap-2">
+          <div className="w-full flex justify-end flex-wrap my-3 gap-2">
             {/* search  */}
             <form
               onSubmit={(e) => {

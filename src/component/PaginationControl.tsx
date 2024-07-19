@@ -27,7 +27,7 @@ export const PaginationControl = ({
   onLimitChange?: (val: number) => void;
 }) => {
   return (
-    <div className="w-full items-center justify-end flex mt-3 gap-3">
+    <div className="w-full items-center flex-wrap justify-end flex mt-3 gap-3">
       {useTotal && (
         <p className="text-neutral-500 me-auto text-sm">
           Total terdapat {meta.totalRows} data

@@ -383,7 +383,7 @@ const DetailJenisPembayaran = () => {
             </ul>
           </div>
 
-          <div className="w-full flex justify-end my-3 gap-2">
+          <div className="w-full flex flex-wrap justify-end my-3 gap-2">
             {/* search bar  */}
             <form
               onSubmit={(e) => {
