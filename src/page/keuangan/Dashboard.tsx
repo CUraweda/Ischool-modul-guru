@@ -48,8 +48,8 @@ const Dashboard = () => {
   return (
     <>
       <div className="w-full p-5">
-        <div className="w-full grid grid-cols-2 xl:grid-cols-3 gap-3 mt-3">
-          <div className="stat bg-base-100 rounded-lg border">
+        <div className="w-full flex flex-wrap gap-3 mt-3">
+          <div className="stat w-fit grow bg-base-100 rounded-lg border">
             <div className="stat-figure text-primary">
               <FaWallet size={28} />
             </div>
@@ -58,7 +58,7 @@ const Dashboard = () => {
               {moneyFormat(totalIncome)}
             </div>
           </div>
-          <div className="stat bg-base-100 rounded-lg border">
+          <div className="stat w-fit grow bg-base-100 rounded-lg border">
             <div className="stat-figure text-primary">
               <FaMoneyBillWave size={28} />
             </div>
@@ -67,7 +67,7 @@ const Dashboard = () => {
               {moneyFormat(todayIncome)}
             </div>
           </div>
-          <div className="stat bg-base-100 rounded-lg border">
+          <div className="stat w-fit grow bg-base-100 rounded-lg border">
             <div className="stat-figure text-primary">
               <FaMoneyBillWave size={28} />
             </div>
@@ -76,7 +76,7 @@ const Dashboard = () => {
               {moneyFormat(monthIncome)}
             </div>
           </div>
-          <div className="stat bg-base-100 rounded-lg border">
+          <div className="stat w-fit grow bg-base-100 rounded-lg border">
             <div className="stat-figure text-success">
               <FaChartPie size={28} />
             </div>
@@ -85,7 +85,7 @@ const Dashboard = () => {
               {lunasPercentage.toFixed(2)}%
             </div>
           </div>
-          <div className="stat bg-base-100 rounded-lg border">
+          <div className="stat w-fit grow bg-base-100 rounded-lg border">
             <div className="stat-figure text-error">
               <FaExclamationTriangle size={28} />
             </div>
