@@ -418,7 +418,22 @@ const AdmSiswa = () => {
       console.log(error);
     }
   };
+  const getTahunAjaran = (startYear: any, endYear: any) => {
+    const currentYear = new Date().getFullYear();
+    const start = currentYear - startYear;
+    const end = currentYear + endYear;
+    const years = [];
 
+    for (let year = start; year <= end; year++) {
+      const year1 = year;
+      const year2 = year1 + 1;
+      years.push(`${year1}/${year2}`);
+    }
+
+    return years;
+  };
+
+  const tahunAjaranOptions = getTahunAjaran(1, 0);
   const handleAddFeedback = async () => {
     try {
       const data = {
@@ -437,7 +452,6 @@ const AdmSiswa = () => {
       });
     }
   };
-
   return (
     <>
       <div className="w-full flex flex-col items-center">
@@ -660,11 +674,19 @@ const AdmSiswa = () => {
               }`}
             >
               <label className="mt-4 font-bold">Tahun Pelajaran</label>
-              <input
-                type="text"
+              <select
                 className="input input-bordered w-full"
                 onChange={(e) => formik.setFieldValue("tahun", e.target.value)}
-              />
+              >
+                <option value="" disabled selected>
+                  Pilih Tahun Pelajaran
+                </option>
+                {tahunAjaranOptions.map((tahun, index) => (
+                  <option key={index} value={tahun}>
+                    {tahun}
+                  </option>
+                ))}
+              </select>
             </div>
             <div
               className={`w-full flex flex-col gap-2 ${
