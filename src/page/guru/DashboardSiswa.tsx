@@ -3,13 +3,12 @@ import PengumumanSiswa from "./pengumumanSiswa";
 import OverviewSiswa from "./OverviewSiswa";
 
 const DashboardSiswa = () => {
-    const [tab, setTab] = useState<string>("raport-siswa");
+  const [tab, setTab] = useState<string>("raport-siswa");
 
   return (
     <>
-       <div className="w-full mt-5 p-3">
-        <div role="tablist" className="tabs tabs-lifted">
-          
+      <div className="w-full mt-5 p-3">
+        <div role="tablist" className="tabs w-full overflow-x-auto tabs-lifted">
           <input
             type="radio"
             name="my_tabs_2"
@@ -21,9 +20,9 @@ const DashboardSiswa = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+            className="tab-content bg-base-100 overflow-x-hidden border-base-300 rounded-box p-6"
           >
-           <PengumumanSiswa/>
+            <PengumumanSiswa />
           </div>
           <input
             type="radio"
@@ -36,12 +35,10 @@ const DashboardSiswa = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+            className="tab-content bg-base-100 overflow-x-hidden border-base-300 rounded-box p-6"
           >
-          <OverviewSiswa/>
+            <OverviewSiswa />
           </div>
-
-          
         </div>
       </div>
     </>
