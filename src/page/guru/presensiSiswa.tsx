@@ -92,9 +92,7 @@ const PresensiSiswa = () => {
       try {
         setLoading(true);
         const dataStatus = selectedStudents
-          .filter(
-            (item: any) => item.presensi === "Hadir" && !item.transportasi
-          )
+          .filter((item: any) => item.presensi === "Hadir")
           .map((item: any) => item.student.id);
 
         setTotalCreate(dataStatus);
@@ -104,9 +102,14 @@ const PresensiSiswa = () => {
             const dataRest = {
               student_class_id: item.student.id,
               att_date: new Date(date).setHours(0, 0, 0, 0),
+              remark: item.transportasi ? item.transportasi : "🚶‍♂️Jalan Kaki",
               status: item.presensi ? item.presensi : "Hadir",
-              semester: '2',
+              semester: semester ? semester : "1",
             };
+
+            if (dataRest.status !== "Hadir") {
+              delete dataRest.remark;
+            }
 
             const isExist = dataSiswa.some(
               (data) =>
@@ -138,6 +141,9 @@ const PresensiSiswa = () => {
   };
 
   const create = async (data: any) => {
+    if (data.status !== "Hadir") {
+      delete data.remark;
+    }
     await Student.CreatePresensi(token, data);
   };
 
@@ -176,28 +182,30 @@ const PresensiSiswa = () => {
     const response = await Student.GetPresensiById(token, id);
     const data = response.data.data[0];
     setPresensi(data.status);
-    setTransport(data.remark);
+    setTransport(data.remark || "🚶‍♂️jalan kaki");
     setIdPresensi(id);
     setIdSiswa(data.student_class_id);
   };
 
   const handleEditPresensi = async () => {
     try {
-      const data = {
+      const data: any = {
         student_class_id: idSiswa,
         status: presensi,
-        remark: presensi === "Hadir" ? transport : "",
         att_date: new Date(date).setHours(0, 0, 0, 0),
         semester: semester,
       };
-      console.log(data);
 
-      const response = await Student.UpdatePresensi(token, idPresensi, data);
-      console.log(response);
+      if (presensi === "Hadir") {
+        data.remark = transport || "🚶‍♂️jalan kaki";
+      }
+
+      await Student.UpdatePresensi(token, idPresensi, data);
+
       closeModal("edit-presensi");
       getPresensiData();
     } catch (error) {
-      console.log(error);
+      console.log("Error:", error);
     }
   };
 
@@ -500,11 +508,11 @@ const PresensiSiswa = () => {
           <span className="text-xl font-bold">Edit Presensi</span>
         </div>
         <div className="w-full flex flex-col gap-2">
-          <label className="mt-4 font-bold">Tangal Presensi</label>
+          <label className="mt-4 font-bold">Tanggal Presensi</label>
           <input
             type="date"
             placeholder="Type here"
-            className="input input-bordered  join-item"
+            className="input input-bordered join-item"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
@@ -512,13 +520,18 @@ const PresensiSiswa = () => {
         <div className="w-full flex flex-col gap-2">
           <label className="mt-4 font-bold">Presensi</label>
           <select
-            className={`select select-bordered w-full join-item`}
+            className="select select-bordered w-full join-item"
             value={presensi}
-            onChange={(e) => setPresensi(e.target.value)}
+            onChange={(e) => {
+              setPresensi(e.target.value);
+              if (e.target.value === "Hadir") {
+                setTransport(transport || "🚶‍♂️jalan kaki");
+              } else {
+                setTransport("");
+              }
+            }}
           >
-            <option value="Hadir" selected>
-              Hadir
-            </option>
+            <option value="Hadir">Hadir</option>
             <option value="Izin">Izin</option>
             <option value="Alfa">Alfa</option>
             <option value="Sakit">Sakit</option>
@@ -531,30 +544,25 @@ const PresensiSiswa = () => {
             value={semester}
             onChange={(e) => setSemester(e.target.value)}
           >
-            <option disabled selected>
-              Semester
-            </option>
+            <option disabled>Semester</option>
             <option value="1">Ganjil</option>
-            <option value="2">Genap </option>
+            <option value="2">Genap</option>
           </select>
         </div>
         <div className="w-full flex flex-col gap-2">
           <label className="mt-4 font-bold">Transportasi</label>
           <select
-            className={`select select-bordered w-full join-item`}
+            className="select select-bordered w-full join-item"
             value={transport}
             onChange={(e) => setTransport(e.target.value)}
             disabled={presensi !== "Hadir"}
           >
             <option value="🚶‍♂️jalan kaki">Jalan Kaki</option>
             <option value="🚌kendaraan umum">Kendaraan Umum</option>
-            <option value="🚗antar jemput" selected>
-              Antar Jemput
-            </option>
+            <option value="🚗antar jemput">Antar Jemput</option>
             <option value="🚲sepeda">Sepeda</option>
           </select>
         </div>
-
         <div className="mt-5 w-full">
           <button
             className="btn bg-green-500 w-full text-white"

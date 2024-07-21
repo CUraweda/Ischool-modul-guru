@@ -452,11 +452,12 @@ const Raport = {
     }),
   getAllStudentReport: (
     token: string | null,
-    id: string | null
+    id: string | null,
+    semester: string | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-report/show-by-class/${id}`,
+      url: `/api/student-report/show-by-class/${id}?search=${semester}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

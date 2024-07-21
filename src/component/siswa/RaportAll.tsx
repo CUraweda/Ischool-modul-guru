@@ -14,6 +14,7 @@ const RaportAll = () => {
   const [semester, setSemester] = useState<string>("");
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
   const [dataRaport, setDataRaport] = useState<any>([]);
+  const [semesterDropdown, setSemesterDropdown] = useState<string>("");
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
@@ -33,7 +34,7 @@ const RaportAll = () => {
   useEffect(() => {
     getStudent();
     getDataRaport();
-  }, [idClass]);
+  }, [idClass, semesterDropdown]);
 
   useEffect(() => {
     getDataRaport();
@@ -63,8 +64,9 @@ const RaportAll = () => {
 
   const getDataRaport = async () => {
     try {
-      const id = idClass ? idClass : '11';
-      const response = await Raport.getAllStudentReport(token, id);
+      const id = idClass ? idClass : "11";
+      const semester = semesterDropdown;
+      const response = await Raport.getAllStudentReport(token, id, semester);
       setDataRaport(response.data.data);
     } catch (error) {
       console.log(error);
@@ -112,7 +114,7 @@ const RaportAll = () => {
   return (
     <div>
       <div className="w-full flex justify-between gap-2">
-        <div className="join">
+        <div className="join gap-2">
           <select
             className="select select-bordered w-full"
             value={idClass}
@@ -120,15 +122,22 @@ const RaportAll = () => {
               setIdClass(e.target.value), setKelasProps(e.target.value);
             }}
           >
-            <option selected>
-              Kelas
-            </option>
+            <option selected>Kelas</option>
             {Class?.map((item: any, index: number) => (
               <option
                 value={item.id}
                 key={index}
               >{`${item.level}-${item.class_name}`}</option>
             ))}
+          </select>
+          <select
+            className="select select-bordered w-full"
+            value={semesterDropdown}
+            onChange={(e) => setSemesterDropdown(e.target.value)}
+          >
+            <option selected>Semester</option>
+            <option value={1}>Ganjil</option>
+            <option value={2}>Genap</option>
           </select>
         </div>
         <button
@@ -144,6 +153,7 @@ const RaportAll = () => {
             <tr className="bg-blue-300">
               <th>No</th>
               <th>Nama Siswa</th>
+              <th>Semester</th>
               <th>Rapot Angka</th>
               <th>Rapot Narasi</th>
               <th>Raport Portofolio</th>
@@ -156,6 +166,7 @@ const RaportAll = () => {
               <tr key={index}>
                 <th>{index + 1}</th>
                 <td>{item?.studentclass.student.full_name}</td>
+                <td>{item?.semester == 1 ? "Ganjil" : "Genap"}</td>
                 <td>
                   <button
                     className={`btn btn-sm join-item bg-green-500 text-white tooltip ${
