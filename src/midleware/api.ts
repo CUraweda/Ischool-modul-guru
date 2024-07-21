@@ -674,6 +674,14 @@ const Raport = {
       },
       data,
     }),
+  deleteNarasi: (token: string | null, id: string | null): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: `/api/narrative-report/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   createSubKategori: (token: string | null, data: any): AxiosPromise<any> =>
     instance({
       method: "POST",
@@ -1050,6 +1058,15 @@ const PosJenisPembayaran = {
       },
       data,
     }),
+  bulkCreate: (token: string | null, data: any) =>
+    instance({
+      method: "POST",
+      url: "/api/student-payment-bills/bulk-create",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
   showAll: (
     token: string | null,
     search?: string,
@@ -1323,6 +1340,17 @@ const ForCountryDetail = {
     }),
 };
 
+const DashboardKeuangan = {
+  getCards: (token: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `api/dashboard/admin-keuangan`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
 export {
   Auth,
   Task,
@@ -1338,4 +1366,5 @@ export {
   PosJenisPembayaran,
   TagihanSiswa,
   ForCountryDetail,
+  DashboardKeuangan,
 };
