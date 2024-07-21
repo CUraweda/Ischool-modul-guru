@@ -15,7 +15,7 @@ const RaportAll = () => {
   const [semester, setSemester] = useState<string>("");
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
   const [dataRaport, setDataRaport] = useState<any>([]);
-  const [semesterDropdown, setSemesterDropdown] = useState<string>("");
+  const [semesterDropdown, setSemesterDropdown] = useState<string>("1");
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
