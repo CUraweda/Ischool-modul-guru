@@ -235,8 +235,7 @@ const RaportAll = () => {
                     className={`btn btn-sm join-item bg-orange-500 text-white tooltip ${
                       !item?.number_path ||
                       !item?.narrative_path ||
-                      !item?.portofolio_path ||
-                      !item?.merged_path
+                      !item?.portofolio_path
                         ? "btn-disabled"
                         : ""
                     }`}
