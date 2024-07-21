@@ -6,6 +6,10 @@ import Modal from "../../component/modal";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
+import {
+  IpageMeta,
+  PaginationControl,
+} from "../../component/PaginationControl";
 
 const validationSchema = Yup.object({
   topic: Yup.string().required("Tema tidak boleh kosong"),
@@ -38,9 +42,25 @@ const OverviewSiswa = () => {
     },
   });
 
+  const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
+  const [filter, setFilter] = useState({
+    classId: "",
+    page: 0,
+    limit: 10,
+  });
+
+  const handleFilter = (key: string, value: any) => {
+    const obj = {
+      ...filter,
+      [key]: value,
+    };
+    if (key != "page") obj["page"] = 0;
+    setFilter(obj);
+  };
+
   useEffect(() => {
     getOverview();
-  }, []);
+  }, [filter]);
 
   const [classes, setClasses] = useState<any[]>([]);
 
@@ -70,8 +90,15 @@ const OverviewSiswa = () => {
   };
 
   const getOverview = async () => {
-    const response = await DashboardSiswa.getAllOverView(token);
-    setOverview(response?.data?.data?.result);
+    const response = await DashboardSiswa.getAllOverView(
+      token,
+      filter.classId,
+      filter.page,
+      filter.limit
+    );
+    const { result, ...meta } = response?.data?.data;
+    setOverview(result);
+    setPageMeta(meta);
   };
 
   const handleCreateOverview = async () => {
@@ -111,7 +138,7 @@ const OverviewSiswa = () => {
       );
       formik.setFieldValue("tup", data.tup);
       formik.setFieldValue("status", data.status);
-      formik.setFieldValue("class_id", data.class_id ?? "")
+      formik.setFieldValue("class_id", data.class_id ?? "");
     } catch (error) {
       console.log(error);
     }
@@ -187,7 +214,20 @@ const OverviewSiswa = () => {
   };
   return (
     <>
-      <div className="w-full flex flex-wrap justify-end">
+      <div className="w-full gap-3 flex flex-wrap justify-end">
+        <select
+          value={filter.classId}
+          onChange={(e) => handleFilter("classId", e.target.value)}
+          className="select select-bordered w-32"
+        >
+          <option value={""}>Pilih Kelas</option>
+          {classes.map((dat, i) => (
+            <option value={dat.id} key={i}>
+              {dat.class_name}
+            </option>
+          ))}
+        </select>
+
         <button
           id="tambah-pengumuman"
           className="btn btn-ghost bg-green-500 text-white"
@@ -198,7 +238,6 @@ const OverviewSiswa = () => {
       </div>
 
       <div className="overflow-x-auto">
-
         <table className="table table-zebra mt-4">
           {/* head */}
           <thead className="bg-blue-300">
@@ -247,6 +286,14 @@ const OverviewSiswa = () => {
           </tbody>
         </table>
       </div>
+
+      <PaginationControl
+        meta={pageMeta}
+        onPrevClick={() => handleFilter("page", pageMeta.page - 1)}
+        onNextClick={() => handleFilter("page", pageMeta.page + 1)}
+        onJumpPageClick={(val) => handleFilter("page", val)}
+        onLimitChange={(val) => handleFilter("limit", val)}
+      />
 
       <Modal id="add-overview">
         <div className="w-full flex flex-col items-center">
