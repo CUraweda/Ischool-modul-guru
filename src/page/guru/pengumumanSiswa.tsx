@@ -100,14 +100,17 @@ const PengumumanSiswa = () => {
         date_end: endDate,
         announcement_desc: anouncement,
       };
-      const respone = await Pengumuman.UpdatePengumuman(token, idPengumuman, data)
+      const respone = await Pengumuman.UpdatePengumuman(
+        token,
+        idPengumuman,
+        data
+      );
       console.log(respone);
-      
+
       GetAllPengumuman();
       closeModal("edit-pengumuman");
       formik.resetForm();
     } catch (error) {
-      
       console.log(error);
     }
   };
@@ -168,31 +171,31 @@ const PengumumanSiswa = () => {
 
   return (
     <>
-      <div className="overflow-x-auto">
-        <div className="w-full flex justify-end gap-3">
-          <div className="flex gap-1 justify-center items-center">
-            <input
-              type="date"
-              className="input input-bordered"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-            <p>-</p>
-            <input
-              type="date"
-              className="input input-bordered"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
-          </div>
-          <button
-            id="tambah-pengumuman"
-            className="btn btn-ghost bg-green-500 text-white"
-            onClick={() => showModal("add-pengumuman")}
-          >
-            tambah
-          </button>
+      <div className="w-full flex flex-wrap justify-end gap-3">
+        <div className="flex grow overflow-hidden gap-1 justify-end items-center">
+          <input
+            type="date"
+            className="input input-bordered"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+          <p>-</p>
+          <input
+            type="date"
+            className="input input-bordered"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
         </div>
+        <button
+          id="tambah-pengumuman"
+          className="btn btn-ghost bg-green-500 text-white"
+          onClick={() => showModal("add-pengumuman")}
+        >
+          tambah
+        </button>
+      </div>
+      <div className="overflow-x-auto">
         <table className="table table-zebra mt-4">
           {/* head */}
           <thead className="bg-blue-300">
@@ -209,7 +212,11 @@ const PengumumanSiswa = () => {
               <tr key={index}>
                 <th>{index + 1}</th>
 
-                <td>{item?.announcement_desc}</td>
+                <td>
+                  <p className="min-w-80">
+                  {item?.announcement_desc}
+                  </p>
+                </td>
                 <td>{formatDate(item?.date_start)}</td>
                 <td>{formatDate(item?.date_end)}</td>
 
@@ -221,7 +228,10 @@ const PengumumanSiswa = () => {
                     >
                       <FaEdit />
                     </button>
-                    <button className="btn btn-ghost btn-sm text-xl text-red-500" onClick={() => deletePengumunanTriger(item?.id)}>
+                    <button
+                      className="btn btn-ghost btn-sm text-xl text-red-500"
+                      onClick={() => deletePengumunanTriger(item?.id)}
+                    >
                       <FaRegTrashAlt />
                     </button>
                   </div>
@@ -382,7 +392,7 @@ const PengumumanSiswa = () => {
               ) : null}
             </div>
             <button
-            type="submit"
+              type="submit"
               className="btn btn-ghost w-full bg-green-500 text-white mt-5"
               onClick={EditPengumuman}
             >
