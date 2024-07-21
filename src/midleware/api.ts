@@ -430,6 +430,14 @@ const Kalender = {
 };
 
 const Raport = {
+  downloadMergeRaport: (token: string | null, id: any): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/student-report/merge/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   createStudentRaport: (token: string | null, data: any): AxiosPromise<any> =>
     instance({
       method: "POST",

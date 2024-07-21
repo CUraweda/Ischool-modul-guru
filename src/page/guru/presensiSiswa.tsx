@@ -101,15 +101,13 @@ const PresensiSiswa = () => {
           const createPromises = selectedStudents.map((item: any) => {
             const dataRest = {
               student_class_id: item.student.id,
-              remark: item.transportasi != "Hadir" ? item.transportasi || "🚶‍♂️jalan kaki" : "-",
+              remark:
+                item.transportasi != "Hadir"
+                  ? item.transportasi || "🚶‍♂️jalan kaki"
+                  : "-",
               att_date: new Date(date).setHours(0, 0, 0, 0),
-              remark: item.transportasi ? item.transportasi : "🚶‍♂️Jalan Kaki",
               status: item.presensi ? item.presensi : "Hadir",
-<<<<<<< HEAD
               semester: semester ? semester : "1",
-=======
-              semester: semester,
->>>>>>> e9e2393017c9246d215893c7594964546abba08c
             };
 
             if (dataRest.status !== "Hadir") {
@@ -120,7 +118,7 @@ const PresensiSiswa = () => {
               (data) =>
                 data.studentclass.student.id === item.student.id &&
                 new Date(data.att_date).setHours(0, 0, 0, 0) ===
-                new Date(date).setHours(0, 0, 0, 0)
+                  new Date(date).setHours(0, 0, 0, 0)
             );
 
             return isExist ? null : create(dataRest);
@@ -201,16 +199,12 @@ const PresensiSiswa = () => {
         semester: semester,
       };
 
-<<<<<<< HEAD
       if (presensi === "Hadir") {
         data.remark = transport || "🚶‍♂️jalan kaki";
       }
 
       await Student.UpdatePresensi(token, idPresensi, data);
 
-=======
-      const response = await Student.UpdatePresensi(token, idPresensi, data);
->>>>>>> e9e2393017c9246d215893c7594964546abba08c
       closeModal("edit-presensi");
       getPresensiData();
     } catch (error) {
@@ -342,7 +336,7 @@ const PresensiSiswa = () => {
             <select
               className="select select-bordered w-full"
               value={semester}
-              onChange={(e) => setSemester(+(e.target.value))}
+              onChange={(e) => setSemester(+e.target.value)}
             >
               <option disabled selected>
                 Semester
@@ -404,10 +398,11 @@ const PresensiSiswa = () => {
                     <td>{item?.student?.class}</td>
                     <td className="flex join">
                       <select
-                        className={`select select-bordered w-32 max-w-xs join-item ${totalCreate.some((id) => id === item.student.id)
+                        className={`select select-bordered w-32 max-w-xs join-item ${
+                          totalCreate.some((id) => id === item.student.id)
                             ? "bg-red-400"
                             : ""
-                          }`}
+                        }`}
                         value={item.presensi}
                         onChange={(e) => {
                           item.presensi = e.target.value;
@@ -438,10 +433,11 @@ const PresensiSiswa = () => {
                         <option value="Sakit">Sakit</option>
                       </select>
                       <select
-                        className={`select select-bordered w-32 max-w-xs join-item ${totalCreate.some((id) => id === item.student.id)
+                        className={`select select-bordered w-32 max-w-xs join-item ${
+                          totalCreate.some((id) => id === item.student.id)
                             ? "bg-red-400"
                             : ""
-                          }`}
+                        }`}
                         value={item.transportasi}
                         onChange={(e) => {
                           item.transportasi = e.target.value;
@@ -483,8 +479,9 @@ const PresensiSiswa = () => {
 
           <div className="w-full flex gap-3 justify-end mt-10 items-center">
             <span
-              className={`text-red-500 font-bold ${totalCreate.length === 0 ? "hidden" : ""
-                }`}
+              className={`text-red-500 font-bold ${
+                totalCreate.length === 0 ? "hidden" : ""
+              }`}
             >
               Isi Semua Field Terpilih !
             </span>
@@ -548,7 +545,7 @@ const PresensiSiswa = () => {
           <select
             className="select select-bordered w-full"
             value={semester}
-            onChange={(e) => setSemester(+(e.target.value))}
+            onChange={(e) => setSemester(+e.target.value)}
           >
             <option disabled>Semester</option>
             <option value="1">Ganjil</option>

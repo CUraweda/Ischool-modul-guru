@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Modal from "../modal";
+import { FaCodeMerge } from "react-icons/fa6";
 import { FaFilePdf } from "react-icons/fa";
 import { Task, Student, Raport } from "../../midleware/api";
 import { Store, useProps } from "../../store/Store";
@@ -111,6 +112,14 @@ const RaportAll = () => {
     }
   };
 
+  const downloadRaportMerge = async (id: any) => {
+    try {
+      await Raport.downloadMergeRaport(token, id);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div>
       <div className="w-full flex justify-between gap-2">
@@ -158,6 +167,7 @@ const RaportAll = () => {
               <th>Rapot Narasi</th>
               <th>Raport Portofolio</th>
               <th>Raport Siswa</th>
+              <th>Aksi</th>
               {/* <th>Action</th> */}
             </tr>
           </thead>
@@ -217,6 +227,23 @@ const RaportAll = () => {
                   >
                     <span className="text-xl">
                       <FaFilePdf />
+                    </span>
+                  </button>
+                </td>
+                <td className="flex items-center justify-center">
+                  <button
+                    className={`btn btn-sm join-item bg-orange-500 text-white tooltip ${
+                      !item?.number_path ||
+                      !item?.narrative_path ||
+                      !item?.portofolio_path ||
+                      !item?.merged_path
+                        ? "btn-disabled"
+                        : ""
+                    }`}
+                    onClick={() => downloadRaportMerge(item?.id)}
+                  >
+                    <span className="text-xl">
+                      <FaCodeMerge />
                     </span>
                   </button>
                 </td>
