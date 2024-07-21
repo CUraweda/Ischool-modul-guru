@@ -8,7 +8,7 @@ import * as Yup from "yup";
 import Swal from "sweetalert2";
 
 const validationSchema = Yup.object({
-  topic: Yup.string().required("Topik tidak boleh kosong"),
+  topic: Yup.string().required("Tema tidak boleh kosong"),
   meaningful_understanding: Yup.string().required(
     "Pemahaman tidak boleh kosong"
   ),
@@ -254,7 +254,7 @@ const OverviewSiswa = () => {
           <form action="" onSubmit={formik.handleSubmit} className="w-full">
             <div className="w-full flex flex-col gap-2 mt-5">
               <label htmlFor="" className="font-bold">
-                Topik
+                Tema
               </label>
               <div className="flex gap-1 justify-center items-center w-full ">
                 <input
@@ -423,7 +423,7 @@ const OverviewSiswa = () => {
           <form action="" onSubmit={formik.handleSubmit} className="w-full">
             <div className="w-full flex flex-col gap-2 mt-5">
               <label htmlFor="" className="font-bold">
-                Topik
+                Tema
               </label>
               <div className="flex gap-1 justify-center items-center w-full ">
                 <input
