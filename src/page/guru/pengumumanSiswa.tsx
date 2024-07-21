@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Pengumuman } from "../../midleware/api";
+import { Pengumuman, Task } from "../../midleware/api";
 import { Store } from "../../store/Store";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import Modal from "../../component/modal";
@@ -8,9 +8,10 @@ import * as Yup from "yup";
 import Swal from "sweetalert2";
 
 const validationSchema = Yup.object({
-  startDate: Yup.string().required("tanggal mulai tidak boleh kosong"),
-  endDate: Yup.string().required("tanggal selesai tidak boleh kosong"),
-  anouncement: Yup.string().required("pengumuman tidak boleh kosong"),
+  startDate: Yup.string().required("Tanggal mulai tidak boleh kosong"),
+  endDate: Yup.string().required("Tanggal selesai tidak boleh kosong"),
+  anouncement: Yup.string().required("Pengumuman tidak boleh kosong"),
+  class_id: Yup.string().required("Kelas tidak boleh kosong"),
 });
 
 const PengumumanSiswa = () => {
@@ -19,12 +20,14 @@ const PengumumanSiswa = () => {
   const [endDate, setEndDate] = useState<string>("2024-12-30");
   const [idPengumuman, setIdPengumuman] = useState<string>("");
   const [pengumuman, setPengumuman] = useState<any>([]);
+  const [Class, setClass] = useState<any[]>([]);
 
   const formik = useFormik({
     initialValues: {
       startDate: "",
       endDate: "",
       anouncement: "",
+      class_id: 0,
     },
     validationSchema,
     onSubmit: (values) => {
@@ -34,7 +37,13 @@ const PengumumanSiswa = () => {
 
   useEffect(() => {
     GetAllPengumuman();
+    getClass();
   }, [startDate, endDate]);
+
+  const getClass = async () => {
+    const response = await Task.GetAllClass(token, 0, 20);
+    setClass(response.data.data.result);
+  };
 
   const GetAllPengumuman = async () => {
     try {
@@ -48,6 +57,7 @@ const PengumumanSiswa = () => {
       console.log(error);
     }
   };
+
   const formatDateFormik = (date: any) => {
     const tanggal = new Date(date);
     const year = tanggal.getFullYear();
@@ -65,6 +75,7 @@ const PengumumanSiswa = () => {
       formik.setFieldValue("startDate", formatDateFormik(data.date_start));
       formik.setFieldValue("endDate", formatDateFormik(data.date_end));
       formik.setFieldValue("anouncement", data.announcement_desc);
+      formik.setFieldValue("class_id", data.class_id);
     } catch (error) {
       console.log(error);
     }
@@ -78,27 +89,37 @@ const PengumumanSiswa = () => {
 
   const CreatePengumuman = async () => {
     try {
-      const { anouncement, startDate, endDate } = formik.values;
+      const { anouncement, startDate, endDate, class_id } = formik.values;
       const data = {
         date_start: startDate,
         date_end: endDate,
         announcement_desc: anouncement,
+        class_id: class_id,
       };
       await Pengumuman.createPengumuman(token, data);
       GetAllPengumuman();
       closeModal("add-pengumuman");
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Your work has been saved",
+        showConfirmButton: false,
+        timer: 1500,
+      });
       formik.resetForm();
     } catch (error) {
       console.log(error);
     }
   };
+
   const EditPengumuman = async () => {
     try {
-      const { anouncement, startDate, endDate } = formik.values;
+      const { anouncement, startDate, endDate, class_id } = formik.values;
       const data = {
         date_start: startDate,
         date_end: endDate,
         announcement_desc: anouncement,
+        class_id: class_id,
       };
       const respone = await Pengumuman.UpdatePengumuman(
         token,
@@ -109,6 +130,13 @@ const PengumumanSiswa = () => {
 
       GetAllPengumuman();
       closeModal("edit-pengumuman");
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Your work has been saved",
+        showConfirmButton: false,
+        timer: 1500,
+      });
       formik.resetForm();
     } catch (error) {
       console.log(error);
@@ -290,6 +318,36 @@ const PengumumanSiswa = () => {
             </div>
             <div className="w-full flex flex-col gap-2 mt-5">
               <label htmlFor="" className="font-bold">
+                Kelas
+              </label>
+              <div className="flex gap-1 justify-center items-center w-full ">
+                <select
+                  name="class_id"
+                  className={`select select-bordered w-full ${
+                    formik.touched.class_id && formik.errors.class_id
+                      ? "select-error"
+                      : ""
+                  }`}
+                  value={formik.values.class_id}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <option value="">Pilih Kelas</option>
+                  {Class.map((item, index) => (
+                    <option value={item.id} key={index}>
+                      {item.class_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {formik.touched.class_id && formik.errors.class_id ? (
+                <div className="text-red-500 text-xs">
+                  {formik.errors.class_id}
+                </div>
+              ) : null}
+            </div>
+            <div className="w-full flex flex-col gap-2 mt-5">
+              <label htmlFor="" className="font-bold">
                 Pengumuman
               </label>
               <div className="flex gap-1 justify-center items-center w-full ">
@@ -313,6 +371,7 @@ const PengumumanSiswa = () => {
               ) : null}
             </div>
             <button
+              type="submit"
               className="btn btn-ghost w-full bg-green-500 text-white mt-5"
               onClick={CreatePengumuman}
             >
@@ -364,6 +423,36 @@ const PengumumanSiswa = () => {
               {formik.touched.endDate && formik.errors.endDate ? (
                 <div className="text-red-500 text-xs">
                   {formik.errors.endDate}
+                </div>
+              ) : null}
+            </div>
+            <div className="w-full flex flex-col gap-2 mt-5">
+              <label htmlFor="" className="font-bold">
+                Kelas
+              </label>
+              <div className="flex gap-1 justify-center items-center w-full ">
+                <select
+                  name="class_id"
+                  className={`select select-bordered w-full ${
+                    formik.touched.class_id && formik.errors.class_id
+                      ? "select-error"
+                      : ""
+                  }`}
+                  value={formik.values.class_id}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <option value="">Pilih Kelas</option>
+                  {Class.map((item, index) => (
+                    <option key={index} value={item.id}>
+                      {item.class_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {formik.touched.class_id && formik.errors.class_id ? (
+                <div className="text-red-500 text-xs">
+                  {formik.errors.class_id}
                 </div>
               ) : null}
             </div>

@@ -34,7 +34,7 @@ const AdmSiswa = () => {
   const [taskClass, setTaskClass] = useState<any>([]);
   const [kelas, setKelas] = useState<any[]>([]);
   const [mapel, setMapel] = useState<any[]>([]);
-  const [file, setFile] = useState<any>(null);
+  const [file, setFile] = useState<any | null>(null);
   const [siswa, setSiswa] = useState<any>("all-student");
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
   const [feedback, setFeedback] = useState<string>("");
@@ -62,7 +62,7 @@ const AdmSiswa = () => {
   useEffect(() => {
     getStudent();
     getClass();
-  }, [formik.values.classId]);
+  }, [formik?.values.classId]);
 
   useEffect(() => {
     getTask();
@@ -71,6 +71,7 @@ const AdmSiswa = () => {
 
   useEffect(() => {
     getMapel();
+    getTask();
   }, [level]);
 
   const showModal = (props: string) => {
@@ -125,7 +126,8 @@ const AdmSiswa = () => {
   };
 
   const getStudent = async () => {
-    const idClass = parseInt(formik.values.classId);
+    const classId = formik.values.classId;
+    const idClass = classId ? parseInt(classId) : null;
     const response = await Student.GetStudentByClass(
       token,
       idClass,
@@ -156,11 +158,10 @@ const AdmSiswa = () => {
     formData.append("start_date", startDate);
     formData.append("end_date", endDate);
     formData.append("status", status == "1" ? "Open" : "Close");
-    formData.append("up_file", file);
+    formData.append("task_file", file);
 
     try {
       await Task.createTaskClass(token, formData);
-      getTaskClass();
       formik.resetForm({ values: formik.initialValues });
       closeModal("add-task");
       Swal.fire({
@@ -168,8 +169,9 @@ const AdmSiswa = () => {
         icon: "success",
         title: "Data Berhasil Disimpan",
         showConfirmButton: false,
-        timer: 1500,
+        timer: 3000,
       });
+      getTaskClass();
     } catch (error: any) {
       closeModal("add-task");
       Swal.fire({
@@ -203,13 +205,20 @@ const AdmSiswa = () => {
     formData.append("start_date", startDate);
     formData.append("end_date", endDate);
     formData.append("status", status == "1" ? "Open" : "Close");
-    formData.append("down_file", file);
+    formData.append("up_file", file);
 
     try {
       await Task.createTask(token, formData);
-      getTask();
       formik.resetForm({ values: formik.initialValues });
       closeModal("add-task");
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Data Berhasil Disimpan",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      getClass();
     } catch (error: any) {
       closeModal("add-task");
       Swal.fire({
@@ -230,8 +239,19 @@ const AdmSiswa = () => {
   };
 
   const handleFile = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    setFile(file || null);
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      if (selectedFile.type !== "application/pdf") {
+        console.warn("Please upload a PDF file");
+        setFile(null);
+        return;
+      }
+      setFile(selectedFile);
+      console.log(selectedFile);
+    } else {
+      console.warn("No file selected");
+      setFile(null);
+    }
   };
 
   const deleteTask2 = async (id: number) => {
@@ -440,7 +460,7 @@ const AdmSiswa = () => {
             </button>
           </div>
           <div className="overflow-x-auto">
-            <table className="table table-zebra shadow-md mt-5">
+            <table className="table table-zebra mt-5">
               {/* head */}
               <thead className="bg-blue-200">
                 <tr>
@@ -457,7 +477,7 @@ const AdmSiswa = () => {
               </thead>
               <tbody>
                 {taskClass?.map((item: any, index: number) => (
-                  <tr>
+                  <tr key={index}>
                     <th>{index + 1}</th>
                     <td>{item?.topic}</td>
                     <td>{item?.subject.name}</td>
@@ -502,7 +522,7 @@ const AdmSiswa = () => {
           </div>
           <div className="overflow-x-auto mt-10">
             <p className="text-xl font-bold">Tugas Berdasarkan Siswa</p>
-            <table className="table table-zebra shadow-md mt-5">
+            <table className="table table-zebra mt-5">
               {/* head */}
               <thead className="bg-blue-200">
                 <tr>
@@ -519,7 +539,7 @@ const AdmSiswa = () => {
               </thead>
               <tbody>
                 {task?.map((item: any, index: number) => (
-                  <tr>
+                  <tr key={index}>
                     <th>{index + 1}</th>
                     <td>{item?.studentclass?.student?.full_name}</td>
                     <td>{item?.topic}</td>
