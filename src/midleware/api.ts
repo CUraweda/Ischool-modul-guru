@@ -189,6 +189,7 @@ const Task = {
       url: `/api/student-task/create`,
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
       },
       data,
     }),
@@ -237,6 +238,7 @@ const Task = {
       url: `/api/task/create`,
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
       },
       data,
     }),
