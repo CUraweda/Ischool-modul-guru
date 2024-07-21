@@ -1070,12 +1070,14 @@ const PosJenisPembayaran = {
   showAll: (
     token: string | null,
     search?: string,
+    paymentPostId?: string | null,
+    academicYear?: string | null,
     page: number = 0,
-    limit: number = 10
+    limit: number = 10,
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-payment-bills?search_query=${search}&page=${page}&limit=${limit}`,
+      url: `/api/student-payment-bills?search_query=${search}&payment_post_id=${paymentPostId}&academic_year=${academicYear}&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

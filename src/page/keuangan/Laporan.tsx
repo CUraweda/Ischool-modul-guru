@@ -107,7 +107,7 @@ const Laporan = () => {
   const [paymentCats, setPaymentCats] = useState<any[]>([]);
   const getPaymentCats = async () => {
     try {
-      const res = await PosJenisPembayaran.showAll(token, "", 0, 1000);
+      const res = await PosJenisPembayaran.showAll(token, "", "", "", 0, 1000);
       setPaymentCats(res.data.data.result);
     } catch {}
   };

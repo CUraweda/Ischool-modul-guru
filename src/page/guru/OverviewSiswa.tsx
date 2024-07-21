@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { DashboardSiswa } from "../../midleware/api";
+import { Class, DashboardSiswa } from "../../midleware/api";
 import { Store } from "../../store/Store";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import Modal from "../../component/modal";
@@ -8,13 +8,14 @@ import * as Yup from "yup";
 import Swal from "sweetalert2";
 
 const validationSchema = Yup.object({
-  topic: Yup.string().required("Topik tidak boleh kosong"),
+  topic: Yup.string().required("Tema tidak boleh kosong"),
   meaningful_understanding: Yup.string().required(
     "Pemahaman tidak boleh kosong"
   ),
   period: Yup.string().required("Periode tidak boleh kosong"),
   tup: Yup.string().required("TUP tidak boleh kosong"),
   status: Yup.string().required("Status tidak boleh kosong"),
+  class_id: Yup.number().optional(),
 });
 
 const OverviewSiswa = () => {
@@ -29,6 +30,7 @@ const OverviewSiswa = () => {
       period: "",
       tup: "",
       status: "",
+      class_id: "",
     },
     validationSchema,
     onSubmit: (values) => {
@@ -38,6 +40,19 @@ const OverviewSiswa = () => {
 
   useEffect(() => {
     getOverview();
+  }, []);
+
+  const [classes, setClasses] = useState<any[]>([]);
+
+  const getClasses = async () => {
+    try {
+      const res = await Class.showAll(token, 0, 1000);
+      setClasses(res.data.data.result);
+    } catch {}
+  };
+
+  useEffect(() => {
+    getClasses();
   }, []);
 
   const showModal = (props: string) => {
@@ -61,7 +76,7 @@ const OverviewSiswa = () => {
 
   const handleCreateOverview = async () => {
     try {
-      const { topic, meaningful_understanding, tup, period, status } =
+      const { topic, meaningful_understanding, tup, period, status, class_id } =
         formik.values;
       const data = {
         topic,
@@ -69,6 +84,7 @@ const OverviewSiswa = () => {
         period,
         tup,
         status,
+        class_id: class_id == "" ? null : class_id,
       };
       await DashboardSiswa.createOverview(token, data);
 
@@ -95,6 +111,7 @@ const OverviewSiswa = () => {
       );
       formik.setFieldValue("tup", data.tup);
       formik.setFieldValue("status", data.status);
+      formik.setFieldValue("class_id", data.class_id ?? "")
     } catch (error) {
       console.log(error);
     }
@@ -108,7 +125,7 @@ const OverviewSiswa = () => {
 
   const EditOverview = async () => {
     try {
-      const { topic, meaningful_understanding, tup, period, status } =
+      const { topic, meaningful_understanding, tup, period, status, class_id } =
         formik.values;
       const data = {
         topic,
@@ -116,12 +133,9 @@ const OverviewSiswa = () => {
         period,
         tup,
         status,
+        class_id: class_id == "" ? null : class_id,
       };
-      await DashboardSiswa.UpdateOverview(
-        token,
-        idOverview,
-        data
-      );
+      await DashboardSiswa.UpdateOverview(token, idOverview, data);
 
       getOverview();
       closeModal("edit-overview");
@@ -173,16 +187,18 @@ const OverviewSiswa = () => {
   };
   return (
     <>
+      <div className="w-full flex flex-wrap justify-end">
+        <button
+          id="tambah-pengumuman"
+          className="btn btn-ghost bg-green-500 text-white"
+          onClick={() => showModal("add-overview")}
+        >
+          tambah
+        </button>
+      </div>
+
       <div className="overflow-x-auto">
-        <div className="w-full flex justify-end">
-          <button
-            id="tambah-pengumuman"
-            className="btn btn-ghost bg-green-500 text-white"
-            onClick={() => showModal("add-overview")}
-          >
-            tambah
-          </button>
-        </div>
+
         <table className="table table-zebra mt-4">
           {/* head */}
           <thead className="bg-blue-300">
@@ -192,6 +208,7 @@ const OverviewSiswa = () => {
               <th>Pemahaman</th>
               <th>Periode</th>
               <th>TUP</th>
+              <th>Kelas</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
@@ -203,7 +220,10 @@ const OverviewSiswa = () => {
                 <td>{item?.topic}</td>
                 <td>{item?.meaningful_understanding}</td>
                 <td>{item?.period}</td>
-                <td>{item?.tup}</td>
+                <td>
+                  <div className="min-w-80">{item?.tup}</div>
+                </td>
+                <td>{item?.class?.class_name ?? "-"}</td>
                 <td>{item?.status}</td>
                 {/* <td>{item?.status}</td> */}
                 <td>
@@ -234,7 +254,7 @@ const OverviewSiswa = () => {
           <form action="" onSubmit={formik.handleSubmit} className="w-full">
             <div className="w-full flex flex-col gap-2 mt-5">
               <label htmlFor="" className="font-bold">
-                Topik
+                Tema
               </label>
               <div className="flex gap-1 justify-center items-center w-full ">
                 <input
@@ -355,6 +375,36 @@ const OverviewSiswa = () => {
               {formik.touched.status && formik.errors.status ? (
                 <div className="text-red-500 text-xs">
                   {formik.errors.status}
+                </div>
+              ) : null}
+            </div>
+            <div className="w-full flex flex-col gap-2 mt-5">
+              <label htmlFor="" className="font-bold">
+                Kelas (opsional)
+              </label>
+              <div className="flex gap-1 justify-center items-center w-full ">
+                <select
+                  className={`select select-bordered w-full ${
+                    formik.touched.class_id && formik.errors.class_id
+                      ? "select-error"
+                      : ""
+                  }`}
+                  name="class_id"
+                  value={formik.values.class_id}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <option value={""}>Pilih kelas</option>
+                  {classes.map((dat, i) => (
+                    <option value={dat.id} key={i}>
+                      {dat.class_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {formik.touched.class_id && formik.errors.class_id ? (
+                <div className="text-red-500 text-xs">
+                  {formik.errors.class_id}
                 </div>
               ) : null}
             </div>
@@ -373,7 +423,7 @@ const OverviewSiswa = () => {
           <form action="" onSubmit={formik.handleSubmit} className="w-full">
             <div className="w-full flex flex-col gap-2 mt-5">
               <label htmlFor="" className="font-bold">
-                Topik
+                Tema
               </label>
               <div className="flex gap-1 justify-center items-center w-full ">
                 <input
@@ -494,6 +544,36 @@ const OverviewSiswa = () => {
               {formik.touched.status && formik.errors.status ? (
                 <div className="text-red-500 text-xs">
                   {formik.errors.status}
+                </div>
+              ) : null}
+            </div>
+            <div className="w-full flex flex-col gap-2 mt-5">
+              <label htmlFor="" className="font-bold">
+                Kelas (opsional)
+              </label>
+              <div className="flex gap-1 justify-center items-center w-full ">
+                <select
+                  className={`select select-bordered w-full ${
+                    formik.touched.class_id && formik.errors.class_id
+                      ? "select-error"
+                      : ""
+                  }`}
+                  name="class_id"
+                  value={formik.values.class_id}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <option value={""}>Pilih kelas</option>
+                  {classes.map((dat, i) => (
+                    <option value={dat.id} key={i}>
+                      {dat.class_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {formik.touched.class_id && formik.errors.class_id ? (
+                <div className="text-red-500 text-xs">
+                  {formik.errors.class_id}
                 </div>
               ) : null}
             </div>
