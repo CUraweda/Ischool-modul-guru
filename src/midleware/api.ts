@@ -881,10 +881,15 @@ const Pengumuman = {
 };
 
 const DashboardSiswa = {
-  getAllOverView: (token: string | null): AxiosPromise<any> =>
+  getAllOverView: (
+    token: string | null,
+    classId: string | null,
+    page: number | null,
+    limit: number | null
+  ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/overview?search_query=&page=0&limit=100`,
+      url: `/api/overview?search_query=&page=${page}&limit=${limit}&class_id=${classId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1084,7 +1089,7 @@ const PosJenisPembayaran = {
     paymentPostId?: string | null,
     academicYear?: string | null,
     page: number = 0,
-    limit: number = 10,
+    limit: number = 10
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
