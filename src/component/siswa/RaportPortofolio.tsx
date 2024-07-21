@@ -54,8 +54,8 @@ const RaportPortofolio = () => {
 
   const getStudent = async () => {
     try {
-      const id = idClass ? idClass : '11'
-      const response = await Raport.getAllStudentReport(token, id);
+      const id = idClass ? idClass : "11";
+      const response = await Raport.getAllStudentReport(token, id, null);
 
       setDataSiswa(response.data.data);
     } catch (error) {
@@ -70,8 +70,12 @@ const RaportPortofolio = () => {
     const dataRest = response.data.data;
     const type = dataRest?.map((item: any) => item.type);
     console.log(type);
-    
-    if (type.length === 2 && type.includes("Guru") && type.includes("Orang Tua")) {
+
+    if (
+      type.length === 2 &&
+      type.includes("Guru") &&
+      type.includes("Orang Tua")
+    ) {
       setMerge(true);
     } else {
       setMerge(false);
@@ -168,9 +172,7 @@ const RaportPortofolio = () => {
       <div className="w-full flex justify-between gap-2">
         <div className="join">
           <select className="select select-sm join-item w-32 max-w-md select-bordered">
-            <option selected>
-              Tahun Pelajaran
-            </option>
+            <option selected>Tahun Pelajaran</option>
             <option>2023/2024</option>
             <option>2024/2025</option>
           </select>
@@ -181,20 +183,18 @@ const RaportPortofolio = () => {
               setSmt(e.target.value), setSemesterProps(e.target.value);
             }}
           >
-            <option selected>
-              Semester
-            </option>
+            <option selected>Semester</option>
             <option value={"1"}>Ganjil</option>
             <option value={"2"}>Genap</option>
           </select>
           <select
             className="select select-sm join-item w-32 max-w-md select-bordered"
             value={idClass}
-            onChange={(e) => {setClass(e.target.value), setKelasProps(e.target.value)}}
+            onChange={(e) => {
+              setClass(e.target.value), setKelasProps(e.target.value);
+            }}
           >
-            <option selected>
-              pilih kelas
-            </option>
+            <option selected>pilih kelas</option>
             {kelas?.map((item: any, index: number) => (
               <option
                 value={item.id}

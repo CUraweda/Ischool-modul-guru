@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Modal from "../modal";
+import { FaCodeMerge } from "react-icons/fa6";
 import { FaFilePdf } from "react-icons/fa";
 import { Task, Student, Raport } from "../../midleware/api";
 import { Store, useProps } from "../../store/Store";
@@ -14,6 +15,7 @@ const RaportAll = () => {
   const [semester, setSemester] = useState<string>("");
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
   const [dataRaport, setDataRaport] = useState<any>([]);
+  const [semesterDropdown, setSemesterDropdown] = useState<string>("");
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
@@ -33,7 +35,7 @@ const RaportAll = () => {
   useEffect(() => {
     getStudent();
     getDataRaport();
-  }, [idClass]);
+  }, [idClass, semesterDropdown]);
 
   useEffect(() => {
     getDataRaport();
@@ -63,8 +65,9 @@ const RaportAll = () => {
 
   const getDataRaport = async () => {
     try {
-      const id = idClass ? idClass : '11';
-      const response = await Raport.getAllStudentReport(token, id);
+      const id = idClass ? idClass : "11";
+      const semester = semesterDropdown;
+      const response = await Raport.getAllStudentReport(token, id, semester);
       setDataRaport(response.data.data);
     } catch (error) {
       console.log(error);
@@ -109,10 +112,18 @@ const RaportAll = () => {
     }
   };
 
+  const downloadRaportMerge = async (id: any) => {
+    try {
+      await Raport.downloadMergeRaport(token, id);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div>
       <div className="w-full flex justify-between gap-2">
-        <div className="join">
+        <div className="join gap-2">
           <select
             className="select select-bordered w-full"
             value={idClass}
@@ -120,15 +131,22 @@ const RaportAll = () => {
               setIdClass(e.target.value), setKelasProps(e.target.value);
             }}
           >
-            <option selected>
-              Kelas
-            </option>
+            <option selected>Kelas</option>
             {Class?.map((item: any, index: number) => (
               <option
                 value={item.id}
                 key={index}
               >{`${item.level}-${item.class_name}`}</option>
             ))}
+          </select>
+          <select
+            className="select select-bordered w-full"
+            value={semesterDropdown}
+            onChange={(e) => setSemesterDropdown(e.target.value)}
+          >
+            <option selected>Semester</option>
+            <option value={1}>Ganjil</option>
+            <option value={2}>Genap</option>
           </select>
         </div>
         <button
@@ -144,10 +162,12 @@ const RaportAll = () => {
             <tr className="bg-blue-300">
               <th>No</th>
               <th>Nama Siswa</th>
+              <th>Semester</th>
               <th>Rapot Angka</th>
               <th>Rapot Narasi</th>
               <th>Raport Portofolio</th>
               <th>Raport Siswa</th>
+              <th>Aksi</th>
               {/* <th>Action</th> */}
             </tr>
           </thead>
@@ -156,6 +176,7 @@ const RaportAll = () => {
               <tr key={index}>
                 <th>{index + 1}</th>
                 <td>{item?.studentclass.student.full_name}</td>
+                <td>{item?.semester == 1 ? "Ganjil" : "Genap"}</td>
                 <td>
                   <button
                     className={`btn btn-sm join-item bg-green-500 text-white tooltip ${
@@ -206,6 +227,23 @@ const RaportAll = () => {
                   >
                     <span className="text-xl">
                       <FaFilePdf />
+                    </span>
+                  </button>
+                </td>
+                <td className="flex items-center justify-center">
+                  <button
+                    className={`btn btn-sm join-item bg-orange-500 text-white tooltip ${
+                      !item?.number_path ||
+                      !item?.narrative_path ||
+                      !item?.portofolio_path ||
+                      !item?.merged_path
+                        ? "btn-disabled"
+                        : ""
+                    }`}
+                    onClick={() => downloadRaportMerge(item?.id)}
+                  >
+                    <span className="text-xl">
+                      <FaCodeMerge />
                     </span>
                   </button>
                 </td>

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Modal from "../modal";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { Task, Raport } from "../../midleware/api";
-import { Store , useProps} from "../../store/Store";
+import { Store, useProps } from "../../store/Store";
 import { FaGear } from "react-icons/fa6";
 import { PiNotePencilBold } from "react-icons/pi";
 import { BiTrash } from "react-icons/bi";
@@ -25,13 +25,8 @@ const schema = Yup.object({
 
 const RaportNarasi = () => {
   const { token } = Store();
-  const {
-   
-    setSemesterProps,
-    setKelasProps,
-    semesterProps,
-    kelasProps,
-  } = useProps();
+  const { setSemesterProps, setKelasProps, semesterProps, kelasProps } =
+    useProps();
   const [kelas, setKelas] = useState<any[]>([]);
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
   const [idClass, setClass] = useState<string>(kelasProps);
@@ -80,7 +75,6 @@ const RaportNarasi = () => {
     }
   };
 
-
   const closeModal = (props: string) => {
     let modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {
@@ -95,8 +89,8 @@ const RaportNarasi = () => {
 
   const getStudent = async () => {
     try {
-      const id = idClass ? idClass : '11'
-      const response = await Raport.getAllStudentReport(token, id);
+      const id = idClass ? idClass : "11";
+      const response = await Raport.getAllStudentReport(token, id, null);
 
       sessionStorage.setItem("idClass", idClass);
       setDataSiswa(response.data.data);
@@ -123,7 +117,7 @@ const RaportNarasi = () => {
     if (!classId) {
     }
     const data = {
-      code: 'kategori',
+      code: "kategori",
       class_id: classId,
       category: kategori,
     };
@@ -134,10 +128,10 @@ const RaportNarasi = () => {
   };
 
   const CreateSubKategori = async () => {
-    const { idKategori,  subKategori } = formik.values;
+    const { idKategori, subKategori } = formik.values;
 
     const data = {
-      code: 'sub-kategori',
+      code: "sub-kategori",
       narrative_cat_id: idKategori,
       sub_category: subKategori,
     };
@@ -287,15 +281,12 @@ const RaportNarasi = () => {
     }
   };
 
-
   return (
     <div>
       <div className="w-full flex justify-between gap-2">
         <div className="join">
           <select className="select select-sm join-item w-32 max-w-md select-bordered">
-            <option selected>
-              Tahun Pelajaran
-            </option>
+            <option selected>Tahun Pelajaran</option>
             <option>2023/2024</option>
             <option>2024/2025</option>
           </select>
@@ -304,12 +295,11 @@ const RaportNarasi = () => {
             value={formik.values.smt}
             onChange={(e) => {
               sessionStorage.setItem("smt", e.target.value),
-                formik.setFieldValue("smt", e.target.value), setSemesterProps(e.target.value);
+                formik.setFieldValue("smt", e.target.value),
+                setSemesterProps(e.target.value);
             }}
           >
-            <option selected>
-              Semester
-            </option>
+            <option selected>Semester</option>
             <option value={"1"}>Ganjil</option>
             <option value={"2"}>Genap</option>
           </select>
@@ -322,9 +312,7 @@ const RaportNarasi = () => {
                 setKelasProps(e.target.value);
             }}
           >
-            <option selected>
-              pilih kelas
-            </option>
+            <option selected>pilih kelas</option>
             {kelas?.map((item: any, index: number) => (
               <option
                 value={item.id}
@@ -449,7 +437,7 @@ const RaportNarasi = () => {
               <thead>
                 <tr className="bg-blue-300 ">
                   <th className="w-12">No</th>
-                  
+
                   <th>Kategori</th>
                   <th>Action</th>
                 </tr>
@@ -458,7 +446,7 @@ const RaportNarasi = () => {
                 {kategori?.map((item: any, index: number) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                   
+
                     <td>{item.category}</td>
                     <td className="flex gap-1 text-2xl">
                       <span
@@ -511,7 +499,7 @@ const RaportNarasi = () => {
               <thead>
                 <tr className="bg-blue-300 ">
                   <th className="w-12">No</th>
-                  
+
                   <th>Sub Kategori</th>
                   <th>Action</th>
                 </tr>
@@ -520,7 +508,7 @@ const RaportNarasi = () => {
                 {subKategori?.map((item: any, index: number) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                   
+
                     <td>{item.sub_category}</td>
                     <td className="flex gap-1 text-2xl">
                       <span
@@ -547,9 +535,7 @@ const RaportNarasi = () => {
         <div className="w-full flex justify-center flex-col items-center">
           <p className="text-xl font-bold">Komentar Orang Tua / Wali</p>
           <div className="w-full border-1 min-h-96 max-h-96 bg-gray-200 mt-5 rounded-md shadow-md p-3 overflow-auto">
-            <span>
-              {komen}
-            </span>
+            <span>{komen}</span>
           </div>
         </div>
       </Modal>
@@ -583,9 +569,7 @@ const RaportNarasi = () => {
               value={formik.values.classId}
               onChange={(e) => formik.setFieldValue("classId", e.target.value)}
             >
-              <option selected>
-                pilih kelas
-              </option>
+              <option selected>pilih kelas</option>
               {kelas?.map((item: any, index: number) => (
                 <option
                   value={item.id}
@@ -637,9 +621,7 @@ const RaportNarasi = () => {
                 formik.setFieldValue("idKategori", e.target.value)
               }
             >
-              <option selected>
-                Kategori
-              </option>
+              <option selected>Kategori</option>
               {kategori?.map((item: any, index: number) => (
                 <option value={item.id} key={index}>
                   {item?.category}
