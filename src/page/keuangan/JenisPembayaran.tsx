@@ -187,25 +187,37 @@ const JenisPembayaran = () => {
   const [loadingDelete, setLoadingDelete] = useState(false);
   const handleDelete = async (id: any) => {
     setLoadingDelete(true);
-    try {
-      await PosJenisPembayaran.delete(token, id);
 
-      Swal.fire({
-        icon: "success",
-        title: "Berhasil",
-        text: "Berhasil menghapus data jenis pembayaran",
-      });
+    Swal.fire({
+      icon: "question",
+      title: "Anda Yakin?",
+      text: `Aksi ini tidak dapat dibatalkan. Apakah Anda yakin ingin melanjutkan?`,
+      showCancelButton: true,
+      confirmButtonText: "Yakin",
+      cancelButtonText: "Batalkan",
+    }).then(async (result) => {
+      try {
+        if (result.isConfirmed) {
+          await PosJenisPembayaran.delete(token, id);
 
-      getDataList();
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Gagal menghapus data jenis pembayaran",
-      });
-    } finally {
-      setLoadingDelete(false);
-    }
+          Swal.fire({
+            icon: "success",
+            title: "Aksi Berhasil",
+            text: "Berhasil menghapus data jenis pembayaran",
+          });
+
+          getDataList();
+        }
+      } catch {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Gagal menghapus data jenis pembayaran",
+        });
+      } finally {
+        setLoadingDelete(false);
+      }
+    });
   };
 
   return (
