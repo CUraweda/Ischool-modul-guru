@@ -145,7 +145,7 @@ const AdmSiswa = () => {
     });
     return formattedDate;
   };
-
+  const delay = (ms: any) => new Promise((res) => setTimeout(res, ms));
   const createTugas = async () => {
     const { classId, subjectId, topik, startDate, endDate, status, jenis } =
       formik.values;
@@ -167,11 +167,13 @@ const AdmSiswa = () => {
       Swal.fire({
         position: "center",
         icon: "success",
-        title: "Data Berhasil Disimpan",
+        title: "Data Berhasil Disimpan Refresh kembali jika data tidak muncul",
         showConfirmButton: false,
         timer: 3000,
       });
       getTaskClass();
+      await delay(2500);
+      location.reload();
     } catch (error: any) {
       closeModal("add-task");
       Swal.fire({
@@ -214,11 +216,13 @@ const AdmSiswa = () => {
       Swal.fire({
         position: "center",
         icon: "success",
-        title: "Data Berhasil Disimpan",
+        title: "Data Berhasil Disimpan Refresh kembali jika data tidak muncul",
         showConfirmButton: false,
         timer: 3000,
       });
       getClass();
+      await delay(2500);
+      location.reload();
     } catch (error: any) {
       closeModal("add-task");
       Swal.fire({
@@ -724,9 +728,15 @@ const AdmSiswa = () => {
                 <option disabled selected>
                   Pick one
                 </option>
-                <option value={2}>Project Kelompok</option>
-                <option value={1}>WWP</option>
-                <option value={3}>Mandiri</option>
+                {siswa === "all-student" ? (
+                  <>
+                    <option value={2}>Project Kelompok</option>
+                    <option value={1}>WWP</option>
+                    <option value={3}>Mandiri</option>
+                  </>
+                ) : (
+                  <option value={3}>Mandiri</option>
+                )}
               </select>
               <label className="mt-4 w-full font-bold">Periode</label>
               <div className="flex gap-2 justify-center items-center">
