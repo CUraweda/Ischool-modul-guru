@@ -116,6 +116,11 @@ const RaportAll = () => {
     try {
       await Raport.downloadMergeRaport(token, id);
     } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Gagal melakukan merge, Silahkan refresh halaman !",
+      });
       console.error(error);
     }
   };

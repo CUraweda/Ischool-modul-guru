@@ -548,11 +548,12 @@ const Raport = {
   // Raport Narasi
   getKategoriNarasi: (
     token: string | null,
-    id: string | null
+    id: string | null,
+    semester: string | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/narrative-category/show-by-class/${id}`,
+      url: `/api/narrative-category/show-by-class/${id}?semester=${semester} `,
       headers: {
         Authorization: `Bearer ${token}`,
       },

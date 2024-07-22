@@ -25,8 +25,7 @@ const schema = Yup.object({
 
 const RaportNarasi = () => {
   const { token } = Store();
-  const { setSemesterProps, setKelasProps, semesterProps, kelasProps } =
-    useProps();
+  const { setKelasProps, semesterProps, kelasProps } = useProps();
   const [kelas, setKelas] = useState<any[]>([]);
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
   const [idClass, setClass] = useState<string>(kelasProps);
@@ -35,7 +34,7 @@ const RaportNarasi = () => {
   const [subKategori, setSubKategori] = useState<any>([]);
 
   const [studentClass, setStudentClass] = useState<string>("");
-  const [smt, setSmt] = useState<string>("");
+  const [smt, setSmt] = useState<string>("1");
   const [reportId, setReportId] = useState<string>("");
   const [setting, setSetting] = useState<boolean>(false);
   const [edit, setEdit] = useState<string>("");
@@ -58,7 +57,7 @@ const RaportNarasi = () => {
   useEffect(() => {
     getStudent();
     getKategori();
-  }, [idClass]);
+  }, [kelas, smt]);
 
   useEffect(() => {
     getClass();
@@ -160,7 +159,7 @@ const RaportNarasi = () => {
 
   const getKategori = async () => {
     try {
-      const response = await Raport.getKategoriNarasi(token, idClass);
+      const response = await Raport.getKategoriNarasi(token, idClass, smt);
       setKategori(response.data.data);
     } catch (error) {
       console.log(error);
@@ -292,16 +291,14 @@ const RaportNarasi = () => {
           </select>
           <select
             className="select select-sm join-item w-32 max-w-md select-bordered"
-            value={formik.values.smt}
+            value={smt}
             onChange={(e) => {
-              sessionStorage.setItem("smt", e.target.value),
-                formik.setFieldValue("smt", e.target.value),
-                setSemesterProps(e.target.value);
+              setSmt(e.target.value);
             }}
           >
             <option selected>Semester</option>
-            <option value={"1"}>Ganjil</option>
-            <option value={"2"}>Genap</option>
+            <option value="1">Ganjil</option>
+            <option value="2">Genap</option>
           </select>
           <select
             className="select select-sm join-item w-32 max-w-md select-bordered"
@@ -313,11 +310,10 @@ const RaportNarasi = () => {
             }}
           >
             <option selected>pilih kelas</option>
-            {kelas?.map((item: any, index: number) => (
-              <option
-                value={item.id}
-                key={index}
-              >{`${item.level}-${item.class_name}`}</option>
+            {kelas?.map((item, index) => (
+              <option value={item.id} key={index}>
+                {item.class_name}
+              </option>
             ))}
           </select>
         </div>

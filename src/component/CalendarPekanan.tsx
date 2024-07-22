@@ -288,7 +288,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
       <Modal id="edit-rencana">
         <div className="w-full flex flex-col items-center">
           <span className="text-xl font-bold">Edit Rencana Pekanan</span>
-         
+
           <div className="flex w-full mt-5 flex-col">
             <div className="w-full flex flex-col gap-2">
               <label className="mt-4 w-full font-bold">Tahun Pelajaran</label>
@@ -387,7 +387,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
                 formik.setFieldValue("hide", e.target.checked);
               }}
             />
-            <label className="font-bold">Tampilkan di modul siswa ?</label>
+            <label className="font-bold">Tidak tampil di siswa ?</label>
           </div>
 
           <div className="w-full flex justify-center mt-10 gap-2">
