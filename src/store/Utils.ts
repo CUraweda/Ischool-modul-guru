@@ -28,6 +28,9 @@ export interface StoreProps {
   kelasProps: string;
   setKelasProps: (kelasProps: string) => void;
 
+  academicProps: string,
+  setAcademicYearProps: (academicProps: string) => void;
+
   mapelProps: string;
   setMapelProps: (mapelProps: string) => void;
 

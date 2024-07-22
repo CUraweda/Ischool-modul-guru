@@ -11,11 +11,11 @@ const RaportAll = () => {
   const { setKelasProps, kelasProps } = useProps();
   const [Class, setClass] = useState<any[]>([]);
   const [siswa, setSiswa] = useState<any[]>([]);
-  const [idClass, setIdClass] = useState<string>(kelasProps);
-  const [semester, setSemester] = useState<string>("");
+  const [idClass, setIdClass] = useState<string>(kelasProps || "11");
+  const [semester, setSemester] = useState<string>("1");
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
   const [dataRaport, setDataRaport] = useState<any>([]);
-  const [semesterDropdown, setSemesterDropdown] = useState<string>("");
+  const [semesterDropdown, setSemesterDropdown] = useState<string>("1");
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
@@ -30,7 +30,7 @@ const RaportAll = () => {
     if (modalElement) {
       modalElement.close();
     }
-  };
+};
 
   useEffect(() => {
     getStudent();
@@ -66,7 +66,7 @@ const RaportAll = () => {
   const getDataRaport = async () => {
     try {
       const id = idClass ? idClass : "11";
-      const semester = semesterDropdown;
+      const semester = semesterDropdown || "1";
       const response = await Raport.getAllStudentReport(token, id, semester);
       setDataRaport(response.data.data);
     } catch (error) {

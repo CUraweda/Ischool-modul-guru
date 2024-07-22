@@ -25,17 +25,18 @@ const schema = Yup.object({
 
 const RaportNarasi = () => {
   const { token } = Store();
-  const { setSemesterProps, setKelasProps, semesterProps, kelasProps } =
+  const { setSemesterProps,setAcademicYearProps ,setKelasProps, academicProps,semesterProps, kelasProps } =
     useProps();
   const [kelas, setKelas] = useState<any[]>([]);
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
-  const [idClass, setClass] = useState<string>(kelasProps);
+  const [idClass, setClass] = useState<string>(kelasProps || "11");
   const [komen, setKomen] = useState<string>("");
+  const [academicYear, setAcademicYear] = useState<string>(academicProps);
   const [kategori, setKategori] = useState<any[]>([]);
   const [subKategori, setSubKategori] = useState<any>([]);
 
   const [studentClass, setStudentClass] = useState<string>("");
-  const [smt, setSmt] = useState<string>("");
+  const [smt, setSmt] = useState<string>("1");
   const [reportId, setReportId] = useState<string>("");
   const [setting, setSetting] = useState<boolean>(false);
   const [edit, setEdit] = useState<string>("");
@@ -48,7 +49,7 @@ const RaportNarasi = () => {
       idKategori: "",
       idSubKategori: "",
       subKategori: "",
-      smt: semesterProps,
+    smt: semesterProps,
     },
     validationSchema: schema,
     onSubmit: (values) => {
@@ -168,7 +169,7 @@ const RaportNarasi = () => {
   };
   const getSubKategori = async () => {
     try {
-      const id = formik.values.idKategori;
+      const id = formik.values.idKategori || "1";
       const response = await Raport.getSubCategoriNarasi(token, id);
       setSubKategori(response.data.data);
     } catch (error) {
