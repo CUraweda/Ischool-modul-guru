@@ -24,6 +24,7 @@ const schema = Yup.object({
   startDate: Yup.string().required("required"),
   endDate: Yup.string().required("required"),
   status: Yup.string().required("required"),
+  description: Yup.string().required("required"),
 });
 
 const AdmSiswa = () => {
@@ -34,7 +35,7 @@ const AdmSiswa = () => {
   const [taskClass, setTaskClass] = useState<any>([]);
   const [kelas, setKelas] = useState<any[]>([]);
   const [mapel, setMapel] = useState<any[]>([]);
-  const [file, setFile] = useState<any>(null);
+  const [file, setFile] = useState<any | null>(null);
   const [siswa, setSiswa] = useState<any>("all-student");
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
   const [feedback, setFeedback] = useState<string>("");
@@ -53,6 +54,7 @@ const AdmSiswa = () => {
       startDate: "",
       endDate: "",
       status: "",
+      description: "",
     },
     validationSchema: schema,
     onSubmit: (values) => {
@@ -62,7 +64,7 @@ const AdmSiswa = () => {
   useEffect(() => {
     getStudent();
     getClass();
-  }, [formik.values.classId]);
+  }, [formik?.values.classId]);
 
   useEffect(() => {
     getTask();
@@ -71,6 +73,7 @@ const AdmSiswa = () => {
 
   useEffect(() => {
     getMapel();
+    getTask();
   }, [level]);
 
   const showModal = (props: string) => {
@@ -92,6 +95,7 @@ const AdmSiswa = () => {
     try {
       const response = await Task.GetAll(token, 0, 20);
       setTask(response.data.data.result);
+      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -125,7 +129,8 @@ const AdmSiswa = () => {
   };
 
   const getStudent = async () => {
-    const idClass = parseInt(formik.values.classId);
+    const classId = formik.values.classId;
+    const idClass = classId ? parseInt(classId) : null;
     const response = await Student.GetStudentByClass(
       token,
       idClass,
@@ -143,10 +148,18 @@ const AdmSiswa = () => {
     });
     return formattedDate;
   };
-
+  const delay = (ms: any) => new Promise((res) => setTimeout(res, ms));
   const createTugas = async () => {
-    const { classId, subjectId, topik, startDate, endDate, status, jenis } =
-      formik.values;
+    const {
+      classId,
+      subjectId,
+      topik,
+      startDate,
+      endDate,
+      status,
+      jenis,
+      description,
+    } = formik.values;
 
     const formData = new FormData();
     formData.append("class_id", classId);
@@ -157,19 +170,22 @@ const AdmSiswa = () => {
     formData.append("end_date", endDate);
     formData.append("status", status == "1" ? "Open" : "Close");
     formData.append("up_file", file);
+    formData.append("description", description);
 
     try {
       await Task.createTaskClass(token, formData);
-      getTaskClass();
       formik.resetForm({ values: formik.initialValues });
       closeModal("add-task");
       Swal.fire({
         position: "center",
         icon: "success",
-        title: "Data Berhasil Disimpan",
+        title: "Data Berhasil Disimpan Refresh kembali jika data tidak muncul",
         showConfirmButton: false,
-        timer: 1500,
+        timer: 3000,
       });
+      getTaskClass();
+      await delay(2500);
+      location.reload();
     } catch (error: any) {
       closeModal("add-task");
       Swal.fire({
@@ -203,13 +219,22 @@ const AdmSiswa = () => {
     formData.append("start_date", startDate);
     formData.append("end_date", endDate);
     formData.append("status", status == "1" ? "Open" : "Close");
-    formData.append("down_file", file);
+    formData.append("up_file", file);
 
     try {
       await Task.createTask(token, formData);
-      getTask();
       formik.resetForm({ values: formik.initialValues });
       closeModal("add-task");
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Data Berhasil Disimpan Refresh kembali jika data tidak muncul",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      getClass();
+      await delay(2500);
+      location.reload();
     } catch (error: any) {
       closeModal("add-task");
       Swal.fire({
@@ -230,8 +255,19 @@ const AdmSiswa = () => {
   };
 
   const handleFile = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    setFile(file || null);
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      if (selectedFile.type !== "application/pdf") {
+        console.warn("Please upload a PDF file");
+        setFile(null);
+        return;
+      }
+      setFile(selectedFile);
+      console.log(selectedFile);
+    } else {
+      console.warn("No file selected");
+      setFile(null);
+    }
   };
 
   const deleteTask2 = async (id: number) => {
@@ -363,6 +399,7 @@ const AdmSiswa = () => {
       formik.setFieldValue("startDate", formatDateFormik(data.start_date));
       formik.setFieldValue("endDate", formatDateFormik(data.end_date));
       formik.setFieldValue("status", data.status == "Open" ? "1" : "2");
+      formik.setFieldValue("description", data.description);
     } catch (error) {
       console.log(error);
     }
@@ -398,7 +435,22 @@ const AdmSiswa = () => {
       console.log(error);
     }
   };
+  const getTahunAjaran = (startYear: any, endYear: any) => {
+    const currentYear = new Date().getFullYear();
+    const start = currentYear - startYear;
+    const end = currentYear + endYear;
+    const years = [];
 
+    for (let year = start; year <= end; year++) {
+      const year1 = year;
+      const year2 = year1 + 1;
+      years.push(`${year1}/${year2}`);
+    }
+
+    return years;
+  };
+
+  const tahunAjaranOptions = getTahunAjaran(1, 0);
   const handleAddFeedback = async () => {
     try {
       const data = {
@@ -417,7 +469,6 @@ const AdmSiswa = () => {
       });
     }
   };
-
   return (
     <>
       <div className="w-full flex flex-col items-center">
@@ -440,12 +491,13 @@ const AdmSiswa = () => {
             </button>
           </div>
           <div className="overflow-x-auto">
-            <table className="table table-zebra shadow-md mt-5">
+            <table className="table table-zebra mt-5">
               {/* head */}
               <thead className="bg-blue-200">
                 <tr>
                   <th>No</th>
                   <th>Topik</th>
+                  <th>Deskripsi</th>
                   <th>Mapel</th>
                   <th>Kelas</th>
                   <th>Tgl Mulai</th>
@@ -457,9 +509,10 @@ const AdmSiswa = () => {
               </thead>
               <tbody>
                 {taskClass?.map((item: any, index: number) => (
-                  <tr>
+                  <tr key={index}>
                     <th>{index + 1}</th>
                     <td>{item?.topic}</td>
+                    <td>{item?.description}</td>
                     <td>{item?.subject.name}</td>
                     <td>{item?.class?.class_name}</td>
                     <td>{formatDate(item?.start_date)}</td>
@@ -502,7 +555,7 @@ const AdmSiswa = () => {
           </div>
           <div className="overflow-x-auto mt-10">
             <p className="text-xl font-bold">Tugas Berdasarkan Siswa</p>
-            <table className="table table-zebra shadow-md mt-5">
+            <table className="table table-zebra mt-5">
               {/* head */}
               <thead className="bg-blue-200">
                 <tr>
@@ -519,7 +572,7 @@ const AdmSiswa = () => {
               </thead>
               <tbody>
                 {task?.map((item: any, index: number) => (
-                  <tr>
+                  <tr key={index}>
                     <th>{index + 1}</th>
                     <td>{item?.studentclass?.student?.full_name}</td>
                     <td>{item?.topic}</td>
@@ -640,11 +693,19 @@ const AdmSiswa = () => {
               }`}
             >
               <label className="mt-4 font-bold">Tahun Pelajaran</label>
-              <input
-                type="text"
+              <select
                 className="input input-bordered w-full"
                 onChange={(e) => formik.setFieldValue("tahun", e.target.value)}
-              />
+              >
+                <option value="" disabled selected>
+                  Pilih Tahun Pelajaran
+                </option>
+                {tahunAjaranOptions.map((tahun, index) => (
+                  <option key={index} value={tahun}>
+                    {tahun}
+                  </option>
+                ))}
+              </select>
             </div>
             <div
               className={`w-full flex flex-col gap-2 ${
@@ -659,8 +720,8 @@ const AdmSiswa = () => {
                 }
               >
                 <option selected>Pick one</option>
-                <option value={1}>1</option>
-                <option value={2}>2</option>
+                <option value={1}>Ganjil</option>
+                <option value={2}>Genap</option>
               </select>
             </div>
             <div className="w-full flex flex-col gap-2">
@@ -671,6 +732,18 @@ const AdmSiswa = () => {
                 onChange={(e) => formik.setFieldValue("topik", e.target.value)}
               />
             </div>
+            {siswa === "all-student" ? (
+              <div className="w-full flex flex-col gap-2">
+                <label className="mt-4 font-bold">deskripsi</label>
+                <input
+                  type="text"
+                  className="input input-bordered w-full"
+                  onChange={(e) =>
+                    formik.setFieldValue("description", e.target.value)
+                  }
+                />
+              </div>
+            ) : null}
           </div>
           <div className="w-full">
             <div className="w-full flex flex-col gap-2">
@@ -682,9 +755,15 @@ const AdmSiswa = () => {
                 <option disabled selected>
                   Pick one
                 </option>
-                <option value={2}>Project Kelompok</option>
-                <option value={1}>WWP</option>
-                <option value={3}>Mandiri</option>
+                {siswa === "all-student" ? (
+                  <>
+                    <option value={2}>Project Kelompok</option>
+                    <option value={1}>WWP</option>
+                    <option value={3}>Mandiri</option>
+                  </>
+                ) : (
+                  <option value={3}>Mandiri</option>
+                )}
               </select>
               <label className="mt-4 w-full font-bold">Periode</label>
               <div className="flex gap-2 justify-center items-center">

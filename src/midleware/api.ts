@@ -189,6 +189,7 @@ const Task = {
       url: `/api/student-task/create`,
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
       },
       data,
     }),
@@ -237,6 +238,7 @@ const Task = {
       url: `/api/task/create`,
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
       },
       data,
     }),
@@ -845,12 +847,16 @@ const Pengumuman = {
 
   getAllPengumuman: (
     token: string | null,
+    search: string | null,
+    classId: string | null,
     start: string | null,
-    end: string | null
+    end: string | null,
+    page: number | null,
+    limit: number | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/announcement/show-between?start=${start}&end=${end}`,
+      url: `/api/announcement?search_query=${search}&class_id=${classId}&start_date=${start}&end_date=${end}&page=${page}$limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -880,10 +886,15 @@ const Pengumuman = {
 };
 
 const DashboardSiswa = {
-  getAllOverView: (token: string | null): AxiosPromise<any> =>
+  getAllOverView: (
+    token: string | null,
+    classId: string | null,
+    page: number | null,
+    limit: number | null
+  ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/overview?search_query=&page=0&limit=100`,
+      url: `/api/overview?search_query=&page=${page}&limit=${limit}&class_id=${classId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1080,12 +1091,14 @@ const PosJenisPembayaran = {
   showAll: (
     token: string | null,
     search?: string,
+    paymentPostId?: string | null,
+    academicYear?: string | null,
     page: number = 0,
     limit: number = 10
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-payment-bills?search_query=${search}&page=${page}&limit=${limit}`,
+      url: `/api/student-payment-bills?search_query=${search}&payment_post_id=${paymentPostId}&academic_year=${academicYear}&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
