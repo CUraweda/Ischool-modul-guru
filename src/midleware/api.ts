@@ -846,12 +846,16 @@ const Pengumuman = {
 
   getAllPengumuman: (
     token: string | null,
+    search: string | null,
+    classId: string | null,
     start: string | null,
-    end: string | null
+    end: string | null,
+    page: number | null,
+    limit: number | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/announcement/show-between?start=${start}&end=${end}`,
+      url: `/api/announcement?search_query=${search}&class_id=${classId}&start_date=${start}&end_date=${end}&page=${page}$limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
