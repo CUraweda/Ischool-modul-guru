@@ -24,6 +24,7 @@ const schema = Yup.object({
   startDate: Yup.string().required("required"),
   endDate: Yup.string().required("required"),
   status: Yup.string().required("required"),
+  description: Yup.string().required("required"),
 });
 
 const AdmSiswa = () => {
@@ -53,6 +54,7 @@ const AdmSiswa = () => {
       startDate: "",
       endDate: "",
       status: "",
+      description: "",
     },
     validationSchema: schema,
     onSubmit: (values) => {
@@ -93,6 +95,7 @@ const AdmSiswa = () => {
     try {
       const response = await Task.GetAll(token, 0, 20);
       setTask(response.data.data.result);
+      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -147,8 +150,16 @@ const AdmSiswa = () => {
   };
   const delay = (ms: any) => new Promise((res) => setTimeout(res, ms));
   const createTugas = async () => {
-    const { classId, subjectId, topik, startDate, endDate, status, jenis } =
-      formik.values;
+    const {
+      classId,
+      subjectId,
+      topik,
+      startDate,
+      endDate,
+      status,
+      jenis,
+      description,
+    } = formik.values;
 
     const formData = new FormData();
     formData.append("class_id", classId);
@@ -158,7 +169,8 @@ const AdmSiswa = () => {
     formData.append("start_date", startDate);
     formData.append("end_date", endDate);
     formData.append("status", status == "1" ? "Open" : "Close");
-    formData.append("task_file", file);
+    formData.append("up_file", file);
+    formData.append("description", description);
 
     try {
       await Task.createTaskClass(token, formData);
@@ -387,6 +399,7 @@ const AdmSiswa = () => {
       formik.setFieldValue("startDate", formatDateFormik(data.start_date));
       formik.setFieldValue("endDate", formatDateFormik(data.end_date));
       formik.setFieldValue("status", data.status == "Open" ? "1" : "2");
+      formik.setFieldValue("description", data.description);
     } catch (error) {
       console.log(error);
     }
@@ -484,6 +497,7 @@ const AdmSiswa = () => {
                 <tr>
                   <th>No</th>
                   <th>Topik</th>
+                  <th>Deskripsi</th>
                   <th>Mapel</th>
                   <th>Kelas</th>
                   <th>Tgl Mulai</th>
@@ -498,6 +512,7 @@ const AdmSiswa = () => {
                   <tr key={index}>
                     <th>{index + 1}</th>
                     <td>{item?.topic}</td>
+                    <td>{item?.description}</td>
                     <td>{item?.subject.name}</td>
                     <td>{item?.class?.class_name}</td>
                     <td>{formatDate(item?.start_date)}</td>
@@ -705,8 +720,8 @@ const AdmSiswa = () => {
                 }
               >
                 <option selected>Pick one</option>
-                <option value={1}>1</option>
-                <option value={2}>2</option>
+                <option value={1}>Ganjil</option>
+                <option value={2}>Genap</option>
               </select>
             </div>
             <div className="w-full flex flex-col gap-2">
@@ -717,6 +732,18 @@ const AdmSiswa = () => {
                 onChange={(e) => formik.setFieldValue("topik", e.target.value)}
               />
             </div>
+            {siswa === "all-student" ? (
+              <div className="w-full flex flex-col gap-2">
+                <label className="mt-4 font-bold">deskripsi</label>
+                <input
+                  type="text"
+                  className="input input-bordered w-full"
+                  onChange={(e) =>
+                    formik.setFieldValue("description", e.target.value)
+                  }
+                />
+              </div>
+            ) : null}
           </div>
           <div className="w-full">
             <div className="w-full flex flex-col gap-2">
