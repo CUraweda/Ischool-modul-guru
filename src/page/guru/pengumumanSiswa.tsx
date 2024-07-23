@@ -2,25 +2,27 @@ import { useState, useEffect } from "react";
 import { Pengumuman, Task } from "../../midleware/api";
 import { Store } from "../../store/Store";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
-import Modal from "../../component/modal";
+import Modal, { closeModal, openModal } from "../../component/modal";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
+import {
+  IpageMeta,
+  PaginationControl,
+} from "../../component/PaginationControl";
+import { formatTime } from "../../utils/date";
 
 const validationSchema = Yup.object({
   startDate: Yup.string().required("Tanggal mulai tidak boleh kosong"),
   endDate: Yup.string().required("Tanggal selesai tidak boleh kosong"),
   anouncement: Yup.string().required("Pengumuman tidak boleh kosong"),
-  class_id: Yup.string().required("Kelas tidak boleh kosong"),
+  class_id: Yup.string(),
 });
 
 const PengumumanSiswa = () => {
   const { token } = Store();
-  const [startDate, setStartDate] = useState<string>("2024-01-01");
-  const [endDate, setEndDate] = useState<string>("2024-12-30");
   const [idPengumuman, setIdPengumuman] = useState<string>("");
-  const [pengumuman, setPengumuman] = useState<any>([]);
-  const [Class, setClass] = useState<any[]>([]);
+  const [classes, setClasses] = useState<any[]>([]);
 
   const formik = useFormik({
     initialValues: {
@@ -35,26 +37,58 @@ const PengumumanSiswa = () => {
     },
   });
 
+  const [dataList, setDataList] = useState<any[]>([]);
+  const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
+  const [filter, setFilter] = useState({
+    page: 0,
+    limit: 10,
+    search: "",
+    classId: "",
+    startDate: "",
+    endDate: "",
+  });
+
+  const handleFilter = (key: string, value: any) => {
+    const obj = {
+      ...filter,
+      [key]: value,
+    };
+    if (key != "page") obj["page"] = 0;
+    setFilter(obj);
+  };
+
   useEffect(() => {
-    GetAllPengumuman();
+    getDataList();
     getClass();
-  }, [startDate, endDate]);
+  }, [filter]);
 
   const getClass = async () => {
     const response = await Task.GetAllClass(token, 0, 20);
-    setClass(response.data.data.result);
+    setClasses(response.data.data.result);
   };
 
-  const GetAllPengumuman = async () => {
+  const getDataList = async () => {
     try {
       const response = await Pengumuman.getAllPengumuman(
         token,
-        startDate,
-        endDate
+        filter.search,
+        filter.classId,
+        filter.startDate,
+        filter.endDate,
+        filter.page,
+        filter.limit
       );
-      setPengumuman(response.data.data);
+
+      const { result, ...meta } = response.data?.data ?? {};
+
+      setDataList(result);
+      setPageMeta(meta);
     } catch (error) {
-      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Gagal Mengambil data pengumuman, silakan refresh halaman!",
+      });
     }
   };
 
@@ -82,7 +116,7 @@ const PengumumanSiswa = () => {
   };
 
   const trigerEdit = async (id: string) => {
-    showModal("edit-pengumuman");
+    openModal("edit-pengumuman");
     setIdPengumuman(id);
     GetByIdPengumuman(id);
   };
@@ -94,10 +128,10 @@ const PengumumanSiswa = () => {
         date_start: startDate,
         date_end: endDate,
         announcement_desc: anouncement,
-        class_id: class_id,
+        class_id: !class_id ? null : class_id,
       };
       await Pengumuman.createPengumuman(token, data);
-      GetAllPengumuman();
+      getDataList();
       closeModal("add-pengumuman");
       Swal.fire({
         position: "center",
@@ -119,16 +153,15 @@ const PengumumanSiswa = () => {
         date_start: startDate,
         date_end: endDate,
         announcement_desc: anouncement,
-        class_id: class_id,
+        class_id: !class_id ? null : class_id,
       };
-      const respone = await Pengumuman.UpdatePengumuman(
+      await Pengumuman.UpdatePengumuman(
         token,
         idPengumuman,
         data
       );
-      console.log(respone);
 
-      GetAllPengumuman();
+      getDataList();
       closeModal("edit-pengumuman");
       Swal.fire({
         position: "center",
@@ -143,30 +176,6 @@ const PengumumanSiswa = () => {
     }
   };
 
-  const showModal = (props: string) => {
-    let modalElement = document.getElementById(props) as HTMLDialogElement;
-    if (modalElement) {
-      modalElement.showModal();
-    }
-  };
-
-  const closeModal = (props: string) => {
-    let modalElement = document.getElementById(props) as HTMLDialogElement;
-    if (modalElement) {
-      modalElement.close();
-    }
-  };
-
-  const formatDate = (date: string) => {
-    let Newdate = new Date(date);
-    let formattedDate = Newdate.toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-    return formattedDate;
-  };
-
   const deletePengumuman = async (id: string) => {
     await Pengumuman.DeletePengumuman(token, id);
     Swal.fire({
@@ -174,7 +183,7 @@ const PengumumanSiswa = () => {
       text: "Your file has been deleted.",
       icon: "success",
     });
-    GetAllPengumuman();
+    getDataList();
   };
 
   const deletePengumunanTriger = async (id: string) => {
@@ -199,30 +208,44 @@ const PengumumanSiswa = () => {
 
   return (
     <>
-      <div className="w-full flex flex-wrap justify-end gap-3">
-        <div className="flex grow overflow-hidden gap-1 justify-end items-center">
+      <div className="w-full gap-3 flex flex-wrap justify-end">
+        {/* filter bar  */}
+        <div className="flex items-center">
           <input
             type="date"
             className="input input-bordered"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            value={filter.startDate}
+            onChange={(e) => handleFilter("startDate", e.target.value)}
           />
-          <p>-</p>
+          <div className="w-4 h-1 bg-base-300"></div>
           <input
             type="date"
             className="input input-bordered"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
+            value={filter.endDate}
+            onChange={(e) => handleFilter("endDate", e.target.value)}
           />
         </div>
+        <select
+          value={filter.classId}
+          onChange={(e) => handleFilter("classId", e.target.value)}
+          className="select select-bordered w-32"
+        >
+          <option value={""}>Pilih Kelas</option>
+          {classes.map((dat, i) => (
+            <option value={dat.id} key={i}>
+              {dat.class_name}
+            </option>
+          ))}
+        </select>
         <button
           id="tambah-pengumuman"
           className="btn btn-ghost bg-green-500 text-white"
-          onClick={() => showModal("add-pengumuman")}
+          onClick={() => openModal("add-pengumuman")}
         >
           tambah
         </button>
       </div>
+
       <div className="overflow-x-auto">
         <table className="table table-zebra mt-4">
           {/* head */}
@@ -230,23 +253,24 @@ const PengumumanSiswa = () => {
             <tr>
               <th>No</th>
               <th>Pengumuman</th>
-              <th>Tanggal Mulai</th>
-              <th>Tanggal Selesai</th>
+              <th>Tanggal</th>
+              <th>Kelas</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {pengumuman?.map((item: any, index: number) => (
+            {dataList.map((item: any, index: number) => (
               <tr key={index}>
                 <th>{index + 1}</th>
 
                 <td>
-                  <p className="min-w-80">
-                  {item?.announcement_desc}
-                  </p>
+                  <p className="min-w-80">{item?.announcement_desc}</p>
                 </td>
-                <td>{formatDate(item?.date_start)}</td>
-                <td>{formatDate(item?.date_end)}</td>
+                <td className="whitespace-nowrap">
+                  {formatTime(item?.date_start, "DD MMMM YYYY")}-{" "}
+                  {formatTime(item?.date_end, "DD MMMM YYYY")}
+                </td>
+                <td>{item.class?.class_name ?? "-"}</td>
 
                 <td>
                   <div className="flex gap-1 text-xl">
@@ -269,6 +293,14 @@ const PengumumanSiswa = () => {
           </tbody>
         </table>
       </div>
+
+      <PaginationControl
+        meta={pageMeta}
+        onPrevClick={() => handleFilter("page", pageMeta.page - 1)}
+        onNextClick={() => handleFilter("page", pageMeta.page + 1)}
+        onJumpPageClick={(val) => handleFilter("page", val)}
+        onLimitChange={(val) => handleFilter("limit", val)}
+      />
 
       <Modal id="add-pengumuman">
         <div className="flex flex-col gap-2 items-center">
@@ -333,7 +365,7 @@ const PengumumanSiswa = () => {
                   onBlur={formik.handleBlur}
                 >
                   <option value="">Pilih Kelas</option>
-                  {Class.map((item, index) => (
+                  {classes.map((item, index) => (
                     <option value={item.id} key={index}>
                       {item.class_name}
                     </option>
@@ -380,6 +412,7 @@ const PengumumanSiswa = () => {
           </form>
         </div>
       </Modal>
+
       <Modal id="edit-pengumuman">
         <div className="flex flex-col gap-2 items-center">
           <span className="text-xl font-bold">Edit Pengumuman</span>
@@ -443,7 +476,7 @@ const PengumumanSiswa = () => {
                   onBlur={formik.handleBlur}
                 >
                   <option value="">Pilih Kelas</option>
-                  {Class.map((item, index) => (
+                  {classes.map((item, index) => (
                     <option key={index} value={item.id}>
                       {item.class_name}
                     </option>
