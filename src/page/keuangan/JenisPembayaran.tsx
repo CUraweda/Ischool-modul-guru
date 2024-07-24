@@ -1,5 +1,5 @@
 // import React from "react";
-import { FaChevronDown, FaRegFileAlt, FaTrash } from "react-icons/fa";
+import { FaChevronDown, FaRegFileAlt, FaSearch, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaPencil } from "react-icons/fa6";
 import { useEffect, useState } from "react";
@@ -38,7 +38,12 @@ const JenisPembayaran = () => {
   const [filter, setFilter] = useState({
     page: 0,
     limit: 10,
+    search: "",
+    academicYear: "",
+    paymentPostId: "",
   });
+
+  const [search, setSearch] = useState("");
 
   const handleFilter = (key: string, value: any) => {
     const obj = {
@@ -53,7 +58,9 @@ const JenisPembayaran = () => {
     try {
       const res = await PosJenisPembayaran.showAll(
         token,
-        "",
+        filter.search,
+        filter.paymentPostId,
+        filter.academicYear,
         filter.page,
         filter.limit
       );
@@ -73,6 +80,7 @@ const JenisPembayaran = () => {
 
   useEffect(() => {
     getDataList();
+    getPostPayments();
   }, [filter]);
 
   // state in modal form
@@ -179,25 +187,37 @@ const JenisPembayaran = () => {
   const [loadingDelete, setLoadingDelete] = useState(false);
   const handleDelete = async (id: any) => {
     setLoadingDelete(true);
-    try {
-      await PosJenisPembayaran.delete(token, id);
 
-      Swal.fire({
-        icon: "success",
-        title: "Berhasil",
-        text: "Berhasil menghapus data jenis pembayaran",
-      });
+    Swal.fire({
+      icon: "question",
+      title: "Anda Yakin?",
+      text: `Aksi ini tidak dapat dibatalkan. Apakah Anda yakin ingin melanjutkan?`,
+      showCancelButton: true,
+      confirmButtonText: "Yakin",
+      cancelButtonText: "Batalkan",
+    }).then(async (result) => {
+      try {
+        if (result.isConfirmed) {
+          await PosJenisPembayaran.delete(token, id);
 
-      getDataList();
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Gagal menghapus data jenis pembayaran",
-      });
-    } finally {
-      setLoadingDelete(false);
-    }
+          Swal.fire({
+            icon: "success",
+            title: "Aksi Berhasil",
+            text: "Berhasil menghapus data jenis pembayaran",
+          });
+
+          getDataList();
+        }
+      } catch {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Gagal menghapus data jenis pembayaran",
+        });
+      } finally {
+        setLoadingDelete(false);
+      }
+    });
   };
 
   return (
@@ -287,12 +307,44 @@ const JenisPembayaran = () => {
       <div className="w-full flex justify-center flex-col items-center p-3">
         <span className="font-bold text-xl">JENIS PEMBAYARAN</span>
         <div className="w-full p-3 bg-white rounded-lg">
-          <div className="w-full flex justify-end my-3 gap-2">
-            <select className="select select-bordered w-32">
-              <option>Filter</option>
-              <option>Han Solo</option>
-              <option>Greedo</option>
-            </select>
+          {/* filters  */}
+          <div className="w-full flex flex-wrap justify-end my-3 gap-2">
+            {/* search bar  */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleFilter("search", search);
+              }}
+              className="join"
+            >
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Cari"
+                slotRight={<FaSearch />}
+              />
+            </form>
+
+            <div>
+              <Select
+                value={filter.academicYear}
+                placeholder="Tahun pembelajaran"
+                onChange={(e) => handleFilter("academicYear", e.target.value)}
+                options={getAcademicYears()}
+              />
+            </div>
+
+            <div>
+              <Select
+                value={filter.paymentPostId}
+                placeholder="Pos pembayaran"
+                keyValue="id"
+                keyDisplay="name"
+                onChange={(e) => handleFilter("paymentPostId", e.target.value)}
+                options={postPayments}
+              />
+            </div>
+
             <div className="dropdown dropdown-end">
               <button
                 tabIndex={0}

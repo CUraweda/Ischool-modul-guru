@@ -85,7 +85,7 @@ const RaportAll = () => {
     if (selectedStudents) {
       const createPromise = selectedStudents.map((item: any) => {
         const dataRest = {
-          student_class_id: item.student_id,
+          student_class_id: item.id,
           semester: semester,
         };
         return create(dataRest);
