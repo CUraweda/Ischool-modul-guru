@@ -111,7 +111,7 @@ const jadwalMengajar = () => {
       title,
       start_date: new Date(formatDateCreate(start_date)),
       end_date: new Date(formatDateCreate(end_date)),
-      hide_student: hide ? hide : false,
+      hide_student: !hide,
     };
 
     const pertama = new Date(start_date).getTime();
@@ -310,7 +310,7 @@ const jadwalMengajar = () => {
                 formik.setFieldValue("hide", e.target.checked);
               }}
             />
-            <label className="font-bold">Tampilkan di modul siswa ?</label>
+            <label className="font-bold">Jangan tampilkan di modul siswa</label>
           </div>
 
           <div className="w-full flex justify-center mt-10 gap-2">
