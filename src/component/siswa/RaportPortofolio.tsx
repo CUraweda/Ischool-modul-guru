@@ -10,19 +10,19 @@ import Swal from "sweetalert2";
 
 const RaportPortofolio = () => {
   const { token } = Store();
-  const { setSemesterProps, setKelasProps, semesterProps, kelasProps } =
-    useProps();
+  const { setSemesterProps, setKelasProps, setAcademicYearProps, semesterProps, kelasProps, academicProps } = useProps();
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
   const [kelas, setKelas] = useState<any[]>([]);
   const [porto, setPorto] = useState<any[]>([]);
   const [idClass, setClass] = useState<string>(kelasProps);
+  const [academicYear, setAcademicYear] = useState<string>(academicProps);
   const [reportId, setReportId] = useState<string>("");
   const [file, showFile] = useState<any>();
   const [fileUpload, setFile] = useState<any>(null);
   const [komen, setKomen] = useState<string>("");
 
   const [studentClass, setStudentClass] = useState<string>("");
-  const [smt, setSmt] = useState<string>(semesterProps);
+  const [smt, setSmt] = useState<string>(semesterProps || "1");
   const [merge, setMerge] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -55,7 +55,9 @@ const RaportPortofolio = () => {
   const getStudent = async () => {
     try {
       const id = idClass ? idClass : "11";
-      const response = await Raport.getAllStudentReport(token, id, null);
+      const semester = smt ? smt : "1"
+      const academic = academicYear ? academicYear : "2023/2024"
+      const response = await Raport.getAllStudentReport(token, id, semester, academic);
 
       setDataSiswa(response.data.data);
     } catch (error) {
@@ -69,7 +71,6 @@ const RaportPortofolio = () => {
     const response = await Raport.getPortofolioByRaport(token, id);
     const dataRest = response.data.data;
     const type = dataRest?.map((item: any) => item.type);
-    console.log(type);
 
     if (
       type.length === 2 &&
@@ -171,7 +172,12 @@ const RaportPortofolio = () => {
     <div>
       <div className="w-full flex justify-between gap-2">
         <div className="join">
-          <select className="select select-sm join-item w-32 max-w-md select-bordered">
+          <select className="select select-sm join-item w-32 max-w-md select-bordered"
+            value={academicYear}
+            onChange={(e) => {
+              setAcademicYear(e.target.value), setAcademicYearProps(e.target.value)
+            }}
+          >
             <option selected>Tahun Pelajaran</option>
             <option>2023/2024</option>
             <option>2024/2025</option>

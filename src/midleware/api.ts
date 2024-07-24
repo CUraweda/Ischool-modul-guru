@@ -461,11 +461,12 @@ const Raport = {
   getAllStudentReport: (
     token: string | null,
     id: string | null,
-    semester: string | null
+    semester: string | null,
+    academic: string | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-report/show-by-class/${id}?semester=${semester}`,
+      url: `/api/student-report/show-by-class/${id}?semester=${semester}&academic=${academic}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -548,12 +549,11 @@ const Raport = {
   // Raport Narasi
   getKategoriNarasi: (
     token: string | null,
-    id: string | null,
-    semester: string | null
+    id: string | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/narrative-category/show-by-class/${id}?semester=${semester} `,
+      url: `/api/narrative-category/show-by-class/${id} `,
       headers: {
         Authorization: `Bearer ${token}`,
       },

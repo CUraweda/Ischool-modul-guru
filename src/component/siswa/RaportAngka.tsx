@@ -56,8 +56,8 @@ const RaportAngka = () => {
   const [idSiswa, setIdSiswa] = useState<string>("");
   const [level, setLevel] = useState<string>("");
   const [tahun, setTahun] = useState<string>(tahunProps);
-  const [semester, setSemester] = useState<string>(semesterProps);
-  const [kelasId, setKelasId] = useState<string>(kelasProps);
+  const [semester, setSemester] = useState<string>(semesterProps || "1");
+  const [kelasId, setKelasId] = useState<string>(kelasProps || "11");
   const [mapelId, setMapelId] = useState<string>(mapelProps);
   const [arrayMapel, setarrayMapel] = useState<any>();
   const [arrayKelas, setarrayKelas] = useState<any>();
@@ -135,9 +135,14 @@ const RaportAngka = () => {
   };
 
   const getStudent = async () => {
-    const idClass = formik.values.classId;
+    const idClass = formik.values.classId || "11";
     try {
-      const response = await Raport.getAllStudentReport(token, idClass, null);
+      const response = await Raport.getAllStudentReport(
+        token,
+        idClass,
+        null,
+        ""
+      );
       setDataSiswa(response.data.data);
     } catch (error) {
       console.log(error);

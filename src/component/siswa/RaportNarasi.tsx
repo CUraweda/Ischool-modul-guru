@@ -25,7 +25,7 @@ const schema = Yup.object({
 
 const RaportNarasi = () => {
   const { token } = Store();
-  const { setKelasProps, semesterProps, kelasProps } = useProps();
+  const { setKelasProps, kelasProps } = useProps();
   const [kelas, setKelas] = useState<any[]>([]);
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
   const [idClass, setClass] = useState<string>(kelasProps);
@@ -38,6 +38,7 @@ const RaportNarasi = () => {
   const [reportId, setReportId] = useState<string>("");
   const [setting, setSetting] = useState<boolean>(false);
   const [edit, setEdit] = useState<string>("");
+  const [academic, setAcademic] = useState<string>("");
 
   const formik = useFormik({
     initialValues: {
@@ -47,7 +48,7 @@ const RaportNarasi = () => {
       idKategori: "",
       idSubKategori: "",
       subKategori: "",
-      smt: semesterProps,
+      smt: smt,
     },
     validationSchema: schema,
     onSubmit: (values) => {
@@ -57,7 +58,7 @@ const RaportNarasi = () => {
   useEffect(() => {
     getStudent();
     getKategori();
-  }, [kelas, smt]);
+  }, [idClass, smt, academic]);
 
   useEffect(() => {
     getClass();
@@ -89,7 +90,12 @@ const RaportNarasi = () => {
   const getStudent = async () => {
     try {
       const id = idClass ? idClass : "11";
-      const response = await Raport.getAllStudentReport(token, id, null);
+      const response = await Raport.getAllStudentReport(
+        token,
+        id,
+        smt,
+        academic
+      );
 
       sessionStorage.setItem("idClass", idClass);
       setDataSiswa(response.data.data);
@@ -159,7 +165,7 @@ const RaportNarasi = () => {
 
   const getKategori = async () => {
     try {
-      const response = await Raport.getKategoriNarasi(token, idClass, smt);
+      const response = await Raport.getKategoriNarasi(token, idClass);
       setKategori(response.data.data);
     } catch (error) {
       console.log(error);
@@ -284,10 +290,14 @@ const RaportNarasi = () => {
     <div>
       <div className="w-full flex justify-between gap-2">
         <div className="join">
-          <select className="select select-sm join-item w-32 max-w-md select-bordered">
-            <option selected>Tahun Pelajaran</option>
-            <option>2023/2024</option>
-            <option>2024/2025</option>
+          <select
+            className="select select-sm join-item w-32 max-w-md select-bordered"
+            value={academic}
+            onChange={(e) => setAcademic(e.target.value)}
+          >
+            <option selected>Tahun Ajaran</option>
+            <option value="2023/2024">2023/2024</option>
+            <option value="2024/2025">2024/2025</option>
           </select>
           <select
             className="select select-sm join-item w-32 max-w-md select-bordered"
@@ -297,8 +307,8 @@ const RaportNarasi = () => {
             }}
           >
             <option selected>Semester</option>
-            <option value="1">Ganjil</option>
-            <option value="2">Genap</option>
+            <option value={"1"}>Ganjil</option>
+            <option value={"2"}>Genap</option>
           </select>
           <select
             className="select select-sm join-item w-32 max-w-md select-bordered"
@@ -310,10 +320,11 @@ const RaportNarasi = () => {
             }}
           >
             <option selected>pilih kelas</option>
-            {kelas?.map((item, index) => (
-              <option value={item.id} key={index}>
-                {item.class_name}
-              </option>
+            {kelas?.map((item: any, index: number) => (
+              <option
+                value={item.id}
+                key={index}
+              >{`${item.level}-${item.class_name}`}</option>
             ))}
           </select>
         </div>

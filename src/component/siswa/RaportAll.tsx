@@ -11,11 +11,12 @@ const RaportAll = () => {
   const { setKelasProps, kelasProps } = useProps();
   const [Class, setClass] = useState<any[]>([]);
   const [siswa, setSiswa] = useState<any[]>([]);
-  const [idClass, setIdClass] = useState<string>(kelasProps);
-  const [semester, setSemester] = useState<string>("");
+  const [idClass, setIdClass] = useState<string>(kelasProps || "11");
+  const [semester, setSemester] = useState<string>("1");
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
   const [dataRaport, setDataRaport] = useState<any>([]);
   const [semesterDropdown, setSemesterDropdown] = useState<string>("1");
+  const [academic, setAcademic] = useState<string>("");
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
@@ -35,7 +36,7 @@ const RaportAll = () => {
   useEffect(() => {
     getStudent();
     getDataRaport();
-  }, [idClass, semesterDropdown]);
+  }, [idClass, semesterDropdown, academic]);
 
   useEffect(() => {
     getDataRaport();
@@ -66,8 +67,14 @@ const RaportAll = () => {
   const getDataRaport = async () => {
     try {
       const id = idClass ? idClass : "11";
-      const semester = semesterDropdown;
-      const response = await Raport.getAllStudentReport(token, id, semester);
+      const semester = semesterDropdown || "1";
+      const tahunAjaran = academic || "2023/2024";
+      const response = await Raport.getAllStudentReport(
+        token,
+        id,
+        semester,
+        tahunAjaran
+      );
       setDataRaport(response.data.data);
     } catch (error) {
       console.log(error);
@@ -129,6 +136,15 @@ const RaportAll = () => {
     <div>
       <div className="w-full flex justify-between gap-2">
         <div className="join gap-2">
+          <select
+            className="select select-bordered w-full"
+            value={academic}
+            onChange={(e) => setAcademic(e.target.value)}
+          >
+            <option selected>Tahun Ajaran</option>
+            <option value="2023/2024">2023/2024</option>
+            <option value="2024/2025">2024/2025</option>
+          </select>
           <select
             className="select select-bordered w-full"
             value={idClass}

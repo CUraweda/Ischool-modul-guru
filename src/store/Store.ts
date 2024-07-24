@@ -56,6 +56,9 @@ const useProps = create<StoreProps>((set) => ({
   semesterProps: '',
   setSemesterProps: (semesterProps: string) => set({ semesterProps }),
 
+  academicProps: '',
+  setAcademicYearProps: (academicProps: string) => set({ academicProps }),
+
   kelasProps: '',
   setKelasProps: (kelasProps: string) => set({ kelasProps }),
 
