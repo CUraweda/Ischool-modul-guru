@@ -137,7 +137,7 @@ const Dashboard = () => {
 
           {/* recent */}
           <div className="col-span-1">
-            <div className="bg-base-100 p-3 rounded-lg">
+            <div className="bg-base-100 p-3 rounded-lg border">
               <h4 className="text-lg font-bold mb-6">Pembayaran Terbaru</h4>
 
               {recentPaidOff.map((item, i) => (
