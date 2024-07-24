@@ -97,7 +97,7 @@ function PosKeuangan() {
           icon: "success",
           title: "Berhasil",
           text: `Berhasil ${
-            dataIdxInForm ? "memperbarui" : "menambahkan"
+            dataIdxInForm != null ? "memperbarui" : "menambahkan"
           } data pos pembayaran`,
         });
 
@@ -108,7 +108,7 @@ function PosKeuangan() {
           icon: "error",
           title: "Oops...",
           text: `Gagal ${
-            dataIdxInForm ? "memperbarui" : "menambahkan"
+            dataIdxInForm != null ? "memperbarui" : "menambahkan"
           } data pos pembayaran`,
         });
       } finally {
@@ -175,7 +175,7 @@ function PosKeuangan() {
       <Modal onClose={() => setDataIdxInForm(null)} id="form-pos-pembayaran">
         <form onSubmit={posPembayaranForm.handleSubmit}>
           <h3 className="text-xl font-bold mb-6">
-            {dataIdxInForm ? "Edit" : "Tambah"} Pos Pembayaran
+            {dataIdxInForm != null ? "Edit" : "Tambah"} Pos Pembayaran
           </h3>
           <Input
             type="text"

@@ -9,10 +9,11 @@ import {
   FaWallet,
 } from "react-icons/fa";
 import { moneyFormat } from "../../utils/common";
-import { DashboardKeuangan } from "../../midleware/api";
+import { DashboardKeuangan, PosPembayaran } from "../../midleware/api";
 import { Store } from "../../store/Store";
 import moment from "moment";
 import { Link } from "react-router-dom";
+import { Input, Select } from "../../component/Input";
 
 const Dashboard = () => {
   const { token } = Store();
@@ -43,6 +44,24 @@ const Dashboard = () => {
 
   useEffect(() => {
     getCards();
+  }, []);
+
+  // charts
+  const [postPayments, setPostPayments] = useState<any[]>([]);
+
+  const [postPaymentId, setPostPaymentId] = useState(""),
+    [chartStartDate, setChartStartDate] = useState(""),
+    [chartEndDate, setChartEndDate] = useState("");
+
+  const getPostPayments = async () => {
+    try {
+      const res = await PosPembayaran.showAll(token, "", 0, 1000);
+      setPostPayments(res.data?.data?.result ?? []);
+    } catch {}
+  };
+
+  useEffect(() => {
+    getPostPayments();
   }, []);
 
   return (
@@ -101,43 +120,40 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
           <div className="col-span-2">
             {/* chart filter  */}
-            <div className="w-full flex items-center justify-end gap-3 flex-wrap mb-3">
-              <select
-                className="select select-bordered bg-white w-40"
-                // onChange={(e) =>
-                //   formik.setFieldValue("semester", e.target.value)
-                // }
-              >
-                <option>Pos Keuangan</option>
-                <option value={1}>1</option>
-                <option value={2}>2</option>
-              </select>
-
-              <div className="flex overflow-x-auto items-center gap-3 ">
-                <input
-                  type="date"
-                  placeholder="Type here"
-                  className="input w-full"
+            <div className="w-full flex items-center justify-end gap-3 flex-wrap">
+              <div>
+                <Select
+                  placeholder="Pos Keuangan"
+                  keyValue="id"
+                  keyDisplay="name"
+                  value={postPaymentId}
+                  onChange={(e) => setPostPaymentId(e.target.value)}
+                  options={postPayments}
                 />
-                -
-                <input
+              </div>
+              <div className="flex items-center">
+                <Input
                   type="date"
-                  placeholder="Type here"
-                  className="input w-full"
+                  value={chartStartDate}
+                  onChange={(e) => setChartStartDate(e.target.value)}
+                />
+                <div className="w-4 h-1 bg-gray-400 relative -top-1"></div>
+                <Input
+                  type="date"
+                  value={chartEndDate}
+                  onChange={(e) => setChartEndDate(e.target.value)}
                 />
               </div>
             </div>
 
-            {/* chart  */}
-
-            <div className="w-full bg-white p-3 rounded-md">
+            <div className="w-full bg-white p-3 rounded-md border">
               <ChartMap />
             </div>
           </div>
 
           {/* recent */}
           <div className="col-span-1">
-            <div className="bg-base-100 p-3 rounded-lg">
+            <div className="bg-base-100 p-3 rounded-lg border">
               <h4 className="text-lg font-bold mb-6">Pembayaran Terbaru</h4>
 
               {recentPaidOff.map((item, i) => (
