@@ -80,7 +80,7 @@ const JenisPembayaran = () => {
 
   useEffect(() => {
     getDataList();
-    getPostPayments()
+    getPostPayments();
   }, [filter]);
 
   // state in modal form
@@ -317,16 +317,12 @@ const JenisPembayaran = () => {
               }}
               className="join"
             >
-              <label className="input input-bordered flex items-center gap-2">
-                <input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  type="text"
-                  placeholder="Cari"
-                  className="grow"
-                />
-                <FaSearch />
-              </label>
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Cari"
+                slotRight={<FaSearch />}
+              />
             </form>
 
             <div>
@@ -339,12 +335,12 @@ const JenisPembayaran = () => {
             </div>
 
             <div>
-              <Select 
+              <Select
                 value={filter.paymentPostId}
                 placeholder="Pos pembayaran"
                 keyValue="id"
                 keyDisplay="name"
-                onChange={e => handleFilter("paymentPostId", e.target.value)}
+                onChange={(e) => handleFilter("paymentPostId", e.target.value)}
                 options={postPayments}
               />
             </div>
