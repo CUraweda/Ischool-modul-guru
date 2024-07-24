@@ -3,7 +3,7 @@ import { FaFileExcel, FaSearch } from "react-icons/fa";
 import { Store } from "../../store/Store";
 import { useEffect, useState } from "react";
 import { Class, TagihanSiswa } from "../../midleware/api";
-import { Select } from "../../component/Input";
+import { Input, Select } from "../../component/Input";
 import Swal from "sweetalert2";
 import {
   IpageMeta,
@@ -110,16 +110,12 @@ const DaftarTunggakan = () => {
                 handleFilter("search", search);
               }}
             >
-              <label className="input input-bordered flex items-center gap-2">
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="grow"
-                  placeholder="Cari..."
-                />
-                <FaSearch />
-              </label>
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Cari siswa"
+                slotRight={<FaSearch />}
+              />
             </form>
 
             {/* filter class  */}
