@@ -16,11 +16,11 @@ const validationSchema = Yup.object({
   startDate: Yup.string().required("Tanggal mulai tidak boleh kosong"),
   endDate: Yup.string().required("Tanggal selesai tidak boleh kosong"),
   anouncement: Yup.string().required("Pengumuman tidak boleh kosong"),
-  class_id: Yup.string(),
+  class_id: Yup.string().optional(),
 });
 
 const PengumumanSiswa = () => {
-  const { token } = Store();
+  const { token, role } = Store();
   const [idPengumuman, setIdPengumuman] = useState<string>("");
   const [classes, setClasses] = useState<any[]>([]);
 
@@ -32,8 +32,10 @@ const PengumumanSiswa = () => {
       class_id: 0,
     },
     validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: (values, { setFieldError }) => {
+      console.log(values)
+      if (role == "6" && !values.class_id)
+        setFieldError("class_id", "Kelas tidak boleh kosong");
     },
   });
 
@@ -125,6 +127,8 @@ const PengumumanSiswa = () => {
   const CreatePengumuman = async () => {
     try {
       const { anouncement, startDate, endDate, class_id } = formik.values;
+      if (role == "6" && !class_id) return;
+
       const data = {
         date_start: startDate,
         date_end: endDate,
@@ -150,6 +154,8 @@ const PengumumanSiswa = () => {
   const EditPengumuman = async () => {
     try {
       const { anouncement, startDate, endDate, class_id } = formik.values;
+      if (role == "6" && !class_id) return;
+
       const data = {
         date_start: startDate,
         date_end: endDate,
