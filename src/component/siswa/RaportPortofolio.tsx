@@ -7,15 +7,14 @@ import { Task, Raport } from "../../midleware/api";
 import { Store, useProps } from "../../store/Store";
 import { CiFolderOff } from "react-icons/ci";
 import Swal from "sweetalert2";
+import { IpageMeta, PaginationControl } from "../PaginationControl";
 
 const RaportPortofolio = () => {
   const { token } = Store();
-  const { setSemesterProps, setKelasProps, semesterProps, kelasProps } =
-    useProps();
+  const { setSemesterProps, setKelasProps, semesterProps } = useProps();
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
   const [kelas, setKelas] = useState<any[]>([]);
   const [porto, setPorto] = useState<any[]>([]);
-  const [idClass, setClass] = useState<string>(kelasProps);
   const [reportId, setReportId] = useState<string>("");
   const [file, showFile] = useState<any>();
   const [fileUpload, setFile] = useState<any>(null);
@@ -39,25 +38,50 @@ const RaportPortofolio = () => {
     }
   };
 
+  const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
+  const [filter, setFilter] = useState({
+    academic: "",
+    classId: "",
+    semester: "1",
+    page: 0,
+    limit: 10,
+  });
+
+  const handleFilter = (key: string, value: any) => {
+    const obj = {
+      ...filter,
+      [key]: value,
+    };
+    if (key != "page") obj["page"] = 0;
+    setFilter(obj);
+  };
+
   useEffect(() => {
     getClass();
   }, []);
 
   useEffect(() => {
     getStudent();
-  }, [idClass]);
+  }, [filter]);
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20);
+    const response = await Task.GetAllClass(token, 0, 20, "Y", "N");
     setKelas(response.data.data.result);
   };
 
   const getStudent = async () => {
     try {
-      const id = idClass ? idClass : "11";
-      const response = await Raport.getAllStudentReport(token, id, null);
-
-      setDataSiswa(response.data.data);
+      const response = await Raport.showAllStudentReport(
+        token,
+        filter.classId,
+        filter.semester,
+        filter.page,
+        filter.limit,
+        "Y"
+      );
+      const { result, ...meta } = response.data.data;
+      setDataSiswa(result);
+      setPageMeta(meta);
     } catch (error) {
       console.log(error);
     }
@@ -171,16 +195,21 @@ const RaportPortofolio = () => {
     <div>
       <div className="w-full flex justify-between gap-2">
         <div className="join">
-          <select className="select select-sm join-item w-32 max-w-md select-bordered">
+          <select
+            value={filter.academic}
+            onChange={(e) => handleFilter("academic", e.target.value)}
+            className="select join-item w-32 max-w-md select-bordered"
+          >
             <option selected>Tahun Pelajaran</option>
             <option>2023/2024</option>
             <option>2024/2025</option>
           </select>
           <select
-            className="select select-sm join-item w-32 max-w-md select-bordered"
-            value={smt}
+            className="select join-item w-32 max-w-md select-bordered"
+            value={filter.semester}
             onChange={(e) => {
-              setSmt(e.target.value), setSemesterProps(e.target.value);
+              handleFilter("semester", e.target.value),
+                setSemesterProps(e.target.value);
             }}
           >
             <option selected>Semester</option>
@@ -188,10 +217,11 @@ const RaportPortofolio = () => {
             <option value={"2"}>Genap</option>
           </select>
           <select
-            className="select select-sm join-item w-32 max-w-md select-bordered"
-            value={idClass}
+            className="select join-item w-32 max-w-md select-bordered"
+            value={filter.classId}
             onChange={(e) => {
-              setClass(e.target.value), setKelasProps(e.target.value);
+              handleFilter("classId", e.target.value),
+                setKelasProps(e.target.value);
             }}
           >
             <option selected>pilih kelas</option>
@@ -203,8 +233,8 @@ const RaportPortofolio = () => {
             ))}
           </select>
         </div>
-        <div></div>
       </div>
+
       <div className="overflow-x-auto mt-5">
         <table className="table table-md table-zebra">
           <thead>
@@ -269,6 +299,14 @@ const RaportPortofolio = () => {
           </tbody>
         </table>
       </div>
+
+      <PaginationControl
+        meta={pageMeta}
+        onPrevClick={() => handleFilter("page", pageMeta.page - 1)}
+        onNextClick={() => handleFilter("page", pageMeta.page + 1)}
+        onJumpPageClick={(val) => handleFilter("page", val)}
+        onLimitChange={(val) => handleFilter("limit", val)}
+      />
 
       <Modal id="upload-portofolio">
         <div className="w-full flex flex-col items-center">
