@@ -395,6 +395,20 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  GetAllTimetableByClass: (
+    token: string | null,
+    classId: string | null,
+    semester: string | null,
+    academic: string,
+    withAssign: string = "N"
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/timetable/show-by-class?semester=${semester}&academic=${academic}&class_id=${classId}&with_assign=${withAssign}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 
   GetTimetableById: (
     token: string | null,
