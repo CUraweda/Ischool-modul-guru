@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaPencilAlt, FaPlus, FaRegTrashAlt } from "react-icons/fa";
+import { FaPencilAlt, FaPlus, FaRegTrashAlt, FaSearch } from "react-icons/fa";
 import Modal from "../modal";
 import { MdCloudUpload } from "react-icons/md";
 import { Store, useProps } from "../../store/Store";
@@ -18,6 +18,7 @@ import template from "./template.xlsx";
 import * as ExcelJS from "exceljs";
 import { FiFileText } from "react-icons/fi";
 import { BsPersonLinesFill } from "react-icons/bs";
+import { IpageMeta, PaginationControl } from "../PaginationControl";
 
 const validationSchema = Yup.object({
   classId: Yup.string().required("required"),
@@ -37,16 +38,8 @@ const validationPersonalitySchema = Yup.object({
 
 const RaportAngka = () => {
   const { token } = Store();
-  const {
-    setTahunProps,
-    setSemesterProps,
-    setKelasProps,
-    setMapelProps,
-    tahunProps,
-    semesterProps,
-    kelasProps,
-    mapelProps,
-  } = useProps();
+  const { setTahunProps, setSemesterProps, setKelasProps, setMapelProps } =
+    useProps();
 
   const [kelas, setKelas] = useState<any[]>([]);
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
@@ -55,10 +48,6 @@ const RaportAngka = () => {
   const [idNumber, setIdNumber] = useState<string>("");
   const [idSiswa, setIdSiswa] = useState<string>("");
   const [level, setLevel] = useState<string>("");
-  const [tahun, setTahun] = useState<string>(tahunProps);
-  const [semester, setSemester] = useState<string>(semesterProps);
-  const [kelasId, setKelasId] = useState<string>(kelasProps);
-  const [mapelId, setMapelId] = useState<string>(mapelProps);
   const [arrayMapel, setarrayMapel] = useState<any>();
   const [arrayKelas, setarrayKelas] = useState<any>();
   const [arrayNumber, setarrayNumber] = useState<any>();
@@ -69,6 +58,27 @@ const RaportAngka = () => {
   const [studentInEditPersonality, setStudentInEditPersonality] = useState<any>(
     {}
   );
+
+  const [search, setSearch] = useState("");
+  const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
+  const [filter, setFilter] = useState({
+    academic: "",
+    semester: "1",
+    classId: "",
+    subjectId: "",
+    search: "",
+    page: 0,
+    limit: 10,
+  });
+
+  const handleFilter = (key: string, value: any) => {
+    const obj = {
+      ...filter,
+      [key]: value,
+    };
+    if (key != "page") obj["page"] = 0;
+    setFilter(obj);
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -101,7 +111,7 @@ const RaportAngka = () => {
 
   useEffect(() => {
     getNumberRaport();
-  }, [tahun, semester, kelasId, mapelId, arrayKelas]);
+  }, [filter, arrayKelas]);
 
   useEffect(() => {
     getStudentPersonalities();
@@ -123,7 +133,7 @@ const RaportAngka = () => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20);
+    const response = await Task.GetAllClass(token, 0, 20, "Y", "N", "Y");
     const kelasData = response.data.data.result;
     const kelasFilter = kelasData.filter(
       (value: any) => value.id == formik.values.classId
@@ -152,21 +162,21 @@ const RaportAngka = () => {
   };
 
   const getNumberRaport = async () => {
-    const data = {
-      tahun: tahun ? tahun : "2023/2024",
-      semester: semester ? semester : 1,
-      class: kelasId ? kelasId : "11",
-    };
-    const response = await Raport.getAllNumberReport(token, data);
-    const dataRest = response.data.data;
-    if (mapelId) {
-      const filteredData = dataRest.filter(
-        (item: any) => item.subject_id == mapelId
-      );
-      setDataRaport(filteredData);
-    } else {
-      setDataRaport(dataRest);
-    }
+    const response = await Raport.showAllNumberReport(
+      token,
+      filter.search,
+      filter.classId,
+      filter.academic,
+      filter.semester,
+      filter.subjectId,
+      filter.page,
+      filter.limit,
+      "Y"
+    );
+
+    const { result, ...meta } = response.data.data;
+    setDataRaport(result);
+    setPageMeta(meta);
   };
 
   const numberToWords = (number: string): string => {
@@ -490,14 +500,18 @@ const RaportAngka = () => {
   const getDataNumberByStudent = async (id: string) => {
     showModal("view-angka");
     setIdSiswa(id);
-    const response = await Raport.getNumberReportByStudent(token, id, semester);
+    const response = await Raport.getNumberReportByStudent(
+      token,
+      id,
+      filter.semester
+    );
     const dataRest = response.data.data;
     setarrayNumber(dataRest);
   };
 
   const generatePdf = async () => {
     try {
-      await Raport.generateNumberReport(token, idSiswa, semester);
+      await Raport.generateNumberReport(token, idSiswa, filter.semester);
       closeModal("view-angka");
       Swal.fire({
         position: "center",
@@ -518,38 +532,46 @@ const RaportAngka = () => {
 
   return (
     <div>
-      <div className="w-full flex justify-between gap-2">
+      <div className="w-full flex flex-wrap gap-3">
         <div className="join">
           <select
-            className="select select-sm join-item w-32 max-w-md select-bordered"
-            value={tahun}
+            className="select join-item w-32 max-w-md select-bordered"
+            value={filter.academic}
             onChange={(e) => {
-              setTahun(e.target.value), setTahunProps(e.target.value);
+              handleFilter("academic", e.target.value),
+                setTahunProps(e.target.value);
             }}
           >
-            <option selected>Tahun Pelajaran</option>
+            <option value={""} selected>
+              Tahun Pelajaran
+            </option>
             <option value={"2023/2024"}>2023/2024</option>
             <option value={"2024/2025"}>2024/2025</option>
           </select>
           <select
-            className="select select-sm join-item w-32 max-w-md select-bordered"
-            value={semester}
+            className="select join-item w-32 max-w-md select-bordered"
+            value={filter.semester}
             onChange={(e) => {
-              setSemester(e.target.value), setSemesterProps(e.target.value);
+              handleFilter("semester", e.target.value),
+                setSemesterProps(e.target.value);
             }}
           >
-            <option selected>Semester</option>
+            <option value={""} selected>
+              Semester
+            </option>
             <option value={"1"}>Ganjil</option>
             <option value={"2"}>Genap</option>
           </select>
+        </div>
+        <div className="join me-auto">
           <select
-            className="select select-sm join-item w-32 max-w-md select-bordered"
+            className="select join-item w-32 max-w-md select-bordered"
             onChange={(e) => {
-              setKelasId(e.target.value),
+              handleFilter("classId", e.target.value),
                 setKelasProps(e.target.value),
                 formik.setFieldValue("classId", e.target.value);
             }}
-            value={kelasId}
+            value={filter.classId}
           >
             <option selected>pilih kelas</option>
             {kelas?.map((item: any, index: number) => (
@@ -560,41 +582,58 @@ const RaportAngka = () => {
             ))}
           </select>
           <select
-            className="select select-sm join-item w-32 max-w-md select-bordered"
-            value={mapelId}
+            className="select join-item w-32 max-w-md select-bordered"
+            value={filter.subjectId}
             onChange={(e) => {
-              setMapelId(e.target.value), setMapelProps(e.target.value);
+              handleFilter("subjectId", e.target.value),
+                setMapelProps(e.target.value);
             }}
           >
-            <option selected>Pelajaran</option>
+            <option value={""} selected>
+              Pelajaran
+            </option>
             {mapel?.map((item: any, index: number) => (
               <option value={item.id} key={index}>
                 {item.name}
               </option>
             ))}
           </select>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleFilter("search", search);
+            }}
+            className="join-item input input-bordered flex items-center gap-2"
+          >
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              type="text"
+              placeholder="Cari"
+              className="grow"
+            />
+            <FaSearch />
+          </form>
         </div>
-        <div>
-          <div className="join">
-            <button
-              className="btn btn-sm join-item bg-blue-500 text-white "
-              onClick={() => showModal("add-angka")}
-            >
-              <span className="text-xl">
-                <FaPlus />
-              </span>
-              Tambah
-            </button>
-            <button
-              className="btn btn-sm join-item bg-cyan-500 text-white "
-              onClick={() => showModal("upload-angka")}
-            >
-              <span className="text-xl">
-                <MdCloudUpload />
-              </span>
-              Upload
-            </button>
-          </div>
+        <div className="join">
+          <button
+            className="btn join-item bg-blue-500 text-white "
+            onClick={() => showModal("add-angka")}
+          >
+            <span className="text-xl">
+              <FaPlus />
+            </span>
+            Tambah
+          </button>
+          <button
+            className="btn join-item bg-cyan-500 text-white "
+            onClick={() => showModal("upload-angka")}
+          >
+            <span className="text-xl">
+              <MdCloudUpload />
+            </span>
+            Upload
+          </button>
         </div>
       </div>
       <div className="overflow-x-auto mt-5">
@@ -673,6 +712,15 @@ const RaportAngka = () => {
           </tbody>
         </table>
       </div>
+
+      <PaginationControl
+        meta={pageMeta}
+        onPrevClick={() => handleFilter("page", pageMeta.page - 1)}
+        onNextClick={() => handleFilter("page", pageMeta.page + 1)}
+        onJumpPageClick={(val) => handleFilter("page", val)}
+        onLimitChange={(val) => handleFilter("limit", val)}
+      />
+
       <Modal id="edit-kepribadian" width="w-11/12 max-w-4xl">
         <h3 className="text-xl mb-6">Edit Kepribadian</h3>
         <div className="mb-6 grid grid-cols-3">
