@@ -99,9 +99,8 @@ const PresensiSiswa = () => {
   };
 
   const getStudent = async () => {
-    const id = parseInt(idClass);
     try {
-      const response = await Student.GetStudentByClass(token, id, "2023/2024");
+      const response = await Student.GetStudentByClass(token, idClass, "2023/2024");
       setSiswa(response.data.data);
     } catch (error) {
       closeModal("add-presensi");
@@ -278,7 +277,7 @@ const PresensiSiswa = () => {
             </button>
           </div>
 
-          <table className="table shadow-lg">
+          <table className="table">
             {/* head */}
             <thead className="bg-blue-400 text-white">
               <tr>

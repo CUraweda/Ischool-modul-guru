@@ -130,10 +130,9 @@ const AdmSiswa = () => {
 
   const getStudent = async () => {
     const classId = formik.values.classId;
-    const idClass = classId ? parseInt(classId) : null;
     const response = await Student.GetStudentByClass(
       token,
-      idClass,
+      classId,
       "2023/2024"
     );
     setDataSiswa(response.data.data);
