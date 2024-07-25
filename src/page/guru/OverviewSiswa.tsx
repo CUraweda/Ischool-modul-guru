@@ -23,7 +23,7 @@ const validationSchema = Yup.object({
 });
 
 const OverviewSiswa = () => {
-  const { token } = Store();
+  const { token, role } = Store();
   const [overview, setOverview] = useState<any>([]);
   const [idOverview, setIdOverview] = useState<string>("");
 
@@ -37,8 +37,9 @@ const OverviewSiswa = () => {
       class_id: "",
     },
     validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: (values, { setFieldError }) => {
+      if (role == "6" && !values.class_id)
+        setFieldError("class_id", "Kelas tidak boleh kosong");
     },
   });
 
@@ -66,7 +67,7 @@ const OverviewSiswa = () => {
 
   const getClasses = async () => {
     try {
-      const res = await Class.showAll(token, 0, 1000);
+      const res = await Class.showAll(token, 0, 0, "Y");
       setClasses(res.data.data.result);
     } catch {}
   };
@@ -94,7 +95,8 @@ const OverviewSiswa = () => {
       token,
       filter.classId,
       filter.page,
-      filter.limit
+      filter.limit,
+      "Y"
     );
     const { result, ...meta } = response?.data?.data;
     setOverview(result);
@@ -105,6 +107,9 @@ const OverviewSiswa = () => {
     try {
       const { topic, meaningful_understanding, tup, period, status, class_id } =
         formik.values;
+
+      if (role == "6" && !class_id) return;
+
       const data = {
         topic,
         meaningful_understanding,
@@ -154,6 +159,9 @@ const OverviewSiswa = () => {
     try {
       const { topic, meaningful_understanding, tup, period, status, class_id } =
         formik.values;
+
+      if (role == "6" && !class_id) return;
+
       const data = {
         topic,
         meaningful_understanding,
@@ -427,7 +435,7 @@ const OverviewSiswa = () => {
             </div>
             <div className="w-full flex flex-col gap-2 mt-5">
               <label htmlFor="" className="font-bold">
-                Kelas (opsional)
+                Kelas
               </label>
               <div className="flex gap-1 justify-center items-center w-full ">
                 <select
