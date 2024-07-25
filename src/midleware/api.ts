@@ -82,6 +82,22 @@ const Student = {
       },
       data,
     }),
+  showAllPresensi: (
+    token: string | null,
+    search: string | null,
+    page: number | null,
+    limit: number | null,
+    classId: string | null,
+    attDate: string | null,
+    withAssign: string | null = "N"
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-attendance?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&att_date=${attDate}&with_assign=${withAssign}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   GetPresensiByClassDate: (
     token: string | null,
     id: number | null,
