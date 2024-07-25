@@ -892,11 +892,12 @@ const DashboardSiswa = {
     token: string | null,
     classId: string | null,
     page: number | null,
-    limit: number | null
+    limit: number | null,
+    withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/overview?search_query=&page=${page}&limit=${limit}&class_id=${classId}`,
+      url: `/api/overview?search_query=&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
