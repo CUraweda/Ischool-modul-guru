@@ -59,11 +59,11 @@ const PengumumanSiswa = () => {
 
   useEffect(() => {
     getDataList();
-    getClass();
+    getClassByEmployee();
   }, [filter]);
 
-  const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20);
+  const getClassByEmployee = async () => {
+    const response = await Task.GetAllClass(token, 0, 20, "Y");
     setClasses(response.data.data.result);
   };
 
@@ -76,7 +76,8 @@ const PengumumanSiswa = () => {
         filter.startDate,
         filter.endDate,
         filter.page,
-        filter.limit
+        filter.limit,
+        "Y"
       );
 
       const { result, ...meta } = response.data?.data ?? {};
@@ -155,11 +156,7 @@ const PengumumanSiswa = () => {
         announcement_desc: anouncement,
         class_id: !class_id ? null : class_id,
       };
-      await Pengumuman.UpdatePengumuman(
-        token,
-        idPengumuman,
-        data
-      );
+      await Pengumuman.UpdatePengumuman(token, idPengumuman, data);
 
       getDataList();
       closeModal("edit-pengumuman");
