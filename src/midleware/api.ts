@@ -20,7 +20,7 @@ const Auth = {
 const Student = {
   GetStudentByClass: (
     token: string | null,
-    id: number | null,
+    id: string | null,
     tahun: string | null
   ): AxiosPromise<any> =>
     instance({
@@ -504,7 +504,21 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
-
+  showAllStudentReport: (
+    token: string | null,
+    classId: string,
+    semester: string,
+    page: number | null,
+    limit: number | null,
+    withAssign: string | null = "N"
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-report?search_query=&page=${page}&class_id=${classId}&semester=${semester}&limit=${limit}&with_assign=${withAssign}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   // raport angka
   getAllNumberReport: (token: string | null, data: any): AxiosPromise<any> =>
     instance({
@@ -884,7 +898,7 @@ const Pengumuman = {
     end: string | null,
     page: number | null,
     limit: number | null,
-    withAssign: string  = "N"
+    withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",

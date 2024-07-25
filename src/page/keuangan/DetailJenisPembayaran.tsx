@@ -164,7 +164,7 @@ const DetailJenisPembayaran = () => {
       if (class_id) {
         result = await Student.GetStudentByClass(
           token,
-          class_id,
+          class_id.toString(),
           academic_year
         );
         tambahSiswaForm.setFieldValue("student_id", 0);
