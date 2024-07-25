@@ -58,7 +58,7 @@ const RaportAll = () => {
   }, []);
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20, "Y");
+    const response = await Task.GetAllClass(token, 0, 20, "Y", "N", "Y");
     setClass(response.data.data.result);
   };
 
