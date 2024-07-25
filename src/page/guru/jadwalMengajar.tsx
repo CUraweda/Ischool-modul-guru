@@ -22,7 +22,7 @@ const jadwalMengajar = () => {
   const { token, tanggalPekanan, tanggalStartDate } = Store();
   const [kelas, setKelas] = useState<any[]>([]);
   const [smt, setSmt] = useState<string>("1");
-  const [idClass, setIdClass] = useState<string>("11");
+  const [idClass, setIdClass] = useState<string>("");
 
   const formik = useFormik({
     initialValues: {
@@ -96,7 +96,7 @@ const jadwalMengajar = () => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20);
+    const response = await Task.GetAllClass(token, 0, 20, "Y");
     setKelas(response.data.data.result);
   };
 
@@ -323,7 +323,6 @@ const jadwalMengajar = () => {
           </div>
         </div>
       </Modal>
-     
     </div>
   );
 };

@@ -93,7 +93,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
   const getKalenderPendidikan = async () => {
     try {
       // const smt = sessionStorage.getItem("smt") ? sessionStorage.getItem("smt") : '1'
-      const response = await Kalender.GetAllTimetable(token, kelas, smt);
+      const response = await Kalender.GetAllTimetableByClass(token, kelas, smt, '2023/2024', 'Y');
       const dataList = response.data.data;
 
       const newData = dataList.map((item: any) => ({
@@ -145,7 +145,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20);
+    const response = await Task.GetAllClass(token, 0, 20, "Y");
     setClass(response.data.data.result);
   };
 
@@ -288,7 +288,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
       <Modal id="edit-rencana">
         <div className="w-full flex flex-col items-center">
           <span className="text-xl font-bold">Edit Rencana Pekanan</span>
-         
+
           <div className="flex w-full mt-5 flex-col">
             <div className="w-full flex flex-col gap-2">
               <label className="mt-4 w-full font-bold">Tahun Pelajaran</label>
