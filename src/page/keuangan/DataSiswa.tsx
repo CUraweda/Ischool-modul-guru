@@ -13,6 +13,7 @@ import {
   PaginationControl,
 } from "../../component/PaginationControl";
 import { formatTime } from "../../utils/date";
+import { Input, Select } from "../../component/Input";
 
 const getReport = (arr: any[], semester: any) => {
   const filt = arr.filter((ar) => ar.semester == semester);
@@ -215,44 +216,36 @@ const DataSiswa = () => {
         <span className="font-bold text-xl">DATA SISWA</span>
         <div className="w-full p-3 bg-white rounded-lg">
           <div className="w-full gap-3 flex flex-wrap justify-end my-3">
-            <select
-              value={filter.classId}
-              onChange={(e) => handleFilter("classId", e.target.value)}
-              className="select select-bordered w-32"
+            <div>
+              <Select
+                placeholder="Pilih kelas"
+                value={filter.classId}
+                onChange={(e) => handleFilter("classId", e.target.value)}
+                options={classes}
+                keyValue="id"
+                keyDisplay="class_name"
+              />
+            </div>
+            <div>
+              <Select
+                value={filter.academicYear}
+                onChange={(e) => handleFilter("academicYear", e.target.value)}
+                options={getAcademicYears()}
+              />
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleFilter("search", search);
+              }}
             >
-              <option value={""}>Pilih Kelas</option>
-              {classes.map((dat, i) => (
-                <option value={dat.id} key={i}>
-                  {dat.class_name}
-                </option>
-              ))}
-            </select>
-            <select
-              value={filter.academicYear}
-              onChange={(e) => handleFilter("academicYear", e.target.value)}
-              className="select select-bordered w-32"
-            >
-              {getAcademicYears().map((val, i) => (
-                <option value={val} key={i}>
-                  {val}
-                </option>
-              ))}
-            </select>
-            <div className="join">
-              <input
-                type="text"
-                placeholder="Cari Siswa"
+              <Input
+                placeholder="Cari siswa"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) =>
-                  e.key == "Enter" ? handleFilter("search", search) : null
-                }
-                className="input input-bordered w-full max-w-xs join-item"
+                slotRight={<FaSearch />}
               />
-              <button className="btn btn-ghost bg-blue-500 join-item text-white">
-                <FaSearch />
-              </button>
-            </div>
+            </form>
           </div>
           <div className="overflow-x-auto">
             <table className="table table-zebra">

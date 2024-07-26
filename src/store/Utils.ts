@@ -39,4 +39,7 @@ export interface StoreProps {
 
   distance: number;
   setDistanceProps: (distance: number) => void;
+
+  userClasses: any[]
+  setUserClasses: (userClasses: any[]) => void
 }

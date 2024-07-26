@@ -24,7 +24,7 @@ const RaportSiswa = () => {
             type="radio"
             name="my_tabs_2"
             role="tab"
-            className="tab bg-blue-300 font-bold"
+            className="tab bg-blue-300 font-bold whitespace-nowrap"
             aria-label="Raport Siswa"
             checked={tab == "raport-siswa"}
             onClick={() => setTab("raport-siswa")}

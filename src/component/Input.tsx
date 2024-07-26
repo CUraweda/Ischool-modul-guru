@@ -10,7 +10,10 @@ interface Props {
 
 interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement>,
-    Props {}
+    Props {
+  slotLeft?: React.ReactNode;
+  slotRight?: React.ReactNode;
+}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
@@ -22,23 +25,33 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       errorMessage,
       helpMessage,
       placeholder = "Ketik disini",
+      slotLeft,
+      slotRight,
       ...props
     },
     ref
   ) => {
     return (
       <label className="form-control w-full">
-        <div className="label">
-          <span className="label-text font-bold">{label}</span>
-          <span className="label-text-alt">{helpMessage}</span>
+        {label || helpMessage ? (
+          <div className="label">
+            <span className="label-text font-bold">{label}</span>
+            <span className="label-text-alt">{helpMessage}</span>
+          </div>
+        ) : (
+          ""
+        )}
+        <div className="flex items-center gap-1 input p-0 input-bordered">
+          {slotLeft ? <div className="ps-4">{slotLeft}</div> : ""}
+          <input
+            type={type}
+            placeholder={placeholder}
+            className={"input input-ghost grow !border-0 w-full " + className}
+            ref={ref}
+            {...props}
+          />
+          {slotRight ? <div className="pe-4">{slotRight}</div> : ""}
         </div>
-        <input
-          type={type}
-          placeholder={placeholder}
-          className={"input input-bordered w-full " + className}
-          ref={ref}
-          {...props}
-        />
         <div className="label">
           {hint && <span className="label-text-alt">{hint}</span>}
           {errorMessage && (

@@ -32,13 +32,14 @@ interface IscheduleDate {
 
 const activities = [
   "Library",
-  "green house",
-  "green lab",
-  "little pond",
-  "little farm",
-  "waste bank",
-  "guru tamu",
-  "display kelas",
+  "Green House",
+  "Green Lab",
+  "Little Pond",
+  "Little Farm",
+  "Waste Bank",
+  "Guru Tamu",
+  "Display Kelas",
+  "Lainnya",
 ];
 
 const statuses = ["Menunggu Pelaksanaan", "Dalam Pelaksanaan", "Selesai"];
@@ -47,6 +48,11 @@ const editDetailSchema = Yup.object().shape({
   activity: Yup.string()
     .oneOf(activities, "Pilihan aktivitas tidak sesuai")
     .required("Aktivitas tidak boleh kosong"),
+  activity_extra: Yup.string().when("activity", {
+    is: (val: any) => val == "Lainnya",
+    then: () => Yup.string().required("Aktivitas lainnya tidak boleh kosong"),
+    otherwise: () => Yup.string().optional(),
+  }),
   remark: Yup.string(),
   duration: Yup.number().moreThan(
     0,
@@ -119,6 +125,7 @@ const ODFYC = () => {
   const detailForm = useFormik({
     initialValues: {
       activity: "",
+      activity_extra: "",
       remark: "",
       duration: 1,
       status: "",
@@ -128,8 +135,13 @@ const ODFYC = () => {
     onSubmit: async (values, { setSubmitting }) => {
       setSubmitting(true);
 
+      const copyValues: any = { ...values };
+      if (copyValues.activity == "Lainnya")
+        copyValues.activity = copyValues.activity_extra;
+      delete copyValues.activity_extra;
+
       try {
-        await ForCountryDetail.update(token, dataDetail.id, values);
+        await ForCountryDetail.update(token, dataDetail.id, copyValues);
 
         setDataDetail({});
         getDataList();
@@ -163,7 +175,14 @@ const ODFYC = () => {
         data = res.data.data;
 
       detailForm.setValues({
-        activity: data.activity ?? "",
+        activity: data.activity
+          ? !activities.includes(data.activity)
+            ? "Lainnya"
+            : data.activity
+          : "",
+        activity_extra: !activities.includes(data.activity)
+          ? data.activity
+          : "",
         remark: data.remark ?? "",
         duration: data.duration ?? 0,
         status: data.status ?? "",
@@ -540,6 +559,16 @@ const ODFYC = () => {
                 onChange={detailForm.handleChange}
                 errorMessage={detailForm.errors.activity}
               />
+
+              {detailForm.values.activity == "Lainnya" && (
+                <Input
+                  label="Aktivitas lainnya"
+                  name="activity_extra"
+                  value={detailForm.values.activity_extra}
+                  onChange={detailForm.handleChange}
+                  errorMessage={detailForm.errors.activity_extra}
+                />
+              )}
 
               <Textarea
                 label="Keterangan"

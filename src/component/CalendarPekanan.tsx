@@ -93,7 +93,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
   const getKalenderPendidikan = async () => {
     try {
       // const smt = sessionStorage.getItem("smt") ? sessionStorage.getItem("smt") : '1'
-      const response = await Kalender.GetAllTimetable(token, kelas, smt);
+      const response = await Kalender.GetAllTimetableByClass(token, kelas, smt, '2023/2024', 'Y');
       const dataList = response.data.data;
 
       const newData = dataList.map((item: any) => ({
@@ -125,7 +125,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
       title,
       start_date: new Date(formatDateCreate(start_date)),
       end_date: new Date(formatDateCreate(end_date)),
-      hide_student: hide ? hide : false,
+      hide_student: !hide,
     };
     await Kalender.EditTimeTable(token, id, data);
     window.location.reload();
@@ -145,7 +145,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20);
+    const response = await Task.GetAllClass(token, 0, 20, "Y");
     setClass(response.data.data.result);
   };
 
@@ -168,7 +168,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
       formik.setFieldValue("title", dataRest?.title);
       formik.setFieldValue("start_date", timeFormat(dataRest?.start_date));
       formik.setFieldValue("end_date", timeFormat(dataRest?.end_date));
-      formik.setFieldValue("hide", dataRest?.hide_student);
+      formik.setFieldValue("hide", !dataRest?.hide_student);
       setDateProps(dataRest?.start_date);
 
       showModal("edit-rencana");
@@ -288,7 +288,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
       <Modal id="edit-rencana">
         <div className="w-full flex flex-col items-center">
           <span className="text-xl font-bold">Edit Rencana Pekanan</span>
-         
+
           <div className="flex w-full mt-5 flex-col">
             <div className="w-full flex flex-col gap-2">
               <label className="mt-4 w-full font-bold">Tahun Pelajaran</label>
@@ -387,7 +387,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
                 formik.setFieldValue("hide", e.target.checked);
               }}
             />
-            <label className="font-bold">Tampilkan di modul siswa ?</label>
+            <label className="font-bold">Jangan tampilkan di modul siswa</label>
           </div>
 
           <div className="w-full flex justify-center mt-10 gap-2">
