@@ -156,24 +156,30 @@ const Class = {
 const Task = {
   GetAll: (
     token: string | null,
+    search: string | null,
+    classId: string | null,
     page: number | null,
-    limit: number | null
+    limit: number | null,
+    withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-task?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/student-task?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }),
   GetAllTask: (
     token: string | null,
+    search: string | null,
+    classId: string | null,
     page: number | null,
-    limit: number | null
+    limit: number | null,
+    withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/task?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/task?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
