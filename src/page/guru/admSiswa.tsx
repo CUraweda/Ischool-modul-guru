@@ -13,6 +13,11 @@ import * as Yup from "yup";
 import Swal from "sweetalert2";
 import { VscTasklist } from "react-icons/vsc";
 import { BsEyeFill } from "react-icons/bs";
+import {
+  IpageMeta,
+  PaginationControl,
+} from "../../component/PaginationControl";
+import { FaSearch } from "react-icons/fa";
 
 const schema = Yup.object({
   classId: Yup.string().required("required"),
@@ -43,6 +48,43 @@ const AdmSiswa = () => {
   const [showFile, setShowFile] = useState<any>();
   const [level, setLevel] = useState<string>("");
 
+  const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
+  const [filter, setFilter] = useState({
+    classId: "",
+    search: "",
+    page: 0,
+    limit: 10,
+  });
+
+  const handleFilter = (key: string, value: any) => {
+    const obj = {
+      ...filter,
+      [key]: value,
+    };
+    if (key != "page") obj["page"] = 0;
+    setFilter(obj);
+  };
+
+  const [search, setSearch] = useState("");
+  const [pageMetaSiswa, setPageMetaSiswa] = useState<IpageMeta>({
+    page: 0,
+    limit: 10,
+  });
+  const [filterSiswa, setFilterSiswa] = useState({
+    search: "",
+    page: 0,
+    limit: 10,
+  });
+
+  const handleFilterSiswa = (key: string, value: any) => {
+    const obj = {
+      ...filterSiswa,
+      [key]: value,
+    };
+    if (key != "page") obj["page"] = 0;
+    setFilterSiswa(obj);
+  };
+
   const formik = useFormik({
     initialValues: {
       classId: "",
@@ -69,7 +111,7 @@ const AdmSiswa = () => {
   useEffect(() => {
     getTask();
     getTaskClass();
-  }, []);
+  }, [filter, filterSiswa]);
 
   useEffect(() => {
     getMapel();
@@ -93,24 +135,41 @@ const AdmSiswa = () => {
 
   const getTask = async () => {
     try {
-      const response = await Task.GetAll(token, 0, 20);
-      setTask(response.data.data.result);
-      console.log(response);
+      const response = await Task.GetAll(
+        token,
+        filterSiswa.search,
+        filter.classId,
+        filterSiswa.page,
+        filterSiswa.limit,
+        "Y"
+      );
+      const { result, ...meta } = response.data.data;
+      setTask(result);
+      setPageMetaSiswa(meta);
     } catch (error) {
       console.log(error);
     }
   };
   const getTaskClass = async () => {
     try {
-      const response = await Task.GetAllTask(token, 0, 20);
-      setTaskClass(response.data.data.result);
+      const response = await Task.GetAllTask(
+        token,
+        filter.search,
+        filter.classId,
+        filter.page,
+        filter.limit,
+        "Y"
+      );
+      const { result, ...meta } = response.data.data;
+      setTaskClass(result);
+      setPageMeta(meta);
     } catch (error) {
       console.log(error);
     }
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20);
+    const response = await Task.GetAllClass(token, 0, 20, "Y");
     const kelasData = response.data.data.result;
     const kelasFilter = kelasData.filter(
       (value: any) => value.id == formik.values.classId
@@ -470,165 +529,250 @@ const AdmSiswa = () => {
   };
   return (
     <>
-      <div className="w-full flex flex-col items-center">
+      <div className="w-full flex flex-col items-center p-3">
         <div className="my-10 flex flex-col text-center">
           <span className="text-4xl font-bold">Daftar Tugas</span>
           {/* <span>Kelas II</span> */}
         </div>
 
-        <div className="overflow-x-auto w-full flex flex-col p-5 my-10 justify-center bg-white">
-          <div className="w-full justify-between bg-red flex">
-            <span className="text-2xl font-bold">Tugas Siswa</span>
-            <button
-              className="btn bg-green-500 text-white font-bold"
-              onClick={() => showModal("add-task")}
-            >
-              <span className="text-xl">
-                <FiPlus />
-              </span>{" "}
-              Tambah
-            </button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="table table-zebra mt-5">
-              {/* head */}
-              <thead className="bg-blue-200">
-                <tr>
-                  <th>No</th>
-                  <th>Topik</th>
-                  <th>Deskripsi</th>
-                  <th>Mapel</th>
-                  <th>Kelas</th>
-                  <th>Tgl Mulai</th>
-                  <th>Tgl Selesai</th>
-                  <th>Jenis</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {taskClass?.map((item: any, index: number) => (
-                  <tr key={index}>
-                    <th>{index + 1}</th>
-                    <td>{item?.topic}</td>
-                    <td>{item?.description}</td>
-                    <td>{item?.subject.name}</td>
-                    <td>{item?.class?.class_name}</td>
-                    <td>{formatDate(item?.start_date)}</td>
-                    <td>{formatDate(item?.end_date)}</td>
-                    <td>
-                      {item?.task_category_id == 1
-                        ? "WWP"
-                        : item?.task_category_id == 2
-                          ? "Project Kelompok"
-                          : "Prbadi"}
-                    </td>
-                    <td>{item?.status}</td>
-                    <td className="join text-white">
-                      <button
-                        className="btn btn-sm btn-ghost bg-orange-600 text-xl join-item tooltip"
-                        data-tip="Edit"
-                        onClick={() => handleEdit(item.id)}
-                      >
-                        <FaPenClip />
-                      </button>
-                      <button
-                        className="btn btn-sm btn-ghost bg-red-600 text-xl join-item tooltip"
-                        data-tip="Hapus"
-                        onClick={() => deleteTaskClass2(item.id)}
-                      >
-                        <BiTrash />
-                      </button>
-                      <button
-                        className="btn btn-sm btn-ghost bg-blue-600 text-xl join-item tooltip"
-                        data-tip="Detail"
-                        onClick={() => handleDetailTask(item.id)}
-                      >
-                        <FaListCheck />
-                      </button>
-                    </td>
-                  </tr>
+        <div role="tablist" className="tabs tabs-lifted w-full">
+          <input
+            type="radio"
+            name="my_tabs_2"
+            role="tab"
+            className="tab bg-blue-300 font-bold whitespace-nowrap"
+            aria-label="Semua Tugas"
+            defaultChecked
+          />
+          <div
+            role="tabpanel"
+            className="tab-content bg-base-100 border rounded-box p-6"
+          >
+            <div className="w-full gap-3 flex flex-wrap">
+              <span className="text-2xl font-bold me-auto">Tugas Siswa</span>
+              <select
+                className="select select-bordered"
+                value={filter.classId}
+                onChange={(e) => {
+                  handleFilter("classId", e.target.value);
+                  formik.setFieldValue("classId", e.target.value);
+                }}
+              >
+                <option selected>Kelas</option>
+                {kelas?.map((item: any, index: number) => (
+                  <option
+                    value={item.id}
+                    key={index}
+                  >{`${item.level}-${item.class_name}`}</option>
                 ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="overflow-x-auto mt-10">
-            <p className="text-xl font-bold">Tugas Berdasarkan Siswa</p>
-            <table className="table table-zebra mt-5">
-              {/* head */}
-              <thead className="bg-blue-200">
-                <tr>
-                  <th>No</th>
-                  <th>Nama Siswa</th>
-                  <th>Topik</th>
-                  <th>Mapel</th>
-                  <th>Tgl Mulai</th>
-                  <th>Tgl Selesai</th>
-                  <th>Jenis</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {task?.map((item: any, index: number) => (
-                  <tr key={index}>
-                    <th>{index + 1}</th>
-                    <td>{item?.studentclass?.student?.full_name}</td>
-                    <td>{item?.topic}</td>
-                    <td>{item?.subject.name}</td>
-                    <td>{formatDate(item?.start_date)}</td>
-                    <td>{formatDate(item?.end_date)}</td>
-                    <td>
-                      {item?.characteristic == 1
-                        ? "WWP"
-                        : item?.characteristic == 2
-                          ? "Project Kelompok"
-                          : "Prbadi"}
-                    </td>
-                    <td>{item?.status}</td>
-                    <td className="join text-white">
-                      <button
-                        className="btn btn-sm btn-ghost bg-red-600 text-xl join-item tooltip"
-                        data-tip="hapus tugas"
-                        onClick={() => deleteTask(item.id)}
-                      >
-                        <BiTrash />
-                      </button>
-                      <button
-                        className={`btn btn-sm btn-ghost bg-orange-600 text-xl join-item tooltip`}
-                        data-tip="download file Tugas"
-                        onClick={() => {
-                          showFileTugas(item?.up_file), showModal("show-file");
-                        }}
-                      >
-                        <BsEyeFill />
-                      </button>
-                      <button
-                        className={`${
-                          !item?.down_file ? "btn-disabled" : ""
-                        } btn btn-sm btn-ghost bg-blue-600 text-xl join-item tooltip`}
-                        data-tip="download tugas siswa"
-                        onClick={() => downloadTugas(item?.down_file)}
-                      >
-                        <BiDownload />
-                      </button>
+              </select>
+              <button
+                className="btn bg-green-500 text-white font-bold"
+                onClick={() => showModal("add-task")}
+              >
+                <span className="text-xl">
+                  <FiPlus />
+                </span>{" "}
+                Tambah
+              </button>
+            </div>
 
-                      <button
-                        className={`${
-                          !item?.down_file ? "btn-disabled" : ""
-                        } btn btn-sm btn-ghost bg-green-600 text-xl join-item tooltip`}
-                        data-tip="feedback"
-                        onClick={() => {
-                          setIdTugas(item.id), showModal("add-feedback");
-                        }}
-                      >
-                        <VscTasklist />
-                      </button>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="table table-zebra mt-5">
+                {/* head */}
+                <thead className="bg-blue-200">
+                  <tr>
+                    <th>No</th>
+                    <th>Topik</th>
+                    <th>Deskripsi</th>
+                    <th>Mapel</th>
+                    <th>Kelas</th>
+                    <th>Tgl Mulai</th>
+                    <th>Tgl Selesai</th>
+                    <th>Jenis</th>
+                    <th>Status</th>
+                    <th>Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {taskClass?.map((item: any, index: number) => (
+                    <tr key={index}>
+                      <th>{index + 1}</th>
+                      <td>{item?.topic}</td>
+                      <td>{item?.description}</td>
+                      <td>{item?.subject.name}</td>
+                      <td>{item?.class?.class_name}</td>
+                      <td>{formatDate(item?.start_date)}</td>
+                      <td>{formatDate(item?.end_date)}</td>
+                      <td>
+                        {item?.task_category_id == 1
+                          ? "WWP"
+                          : item?.task_category_id == 2
+                            ? "Project Kelompok"
+                            : "Prbadi"}
+                      </td>
+                      <td>{item?.status}</td>
+                      <td className="join text-white">
+                        <button
+                          className="btn btn-sm btn-ghost bg-orange-600 text-xl join-item tooltip"
+                          data-tip="Edit"
+                          onClick={() => handleEdit(item.id)}
+                        >
+                          <FaPenClip />
+                        </button>
+                        <button
+                          className="btn btn-sm btn-ghost bg-red-600 text-xl join-item tooltip"
+                          data-tip="Hapus"
+                          onClick={() => deleteTaskClass2(item.id)}
+                        >
+                          <BiTrash />
+                        </button>
+                        <button
+                          className="btn btn-sm btn-ghost bg-blue-600 text-xl join-item tooltip"
+                          data-tip="Detail"
+                          onClick={() => handleDetailTask(item.id)}
+                        >
+                          <FaListCheck />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <PaginationControl
+              meta={pageMeta}
+              onPrevClick={() => handleFilter("page", pageMeta.page - 1)}
+              onNextClick={() => handleFilter("page", pageMeta.page + 1)}
+              onJumpPageClick={(val) => handleFilter("page", val)}
+              onLimitChange={(val) => handleFilter("limit", val)}
+            />
+          </div>
+
+          <input
+            type="radio"
+            name="my_tabs_2"
+            role="tab"
+            className="tab bg-blue-300 font-bold whitespace-nowrap"
+            aria-label="Tugas Siswa"
+          />
+          <div
+            role="tabpanel"
+            className="tab-content bg-base-100 border rounded-box p-6"
+          >
+            <div className="flex gap-3 items-center flex-wrap">
+              <p className="text-xl font-bold me-auto">
+                Tugas Berdasarkan Siswa
+              </p>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleFilterSiswa("search", search);
+                }}
+                className="join-item input input-bordered flex items-center gap-2"
+              >
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  type="text"
+                  placeholder="Cari"
+                  className="grow"
+                />
+                <FaSearch />
+              </form>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="table table-zebra mt-5">
+                {/* head */}
+                <thead className="bg-blue-200">
+                  <tr>
+                    <th>No</th>
+                    <th>Nama Siswa</th>
+                    <th>Topik</th>
+                    <th>Mapel</th>
+                    <th>Tgl Mulai</th>
+                    <th>Tgl Selesai</th>
+                    <th>Jenis</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {task?.map((item: any, index: number) => (
+                    <tr key={index}>
+                      <th>{index + 1}</th>
+                      <td>{item?.studentclass?.student?.full_name}</td>
+                      <td>{item?.topic}</td>
+                      <td>{item?.subject.name}</td>
+                      <td>{formatDate(item?.start_date)}</td>
+                      <td>{formatDate(item?.end_date)}</td>
+                      <td>
+                        {item?.characteristic == 1
+                          ? "WWP"
+                          : item?.characteristic == 2
+                            ? "Project Kelompok"
+                            : "Prbadi"}
+                      </td>
+                      <td>{item?.status}</td>
+                      <td className="join text-white">
+                        <button
+                          className="btn btn-sm btn-ghost bg-red-600 text-xl join-item tooltip"
+                          data-tip="hapus tugas"
+                          onClick={() => deleteTask(item.id)}
+                        >
+                          <BiTrash />
+                        </button>
+                        <button
+                          className={`btn btn-sm btn-ghost bg-orange-600 text-xl join-item tooltip`}
+                          data-tip="download file Tugas"
+                          onClick={() => {
+                            showFileTugas(item?.up_file),
+                              showModal("show-file");
+                          }}
+                        >
+                          <BsEyeFill />
+                        </button>
+                        <button
+                          className={`${
+                            !item?.down_file ? "btn-disabled" : ""
+                          } btn btn-sm btn-ghost bg-blue-600 text-xl join-item tooltip`}
+                          data-tip="download tugas siswa"
+                          onClick={() => downloadTugas(item?.down_file)}
+                        >
+                          <BiDownload />
+                        </button>
+
+                        <button
+                          className={`${
+                            !item?.down_file ? "btn-disabled" : ""
+                          } btn btn-sm btn-ghost bg-green-600 text-xl join-item tooltip`}
+                          data-tip="feedback"
+                          onClick={() => {
+                            setIdTugas(item.id), showModal("add-feedback");
+                          }}
+                        >
+                          <VscTasklist />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <PaginationControl
+              meta={pageMetaSiswa}
+              onPrevClick={() =>
+                handleFilterSiswa("page", pageMetaSiswa.page - 1)
+              }
+              onNextClick={() =>
+                handleFilterSiswa("page", pageMetaSiswa.page + 1)
+              }
+              onJumpPageClick={(val) => handleFilterSiswa("page", val)}
+              onLimitChange={(val) => handleFilterSiswa("limit", val)}
+            />
           </div>
         </div>
       </div>
