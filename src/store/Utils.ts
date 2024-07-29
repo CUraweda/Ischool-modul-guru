@@ -6,12 +6,14 @@ export interface StoreState {
   role: string | null;
   setRole: (role: string | null) => void;
 
+  id: string | null;
+  setId: (id: string | null) => void;
+
   tanggalPekanan: any;
   setTanggalPekanan: (tanggalPekanan: any) => void;
 
   tanggalStartDate: Date;
   setTanggalStartDate: (tanggalStartDate: any) => void;
-
 
   data: string | null;
   setData: (data: string | null) => void;
@@ -28,7 +30,7 @@ export interface StoreProps {
   kelasProps: string;
   setKelasProps: (kelasProps: string) => void;
 
-  academicProps: string,
+  academicProps: string;
   setAcademicYearProps: (academicProps: string) => void;
 
   mapelProps: string;

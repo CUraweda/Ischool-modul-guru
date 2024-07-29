@@ -1374,6 +1374,43 @@ const DashboardKeuangan = {
     }),
 };
 
+const CustomerCare = {
+  GetAllUserChat: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/user-chat/show-by-user/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  GetMessage: (
+    token: string | null,
+    id: string | null,
+    withId: number
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/user-chat/show-conversation?userid=${id}&withid=${withId}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  PostMessage: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/message/create`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
 export {
   Auth,
   Task,
@@ -1390,4 +1427,5 @@ export {
   TagihanSiswa,
   ForCountryDetail,
   DashboardKeuangan,
+  CustomerCare,
 };

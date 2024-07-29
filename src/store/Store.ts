@@ -1,5 +1,5 @@
 import create, { SetState } from "zustand";
-import { StoreState , StoreProps} from "./Utils";
+import { StoreState, StoreProps } from "./Utils";
 
 const Store = create<StoreState>((set: SetState<StoreState>) => ({
   token: localStorage.getItem("token"),
@@ -26,14 +26,25 @@ const Store = create<StoreState>((set: SetState<StoreState>) => ({
     set({ role });
   },
 
+  id: sessionStorage.getItem("id"),
+  setId: (id) => {
+    if (id) {
+      sessionStorage.setItem("id", id);
+    } else {
+      sessionStorage.removeItem("id");
+    }
+    set({ id });
+  },
+
   tanggalPekanan: new Date(),
   setTanggalPekanan: (data) => set({ tanggalPekanan: data }),
 
   tanggalStartDate: new Date(),
   setTanggalStartDate: (data) => set({ tanggalStartDate: data }),
- 
 
-  data: sessionStorage.getItem("data") ? JSON.parse(sessionStorage.getItem("data") as string) : null,
+  data: sessionStorage.getItem("data")
+    ? JSON.parse(sessionStorage.getItem("data") as string)
+    : null,
   setData: (data) => {
     if (data) {
       sessionStorage.setItem("data", JSON.stringify(data));
@@ -46,23 +57,22 @@ const Store = create<StoreState>((set: SetState<StoreState>) => ({
     sessionStorage.removeItem("data");
     set({ data: null });
   },
-
 }));
 
 const useProps = create<StoreProps>((set) => ({
-  tahunProps: '',
+  tahunProps: "",
   setTahunProps: (tahunProps: string) => set({ tahunProps }),
 
-  semesterProps: '',
+  semesterProps: "",
   setSemesterProps: (semesterProps: string) => set({ semesterProps }),
 
-  academicProps: '',
+  academicProps: "",
   setAcademicYearProps: (academicProps: string) => set({ academicProps }),
 
-  kelasProps: '',
+  kelasProps: "",
   setKelasProps: (kelasProps: string) => set({ kelasProps }),
 
-  mapelProps: '',
+  mapelProps: "",
   setMapelProps: (mapelProps: string) => set({ mapelProps }),
 
   inArea: false,

@@ -7,7 +7,6 @@ import * as Yup from "yup";
 import { Store } from "../store/Store";
 import Swal from "sweetalert2";
 import { Input } from "../component/Input";
-// import { Input } from "../component/Input";
 
 const schema = Yup.object({
   email: Yup.string().email("Email tidak valid").required("Email harus diisi"),
@@ -16,7 +15,7 @@ const schema = Yup.object({
 
 const login = () => {
   const navigate = useNavigate();
-  const { setToken, setRole } = Store();
+  const { setToken, setRole, setId } = Store();
 
   const formik = useFormik({
     initialValues: {
@@ -32,7 +31,9 @@ const login = () => {
         const emailLower = email.toLowerCase();
         const response = await Auth.Login(emailLower, password);
         const role = response.data.data.role_id;
+        const id = response.data.data.id;
         setRole(role.toString());
+        setId(id.toString());
 
         if (role === 6) {
           setToken(response.data.tokens.access.token);
