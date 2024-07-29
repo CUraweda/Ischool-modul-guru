@@ -4,7 +4,7 @@ import bg from "../assets/bg2.png";
 import { Auth } from "../midleware/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Store } from "../store/Store";
+import { employeeStore, Store } from "../store/Store";
 import Swal from "sweetalert2";
 import { Input } from "../component/Input";
 // import { Input } from "../component/Input";
@@ -17,6 +17,13 @@ const schema = Yup.object({
 const login = () => {
   const navigate = useNavigate();
   const { setToken, setRole } = Store();
+  const {
+    setEmployee,
+    setFormTeachers,
+    setFormSubjects,
+    setFormXtras,
+    setHeadmaster,
+  } = employeeStore();
 
   const formik = useFormik({
     initialValues: {
@@ -33,6 +40,21 @@ const login = () => {
         const response = await Auth.Login(emailLower, password);
         const role = response.data.data.role_id;
         setRole(role.toString());
+
+        const {
+          id,
+          full_name,
+          headmaster,
+          formextras,
+          formsubjects,
+          formteachers,
+        } = response.data.data?.employee ?? {};
+
+        if (id && full_name) setEmployee({ id, full_name });
+        if (headmaster) setHeadmaster(headmaster);
+        if (formteachers) setFormTeachers(formteachers);
+        if (formsubjects) setFormSubjects(formsubjects);
+        if (formextras) setFormXtras(formextras);
 
         if (role === 6) {
           setToken(response.data.tokens.access.token);

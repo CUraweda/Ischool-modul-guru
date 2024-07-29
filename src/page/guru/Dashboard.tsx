@@ -6,9 +6,11 @@ import FaceDetection from "../../component/FaceRegocnition";
 import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
 
 import Modal from "../../component/modal";
-import { useProps } from "../../store/Store";
+import { employeeStore, useProps } from "../../store/Store";
 
 const Dashboard = () => {
+  const { employee, formTeachers } = employeeStore();
+
   const [camera, setCamera] = useState<boolean>(false);
   const { inArea, distance } = useProps();
 
@@ -36,7 +38,7 @@ const Dashboard = () => {
       })
       .catch(function (err) {
         console.log(err);
-        
+
         setCamera(false);
         console.log("Izin kamera ditolak atau tidak diberikan");
       });
@@ -57,12 +59,18 @@ const Dashboard = () => {
               </div>
               <div className="avatar">
                 <div className="w-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                  <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                  <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
                 </div>
               </div>
               <div className="my-3 flex flex-col items-center justify-center">
-                <span className="text-2xl font-bold">Nama Karyawan</span>
-                <span className="text-md">Wali Kelas 9</span>
+                <span className="text-2xl font-bold">
+                  {employee.full_name ?? "-"}
+                </span>
+                <span className="text-md">
+                  {formTeachers
+                    .map((ft) => `Wali Kelas ${ft.class?.class_name ?? "-"}`)
+                    .join(" | ")}
+                </span>
               </div>
               <div className="my-3 px-5 w-full gap-3 flex flex-col items-center justify-center text-white">
                 <div className="w-full glass bg-green-500 flex flex-col items-center p-3 rounded-md justify-center ">
@@ -176,8 +184,8 @@ const Dashboard = () => {
         <div className={`mt-4 flex justify-center`}>
           {camera ? (
             <>
-            <MapWithTwoRadiusPins />
-            <FaceDetection />
+              <MapWithTwoRadiusPins />
+              <FaceDetection />
             </>
           ) : (
             <img
@@ -185,7 +193,6 @@ const Dashboard = () => {
               alt=""
             />
           )}
-
         </div>
         <div className="my-3 w-full flex flex-col justify-center items-center">
           <img src="" alt="" />
@@ -196,7 +203,6 @@ const Dashboard = () => {
             Anda Berada Diluar Area !{" "}
           </span>
           <div className="w-full flex gap-2">
-           
             <button
               className={`btn bg-gray-500 w-full text-white `}
               onClick={() => closeModalAdd("modal-absen")}
