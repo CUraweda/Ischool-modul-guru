@@ -64,11 +64,11 @@ const Dashboard = () => {
               </div>
               <div className="my-3 flex flex-col items-center justify-center">
                 <span className="text-2xl font-bold">
-                  {employee.full_name ?? "-"}
+                  {employee?.full_name ?? "-"}
                 </span>
                 <span className="text-md">
                   {formTeachers
-                    .map((ft) => `Wali Kelas ${ft.class?.class_name ?? "-"}`)
+                    ?.map((ft) => `Wali Kelas ${ft.class?.class_name ?? "-"}`)
                     .join(" | ")}
                 </span>
               </div>

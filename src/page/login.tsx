@@ -56,7 +56,7 @@ const login = () => {
         if (formsubjects) setFormSubjects(formsubjects);
         if (formextras) setFormXtras(formextras);
 
-        if (role === 6) {
+        if (role === 6 || role === 4) {
           setToken(response.data.tokens.access.token);
           navigate("/guru/dashboard");
         } else if (role === 2) {
