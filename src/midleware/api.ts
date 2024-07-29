@@ -1,4 +1,4 @@
-import axios, { AxiosPromise } from "axios";
+import axios, { Axios, AxiosPromise } from "axios";
 import { LoginResponse } from "./Utils";
 const instance = axios.create({ baseURL: import.meta.env.VITE_REACT_API_URL });
 
@@ -1395,6 +1395,24 @@ const CustomerCare = {
     instance({
       method: "GET",
       url: `/api/user-chat/show-conversation?userid=${id}&withid=${withId}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  GetUserToChat: (token: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/user?limit=10000`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  GetUserToChatGuru: (token: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/user-chat/show-by-guru`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

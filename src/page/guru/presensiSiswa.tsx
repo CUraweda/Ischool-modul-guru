@@ -14,7 +14,7 @@ const PresensiSiswa = () => {
   const [kelas, setKelas] = useState<any[]>([]);
   const [siswa, setSiswa] = useState<any[]>([]);
   const [dataSiswa, setDataSiswa] = useState<any[]>([]);
-  const [idClass, setIdClass] = useState<string>("1");
+  const [idClass, setIdClass] = useState<string>("");
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
   const [totalCreate, setTotalCreate] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);

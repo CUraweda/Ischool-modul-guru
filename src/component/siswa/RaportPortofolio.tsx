@@ -10,7 +10,14 @@ import Swal from "sweetalert2";
 
 const RaportPortofolio = () => {
   const { token } = Store();
-  const { setSemesterProps, setKelasProps, setAcademicYearProps, semesterProps, kelasProps, academicProps } = useProps();
+  const {
+    setSemesterProps,
+    setKelasProps,
+    setAcademicYearProps,
+    semesterProps,
+    kelasProps,
+    academicProps,
+  } = useProps();
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
   const [kelas, setKelas] = useState<any[]>([]);
   const [porto, setPorto] = useState<any[]>([]);
@@ -55,9 +62,14 @@ const RaportPortofolio = () => {
   const getStudent = async () => {
     try {
       const id = idClass ? idClass : "11";
-      const semester = smt ? smt : "1"
-      const academic = academicYear ? academicYear : "2023/2024"
-      const response = await Raport.getAllStudentReport(token, id, semester, academic);
+      const semester = smt ? smt : "1";
+      const academic = academicYear ? academicYear : "2023/2024";
+      const response = await Raport.getAllStudentReport(
+        token,
+        id,
+        semester,
+        academic
+      );
 
       setDataSiswa(response.data.data);
     } catch (error) {
@@ -148,9 +160,12 @@ const RaportPortofolio = () => {
     komen: string,
     kelas: string,
     id: string,
-    smt: string
+    smt: string,
+    type: string
   ) => {
-    showModal("komen-guru-porto");
+    type == "Guru"
+      ? showModal("komen-guru-porto")
+      : showModal("komen-ortu-porto");
     setKomen(komen);
     setReportId(id);
     setStudentClass(kelas);
@@ -172,10 +187,12 @@ const RaportPortofolio = () => {
     <div>
       <div className="w-full flex justify-between gap-2">
         <div className="join">
-          <select className="select select-sm join-item w-32 max-w-md select-bordered"
+          <select
+            className="select select-sm join-item w-32 max-w-md select-bordered"
             value={academicYear}
             onChange={(e) => {
-              setAcademicYear(e.target.value), setAcademicYearProps(e.target.value)
+              setAcademicYear(e.target.value),
+                setAcademicYearProps(e.target.value);
             }}
           >
             <option selected>Tahun Pelajaran</option>
@@ -240,16 +257,6 @@ const RaportPortofolio = () => {
                         <MdCloudUpload />
                       </span>
                     </button>
-
-                    <button
-                      className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
-                      data-tip="lihat portofolio"
-                      onClick={() => getPortoByRapotId(item?.id)}
-                    >
-                      <span className="text-xl">
-                        <FaFilePdf />
-                      </span>
-                    </button>
                     <button
                       className={`btn join-item btn-ghost btn-sm text-xl text-white tooltip ${
                         item.por_teacher_comments
@@ -262,11 +269,38 @@ const RaportPortofolio = () => {
                           item.por_teacher_comments,
                           item.student_class_id,
                           item.id,
-                          item.semester
+                          item.semester,
+                          "Guru"
                         )
                       }
                     >
                       <IoChatboxEllipsesOutline />
+                    </button>
+                    <button
+                      className={`btn join-item btn-ghost btn-sm text-xl text-white bg-yellow-500 tooltip ${
+                        item.nar_parent_comments ? "" : "btn-disabled"
+                      }`}
+                      data-tip="Komentar Ortu"
+                      onClick={() =>
+                        handleKomen(
+                          item.nar_parent_comments,
+                          item.student_class_id,
+                          item.id,
+                          item.semester,
+                          ""
+                        )
+                      }
+                    >
+                      <IoChatboxEllipsesOutline />
+                    </button>
+                    <button
+                      className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
+                      data-tip="lihat portofolio"
+                      onClick={() => getPortoByRapotId(item?.id)}
+                    >
+                      <span className="text-xl">
+                        <FaFilePdf />
+                      </span>
                     </button>
                   </div>
                 </td>
@@ -362,6 +396,14 @@ const RaportPortofolio = () => {
             >
               Submit
             </button>
+          </div>
+        </div>
+      </Modal>
+      <Modal id="komen-ortu-porto" width="w-11/12 max-w-5xl">
+        <div className="w-full flex justify-center flex-col items-center">
+          <p className="text-xl font-bold">Komentar Orang Tua / Wali</p>
+          <div className="w-full border-1 min-h-96 max-h-96 bg-gray-200 mt-5 rounded-md shadow-md p-3 overflow-auto">
+            <span>{komen}</span>
           </div>
         </div>
       </Modal>
