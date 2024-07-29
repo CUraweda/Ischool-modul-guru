@@ -249,8 +249,8 @@ const PresensiSiswa = () => {
       <div className="flex justify-center w-full mt-5 flex-col items-center">
         <span className="text-3xl font-bold">Presensi Siswa</span>
         <span className="text-xl">{formattedDate}</span>
-        <div className="overflow-x-auto my-10 w-full p-5 bg-white">
-          <div className="join w-full flex justify-end mb-5">
+        <div className="my-10 w-full p-5 bg-white rounded-md">
+          <div className="join w-full flex-wrap flex-col [&>*]:w-full sm:flex-row sm:[&>*]:w-auto justify-end mb-5">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -300,54 +300,56 @@ const PresensiSiswa = () => {
             </button>
           </div>
 
-          <table className="table">
-            {/* head */}
-            <thead className="bg-blue-400 text-white">
-              <tr>
-                <th>No</th>
-                <th>Name</th>
-                <th>NIS</th>
-                <th>Kelas</th>
-                <th>Presensi</th>
-                <th>Transportasi</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dataSiswa && dataSiswa.length > 0 ? (
-                dataSiswa.map((item: any, index: number) => (
-                  <tr key={index}>
-                    <th>{index + 1}</th>
-                    <td>{item?.studentclass?.student?.full_name}</td>
-                    <td>{item?.studentclass?.student?.nis}</td>
-                    <td>{item?.studentclass?.student?.class}</td>
-                    <td>{item?.status}</td>
-                    <td>{item?.remark ? item?.remark : "-"}</td>
-                    <td className="join text-white">
-                      <button
-                        className="btn btn-sm btn-ghost bg-orange-600 text-xl join-item"
-                        onClick={() => handlePresensi(item.id)}
-                      >
-                        <BiPencil />
-                      </button>
-                      <button
-                        className="btn btn-sm btn-ghost bg-red-600 text-xl join-item"
-                        onClick={() => deletePresensi(item.id)}
-                      >
-                        <BiTrash />
-                      </button>
+          <div className="overflow-x-auto">
+            <table className="table">
+              {/* head */}
+              <thead className="bg-blue-400 text-white">
+                <tr>
+                  <th>No</th>
+                  <th>Name</th>
+                  <th>NIS</th>
+                  <th>Kelas</th>
+                  <th>Presensi</th>
+                  <th>Transportasi</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dataSiswa && dataSiswa.length > 0 ? (
+                  dataSiswa.map((item: any, index: number) => (
+                    <tr key={index}>
+                      <th>{index + 1}</th>
+                      <td>{item?.studentclass?.student?.full_name}</td>
+                      <td>{item?.studentclass?.student?.nis}</td>
+                      <td>{item?.studentclass?.student?.class}</td>
+                      <td>{item?.status}</td>
+                      <td>{item?.remark ? item?.remark : "-"}</td>
+                      <td className="join text-white">
+                        <button
+                          className="btn btn-sm btn-ghost bg-orange-600 text-xl join-item"
+                          onClick={() => handlePresensi(item.id)}
+                        >
+                          <BiPencil />
+                        </button>
+                        <button
+                          className="btn btn-sm btn-ghost bg-red-600 text-xl join-item"
+                          onClick={() => deletePresensi(item.id)}
+                        >
+                          <BiTrash />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={7} className="text-center">
+                      Tidak ada data
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={7} className="text-center">
-                    Tidak ada data
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
 
           <PaginationControl
             meta={pageMeta}
