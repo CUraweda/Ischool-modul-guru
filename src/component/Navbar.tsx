@@ -2,15 +2,18 @@ import { BsList } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { FaBell } from "react-icons/fa";
+import { employeeStore } from "../store/Store";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const empStore = employeeStore()
 
   moment.locale("id");
   // const date = moment().format('llll');
 
   const logout = () => {
     sessionStorage.clear();
+    empStore.clearStore()
     navigate("/");
   };
 
@@ -42,7 +45,7 @@ const Navbar = () => {
               <div className="w-10 rounded-full">
                 <img
                   alt="Tailwind CSS Navbar component"
-                  src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                 />
               </div>
             </div>

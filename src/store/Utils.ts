@@ -40,3 +40,24 @@ export interface StoreProps {
   userClasses: any[]
   setUserClasses: (userClasses: any[]) => void
 }
+
+// for employee related
+export interface IemployeeState {
+  employee: any
+  setEmployee: (employee: any) => void
+
+  headmaster: any
+  setHeadmaster: (headmaster: any) => void
+
+  formTeachers: any[]
+  setFormTeachers: (formTeachers: any[]) => void
+
+  formSubjects: any[]
+  setFormSubjects: (formSubjects: any[]) => void
+
+  formXtras: any[]
+  setFormXtras: (formXtras: any[]) => void
+  
+  isHeadmaster: () => boolean
+  clearStore: () => void
+}

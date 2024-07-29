@@ -15,6 +15,16 @@ const Auth = {
         password,
       },
     }),
+  MeData: (
+    token: string | null
+  ): AxiosPromise<any> => 
+    instance({
+      method: "GET",
+      url: "/api/user/me",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
 };
 
 const Student = {
