@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   IpageMeta,
   PaginationControl,
@@ -23,18 +23,22 @@ const schema = Yup.object().shape({
   achievement_desc: Yup.string().required("Deskripsi tidak boleh kosong"),
   issued_at: Yup.date().required("Tanggal terbit tidak boleh kosong"),
   file: Yup.mixed<File>()
-    .required("Sertifikat tidak boleh kosong")
+    .nullable()
+    .optional()
     .test(
       "is-valid-type",
       "File harus pdf atau gambar",
       (value) =>
-        value &&
-        certificateExts.includes(value.name.split(".")[1].toLowerCase())
+        !value ||
+        (value &&
+          certificateExts.includes(
+            value.name.split(".").pop()?.toLowerCase() || ""
+          ))
     )
     .test(
       "is-valid-size",
       "Ukuran melebihi batas 5MB",
-      (value: any) => value && value.size <= 5000000
+      (value) => !value || (value && value.size <= 5000000)
     ),
 });
 
@@ -121,6 +125,8 @@ const PrestasiSiswa = () => {
     } catch {}
   };
 
+  const inpCertificateFile = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     getStudents();
   }, [academicYear, filter.classId]);
@@ -143,13 +149,13 @@ const PrestasiSiswa = () => {
         formData.append("student_id", values.student_id);
         formData.append("achievement_desc", values.achievement_desc);
         formData.append("issued_at", values.issued_at);
-        formData.append("file", values.file);
+        if (values.file) formData.append("file", values.file);
 
         values.id
           ? await AchievementSiswa.update(token, values.id, formData)
           : await AchievementSiswa.create(token, formData);
 
-        form.resetForm();
+        handleReset();
         closeModal(modalFormId);
         getDataList();
 
@@ -170,7 +176,12 @@ const PrestasiSiswa = () => {
     },
   });
 
-  // handle delete get one
+  const handleReset = () => {
+    form.resetForm();
+    if (inpCertificateFile.current) inpCertificateFile.current.value = "";
+  };
+
+  // handle get one
   const [isGetLoading, setIsGetLoading] = useState(false);
   const getData = async (id: string) => {
     setIsGetLoading(true);
@@ -178,7 +189,16 @@ const PrestasiSiswa = () => {
     try {
       const res = await AchievementSiswa.showOne(token, id);
 
-      console.log(res);
+      form.setValues({
+        id: res.data.data?.id ?? "",
+        student_id: res.data.data?.student_id ?? "",
+        achievement_desc: res.data.data?.achievement_desc ?? "",
+        issued_at: res.data.data?.issued_at
+          ? formatTime(res.data.data.issued_at, "YYYY-MM-DD")
+          : "",
+        file: "",
+      });
+      openModal(modalFormId);
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -186,46 +206,50 @@ const PrestasiSiswa = () => {
         text: `Gagal mendapatkan data prestasi siswa`,
       });
     } finally {
-      setIsGetLoading(true);
+      setIsGetLoading(false);
     }
   };
 
   return (
     <>
-      <Modal id={modalFormId}>
+      <Modal id={modalFormId} onClose={handleReset}>
         <form onSubmit={form.handleSubmit}>
           <h3 className="text-xl font-bold mb-6">
             {form.values.id ? "Edit" : "Tambah"} Prestasi
           </h3>
 
-          <Select
-            label="Tahun pelajaran"
-            options={getAcademicYears()}
-            value={academicYear}
-            onChange={(e) => setAcademicYear(e.target.value)}
-          />
+          {!form.values.id && (
+            <>
+              <Select
+                label="Tahun pelajaran"
+                options={getAcademicYears()}
+                value={academicYear}
+                onChange={(e) => setAcademicYear(e.target.value)}
+              />
 
-          <Select
-            label="Kelas"
-            value={filter.classId}
-            onChange={(e) => handleFilter("classId", e.target.value)}
-            keyValue="id"
-            displayBuilder={(opt) => `${opt.level}-${opt.class_name}`}
-            options={classes}
-          />
+              <Select
+                label="Kelas"
+                value={filter.classId}
+                onChange={(e) => handleFilter("classId", e.target.value)}
+                keyValue="id"
+                displayBuilder={(opt) => `${opt.level}-${opt.class_name}`}
+                options={classes}
+              />
 
-          <div className="divider"></div>
+              <div className="divider"></div>
 
-          <Select
-            label="Siswa"
-            name="student_id"
-            keyValue="id"
-            keyDisplay="full_name"
-            options={students}
-            value={form.values.student_id}
-            onChange={form.handleChange}
-            errorMessage={form.errors.student_id}
-          />
+              <Select
+                label="Siswa"
+                name="student_id"
+                keyValue="id"
+                keyDisplay="full_name"
+                options={students}
+                value={form.values.student_id}
+                onChange={form.handleChange}
+                errorMessage={form.errors.student_id}
+              />
+            </>
+          )}
 
           <Textarea
             label="Deskripsi"
@@ -248,6 +272,7 @@ const PrestasiSiswa = () => {
             label="Sertifikat"
             name="file"
             type="file"
+            ref={inpCertificateFile}
             accept={certificateExts.map((ext) => "." + ext).join(", ")}
             // value={form.values.file}
             onChange={(e) => {

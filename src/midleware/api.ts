@@ -475,7 +475,7 @@ const Kalender = {
       },
       data,
     }),
-  
+
   EditTimeTable: (
     token: string | null,
     id: string | null,
@@ -1525,7 +1525,6 @@ const CustomerCare = {
     }),
 };
 
-
 const AchievementSiswa = {
   create: (token: string | null, data: any) =>
     instance({
@@ -1554,7 +1553,7 @@ const AchievementSiswa = {
   showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/achievement/get-by-id/${id}`,
+      url: `/api/achievement/show/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1602,5 +1601,5 @@ export {
   ForCountryDetail,
   DashboardKeuangan,
   CustomerCare,
-  AchievementSiswa
+  AchievementSiswa,
 };
