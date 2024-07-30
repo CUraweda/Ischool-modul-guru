@@ -1,5 +1,5 @@
 import create, { SetState } from "zustand";
-import { StoreState, StoreProps } from "./Utils";
+import { StoreState, StoreProps, IemployeeState } from "./Utils";
 
 const Store = create<StoreState>((set: SetState<StoreState>) => ({
   token: localStorage.getItem("token"),
@@ -82,7 +82,35 @@ const useProps = create<StoreProps>((set) => ({
   setDistanceProps: (distance: number) => set({ distance }),
 
   userClasses: [],
-  setUserClasses: (userClasses: any[]) => set({ userClasses })
+  setUserClasses: (userClasses: any[]) => set({ userClasses }),
 }));
 
-export { Store, useProps };
+const employeeStore = create<IemployeeState>((set, get) => ({
+  employee: null,
+  setEmployee: (employee: any) => set({ employee }),
+
+  headmaster: null,
+  setHeadmaster: (headmaster: any) => set({ headmaster }),
+
+  formTeachers: [],
+  setFormTeachers: (formTeachers: any[]) => set({ formTeachers }),
+
+  formSubjects: [],
+  setFormSubjects: (formSubjects: any[]) => set({ formSubjects }),
+
+  formXtras: [],
+  setFormXtras: (formXtras: any[]) => set({ formXtras }),
+
+  isHeadmaster: () => get().employee != null && Store().role?.toString() == "4",
+
+  clearStore: () =>
+    set({
+      employee: null,
+      headmaster: null,
+      formTeachers: [],
+      formSubjects: [],
+      formXtras: [],
+    }),
+}));
+
+export { Store, useProps, employeeStore };

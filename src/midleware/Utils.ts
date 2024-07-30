@@ -3,6 +3,14 @@ export interface LoginResponse {
     token: string;
     role_id: number;
     id: number;
+    employee?: {
+      id: number;
+      full_name: string;
+      headmaster?: any;
+      formteachers?: any[];
+      formsubjects?: any[];
+      formextras?: any[];
+    };
   };
   tokens: {
     access: {
