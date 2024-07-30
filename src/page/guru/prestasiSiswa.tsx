@@ -210,6 +210,42 @@ const PrestasiSiswa = () => {
     }
   };
 
+  // delete
+  const [isDelLoading, setIsDelLoading] = useState(false);
+  const deleteData = async (id: string, xtra: string) => {
+    Swal.fire({
+      icon: "question",
+      title: "Anda Yakin?",
+      text: `Aksi ini tidak dapat dibatalkan. Apakah Anda yakin ingin melanjutkan hapus ${xtra}?`,
+      showCancelButton: true,
+      confirmButtonText: "Yakin",
+      cancelButtonText: "Batalkan",
+    }).then(async (result) => {
+      try {
+        setIsDelLoading(true);
+        if (result.isConfirmed) {
+          await AchievementSiswa.delete(token, id);
+
+          Swal.fire({
+            icon: "success",
+            title: "Aksi Berhasil",
+            text: "Berhasil menghapus data prestasi siswa",
+          });
+
+          getDataList();
+        }
+      } catch {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Gagal menghapus data prestasi siswa",
+        });
+      } finally {
+        setIsDelLoading(false);
+      }
+    });
+  };
+
   return (
     <>
       <Modal id={modalFormId} onClose={handleReset}>
@@ -378,6 +414,13 @@ const PrestasiSiswa = () => {
                         <button
                           className="btn btn-error btn-sm join-item text-white tooltip"
                           data-tip="Hapus"
+                          disabled={isDelLoading}
+                          onClick={() =>
+                            deleteData(
+                              dat.id,
+                              `prestasi "${dat.achievement_desc ?? ""}" milik ${dat.student?.full_name ?? ""}`
+                            )
+                          }
                         >
                           <FaTrash />
                         </button>
