@@ -3,15 +3,17 @@ import { FiPlus } from "react-icons/fi";
 import Modal from "../../component/modal";
 import { BiPencil, BiTrash } from "react-icons/bi";
 import { Task, Student } from "../../midleware/api";
-import { Store } from "../../store/Store";
+import { globalStore, Store } from "../../store/Store";
 import Swal from "sweetalert2";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
 import { FaSearch } from "react-icons/fa";
+import { Input } from "../../component/Input";
 
 const PresensiSiswa = () => {
+  const { academicYear } = globalStore();
   const { token } = Store();
   const today = new Date();
   const [date, setDate] = useState<any>(today.toISOString().substr(0, 10));
@@ -54,7 +56,7 @@ const PresensiSiswa = () => {
     getStudent();
     getPresensiData();
     setSelectedStudents([]);
-  }, [filter]);
+  }, [filter, academicYear]);
 
   const formattedDate = new Date(date).toLocaleDateString("id-ID", {
     weekday: "long",
@@ -106,7 +108,7 @@ const PresensiSiswa = () => {
       const response = await Student.GetStudentByClass(
         token,
         filter.classId,
-        "2023/2024"
+        academicYear
       );
       setSiswa(response.data.data);
     } catch (error) {
@@ -364,6 +366,9 @@ const PresensiSiswa = () => {
       <Modal id="add-presensi" width="w-11/12 max-w-5xl">
         <div className="w-full flex justify-center flex-col items-center">
           <span className="text-xl font-bold">Tambah Presensi</span>
+
+          <Input label="Tahun pelajaran" value={academicYear} disabled />
+
           <div className="w-full flex flex-col gap-2">
             <label className="mt-4 font-bold">Kelas</label>
             <select

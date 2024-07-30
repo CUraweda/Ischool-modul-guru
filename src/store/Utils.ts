@@ -41,6 +41,14 @@ export interface StoreProps {
   setUserClasses: (userClasses: any[]) => void
 }
 
+// global state
+export interface IglobalState {
+  academicYear: string
+  setAcademicYear: (academicYear: string) => void
+
+  clearStore: () => void
+}
+
 // for employee related
 export interface IemployeeState {
   employee: any

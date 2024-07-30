@@ -7,7 +7,7 @@ import { FaListCheck, FaPenClip } from "react-icons/fa6";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { BiDownload, BiTrash } from "react-icons/bi";
 import { Task, Student } from "../../midleware/api";
-import { Store } from "../../store/Store";
+import { globalStore, Store } from "../../store/Store";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
@@ -18,6 +18,7 @@ import {
   PaginationControl,
 } from "../../component/PaginationControl";
 import { FaSearch } from "react-icons/fa";
+import { Input } from "../../component/Input";
 
 const schema = Yup.object({
   classId: Yup.string().required("required"),
@@ -33,6 +34,7 @@ const schema = Yup.object({
 });
 
 const AdmSiswa = () => {
+  const { academicYear } = globalStore();
   const { token } = Store();
   const navigate = useNavigate();
 
@@ -106,7 +108,7 @@ const AdmSiswa = () => {
   useEffect(() => {
     getStudent();
     getClass();
-  }, [formik?.values.classId]);
+  }, [formik?.values.classId, academicYear]);
 
   useEffect(() => {
     getTask();
@@ -192,7 +194,7 @@ const AdmSiswa = () => {
     const response = await Student.GetStudentByClass(
       token,
       classId,
-      "2023/2024"
+      academicYear
     );
     setDataSiswa(response.data.data);
   };
@@ -781,6 +783,8 @@ const AdmSiswa = () => {
         <div className="w-full flex flex-col items-center">
           <span className="text-xl font-bold">Tugas</span>
           <div className="flex w-full mt-5 flex-col">
+            <Input label="Tahun pelajaran" value={academicYear} disabled />
+
             <div className="w-full flex flex-col gap-2">
               <label className="mt-4 font-bold">Kelas</label>
               <select

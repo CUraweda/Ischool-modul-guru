@@ -6,7 +6,9 @@ import { Link } from "react-router-dom";
 import menu from "../data/menu.json";
 import menuKeuangan from "../data/keuangan.json";
 import menuHRD from "../data/hrd.json";
-import { Store } from "../store/Store";
+import { globalStore, Store } from "../store/Store";
+import { Select } from "./Input";
+import { getAcademicYears } from "../utils/common";
 // import karywan from "../data/karyawan.json"
 
 interface Menu {
@@ -25,6 +27,7 @@ type subtitle = {
 };
 
 const Sidebar = () => {
+  const { academicYear, setAcademicYear } = globalStore();
   const Side = sessionStorage.getItem("side") || "/";
   const [data, setData] = useState<Menu[]>([]);
   const [activeMenuItem, setActiveMenuItem] = useState<string>(Side);
@@ -78,7 +81,9 @@ const Sidebar = () => {
               {data
                 .filter((item) => !item.hide)
                 .filter((item) =>
-                  item.roles && role ? item.roles.map(r => r.toString()).includes(role) : true
+                  item.roles && role
+                    ? item.roles.map((r) => r.toString()).includes(role)
+                    : true
                 )
                 .map((item: Menu, index: number) => (
                   <React.Fragment key={`menu-` + index}>
@@ -136,6 +141,14 @@ const Sidebar = () => {
                   </React.Fragment>
                 ))}
             </ul>
+            <div className="mt-auto">
+              <Select
+                placeholder="Tahun pelajaran"
+                value={academicYear}
+                options={getAcademicYears()}
+                onChange={(e) => setAcademicYear(e.target.value)}
+              />
+            </div>
           </ul>
         </div>
       </div>

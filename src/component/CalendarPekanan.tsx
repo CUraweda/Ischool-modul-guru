@@ -12,7 +12,7 @@ import {
   MonthView,
   ViewSwitcher,
 } from "@devexpress/dx-react-scheduler-material-ui";
-import { Store } from "../store/Store";
+import { globalStore, Store } from "../store/Store";
 import { Kalender, Task } from "../midleware/api";
 import { FaPencil } from "react-icons/fa6";
 import { BiTrash } from "react-icons/bi";
@@ -72,6 +72,7 @@ const schema = Yup.object({
 });
 
 const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
+  const { academicYear } = globalStore();
   const { token, setTanggalPekanan, tanggalPekanan, setTanggalStartDate } =
     Store();
   const [Dataappointment, setData] = useState<any[]>([]);
@@ -136,7 +137,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
         token,
         kelas,
         smt,
-        "2023/2024",
+        academicYear,
         "Y"
       );
       const dataList = response.data.data;
@@ -157,7 +158,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
 
   useEffect(() => {
     getKalenderPendidikan();
-  }, [smt, kelas, triggerShow]);
+  }, [smt, kelas, triggerShow, academicYear]);
 
   const formatDateCreate = (props: any) => {
     const dateObject = new Date(dateProps);
