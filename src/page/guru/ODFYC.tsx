@@ -98,7 +98,8 @@ const ODFYC = () => {
         token,
         filter.search,
         filter.page,
-        filter.limit
+        filter.limit,
+        "Y"
       );
 
       const { result, ...meta } = res.data.data;
