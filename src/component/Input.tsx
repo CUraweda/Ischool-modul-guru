@@ -46,7 +46,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             type={type}
             placeholder={placeholder}
-            className={"input input-ghost grow !border-0 w-full " + className}
+            className={
+              (type == "file"
+                ? "file-input file-input-ghost"
+                : "input input-ghost") +
+              " grow !border-0 w-full " +
+              className
+            }
             ref={ref}
             {...props}
           />
