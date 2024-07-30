@@ -19,7 +19,11 @@ import { BiTrash } from "react-icons/bi";
 import { CiClock2 } from "react-icons/ci";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import Modal from "../component/modal";
+import Modal, { closeModal, openModal } from "../component/modal";
+import { Input, Select, Textarea } from "./Input";
+import { getAcademicYears } from "../utils/common";
+import { formatTime } from "../utils/date";
+import Swal from "sweetalert2";
 
 const CustomAppointment: React.FC<any> = ({
   children,
@@ -62,7 +66,7 @@ const schema = Yup.object({
   start_date: Yup.string().required("required"),
   end_date: Yup.string().required("required"),
   hide: Yup.boolean().required("required"),
-  id: Yup.boolean().required("required"),
+  id: Yup.string().required("required"),
 });
 
 const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
@@ -85,15 +89,52 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
       id: "",
     },
     validationSchema: schema,
-    onSubmit: (values) => {
-      console.log(values);
+    validateOnChange: false,
+    onSubmit: async (values) => {
+      const { tahun, title, kelas, semester, start_date, end_date, hide, id } =
+        values;
+
+      try {
+        const data = {
+          academic_year: tahun,
+          class_id: kelas,
+          semester,
+          title,
+          start_date: new Date(formatDateCreate(start_date)),
+          end_date: new Date(formatDateCreate(end_date)),
+          hide_student: !hide,
+        };
+        await Kalender.EditTimeTable(token, id, data);
+
+        getKalenderPendidikan();
+
+        Swal.fire({
+          icon: "success",
+          title: "Berhasil",
+          text: "Berhasil memperbarui rencana pekanan",
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Gagal",
+          text: "Gagal memperbarui rencana pekanan",
+        });
+      } finally {
+        closeModal("edit-rencana");
+      }
     },
   });
 
   const getKalenderPendidikan = async () => {
     try {
       // const smt = sessionStorage.getItem("smt") ? sessionStorage.getItem("smt") : '1'
-      const response = await Kalender.GetAllTimetableByClass(token, kelas, smt, '2023/2024', 'Y');
+      const response = await Kalender.GetAllTimetableByClass(
+        token,
+        kelas,
+        smt,
+        "2023/2024",
+        "Y"
+      );
       const dataList = response.data.data;
 
       const newData = dataList.map((item: any) => ({
@@ -114,23 +155,6 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
     getKalenderPendidikan();
   }, [trigger, smt, kelas]);
 
-  const editDetail = async () => {
-    const { tahun, title, kelas, semester, start_date, end_date, hide, id } =
-      formik.values;
-
-    const data = {
-      academic_year: tahun,
-      class_id: kelas,
-      semester,
-      title,
-      start_date: new Date(formatDateCreate(start_date)),
-      end_date: new Date(formatDateCreate(end_date)),
-      hide_student: !hide,
-    };
-    await Kalender.EditTimeTable(token, id, data);
-    window.location.reload();
-  };
-
   const formatDateCreate = (props: any) => {
     const dateObject = new Date(dateProps);
     const tanggalFormatted = dateObject.toLocaleDateString("en-CA");
@@ -149,14 +173,8 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
     setClass(response.data.data.result);
   };
 
-  const timeFormat = (date: Date) => {
-    const hours = new Date(date).getHours().toString().padStart(2, "0");
-    const minutes = new Date(date).getMinutes().toString().padStart(2, "0");
-
-    return `${hours}:${minutes}`;
-  };
-
   const getTimeTableById = async (id: number) => {
+    formik.resetForm();
     try {
       const response = await Kalender.GetTimetableById(token, id);
       const dataRest = response.data.data;
@@ -166,34 +184,18 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
       formik.setFieldValue("semester", dataRest?.semester);
       formik.setFieldValue("kelas", dataRest?.class_id);
       formik.setFieldValue("title", dataRest?.title);
-      formik.setFieldValue("start_date", timeFormat(dataRest?.start_date));
-      formik.setFieldValue("end_date", timeFormat(dataRest?.end_date));
+      formik.setFieldValue(
+        "start_date",
+        formatTime(dataRest?.start_date, "hh:mm")
+      );
+      formik.setFieldValue("end_date", formatTime(dataRest?.end_date, "hh:mm"));
       formik.setFieldValue("hide", !dataRest?.hide_student);
       setDateProps(dataRest?.start_date);
 
-      showModal("edit-rencana");
+      openModal("edit-rencana");
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const showModal = (props: string) => {
-    let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
-    if (modalElement) {
-      modalElement.showModal();
-    }
-  };
-
-  const getDate = (tanggal: any) => {
-    const options: Intl.DateTimeFormatOptions = {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    };
-    const date = new Date(tanggal)
-      .toLocaleDateString("id-ID", options)
-      .toUpperCase();
-    return date;
   };
 
   const DayCell: React.FC<any> = (props) => (
@@ -201,7 +203,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
       {...props}
       onClick={() => {
         setTanggalStartDate(props.startDate);
-        showModal("add-rencana");
+        openModal("add-rencana");
       }}
     />
   );
@@ -210,7 +212,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
       {...props}
       onClick={() => {
         setTanggalStartDate(props.startDate);
-        showModal("add-rencana");
+        openModal("add-rencana");
       }}
     />
   );
@@ -234,25 +236,25 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
               onClick={() => {
                 handleOpen(appointmentData.id);
               }}
-              className="btn btn-ghost btn-circle text-xl text-orange-500 "
+              className="btn btn-ghost btn-square text-xl text-orange-500 "
             >
               <FaPencil />
             </button>
             <button
               onClick={() => deleteDetail(appointmentData.id)}
-              className="btn btn-ghost btn-circle text-xl text-red-500 "
+              className="btn btn-ghost btn-square text-xl text-red-500 "
             >
               <BiTrash />
             </button>
           </div>
         </div>
-        <div className="mt-4 flex pl-3 items-center gap-3">
+        <div className="mt-2 flex pl-3 pb-3 items-center gap-3">
           <span className="text-2xl ">
             <CiClock2 />
           </span>
           <span className="">
-            {getDate(appointmentData.startDate)} -
-            {getDate(appointmentData.endDate)}
+            {formatTime(appointmentData.startDate, "hh:mm")} -
+            {formatTime(appointmentData.endDate, "hh:mm")}
           </span>
         </div>
       </div>
@@ -285,100 +287,76 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
           <AppointmentTooltip contentComponent={CustomTooltip} />
         </Scheduler>
       </Paper>
+
       <Modal id="edit-rencana">
-        <div className="w-full flex flex-col items-center">
+        <form
+          onSubmit={formik.handleSubmit}
+          className="w-full flex flex-col items-center"
+        >
           <span className="text-xl font-bold">Edit Rencana Pekanan</span>
 
           <div className="flex w-full mt-5 flex-col">
-            <div className="w-full flex flex-col gap-2">
-              <label className="mt-4 w-full font-bold">Tahun Pelajaran</label>
-              <select
-                className="select select-bordered w-full"
-                value={formik.values.tahun}
-                onChange={(e) => formik.setFieldValue("tahun", e.target.value)}
-              >
-                <option disabled selected>
-                  Pilih Tahun
-                </option>
-                <option value={"2023/2024"}>2023 / 2024</option>
-                <option value={"2024/2025"}>2024 / 2025</option>
-              </select>
-            </div>
-            <div className="w-full flex flex-col gap-2">
-              <label className="mt-4 w-full font-bold">Semester</label>
-              <select
-                className="select select-bordered w-full"
-                value={formik.values.semester}
-                onChange={(e) =>
-                  formik.setFieldValue("semester", e.target.value)
-                }
-              >
-                <option disabled selected>
-                  Pilih Semester
-                </option>
-                <option value={1}>1</option>
-                <option value={2}>2</option>
-              </select>
-            </div>
-            <div className="w-full flex flex-col gap-2">
-              <label className="mt-4 w-full font-bold">Kelas</label>
-              <select
-                className="select select-bordered join-item"
-                value={formik.values.kelas}
-                onChange={(e) => formik.setFieldValue("kelas", e.target.value)}
-              >
-                <option disabled selected>
-                  Kelas
-                </option>
-                {Class?.map((item: any, index: number) => (
-                  <option
-                    value={item.id}
-                    key={index}
-                  >{`${item.level}-${item.class_name}`}</option>
-                ))}
-              </select>
-            </div>
-            <div className="w-full flex flex-col gap-2">
-              <label className="mt-4 w-full font-bold">
-                Detail Rencana Pekanan
-              </label>
-              <textarea
-                className="textarea textarea-bordered bg-white shadow-md scrollbar-hide"
-                placeholder="Agenda"
-                value={formik.values.title}
-                onChange={(e) => formik.setFieldValue("title", e.target.value)}
-              ></textarea>
-            </div>
+            <Select
+              label="Tahun pelajaran"
+              name="tahun"
+              options={getAcademicYears()}
+              value={formik.values.tahun}
+              onChange={formik.handleChange}
+              errorMessage={formik.errors.tahun}
+            />
+
+            <Select
+              label="Semester"
+              name="semester"
+              options={[1, 2]}
+              value={formik.values.semester}
+              onChange={formik.handleChange}
+              errorMessage={formik.errors.semester}
+            />
+
+            <Select
+              label="Kelas"
+              name="kelas"
+              options={Class}
+              keyValue="id"
+              displayBuilder={(opt) => `${opt.level}-${opt.class_name}`}
+              value={formik.values.kelas}
+              onChange={formik.handleChange}
+              errorMessage={formik.errors.kelas}
+            />
+
+            <Textarea
+              label="Detail rencana"
+              name="title"
+              value={formik.values.title}
+              onChange={formik.handleChange}
+              errorMessage={formik.errors.title}
+            />
           </div>
-          <div className="w-full">
-            <div className="w-full flex flex-col gap-2">
-              <label className="mt-4 font-bold">Pukul</label>
-              <div className="flex gap-2 justify-center items-center">
-                <input
-                  type="time"
-                  className="input input-bordered bg-white shadow-md w-full"
-                  min="07:00"
-                  max="15:30"
-                  value={formik.values.start_date}
-                  onChange={(e) =>
-                    formik.setFieldValue("start_date", e.target.value)
-                  }
-                />
-                <span>-</span>
-                <input
-                  type="time"
-                  className="input input-bordered bg-white shadow-md w-full"
-                  min="07:00"
-                  max="15:30"
-                  value={formik.values.end_date}
-                  onChange={(e) =>
-                    formik.setFieldValue("end_date", e.target.value)
-                  }
-                />
-              </div>
-            </div>
+          <div className="flex gap-2 w-full items-center">
+            <Input
+              type="time"
+              label="Mulai"
+              name="start_date"
+              min="07:00"
+              max="15:30"
+              value={formik.values.start_date}
+              onChange={formik.handleChange}
+              errorMessage={formik.errors.start_date}
+            />
+            <span>-</span>
+            <Input
+              type="time"
+              label="Selesai"
+              name="end_date"
+              min="07:00"
+              max="15:30"
+              value={formik.values.end_date}
+              onChange={formik.handleChange}
+              errorMessage={formik.errors.end_date}
+            />
           </div>
-          <div className="w-full mt-3 justify-start items-center flex gap-3">
+          <div className="w-full items-center flex gap-3">
             <input
               type="checkbox"
               className="checkbox"
@@ -390,15 +368,13 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
             <label className="font-bold">Jangan tampilkan di modul siswa</label>
           </div>
 
-          <div className="w-full flex justify-center mt-10 gap-2">
-            <button
-              className={`btn btn-ghost bg-green-500 text-white font-bold w-full `}
-              onClick={editDetail}
-            >
-              Simpan
-            </button>
-          </div>
-        </div>
+          <button
+            className={`btn btn-ghost mt-10 bg-green-500 text-white font-bold w-full `}
+            type="submit"
+          >
+            Simpan
+          </button>
+        </form>
       </Modal>
     </>
   );
