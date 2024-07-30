@@ -43,6 +43,8 @@ const AbsenKaryawan = lazy(() => import("../page/admin/AbsenKaryawan"));
 const RekapPresensi = lazy(() => import("../page/hrd/Presensi"));
 const PengajuanCutiHRD = lazy(() => import("../page/hrd/PengajuanCuti"));
 
+const Profile = lazy(() => import("../page/profile"));
+
 const RootRoutes = () => {
   return (
     <BrowserRouter>
@@ -56,6 +58,16 @@ const RootRoutes = () => {
           }
         />
         <Route path="/test" element={<Test />} />
+        <Route
+          path="/profile"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <Profile />
+              </Layout>
+            </Suspense>
+          }
+        />
         <Route
           path="/guru/dashboard"
           element={
