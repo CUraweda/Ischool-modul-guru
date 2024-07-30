@@ -15,16 +15,14 @@ const Auth = {
         password,
       },
     }),
-  MeData: (
-    token: string | null
-  ): AxiosPromise<any> => 
+  MeData: (token: string | null): AxiosPromise<any> =>
     instance({
       method: "GET",
       url: "/api/user/me",
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    }),
 };
 
 const Student = {
@@ -515,11 +513,12 @@ const Raport = {
   getAllStudentReport: (
     token: string | null,
     id: string | null,
-    semester: string | null
+    semester: string | null,
+    academic: string | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-report/show-by-class/${id}?semester=${semester}`,
+      url: `/api/student-report/show-by-class/${id}?semester=${semester}&academic=${academic}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -530,11 +529,12 @@ const Raport = {
     semester: string,
     page: number | null,
     limit: number | null,
-    withAssign: string | null = "N"
+    withAssign: string | null = "N",
+    academic: string
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-report?search_query=&page=${page}&class_id=${classId}&semester=${semester}&limit=${limit}&with_assign=${withAssign}`,
+      url: `/api/student-report?search_query=&page=${page}&class_id=${classId}&semester=${semester}&limit=${limit}&with_assign=${withAssign}&academic=${academic}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -638,7 +638,7 @@ const Raport = {
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/narrative-category/show-by-class/${id}`,
+      url: `/api/narrative-category/show-by-class/${id} `,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1459,6 +1459,61 @@ const DashboardKeuangan = {
     }),
 };
 
+const CustomerCare = {
+  GetAllUserChat: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/user-chat/show-by-user/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  GetMessage: (
+    token: string | null,
+    id: string | null,
+    withId: number
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/user-chat/show-conversation?userid=${id}&withid=${withId}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  GetUserToChat: (token: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/user?limit=10000`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  GetUserToChatGuru: (token: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/user-chat/show-by-guru`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  PostMessage: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/message/create`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
 export {
   Auth,
   Task,
@@ -1475,4 +1530,5 @@ export {
   TagihanSiswa,
   ForCountryDetail,
   DashboardKeuangan,
+  CustomerCare,
 };

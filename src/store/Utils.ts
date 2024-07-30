@@ -6,12 +6,14 @@ export interface StoreState {
   role: string | null;
   setRole: (role: string | null) => void;
 
+  id: string | null;
+  setId: (id: string | null) => void;
+
   tanggalPekanan: any;
   setTanggalPekanan: (tanggalPekanan: any) => void;
 
   tanggalStartDate: Date;
   setTanggalStartDate: (tanggalStartDate: any) => void;
-
 
   data: string | null;
   setData: (data: string | null) => void;
@@ -28,6 +30,9 @@ export interface StoreProps {
   kelasProps: string;
   setKelasProps: (kelasProps: string) => void;
 
+  academicProps: string;
+  setAcademicYearProps: (academicProps: string) => void;
+
   mapelProps: string;
   setMapelProps: (mapelProps: string) => void;
 
@@ -37,27 +42,27 @@ export interface StoreProps {
   distance: number;
   setDistanceProps: (distance: number) => void;
 
-  userClasses: any[]
-  setUserClasses: (userClasses: any[]) => void
+  userClasses: any[];
+  setUserClasses: (userClasses: any[]) => void;
 }
 
 // for employee related
 export interface IemployeeState {
-  employee: any
-  setEmployee: (employee: any) => void
+  employee: any;
+  setEmployee: (employee: any) => void;
 
-  headmaster: any
-  setHeadmaster: (headmaster: any) => void
+  headmaster: any;
+  setHeadmaster: (headmaster: any) => void;
 
-  formTeachers: any[]
-  setFormTeachers: (formTeachers: any[]) => void
+  formTeachers: any[];
+  setFormTeachers: (formTeachers: any[]) => void;
 
-  formSubjects: any[]
-  setFormSubjects: (formSubjects: any[]) => void
+  formSubjects: any[];
+  setFormSubjects: (formSubjects: any[]) => void;
 
-  formXtras: any[]
-  setFormXtras: (formXtras: any[]) => void
-  
-  isHeadmaster: () => boolean
-  clearStore: () => void
+  formXtras: any[];
+  setFormXtras: (formXtras: any[]) => void;
+
+  isHeadmaster: () => boolean;
+  clearStore: () => void;
 }

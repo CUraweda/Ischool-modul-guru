@@ -145,9 +145,14 @@ const RaportAngka = () => {
   };
 
   const getStudent = async () => {
-    const idClass = formik.values.classId;
+    const idClass = formik.values.classId || "11";
     try {
-      const response = await Raport.getAllStudentReport(token, idClass, null);
+      const response = await Raport.getAllStudentReport(
+        token,
+        idClass,
+        null,
+        ""
+      );
       setDataSiswa(response.data.data);
     } catch (error) {
       console.log(error);

@@ -14,6 +14,7 @@ const RaportAll = () => {
   const [siswa, setSiswa] = useState<any[]>([]);
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
   const [dataRaport, setDataRaport] = useState<any>([]);
+  const [academic, setAcademic] = useState("");
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
@@ -50,7 +51,7 @@ const RaportAll = () => {
   useEffect(() => {
     getStudent();
     getDataRaport();
-  }, [filter]);
+  }, [filter, academic]);
 
   useEffect(() => {
     getDataRaport();
@@ -90,7 +91,8 @@ const RaportAll = () => {
         filter.semester,
         filter.page,
         filter.limit,
-        "Y"
+        "Y",
+        academic
       );
       const { result, ...meta } = response.data.data;
       setDataRaport(result);
@@ -142,6 +144,11 @@ const RaportAll = () => {
     try {
       await Raport.downloadMergeRaport(token, id);
     } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Gagal melakukan merge, Silahkan refresh halaman !",
+      });
       console.error(error);
     }
   };
@@ -150,6 +157,15 @@ const RaportAll = () => {
     <div>
       <div className="w-full flex justify-between gap-2">
         <div className="join gap-2">
+          <select
+            className="select select-bordered w-full"
+            value={academic}
+            onChange={(e) => setAcademic(e.target.value)}
+          >
+            <option selected>Tahun Ajaran</option>
+            <option value="2023/2024">2023/2024</option>
+            <option value="2024/2025">2024/2025</option>
+          </select>
           <select
             className="select select-bordered w-full"
             value={filter.classId}
