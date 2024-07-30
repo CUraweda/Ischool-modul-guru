@@ -6,14 +6,14 @@ import { employeeStore } from "../store/Store";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const empStore = employeeStore()
+  const empStore = employeeStore();
 
   moment.locale("id");
   // const date = moment().format('llll');
 
   const logout = () => {
     sessionStorage.clear();
-    empStore.clearStore()
+    empStore.clearStore();
     navigate("/");
   };
 
@@ -29,8 +29,6 @@ const Navbar = () => {
           </label>
         </div>
         <div className="mr-3 ">
-          
-        
           <button className="btn btn-ghost btn-circle text-xl">
             <FaBell />
           </button>
@@ -54,7 +52,9 @@ const Navbar = () => {
               className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
             >
               <li>
-                <a className="justify-between">Profile</a>
+                <a href="/profile" className="justify-between">
+                  Profile
+                </a>
               </li>
 
               <li onClick={logout} className="text-red-500">
