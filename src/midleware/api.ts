@@ -1,4 +1,4 @@
-import axios, { Axios, AxiosPromise } from "axios";
+import axios, { AxiosPromise } from "axios";
 import { LoginResponse } from "./Utils";
 const instance = axios.create({ baseURL: import.meta.env.VITE_REACT_API_URL });
 
@@ -15,16 +15,14 @@ const Auth = {
         password,
       },
     }),
-  MeData: (
-    token: string | null
-  ): AxiosPromise<any> => 
+  MeData: (token: string | null): AxiosPromise<any> =>
     instance({
       method: "GET",
       url: "/api/user/me",
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    }),
 };
 
 const Student = {
