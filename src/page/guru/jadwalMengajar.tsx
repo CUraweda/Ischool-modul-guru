@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaPlus } from "react-icons/fa";
+import { FaChevronDown } from "react-icons/fa";
 import KalenderPekanan from "../../component/CalendarPekanan";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { Kalender, Task } from "../../midleware/api";
@@ -11,6 +11,7 @@ import moment from "moment";
 import { formatTime } from "../../utils/date";
 import { Input, Select, Textarea } from "../../component/Input";
 import { getAcademicYears } from "../../utils/common";
+import ModalCreateRencanaPekananByHistory from "../../component/guru/ModalCreateRencanaPekananByHistory";
 
 const schema = Yup.object({
   tahun: Yup.string().required("required"),
@@ -150,149 +151,174 @@ const jadwalMengajar = () => {
   };
 
   return (
-    <div className="my-10 w-full flex flex-col items-center">
-      <div className=" flex flex-col items-center w-full text-3xl font-bold text-center">
-        <span>RENCANA PEKANAN</span>
-        <span className="text-xl">Bulan {getDate()}</span>
-      </div>
-      <div className="w-full p-6">
-        <div className="text-right">
-          <div className="join">
-            <select
-              className="select select-bordered w-36 join-item"
-              value={idClass}
-              onChange={(e) => setIdClass(e.target.value)}
-            >
-              <option disabled selected>
-                Kelas
-              </option>
-              {kelas?.map((item: any, index: number) => (
-                <option
-                  value={item.id}
-                  key={index}
-                >{`${item.level}-${item.class_name}`}</option>
-              ))}
-            </select>
-            <select
-              className="select select-bordered w-36 join-item"
-              value={smt}
-              onChange={(e) => setSmt(e.target.value)}
-            >
-              <option disabled selected>
-                Semester
-              </option>
-              <option value={1}>1</option>
-              <option value={2}>2</option>
-            </select>
-            <button
-              className="btn bg-green-500 btn-ghost text-white join-item"
-              onClick={() => openModal("add-rencana")}
-            >
-              <span className="text-xl">
-                <FaPlus />
-              </span>
-              Tambah
-            </button>
+    <>
+      <ModalCreateRencanaPekananByHistory
+        modalId="add-rencana-history"
+        postCreate={() => setIdClass(idClass)}
+      />
+
+      <div className="my-10 w-full flex flex-col items-center">
+        <div className=" flex flex-col items-center w-full text-3xl font-bold text-center">
+          <span>RENCANA PEKANAN</span>
+          <span className="text-xl">Bulan {getDate()}</span>
+        </div>
+        <div className="w-full p-6">
+          <div className="text-right">
+            <div className="join">
+              <select
+                className="select select-bordered w-36 join-item"
+                value={idClass}
+                onChange={(e) => setIdClass(e.target.value)}
+              >
+                <option disabled selected>
+                  Kelas
+                </option>
+                {kelas?.map((item: any, index: number) => (
+                  <option
+                    value={item.id}
+                    key={index}
+                  >{`${item.level}-${item.class_name}`}</option>
+                ))}
+              </select>
+              <select
+                className="select select-bordered w-36 join-item"
+                value={smt}
+                onChange={(e) => setSmt(e.target.value)}
+              >
+                <option disabled selected>
+                  Semester
+                </option>
+                <option value={1}>1</option>
+                <option value={2}>2</option>
+              </select>
+
+              <div className="dropdown dropdown-end">
+                <button
+                  tabIndex={0}
+                  className="btn btn-ghost bg-secondary text-white join-item"
+                >
+                  Tambah
+                  <FaChevronDown />
+                </button>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg"
+                >
+                  <li>
+                    <button onClick={() => openModal("add-rencana")}>
+                      Hari ini
+                    </button>
+                  </li>
+                  <li>
+                    <button onClick={() => openModal("add-rencana-history")}>
+                      Duplikat dari riwayat
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className={`w-full bg-white mt-5`}>
+            <KalenderPekanan smt={smt} kelas={idClass} />
           </div>
         </div>
 
-        <div className={`w-full bg-white mt-5`}>
-          <KalenderPekanan smt={smt} kelas={idClass} />
-        </div>
-      </div>
-
-      <Modal id="add-rencana">
-        <form
-          onSubmit={formik.handleSubmit}
-          className="w-full flex flex-col items-center"
-        >
-          <span className="text-xl font-bold">Tambah Rencana Pekanan</span>
-          <span className="text-xl font-bold">
-            {formatTime(moment(), "DD MMMM YYYY")}
-          </span>
-
-          <div className="flex w-full mt-5 flex-col">
-            <Select
-              label="Tahun pelajaran"
-              name="tahun"
-              options={getAcademicYears()}
-              value={formik.values.tahun}
-              onChange={formik.handleChange}
-              errorMessage={formik.errors.tahun}
-            />
-
-            <Select
-              label="Semester"
-              name="semester"
-              options={[1, 2]}
-              value={formik.values.semester}
-              onChange={formik.handleChange}
-              errorMessage={formik.errors.semester}
-            />
-
-            <Select
-              label="Kelas"
-              name="kelas"
-              options={kelas}
-              keyValue="id"
-              displayBuilder={(opt) => `${opt.level}-${opt.class_name}`}
-              value={formik.values.kelas}
-              onChange={formik.handleChange}
-              errorMessage={formik.errors.kelas}
-            />
-
-            <Textarea
-              label="Detail rencana"
-              name="title"
-              value={formik.values.title}
-              onChange={formik.handleChange}
-              errorMessage={formik.errors.title}
-            />
-          </div>
-          <div className="flex gap-2 w-full items-center">
-            <Input
-              type="time"
-              label="Mulai"
-              name="start_date"
-              min="07:00"
-              max="15:30"
-              value={formik.values.start_date}
-              onChange={formik.handleChange}
-              errorMessage={formik.errors.start_date}
-            />
-            <span>-</span>
-            <Input
-              type="time"
-              label="Selesai"
-              name="end_date"
-              min="07:00"
-              max="15:30"
-              value={formik.values.end_date}
-              onChange={formik.handleChange}
-              errorMessage={formik.errors.end_date}
-            />
-          </div>
-          <div className="w-full items-center flex gap-3">
-            <input
-              type="checkbox"
-              className="checkbox"
-              checked={formik.values.hide}
-              onChange={(e) => {
-                formik.setFieldValue("hide", e.target.checked);
-              }}
-            />
-            <label className="font-bold">Jangan tampilkan di modul siswa</label>
-          </div>
-
-          <button
-            className={`btn mt-10 btn-ghost bg-green-500 text-white font-bold w-full `}
-            type="submit"
+        <Modal id="add-rencana">
+          <form
+            onSubmit={formik.handleSubmit}
+            className="w-full flex flex-col items-center"
           >
-            Simpan
-          </button>
-        </form>
-      </Modal>
-    </div>
+            <span className="text-xl font-bold">Tambah Rencana Pekanan</span>
+            <span className="text-xl font-bold">
+              {formatTime(moment(), "DD MMMM YYYY")}
+            </span>
+
+            <div className="flex w-full mt-5 flex-col">
+              <Select
+                label="Tahun pelajaran"
+                name="tahun"
+                options={getAcademicYears()}
+                value={formik.values.tahun}
+                onChange={formik.handleChange}
+                errorMessage={formik.errors.tahun}
+              />
+
+              <Select
+                label="Semester"
+                name="semester"
+                options={[1, 2]}
+                value={formik.values.semester}
+                onChange={formik.handleChange}
+                errorMessage={formik.errors.semester}
+              />
+
+              <Select
+                label="Kelas"
+                name="kelas"
+                options={kelas}
+                keyValue="id"
+                displayBuilder={(opt) => `${opt.level}-${opt.class_name}`}
+                value={formik.values.kelas}
+                onChange={formik.handleChange}
+                errorMessage={formik.errors.kelas}
+              />
+
+              <Textarea
+                label="Detail rencana"
+                name="title"
+                value={formik.values.title}
+                onChange={formik.handleChange}
+                errorMessage={formik.errors.title}
+              />
+            </div>
+            <div className="flex gap-2 w-full items-center">
+              <Input
+                type="time"
+                label="Mulai"
+                name="start_date"
+                min="07:00"
+                max="15:30"
+                value={formik.values.start_date}
+                onChange={formik.handleChange}
+                errorMessage={formik.errors.start_date}
+              />
+              <span>-</span>
+              <Input
+                type="time"
+                label="Selesai"
+                name="end_date"
+                min="07:00"
+                max="15:30"
+                value={formik.values.end_date}
+                onChange={formik.handleChange}
+                errorMessage={formik.errors.end_date}
+              />
+            </div>
+            <div className="w-full items-center flex gap-3">
+              <input
+                type="checkbox"
+                className="checkbox"
+                checked={formik.values.hide}
+                onChange={(e) => {
+                  formik.setFieldValue("hide", e.target.checked);
+                }}
+              />
+              <label className="font-bold">
+                Jangan tampilkan di modul siswa
+              </label>
+            </div>
+
+            <button
+              className={`btn mt-10 btn-ghost bg-green-500 text-white font-bold w-full `}
+              type="submit"
+            >
+              Simpan
+            </button>
+          </form>
+        </Modal>
+      </div>
+    </>
   );
 };
 
