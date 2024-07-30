@@ -1525,6 +1525,66 @@ const CustomerCare = {
     }),
 };
 
+
+const AchievementSiswa = {
+  create: (token: string | null, data: any) =>
+    instance({
+      method: "POST",
+      url: "/api/achievement/create",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  showAll: (
+    token: string | null,
+    search?: string,
+    classId?: string,
+    page: number = 0,
+    limit: number = 10,
+    withAssign: string = "N"
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/achievement?search_query=${search}&class_id=${classId}&with_assign=${withAssign}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/achievement/get-by-id/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  update: (
+    token: string | null,
+    id: string | number | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: "/api/achievement/update/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  delete: (
+    token: string | null,
+    id: string | number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: "/api/achievement/delete/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
 export {
   Auth,
   Task,
@@ -1542,4 +1602,5 @@ export {
   ForCountryDetail,
   DashboardKeuangan,
   CustomerCare,
+  AchievementSiswa
 };
