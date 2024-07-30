@@ -37,6 +37,7 @@ const CustomAppointment: React.FC<any> = ({
   return (
     <Appointments.Appointment
       {...restProps}
+      className="z-0"
       style={{
         ...style,
         backgroundColor: backgroundColor,
@@ -56,6 +57,7 @@ const CustomAppointment: React.FC<any> = ({
 interface Props {
   smt: string;
   kelas: string;
+  triggerShow: boolean;
 }
 
 const schema = Yup.object({
@@ -69,11 +71,10 @@ const schema = Yup.object({
   id: Yup.string().required("required"),
 });
 
-const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
+const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
   const { token, setTanggalPekanan, tanggalPekanan, setTanggalStartDate } =
     Store();
   const [Dataappointment, setData] = useState<any[]>([]);
-  const [trigger, setTrigger] = useState<boolean>(false);
   const [Class, setClass] = useState<any[]>([]);
   const [dateProps, setDateProps] = useState<any>();
 
@@ -112,6 +113,9 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
           icon: "success",
           title: "Berhasil",
           text: "Berhasil memperbarui rencana pekanan",
+          showCloseButton: true,
+        }).then(() => {
+          window.location.reload();
         });
       } catch (error) {
         Swal.fire({
@@ -153,7 +157,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
 
   useEffect(() => {
     getKalenderPendidikan();
-  }, [trigger, smt, kelas]);
+  }, [smt, kelas, triggerShow]);
 
   const formatDateCreate = (props: any) => {
     const dateObject = new Date(dateProps);
@@ -163,9 +167,23 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
   };
 
   const deleteDetail = async (id: number) => {
-    await Kalender.deleteTimeTable(token, id);
-    window.location.reload();
-    setTrigger(!trigger);
+    try {
+      await Kalender.deleteTimeTable(token, id);
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil",
+        text: "Berhasil menghapus rencana pekanan",
+        showCloseButton: true,
+      }).then(() => {
+        window.location.reload();
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: "Gagal menghapus rencana pekanan",
+      });
+    }
   };
 
   const getClass = async () => {
@@ -264,7 +282,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
   return (
     <>
       <Paper>
-        <Scheduler data={Dataappointment} height={650}>
+        <Scheduler data={Dataappointment} locale={"id"} height={650}>
           <ViewState
             currentDate={tanggalPekanan}
             onCurrentDateChange={handlePerubahanTanggal}

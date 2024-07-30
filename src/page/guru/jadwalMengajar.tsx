@@ -25,6 +25,7 @@ const schema = Yup.object({
 
 const jadwalMengajar = () => {
   const { token, tanggalPekanan, tanggalStartDate } = Store();
+  const [triggerShow, setTriggerShow] = useState(true)
   const [kelas, setKelas] = useState<any[]>([]);
   const [smt, setSmt] = useState<string>("1");
   const [idClass, setIdClass] = useState<string>("");
@@ -154,7 +155,7 @@ const jadwalMengajar = () => {
     <>
       <ModalCreateRencanaPekananByHistory
         modalId="add-rencana-history"
-        postCreate={() => setIdClass(idClass)}
+        postCreate={() => setTriggerShow(!triggerShow)}
       />
 
       <div className="my-10 w-full flex flex-col items-center">
@@ -170,7 +171,7 @@ const jadwalMengajar = () => {
                 value={idClass}
                 onChange={(e) => setIdClass(e.target.value)}
               >
-                <option disabled selected>
+                <option value="" selected>
                   Kelas
                 </option>
                 {kelas?.map((item: any, index: number) => (
@@ -185,7 +186,7 @@ const jadwalMengajar = () => {
                 value={smt}
                 onChange={(e) => setSmt(e.target.value)}
               >
-                <option disabled selected>
+                <option value="" selected>
                   Semester
                 </option>
                 <option value={1}>1</option>
@@ -220,7 +221,7 @@ const jadwalMengajar = () => {
           </div>
 
           <div className={`w-full bg-white mt-5`}>
-            <KalenderPekanan smt={smt} kelas={idClass} />
+            <KalenderPekanan smt={smt} kelas={idClass} triggerShow={triggerShow} />
           </div>
         </div>
 
