@@ -1389,11 +1389,12 @@ const ForCountryDetail = {
     token: string | null,
     search?: string,
     page: number = 0,
-    limit: number = 10
+    limit: number = 10,
+    withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/for-country-detail?search_query=${search}&page=${page}&limit=${limit}`,
+      url: `/api/for-country-detail?search_query=${search}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
