@@ -21,9 +21,10 @@ const RaportPortofolio = () => {
   const [komen, setKomen] = useState<string>("");
 
   const [studentClass, setStudentClass] = useState<string>("");
-  const [smt, setSmt] = useState<string>(semesterProps);
+  const [smt, setSmt] = useState<string>(semesterProps || "1");
   const [merge, setMerge] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [academic, setAcademic] = useState("");
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
@@ -40,7 +41,6 @@ const RaportPortofolio = () => {
 
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
-    academic: "",
     classId: "",
     semester: "1",
     page: 0,
@@ -62,7 +62,7 @@ const RaportPortofolio = () => {
 
   useEffect(() => {
     getStudent();
-  }, [filter]);
+  }, [filter, academic]);
 
   const getClass = async () => {
     const response = await Task.GetAllClass(token, 0, 20, "Y", "N");
@@ -77,7 +77,8 @@ const RaportPortofolio = () => {
         filter.semester,
         filter.page,
         filter.limit,
-        "Y"
+        "Y",
+        academic
       );
       const { result, ...meta } = response.data.data;
       setDataSiswa(result);
@@ -93,7 +94,6 @@ const RaportPortofolio = () => {
     const response = await Raport.getPortofolioByRaport(token, id);
     const dataRest = response.data.data;
     const type = dataRest?.map((item: any) => item.type);
-    console.log(type);
 
     if (
       type.length === 2 &&
@@ -171,9 +171,12 @@ const RaportPortofolio = () => {
     komen: string,
     kelas: string,
     id: string,
-    smt: string
+    smt: string,
+    type: string
   ) => {
-    showModal("komen-guru-porto");
+    type == "Guru"
+      ? showModal("komen-guru-porto")
+      : showModal("komen-ortu-porto");
     setKomen(komen);
     setReportId(id);
     setStudentClass(kelas);
@@ -196,13 +199,13 @@ const RaportPortofolio = () => {
       <div className="w-full flex justify-between gap-2">
         <div className="join">
           <select
-            value={filter.academic}
-            onChange={(e) => handleFilter("academic", e.target.value)}
-            className="select join-item w-32 max-w-md select-bordered"
+            className="select select-bordered w-full"
+            value={academic}
+            onChange={(e) => setAcademic(e.target.value)}
           >
-            <option selected>Tahun Pelajaran</option>
-            <option>2023/2024</option>
-            <option>2024/2025</option>
+            <option selected>Tahun Ajaran</option>
+            <option value="2023/2024">2023/2024</option>
+            <option value="2024/2025">2024/2025</option>
           </select>
           <select
             className="select join-item w-32 max-w-md select-bordered"
@@ -264,16 +267,6 @@ const RaportPortofolio = () => {
                         <MdCloudUpload />
                       </span>
                     </button>
-
-                    <button
-                      className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
-                      data-tip="lihat portofolio"
-                      onClick={() => getPortoByRapotId(item?.id)}
-                    >
-                      <span className="text-xl">
-                        <FaFilePdf />
-                      </span>
-                    </button>
                     <button
                       className={`btn join-item btn-ghost btn-sm text-xl text-white tooltip ${
                         item.por_teacher_comments
@@ -286,11 +279,38 @@ const RaportPortofolio = () => {
                           item.por_teacher_comments,
                           item.student_class_id,
                           item.id,
-                          item.semester
+                          item.semester,
+                          "Guru"
                         )
                       }
                     >
                       <IoChatboxEllipsesOutline />
+                    </button>
+                    <button
+                      className={`btn join-item btn-ghost btn-sm text-xl text-white bg-yellow-500 tooltip ${
+                        item.nar_parent_comments ? "" : "btn-disabled"
+                      }`}
+                      data-tip="Komentar Ortu"
+                      onClick={() =>
+                        handleKomen(
+                          item.nar_parent_comments,
+                          item.student_class_id,
+                          item.id,
+                          item.semester,
+                          ""
+                        )
+                      }
+                    >
+                      <IoChatboxEllipsesOutline />
+                    </button>
+                    <button
+                      className="btn btn-sm join-item bg-yellow-500 text-white tooltip"
+                      data-tip="lihat portofolio"
+                      onClick={() => getPortoByRapotId(item?.id)}
+                    >
+                      <span className="text-xl">
+                        <FaFilePdf />
+                      </span>
                     </button>
                   </div>
                 </td>
@@ -394,6 +414,14 @@ const RaportPortofolio = () => {
             >
               Submit
             </button>
+          </div>
+        </div>
+      </Modal>
+      <Modal id="komen-ortu-porto" width="w-11/12 max-w-5xl">
+        <div className="w-full flex justify-center flex-col items-center">
+          <p className="text-xl font-bold">Komentar Orang Tua / Wali</p>
+          <div className="w-full border-1 min-h-96 max-h-96 bg-gray-200 mt-5 rounded-md shadow-md p-3 overflow-auto">
+            <span>{komen}</span>
           </div>
         </div>
       </Modal>

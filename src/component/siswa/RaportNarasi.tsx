@@ -26,8 +26,7 @@ const schema = Yup.object({
 
 const RaportNarasi = () => {
   const { token } = Store();
-  const { setSemesterProps, setKelasProps, semesterProps, kelasProps } =
-    useProps();
+  const { setKelasProps, kelasProps } = useProps();
   const [kelas, setKelas] = useState<any[]>([]);
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
   const [idClass, setClass] = useState<string>(kelasProps);
@@ -36,19 +35,18 @@ const RaportNarasi = () => {
   const [subKategori, setSubKategori] = useState<any>([]);
 
   const [studentClass, setStudentClass] = useState<string>("");
-  const [smt, setSmt] = useState<string>("");
+  const [smt, setSmt] = useState<string>("1");
   const [reportId, setReportId] = useState<string>("");
   const [setting, setSetting] = useState<boolean>(false);
   const [edit, setEdit] = useState<string>("");
-
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
-    academic: "",
     classId: "",
     semester: "1",
     page: 0,
     limit: 10,
   });
+  const [academic, setAcademic] = useState("");
 
   const handleFilter = (key: string, value: any) => {
     const obj = {
@@ -67,7 +65,7 @@ const RaportNarasi = () => {
       idKategori: "",
       idSubKategori: "",
       subKategori: "",
-      smt: semesterProps,
+      smt: smt,
     },
     validationSchema: schema,
     onSubmit: (values) => {
@@ -77,7 +75,7 @@ const RaportNarasi = () => {
   useEffect(() => {
     getStudent();
     getKategori();
-  }, [filter]);
+  }, [filter, academic]);
 
   useEffect(() => {
     getClass();
@@ -114,7 +112,8 @@ const RaportNarasi = () => {
         filter.semester,
         filter.page,
         filter.limit,
-        "Y"
+        "Y",
+        academic
       );
 
       sessionStorage.setItem("idClass", filter.classId);
@@ -313,15 +312,13 @@ const RaportNarasi = () => {
       <div className="w-full flex justify-between gap-2">
         <div className="join">
           <select
-            value={filter.academic}
-            onChange={(e) => handleFilter("academic", e.target.value)}
-            className="select join-item w-32 max-w-md select-bordered"
+            className="select select-bordered w-full"
+            value={academic}
+            onChange={(e) => setAcademic(e.target.value)}
           >
-            <option value={""} selected>
-              Tahun Pelajaran
-            </option>
-            <option>2023/2024</option>
-            <option>2024/2025</option>
+            <option selected>Tahun Ajaran</option>
+            <option value="2023/2024">2023/2024</option>
+            <option value="2024/2025">2024/2025</option>
           </select>
           <select
             className="select join-item w-32 max-w-md select-bordered"
@@ -330,7 +327,6 @@ const RaportNarasi = () => {
               handleFilter("semester", e.target.value);
               sessionStorage.setItem("smt", e.target.value);
               formik.setFieldValue("smt", e.target.value);
-              setSemesterProps(e.target.value);
             }}
           >
             <option value={""} selected>
@@ -353,10 +349,9 @@ const RaportNarasi = () => {
               pilih kelas
             </option>
             {kelas?.map((item: any, index: number) => (
-              <option
-                value={item.id}
-                key={index}
-              >{`${item.level}-${item.class_name}`}</option>
+              <option value={item.id} key={index}>
+                {item.class_name}
+              </option>
             ))}
           </select>
         </div>

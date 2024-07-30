@@ -1,5 +1,5 @@
 import create, { SetState } from "zustand";
-import { StoreState , StoreProps, IemployeeState} from "./Utils";
+import { StoreState, StoreProps, IemployeeState } from "./Utils";
 
 const Store = create<StoreState>((set: SetState<StoreState>) => ({
   token: localStorage.getItem("token"),
@@ -26,14 +26,25 @@ const Store = create<StoreState>((set: SetState<StoreState>) => ({
     set({ role });
   },
 
+  id: sessionStorage.getItem("id"),
+  setId: (id) => {
+    if (id) {
+      sessionStorage.setItem("id", id);
+    } else {
+      sessionStorage.removeItem("id");
+    }
+    set({ id });
+  },
+
   tanggalPekanan: new Date(),
   setTanggalPekanan: (data) => set({ tanggalPekanan: data }),
 
   tanggalStartDate: new Date(),
   setTanggalStartDate: (data) => set({ tanggalStartDate: data }),
- 
 
-  data: sessionStorage.getItem("data") ? JSON.parse(sessionStorage.getItem("data") as string) : null,
+  data: sessionStorage.getItem("data")
+    ? JSON.parse(sessionStorage.getItem("data") as string)
+    : null,
   setData: (data) => {
     if (data) {
       sessionStorage.setItem("data", JSON.stringify(data));
@@ -46,20 +57,22 @@ const Store = create<StoreState>((set: SetState<StoreState>) => ({
     sessionStorage.removeItem("data");
     set({ data: null });
   },
-
 }));
 
 const useProps = create<StoreProps>((set) => ({
-  tahunProps: '',
+  tahunProps: "",
   setTahunProps: (tahunProps: string) => set({ tahunProps }),
 
-  semesterProps: '',
+  semesterProps: "",
   setSemesterProps: (semesterProps: string) => set({ semesterProps }),
 
-  kelasProps: '',
+  academicProps: "",
+  setAcademicYearProps: (academicProps: string) => set({ academicProps }),
+
+  kelasProps: "",
   setKelasProps: (kelasProps: string) => set({ kelasProps }),
 
-  mapelProps: '',
+  mapelProps: "",
   setMapelProps: (mapelProps: string) => set({ mapelProps }),
 
   inArea: false,
@@ -69,7 +82,7 @@ const useProps = create<StoreProps>((set) => ({
   setDistanceProps: (distance: number) => set({ distance }),
 
   userClasses: [],
-  setUserClasses: (userClasses: any[]) => set({ userClasses })
+  setUserClasses: (userClasses: any[]) => set({ userClasses }),
 }));
 
 const employeeStore = create<IemployeeState>((set, get) => ({
@@ -90,13 +103,14 @@ const employeeStore = create<IemployeeState>((set, get) => ({
 
   isHeadmaster: () => get().employee != null && Store().role?.toString() == "4",
 
-  clearStore: () => set({
-    employee: null,
-    headmaster: null,
-    formTeachers: [],
-    formSubjects: [],
-    formXtras: []
-  })
-}))
+  clearStore: () =>
+    set({
+      employee: null,
+      headmaster: null,
+      formTeachers: [],
+      formSubjects: [],
+      formXtras: [],
+    }),
+}));
 
 export { Store, useProps, employeeStore };

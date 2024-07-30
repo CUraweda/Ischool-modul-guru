@@ -133,11 +133,8 @@ const PresensiSiswa = () => {
           const createPromises = selectedStudents.map((item: any) => {
             const dataRest = {
               student_class_id: item.student.id,
-              remark:
-                item.transportasi != "Hadir"
-                  ? item.transportasi || "🚶‍♂️jalan kaki"
-                  : "-",
               att_date: new Date(date).setHours(0, 0, 0, 0),
+              remark: item.transportasi ? item.transportasi : "🚶‍♂️Jalan Kaki",
               status: item.presensi ? item.presensi : "Hadir",
               semester: filter.semester ? filter.semester : "1",
             };
@@ -217,13 +214,16 @@ const PresensiSiswa = () => {
     const response = await Student.GetPresensiById(token, id);
     const data = response.data.data[0];
     setPresensi(data.status);
-    setTransport(data.remark || "🚶‍♂️jalan kaki");
+    setTransport(data.remark || "🚶‍♂️jalan kaki"); // Set default value for transport if it's null
     setIdPresensi(id);
     setIdSiswa(data.student_class_id);
   };
 
   const handleEditPresensi = async () => {
     try {
+      console.log("Status Presensi:", presensi);
+      console.log("Transportasi:", transport);
+
       const data: any = {
         student_class_id: idSiswa,
         status: presensi,
@@ -231,12 +231,18 @@ const PresensiSiswa = () => {
         semester: filter.semester,
       };
 
+      // Jika statusnya adalah "Hadir", tambahkan remark
       if (presensi === "Hadir") {
         data.remark = transport || "🚶‍♂️jalan kaki";
+      } else {
+        data.remark = "";
       }
 
-      await Student.UpdatePresensi(token, idPresensi, data);
+      // Kirim data ke API
+      const response = await Student.UpdatePresensi(token, idPresensi, data);
+      console.log("Response:", response);
 
+      // Tutup modal dan perbarui data presensi
       closeModal("edit-presensi");
       getPresensiData();
     } catch (error) {
@@ -402,8 +408,8 @@ const PresensiSiswa = () => {
               <option disabled selected>
                 Semester
               </option>
-              <option value="1">Ganjil</option>
-              <option value="2">Genap </option>
+              <option value={1}>Ganjil</option>
+              <option value={2}>Genap </option>
             </select>
           </div>
           <div className="w-full max-h-[400px] mt-10 overflow-auto">
