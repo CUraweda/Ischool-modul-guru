@@ -29,8 +29,15 @@ export const PaginationControl = ({
   return (
     <div className="w-full items-center flex-wrap justify-end flex mt-3 gap-3">
       {useTotal && (
-        <p className="text-neutral-500 me-auto text-sm">
-          Total terdapat {meta.totalRows} data
+        <p
+          className={
+            "me-auto text-sm " +
+            (meta.totalRows ? "text-neutral-500" : "text-error")
+          }
+        >
+          {meta.totalRows
+            ? `Total terdapat ${meta.totalRows} data`
+            : "Tidak terdapat data"}
         </p>
       )}
       {useLimit && (
