@@ -59,6 +59,10 @@
             {
                 "name": "ODFYC",
                 "url": "/guru/one-day"
+            },
+            {
+                "name": "Prestasi",
+                "url": "/guru/prestasi-siswa"
             }
         ]
     },
