@@ -468,6 +468,16 @@ const Kalender = {
       data,
     }),
 
+  duplicateTimetable: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/timetable/duplicate-create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  
   EditTimeTable: (
     token: string | null,
     id: string | null,

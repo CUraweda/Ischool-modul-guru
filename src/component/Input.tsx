@@ -113,6 +113,7 @@ interface SelectProps<T>
   options: T[];
   keyValue?: string;
   keyDisplay?: string;
+  displayBuilder?: (t: T) => any;
 }
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps<any>>(
@@ -127,6 +128,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps<any>>(
       options,
       keyValue,
       keyDisplay,
+      displayBuilder,
       ...props
     },
     ref
@@ -157,8 +159,12 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps<any>>(
                   : option
               }
             >
-              {typeof option != "string" && keyDisplay
-                ? option[keyDisplay]
+              {typeof option !== "string"
+                ? displayBuilder
+                  ? displayBuilder(option)
+                  : keyDisplay
+                    ? option[keyDisplay]
+                    : option
                 : option}
             </option>
           ))}
