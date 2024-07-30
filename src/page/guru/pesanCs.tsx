@@ -54,7 +54,7 @@ const PesanCs = () => {
   const GetMessage = async (item: any) => {
     try {
       const withId = item.withUser.id;
-      setCurrentChatUser(item.user ? item.user.full_name : item.full_name);
+      setCurrentChatUser(item.withUser.full_name);
       setCurrentWithId(withId);
       const response = await CustomerCare.GetMessage(token, id, withId);
       if (
@@ -147,16 +147,16 @@ const PesanCs = () => {
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
                       fill="none"
                       viewBox="0 0 24 24"
+                      strokeWidth={1.5}
                       stroke="currentColor"
+                      className="size-6"
                     >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
+                        d="M12 4.5v15m7.5-7.5h-15"
                       />
                     </svg>
                   </label>
