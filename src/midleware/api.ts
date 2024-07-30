@@ -20,7 +20,7 @@ const Auth = {
 const Student = {
   GetStudentByClass: (
     token: string | null,
-    id: number | null,
+    id: string | null,
     tahun: string | null
   ): AxiosPromise<any> =>
     instance({
@@ -82,6 +82,22 @@ const Student = {
       },
       data,
     }),
+  showAllPresensi: (
+    token: string | null,
+    search: string | null,
+    page: number | null,
+    limit: number | null,
+    classId: string | null,
+    attDate: string | null,
+    withAssign: string | null = "N"
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-attendance?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&att_date=${attDate}&with_assign=${withAssign}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   GetPresensiByClassDate: (
     token: string | null,
     id: number | null,
@@ -123,11 +139,14 @@ const Class = {
   showAll: (
     token: string | null,
     page: number | null,
-    limit: number | null
+    limit: number | null,
+    withAssign: string | null = "N",
+    withSubject: string = "Y",
+    withFormClass: string = "Y"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/classes?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/classes?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}&with_subject=${withSubject}&with_form_class=${withFormClass}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -137,24 +156,30 @@ const Class = {
 const Task = {
   GetAll: (
     token: string | null,
+    search: string | null,
+    classId: string | null,
     page: number | null,
-    limit: number | null
+    limit: number | null,
+    withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-task?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/student-task?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }),
   GetAllTask: (
     token: string | null,
+    search: string | null,
+    classId: string | null,
     page: number | null,
-    limit: number | null
+    limit: number | null,
+    withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/task?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/task?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -162,11 +187,14 @@ const Task = {
   GetAllClass: (
     token: string | null,
     page: number | null,
-    limit: number | null
+    limit: number | null,
+    withAssign: string | null = "N",
+    withSubject: string = "Y",
+    withFormClass: string = "Y"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/classes?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/classes?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}&with_subject=${withSubject}&with_form_class=${withFormClass}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -393,6 +421,20 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  GetAllTimetableByClass: (
+    token: string | null,
+    classId: string | null,
+    semester: string | null,
+    academic: string,
+    withAssign: string = "N"
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/timetable/show-by-class?semester=${semester}&academic=${academic}&class_id=${classId}&with_assign=${withAssign}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 
   GetTimetableById: (
     token: string | null,
@@ -473,12 +515,45 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
-
+  showAllStudentReport: (
+    token: string | null,
+    classId: string,
+    semester: string,
+    page: number | null,
+    limit: number | null,
+    withAssign: string | null = "N",
+    academic: string
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-report?search_query=&page=${page}&class_id=${classId}&semester=${semester}&limit=${limit}&with_assign=${withAssign}&academic=${academic}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   // raport angka
   getAllNumberReport: (token: string | null, data: any): AxiosPromise<any> =>
     instance({
       method: "GET",
       url: `/api/number-report/filter-by-params?academic=${data.tahun}&semester=${data.semester}&class_id=${data.class}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showAllNumberReport: (
+    token: string | null,
+    search: string | null,
+    classId: string | null,
+    academic: string | null,
+    semester: string | null,
+    subjectId: string | null,
+    page: number | null,
+    limit: number | null,
+    withAssign: string | null = "N"
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/number-report?search_query=${search}&academic=${academic}&subject_id=${subjectId}&page=${page}&class_id=${classId}&semester=${semester}&limit=${limit}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -852,11 +927,12 @@ const Pengumuman = {
     start: string | null,
     end: string | null,
     page: number | null,
-    limit: number | null
+    limit: number | null,
+    withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/announcement?search_query=${search}&class_id=${classId}&start_date=${start}&end_date=${end}&page=${page}$limit=${limit}`,
+      url: `/api/announcement?search_query=${search}&class_id=${classId}&start_date=${start}&end_date=${end}&page=${page}$limit=${limit}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -890,11 +966,12 @@ const DashboardSiswa = {
     token: string | null,
     classId: string | null,
     page: number | null,
-    limit: number | null
+    limit: number | null,
+    withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/overview?search_query=&page=${page}&limit=${limit}&class_id=${classId}`,
+      url: `/api/overview?search_query=&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

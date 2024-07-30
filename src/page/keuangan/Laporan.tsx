@@ -93,7 +93,7 @@ const Laporan = () => {
     try {
       const res = await Student.GetStudentByClass(
         token,
-        parseInt(filterInForm.classId),
+        filterInForm.classId,
         filterInForm.academicYear
       );
       setStudents(res.data.data.map((dat: any) => dat.student));

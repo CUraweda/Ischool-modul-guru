@@ -16,11 +16,11 @@ const validationSchema = Yup.object({
   startDate: Yup.string().required("Tanggal mulai tidak boleh kosong"),
   endDate: Yup.string().required("Tanggal selesai tidak boleh kosong"),
   anouncement: Yup.string().required("Pengumuman tidak boleh kosong"),
-  class_id: Yup.string(),
+  class_id: Yup.string().optional(),
 });
 
 const PengumumanSiswa = () => {
-  const { token } = Store();
+  const { token, role } = Store();
   const [idPengumuman, setIdPengumuman] = useState<string>("");
   const [classes, setClasses] = useState<any[]>([]);
 
@@ -32,8 +32,10 @@ const PengumumanSiswa = () => {
       class_id: 0,
     },
     validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: (values, { setFieldError }) => {
+      console.log(values)
+      if (role == "6" && !values.class_id)
+        setFieldError("class_id", "Kelas tidak boleh kosong");
     },
   });
 
@@ -59,11 +61,11 @@ const PengumumanSiswa = () => {
 
   useEffect(() => {
     getDataList();
-    getClass();
+    getClassByEmployee();
   }, [filter]);
 
-  const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20);
+  const getClassByEmployee = async () => {
+    const response = await Task.GetAllClass(token, 0, 20, "Y");
     setClasses(response.data.data.result);
   };
 
@@ -76,7 +78,8 @@ const PengumumanSiswa = () => {
         filter.startDate,
         filter.endDate,
         filter.page,
-        filter.limit
+        filter.limit,
+        "Y"
       );
 
       const { result, ...meta } = response.data?.data ?? {};
@@ -124,6 +127,8 @@ const PengumumanSiswa = () => {
   const CreatePengumuman = async () => {
     try {
       const { anouncement, startDate, endDate, class_id } = formik.values;
+      if (role == "6" && !class_id) return;
+
       const data = {
         date_start: startDate,
         date_end: endDate,
@@ -149,17 +154,15 @@ const PengumumanSiswa = () => {
   const EditPengumuman = async () => {
     try {
       const { anouncement, startDate, endDate, class_id } = formik.values;
+      if (role == "6" && !class_id) return;
+
       const data = {
         date_start: startDate,
         date_end: endDate,
         announcement_desc: anouncement,
         class_id: !class_id ? null : class_id,
       };
-      await Pengumuman.UpdatePengumuman(
-        token,
-        idPengumuman,
-        data
-      );
+      await Pengumuman.UpdatePengumuman(token, idPengumuman, data);
 
       getDataList();
       closeModal("edit-pengumuman");

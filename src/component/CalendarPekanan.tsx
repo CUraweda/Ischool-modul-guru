@@ -93,7 +93,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
   const getKalenderPendidikan = async () => {
     try {
       // const smt = sessionStorage.getItem("smt") ? sessionStorage.getItem("smt") : '1'
-      const response = await Kalender.GetAllTimetable(token, kelas, smt);
+      const response = await Kalender.GetAllTimetableByClass(token, kelas, smt, '2023/2024', 'Y');
       const dataList = response.data.data;
 
       const newData = dataList.map((item: any) => ({
@@ -145,7 +145,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas }) => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20);
+    const response = await Task.GetAllClass(token, 0, 20, "Y");
     setClass(response.data.data.result);
   };
 

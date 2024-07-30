@@ -5,18 +5,16 @@ import { FaFilePdf } from "react-icons/fa";
 import { Task, Student, Raport } from "../../midleware/api";
 import { Store, useProps } from "../../store/Store";
 import Swal from "sweetalert2";
+import { IpageMeta, PaginationControl } from "../PaginationControl";
 
 const RaportAll = () => {
   const { token } = Store();
-  const { setKelasProps, kelasProps } = useProps();
+  const { setKelasProps } = useProps();
   const [Class, setClass] = useState<any[]>([]);
   const [siswa, setSiswa] = useState<any[]>([]);
-  const [idClass, setIdClass] = useState<string>(kelasProps || "11");
-  const [semester, setSemester] = useState<string>("1");
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
   const [dataRaport, setDataRaport] = useState<any>([]);
-  const [semesterDropdown, setSemesterDropdown] = useState<string>("1");
-  const [academic, setAcademic] = useState<string>("");
+  const [academic, setAcademic] = useState("");
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
@@ -33,10 +31,27 @@ const RaportAll = () => {
     }
   };
 
+  const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
+  const [filter, setFilter] = useState({
+    classId: "",
+    semester: "1",
+    page: 0,
+    limit: 10,
+  });
+
+  const handleFilter = (key: string, value: any) => {
+    const obj = {
+      ...filter,
+      [key]: value,
+    };
+    if (key != "page") obj["page"] = 0;
+    setFilter(obj);
+  };
+
   useEffect(() => {
     getStudent();
     getDataRaport();
-  }, [idClass, semesterDropdown, academic]);
+  }, [filter, academic]);
 
   useEffect(() => {
     getDataRaport();
@@ -44,15 +59,19 @@ const RaportAll = () => {
   }, []);
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20);
+    const response = await Task.GetAllClass(token, 0, 20, "Y", "N", "Y");
     setClass(response.data.data.result);
   };
 
   const getStudent = async () => {
-    const id = idClass ? parseInt(idClass) : 11;
+    if (!filter.classId) return;
 
     try {
-      const response = await Student.GetStudentByClass(token, id, "2023/2024");
+      const response = await Student.GetStudentByClass(
+        token,
+        filter.classId,
+        "2023/2024"
+      );
       setSiswa(response.data.data);
     } catch (error) {
       closeModal("add-presensi");
@@ -66,16 +85,18 @@ const RaportAll = () => {
 
   const getDataRaport = async () => {
     try {
-      const id = idClass ? idClass : "11";
-      const semester = semesterDropdown || "1";
-      const tahunAjaran = academic || "2023/2024";
-      const response = await Raport.getAllStudentReport(
+      const response = await Raport.showAllStudentReport(
         token,
-        id,
-        semester,
-        tahunAjaran
+        filter.classId,
+        filter.semester,
+        filter.page,
+        filter.limit,
+        "Y",
+        academic
       );
-      setDataRaport(response.data.data);
+      const { result, ...meta } = response.data.data;
+      setDataRaport(result);
+      setPageMeta(meta);
     } catch (error) {
       console.log(error);
     }
@@ -86,7 +107,7 @@ const RaportAll = () => {
       const createPromise = selectedStudents.map((item: any) => {
         const dataRest = {
           student_class_id: item.id,
-          semester: semester,
+          semester: filter.semester,
         };
         return create(dataRest);
       });
@@ -147,9 +168,10 @@ const RaportAll = () => {
           </select>
           <select
             className="select select-bordered w-full"
-            value={idClass}
+            value={filter.classId}
             onChange={(e) => {
-              setIdClass(e.target.value), setKelasProps(e.target.value);
+              handleFilter("classId", e.target.value),
+                setKelasProps(e.target.value);
             }}
           >
             <option selected>Kelas</option>
@@ -162,8 +184,8 @@ const RaportAll = () => {
           </select>
           <select
             className="select select-bordered w-full"
-            value={semesterDropdown}
-            onChange={(e) => setSemesterDropdown(e.target.value)}
+            value={filter.semester}
+            onChange={(e) => handleFilter("semester", e.target.value)}
           >
             <option selected>Semester</option>
             <option value={1}>Ganjil</option>
@@ -171,7 +193,7 @@ const RaportAll = () => {
           </select>
         </div>
         <button
-          className="btn btn-ghost bg-green-500 btn-sm text-white"
+          className="btn btn-ghost bg-green-500 text-white"
           onClick={() => showModal("add-raport-siswa")}
         >
           Tambah
@@ -286,6 +308,14 @@ const RaportAll = () => {
         </table>
       </div>
 
+      <PaginationControl
+        meta={pageMeta}
+        onPrevClick={() => handleFilter("page", pageMeta.page - 1)}
+        onNextClick={() => handleFilter("page", pageMeta.page + 1)}
+        onJumpPageClick={(val) => handleFilter("page", val)}
+        onLimitChange={(val) => handleFilter("limit", val)}
+      />
+
       <Modal id="add-raport-siswa" width="w-11/12 max-w-5xl">
         <div className="w-full flex flex-col items-center">
           <p className="text-xl font-bold">Tambah Raport Siswa</p>
@@ -293,9 +323,10 @@ const RaportAll = () => {
             <label className="mt-4 font-bold">Kelas</label>
             <select
               className="select select-bordered w-full"
-              onChange={(e) => setIdClass(e.target.value)}
+              value={filter.classId}
+              onChange={(e) => handleFilter("classId", e.target.value)}
             >
-              <option disabled selected>
+              <option value={""} selected>
                 Kelas
               </option>
               {Class?.map((item: any, index: number) => (
@@ -310,11 +341,10 @@ const RaportAll = () => {
             <label className="mt-4 font-bold">Semester</label>
             <select
               className="select select-bordered w-full"
-              onChange={(e) => setSemester(e.target.value)}
+              value={filter.semester}
+              onChange={(e) => handleFilter("semester", e.target.value)}
             >
-              <option disabled selected>
-                Semester
-              </option>
+              <option selected>Semester</option>
               <option value={"1"}>Semester 1</option>
               <option value={"2"}>Semester 2</option>
             </select>

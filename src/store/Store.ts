@@ -80,6 +80,9 @@ const useProps = create<StoreProps>((set) => ({
 
   distance: 0,
   setDistanceProps: (distance: number) => set({ distance }),
+
+  userClasses: [],
+  setUserClasses: (userClasses: any[]) => set({ userClasses })
 }));
 
 export { Store, useProps };

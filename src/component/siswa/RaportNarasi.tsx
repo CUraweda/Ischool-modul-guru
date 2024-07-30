@@ -12,6 +12,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import Swal from "sweetalert2";
 import { FaFilePdf } from "react-icons/fa";
+import { IpageMeta, PaginationControl } from "../PaginationControl";
 
 const schema = Yup.object({
   classId: Yup.string().required("required"),
@@ -38,7 +39,23 @@ const RaportNarasi = () => {
   const [reportId, setReportId] = useState<string>("");
   const [setting, setSetting] = useState<boolean>(false);
   const [edit, setEdit] = useState<string>("");
-  const [academic, setAcademic] = useState<string>("");
+  const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
+  const [filter, setFilter] = useState({
+    classId: "",
+    semester: "1",
+    page: 0,
+    limit: 10,
+  });
+  const [academic, setAcademic] = useState("");
+
+  const handleFilter = (key: string, value: any) => {
+    const obj = {
+      ...filter,
+      [key]: value,
+    };
+    if (key != "page") obj["page"] = 0;
+    setFilter(obj);
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -58,7 +75,7 @@ const RaportNarasi = () => {
   useEffect(() => {
     getStudent();
     getKategori();
-  }, [idClass, smt, academic]);
+  }, [filter, academic]);
 
   useEffect(() => {
     getClass();
@@ -83,22 +100,26 @@ const RaportNarasi = () => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20);
+    const response = await Task.GetAllClass(token, 0, 20, "Y");
     setKelas(response.data.data.result);
   };
 
   const getStudent = async () => {
     try {
-      const id = idClass ? idClass : "11";
-      const response = await Raport.getAllStudentReport(
+      const response = await Raport.showAllStudentReport(
         token,
-        id,
-        smt,
+        filter.classId,
+        filter.semester,
+        filter.page,
+        filter.limit,
+        "Y",
         academic
       );
 
-      sessionStorage.setItem("idClass", idClass);
-      setDataSiswa(response.data.data);
+      sessionStorage.setItem("idClass", filter.classId);
+      const { result, ...meta } = response.data.data;
+      setDataSiswa(result);
+      setPageMeta(meta);
     } catch (error) {
       console.log(error);
     }
@@ -291,7 +312,7 @@ const RaportNarasi = () => {
       <div className="w-full flex justify-between gap-2">
         <div className="join">
           <select
-            className="select select-sm join-item w-32 max-w-md select-bordered"
+            className="select select-bordered w-full"
             value={academic}
             onChange={(e) => setAcademic(e.target.value)}
           >
@@ -300,31 +321,37 @@ const RaportNarasi = () => {
             <option value="2024/2025">2024/2025</option>
           </select>
           <select
-            className="select select-sm join-item w-32 max-w-md select-bordered"
-            value={smt}
+            className="select join-item w-32 max-w-md select-bordered"
+            value={filter.semester}
             onChange={(e) => {
-              setSmt(e.target.value);
+              handleFilter("semester", e.target.value);
+              sessionStorage.setItem("smt", e.target.value);
+              formik.setFieldValue("smt", e.target.value);
             }}
           >
-            <option selected>Semester</option>
+            <option value={""} selected>
+              Semester
+            </option>
             <option value={"1"}>Ganjil</option>
             <option value={"2"}>Genap</option>
           </select>
           <select
-            className="select select-sm join-item w-32 max-w-md select-bordered"
-            value={formik.values.classId}
+            className="select join-item w-32 max-w-md select-bordered"
+            value={filter.classId}
             onChange={(e) => {
-              setClass(e.target.value),
-                formik.setFieldValue("classId", e.target.value),
-                setKelasProps(e.target.value);
+              handleFilter("classId", e.target.value);
+              setClass(e.target.value);
+              formik.setFieldValue("classId", e.target.value);
+              setKelasProps(e.target.value);
             }}
           >
-            <option selected>pilih kelas</option>
+            <option value={""} selected>
+              pilih kelas
+            </option>
             {kelas?.map((item: any, index: number) => (
-              <option
-                value={item.id}
-                key={index}
-              >{`${item.level}-${item.class_name}`}</option>
+              <option value={item.id} key={index}>
+                {item.class_name}
+              </option>
             ))}
           </select>
         </div>
@@ -339,94 +366,105 @@ const RaportNarasi = () => {
         </div>
       </div>
 
-      <div className={`overflow-x-auto mt-5 ${setting ? "hidden" : ""}`}>
-        <table className="table table-md table-zebra">
-          <thead>
-            <tr className="bg-blue-300 ">
-              <th>No</th>
-              <th>Nama</th>
-              <th>Kelas</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {DataSiswa?.map((item: any, index: number) => (
-              <tr key={index}>
-                <th>{index + 1}</th>
-                <td>{item?.studentclass?.student.full_name}</td>
-                <td>{item?.studentclass?.class?.class_name}</td>
-
-                <td className="">
-                  <div className="join">
-                    <Link to={"/guru/rapor-siswa/narasi"}>
-                      <button
-                        className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
-                        data-tip="Detail"
-                        onClick={() => {
-                          {
-                            sessionStorage.setItem("idNar", item?.id),
-                              sessionStorage.setItem(
-                                "idSiswa",
-                                item?.studentclass?.id
-                              );
-                          }
-                        }}
-                      >
-                        <MdOutlineDocumentScanner />
-                      </button>
-                    </Link>
-                    <button
-                      className={`btn join-item btn-ghost btn-sm text-xl text-white tooltip ${
-                        item.nar_teacher_comments
-                          ? "bg-green-500"
-                          : "bg-gray-400"
-                      }`}
-                      data-tip="Komentar Guru"
-                      onClick={() =>
-                        handleKomen(
-                          item.nar_teacher_comments,
-                          item.student_class_id,
-                          item.id,
-                          item.semester,
-                          "guru"
-                        )
-                      }
-                    >
-                      <IoChatboxEllipsesOutline />
-                    </button>
-                    <button
-                      className={`btn join-item btn-ghost btn-sm text-xl text-white bg-yellow-500 tooltip ${
-                        item.nar_parent_comments ? "" : "btn-disabled"
-                      }`}
-                      data-tip="Komentar Ortu"
-                      onClick={() =>
-                        handleKomen(
-                          item.nar_parent_comments,
-                          item.student_class_id,
-                          item.id,
-                          item.semester,
-                          "ortu"
-                        )
-                      }
-                    >
-                      <IoChatboxEllipsesOutline />
-                    </button>
-                    <button
-                      className={`btn join-item btn-ghost btn-sm text-xl text-white bg-cyan-500 tooltip`}
-                      data-tip="Generate PDF"
-                      onClick={() =>
-                        hanldegeneratePdf(item.studentclass.student_id)
-                      }
-                    >
-                      <FaFilePdf />
-                    </button>
-                  </div>
-                </td>
+      <div className={`mt-5 ${setting ? "hidden" : ""}`}>
+        <div className="overflow-x-auto">
+          <table className="table table-md table-zebra">
+            <thead>
+              <tr className="bg-blue-300 ">
+                <th>No</th>
+                <th>Nama</th>
+                <th>Kelas</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {DataSiswa?.map((item: any, index: number) => (
+                <tr key={index}>
+                  <th>{index + 1}</th>
+                  <td>{item?.studentclass?.student.full_name}</td>
+                  <td>{item?.studentclass?.class?.class_name}</td>
+
+                  <td className="">
+                    <div className="join">
+                      <Link to={"/guru/rapor-siswa/narasi"}>
+                        <button
+                          className="btn join-item btn-ghost btn-sm text-xl text-white bg-blue-500 tooltip"
+                          data-tip="Detail"
+                          onClick={() => {
+                            {
+                              sessionStorage.setItem("idNar", item?.id),
+                                sessionStorage.setItem(
+                                  "idSiswa",
+                                  item?.studentclass?.id
+                                );
+                            }
+                          }}
+                        >
+                          <MdOutlineDocumentScanner />
+                        </button>
+                      </Link>
+                      <button
+                        className={`btn join-item btn-ghost btn-sm text-xl text-white tooltip ${
+                          item.nar_teacher_comments
+                            ? "bg-green-500"
+                            : "bg-gray-400"
+                        }`}
+                        data-tip="Komentar Guru"
+                        onClick={() =>
+                          handleKomen(
+                            item.nar_teacher_comments,
+                            item.student_class_id,
+                            item.id,
+                            item.semester,
+                            "guru"
+                          )
+                        }
+                      >
+                        <IoChatboxEllipsesOutline />
+                      </button>
+                      <button
+                        className={`btn join-item btn-ghost btn-sm text-xl text-white bg-yellow-500 tooltip ${
+                          item.nar_parent_comments ? "" : "btn-disabled"
+                        }`}
+                        data-tip="Komentar Ortu"
+                        onClick={() =>
+                          handleKomen(
+                            item.nar_parent_comments,
+                            item.student_class_id,
+                            item.id,
+                            item.semester,
+                            "ortu"
+                          )
+                        }
+                      >
+                        <IoChatboxEllipsesOutline />
+                      </button>
+                      <button
+                        className={`btn join-item btn-ghost btn-sm text-xl text-white bg-cyan-500 tooltip`}
+                        data-tip="Generate PDF"
+                        onClick={() =>
+                          hanldegeneratePdf(item.studentclass.student_id)
+                        }
+                      >
+                        <FaFilePdf />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <PaginationControl
+          meta={pageMeta}
+          onPrevClick={() => handleFilter("page", pageMeta.page - 1)}
+          onNextClick={() => handleFilter("page", pageMeta.page + 1)}
+          onJumpPageClick={(val) => handleFilter("page", val)}
+          onLimitChange={(val) => handleFilter("limit", val)}
+        />
       </div>
+
       <div className={`mt-5 ${!setting ? "hidden" : ""}`}>
         <div className="w-full flex flex-col">
           <div className="divider divider-accent text-xl">Kategori</div>

@@ -5,6 +5,10 @@ import { BiPencil, BiTrash } from "react-icons/bi";
 import { Task, Student } from "../../midleware/api";
 import { Store } from "../../store/Store";
 import Swal from "sweetalert2";
+import {
+  IpageMeta,
+  PaginationControl,
+} from "../../component/PaginationControl";
 
 const PresensiSiswa = () => {
   const { token } = Store();
@@ -27,11 +31,28 @@ const PresensiSiswa = () => {
     getClass();
   }, []);
 
+  const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
+  const [filter, setFilter] = useState({
+    classId: "",
+    attDate: today.toISOString().substr(0, 10),
+    page: 0,
+    limit: 10,
+  });
+
+  const handleFilter = (key: string, value: any) => {
+    const obj = {
+      ...filter,
+      [key]: value,
+    };
+    if (key != "page") obj["page"] = 0;
+    setFilter(obj);
+  };
+
   useEffect(() => {
     getStudent();
     getPresensiData();
     setSelectedStudents([]);
-  }, [idClass, date]);
+  }, [filter]);
 
   const formattedDate = new Date(date).toLocaleDateString("id-ID", {
     weekday: "long",
@@ -55,27 +76,31 @@ const PresensiSiswa = () => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20);
+    const response = await Task.GetAllClass(token, 0, 20, "Y");
     setKelas(response.data.data.result);
   };
 
   const getPresensiData = async () => {
-    const newDate = new Date(date);
+    const newDate = new Date(filter.attDate);
     const isoDate = newDate.toISOString();
     const formattedDate = isoDate.slice(0, 10);
-    const Class = parseInt(idClass);
-    const response = await Student.GetPresensiByClassDate(
+    const response = await Student.showAllPresensi(
       token,
-      Class,
-      formattedDate
+      "",
+      filter.page,
+      filter.limit,
+      filter.classId,
+      formattedDate,
+      "Y"
     );
-    setDataSiswa(response.data.data);
+    const { result, ...meta } = response.data.data;
+    setDataSiswa(result);
+    setPageMeta(meta);
   };
 
   const getStudent = async () => {
-    const id = parseInt(idClass);
     try {
-      const response = await Student.GetStudentByClass(token, id, "2023/2024");
+      const response = await Student.GetStudentByClass(token, idClass, "2023/2024");
       setSiswa(response.data.data);
     } catch (error) {
       closeModal("add-presensi");
@@ -227,9 +252,10 @@ const PresensiSiswa = () => {
           <div className="join w-full flex justify-end mb-5">
             <select
               className="select select-bordered w-36 join-item"
-              onChange={(e) => setIdClass(e.target.value)}
+              value={filter.classId}
+              onChange={(e) => handleFilter("classId", e.target.value)}
             >
-              <option disabled selected>
+              <option value={""} selected>
                 Kelas
               </option>
               {kelas?.map((item: any, index: number) => (
@@ -243,8 +269,8 @@ const PresensiSiswa = () => {
               type="date"
               placeholder="Type here"
               className="input input-bordered  join-item"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              value={filter.attDate}
+              onChange={(e) => handleFilter("attDate", e.target.value)}
             />
             <button
               className="btn bg-green-500 text-white font-bold join-item"
@@ -256,7 +282,8 @@ const PresensiSiswa = () => {
               Tambah
             </button>
           </div>
-          <table className="table shadow-lg">
+
+          <table className="table">
             {/* head */}
             <thead className="bg-blue-400 text-white">
               <tr>
@@ -304,6 +331,14 @@ const PresensiSiswa = () => {
               )}
             </tbody>
           </table>
+
+          <PaginationControl
+            meta={pageMeta}
+            onPrevClick={() => handleFilter("page", pageMeta.page - 1)}
+            onNextClick={() => handleFilter("page", pageMeta.page + 1)}
+            onJumpPageClick={(val) => handleFilter("page", val)}
+            onLimitChange={(val) => handleFilter("limit", val)}
+          />
         </div>
       </div>
 
