@@ -15,14 +15,14 @@ const PesanCs = () => {
   const [chatMessage, setChatMessage] = useState("");
 
   const showModal = (props: string) => {
-    let modalElement = document.getElementById(props) as HTMLDialogElement;
+    const modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
     }
   };
 
   const closeModal = (props: string) => {
-    let modalElement = document.getElementById(props) as HTMLDialogElement;
+    const modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {
       modalElement.close();
     }
@@ -73,7 +73,8 @@ const PesanCs = () => {
     }
   };
 
-  const PostMessage = async () => {
+  const PostMessage = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Prevent default form submission
     if (chatMessage.trim() === "") return;
     if (currentWithId === null) {
       console.error("No user selected to chat with");
@@ -116,7 +117,7 @@ const PesanCs = () => {
               <div className="w-full p-5 text-3xl font-bold bg-white">
                 Chats
               </div>
-              <div className="overflow-y-auto h-[25rem]">
+              <div className="overflow-y-auto h-[36rem]">
                 {fetch.map((item) => (
                   <div
                     className="w-full p-3 bg-blue-300 flex gap-2 cursor-pointer"
@@ -200,29 +201,28 @@ const PesanCs = () => {
                   </div>
                 )}
               </div>
-              <div className="w-full px-5 ">
-                <label className="input input-bordered flex items-center gap-2">
-                  <input
-                    type="text"
-                    className="grow"
-                    placeholder="Type your message..."
-                    value={chatMessage}
-                    onChange={(e) => setChatMessage(e.target.value)}
-                  />
-                  <span
-                    className="text-2xl cursor-pointer"
-                    onClick={PostMessage}
-                  >
-                    <BsSend />
-                  </span>
-                </label>
+              <div className="w-full px-5">
+                <form onSubmit={PostMessage}>
+                  <label className="input input-bordered flex items-center gap-2">
+                    <input
+                      type="text"
+                      className="grow"
+                      placeholder="Type your message..."
+                      value={chatMessage}
+                      onChange={(e) => setChatMessage(e.target.value)}
+                    />
+                    <button type="submit" className="text-2xl cursor-pointer">
+                      <BsSend />
+                    </button>
+                  </label>
+                </form>
               </div>
             </div>
           </div>
         </div>
 
         <Modal id="daftar-chat">
-          <div className="w-full max-w-lg mx-auto ">
+          <div className="w-full max-w-lg mx-auto">
             <div className="flex justify-between items-center border-b pb-4 mb-4">
               <h2 className="text-xl font-bold">Daftar Chat</h2>
             </div>
