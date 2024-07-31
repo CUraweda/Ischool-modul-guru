@@ -4,7 +4,12 @@ import {
   PaginationControl,
 } from "../../component/PaginationControl";
 import { Input, Select, Textarea } from "../../component/Input";
-import { FaDownload, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
+import {
+  FaCertificate,
+  FaPlus,
+  FaSearch,
+  FaTrash,
+} from "react-icons/fa";
 import { Store } from "../../store/Store";
 import { AchievementSiswa, Class, Year, Student } from "../../midleware/api";
 import Swal from "sweetalert2";
@@ -16,10 +21,12 @@ import Modal, { closeModal, openModal } from "../../component/modal";
 import { getAcademicYears, getCurrentAcademicYear } from "../../utils/common";
 // import { setYear } from "date-fns/esm";
 
-const certificateExts = ["pdf", "jpeg", "jpg", "png"];
+// const certificateExts = ["pdf", "jpeg", "jpg", "png"];
+const certificateExts = ["pdf"];
 
 const schema = Yup.object().shape({
   id: Yup.string().optional(),
+  certificate_path: Yup.string().optional(),
   student_id: Yup.string().required("Siswa tidak boleh kosong"),
   achievement_desc: Yup.string().required("Deskripsi tidak boleh kosong"),
   issued_at: Yup.date().required("Tanggal terbit tidak boleh kosong"),
@@ -45,7 +52,8 @@ const schema = Yup.object().shape({
 
 const PrestasiSiswa = () => {
   const { token } = Store(),
-    modalFormId = "form-achievement";
+    modalFormId = "form-achievement",
+    modalCertId = "view-cert-achievement";
 
   // filter
   const [search, setSearch] = useState("");
@@ -151,6 +159,7 @@ const PrestasiSiswa = () => {
       achievement_desc: "",
       issued_at: "",
       file: "",
+      certificate_path: ""
     },
     validationSchema: schema,
     validateOnChange: false,
@@ -210,6 +219,7 @@ const PrestasiSiswa = () => {
           ? formatTime(res.data.data.issued_at, "YYYY-MM-DD")
           : "",
         file: "",
+        certificate_path: res.data.data?.certificate_path ?? ""
       });
       openModal(modalFormId);
     } catch (error) {
@@ -259,8 +269,53 @@ const PrestasiSiswa = () => {
     });
   };
 
+  // view certificate
+  const [isCertLoading, setIsCertLoading] = useState(false),
+    [certificateView, setCertificateView] = useState("");
+
+  const viewCertificate = async (path?: string) => {
+    setCertificateView("");
+    if (!path) return;
+
+    setIsCertLoading(true);
+    try {
+      const response = await AchievementSiswa.downloadCertificate(token, path);
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      setCertificateView(URL.createObjectURL(blob));
+      openModal(modalCertId);
+    } catch (error: any) {
+      let message = "Gagal mengunduh sertifikat prestasi siswa"
+      if (error.response?.status == 404) message = "File sertifikat prestasi siswa tidak ditemukan"
+
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: message,
+      });
+    } finally {
+      setIsCertLoading(false);
+    }
+  };
+
   return (
     <>
+      <Modal id={modalCertId}>
+        <h3 className="text-xl font-bold mb-6">Sertifikat Prestasi</h3>
+        <iframe
+          src={certificateView}
+          frameBorder="0"
+          width="100%"
+          height="450px"
+          className="mt-4"
+        />
+        <button
+          onClick={() => closeModal(modalCertId)}
+          className="btn w-full btn-primary mt-10"
+        >
+          Tutup
+        </button>
+      </Modal>
+
       <Modal id={modalFormId} onClose={handleReset}>
         <form onSubmit={form.handleSubmit}>
           <h3 className="text-xl font-bold mb-6">
@@ -339,6 +394,7 @@ const PrestasiSiswa = () => {
             ref={inpCertificateFile}
             accept={certificateExts.map((ext) => "." + ext).join(", ")}
             // value={form.values.file}
+            hint={form.values.certificate_path ? "Sertifikat sebelumnya akan tertimpa dengan sertifikat baru" : ""}
             onChange={(e) => {
               if (e.target.files) {
                 form.setFieldValue("file", e.target.files[0]);
@@ -415,7 +471,7 @@ const PrestasiSiswa = () => {
                 {dataList.map((dat, i) => (
                   <tr key={i}>
                     <th>{i + 1}</th>
-                    <td>{dat.student.full_name ?? "-"}</td>
+                    <td>{dat.student?.full_name ?? "-"}</td>
                     <td>{dat.achievement_desc ?? "-"}</td>
                     <td>
                       {dat.issued_at
@@ -427,9 +483,11 @@ const PrestasiSiswa = () => {
                       <div className="join">
                         <button
                           className="btn btn-primary btn-sm join-item tooltip"
-                          data-tip="Unduh sertifikat"
+                          data-tip="Lihat sertifikat"
+                          disabled={!dat.certificate_path || isCertLoading}
+                          onClick={() => viewCertificate(dat.certificate_path)}
                         >
-                          <FaDownload />
+                          <FaCertificate />
                         </button>
                         <button
                           className="btn btn-secondary btn-sm join-item  tooltip"
