@@ -62,7 +62,20 @@ const RaportAll = () => {
     const response = await Task.GetAllClass(token, 0, 20, "Y", "N", "Y");
     setClass(response.data.data.result);
   };
+  const [Tahun, setTahun] = useState<any[]>([]);
 
+  const generateAcademicYears = () => {
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear;
+
+    setTahun(
+      Array.from(
+        { length: 1 }, // Menghasilkan array dengan panjang 1
+        (_, index) => `${startYear + index}/${startYear + index + 1}`
+      )
+    );
+  };
+  useEffect(() => generateAcademicYears(), []);
   const getStudent = async () => {
     if (!filter.classId) return;
 
@@ -70,7 +83,7 @@ const RaportAll = () => {
       const response = await Student.GetStudentByClass(
         token,
         filter.classId,
-        "2023/2024"
+        Tahun.toString()
       );
       setSiswa(response.data.data);
     } catch (error) {

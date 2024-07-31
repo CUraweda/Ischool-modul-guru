@@ -99,14 +99,27 @@ const PresensiSiswa = () => {
     setDataSiswa(result);
     setPageMeta(meta);
   };
+  const [Tahun, setTahun] = useState<any[]>([]);
 
+  const generateAcademicYears = () => {
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear + 1;
+
+    setTahun(
+      Array.from(
+        { length: 1 }, // Menghasilkan array dengan panjang 1
+        (_, index) => `${startYear + index}/${startYear + index + 1}`
+      )
+    );
+  };
+  useEffect(() => generateAcademicYears(), []);
   const getStudent = async () => {
     if (!filter.classId) return;
     try {
       const response = await Student.GetStudentByClass(
         token,
         filter.classId,
-        "2023/2024"
+        Tahun.toString()
       );
       setSiswa(response.data.data);
     } catch (error) {
