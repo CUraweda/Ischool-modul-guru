@@ -145,12 +145,13 @@ const PresensiSiswa = () => {
         if (dataStatus.length === 0) {
           const createPromises = selectedStudents.map((item: any) => {
             const dataRest = {
-              student_class_id: item.student.id,
+              student_class_id: item.student.class_id,
               att_date: new Date(date).setHours(0, 0, 0, 0),
               remark: item.transportasi ? item.transportasi : "🚶‍♂️Jalan Kaki",
               status: item.presensi ? item.presensi : "Hadir",
               semester: filter.semester ? filter.semester : "1",
             };
+            console.log("oke");
 
             if (dataRest.status !== "Hadir") {
               delete dataRest.remark;
