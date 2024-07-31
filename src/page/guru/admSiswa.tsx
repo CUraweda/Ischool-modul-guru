@@ -109,6 +109,10 @@ const AdmSiswa = () => {
   }, [formik?.values.classId]);
 
   useEffect(() => {
+    generateAcademicYears();
+  }, []);
+
+  useEffect(() => {
     getTask();
     getTaskClass();
   }, [filter, filterSiswa]);
@@ -187,12 +191,24 @@ const AdmSiswa = () => {
     setMapel(mapelFilter);
   };
 
+  const [Tahun, setTahun] = useState<any[]>([]);
+  const generateAcademicYears = () => {
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear + 1;
+
+    setTahun(
+      Array.from(
+        { length: 1 }, // Menghasilkan array dengan panjang 1
+        (_, index) => `${startYear + index}/${startYear + index + 1}`
+      )
+    );
+  };
   const getStudent = async () => {
     const classId = formik.values.classId;
     const response = await Student.GetStudentByClass(
       token,
       classId,
-      "2023/2024"
+      Tahun.toString()
     );
     setDataSiswa(response.data.data);
   };

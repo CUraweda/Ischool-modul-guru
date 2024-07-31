@@ -6,7 +6,7 @@ import {
 import { Input, Select, Textarea } from "../../component/Input";
 import { FaDownload, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import { Store } from "../../store/Store";
-import { AchievementSiswa, Class, Student } from "../../midleware/api";
+import { AchievementSiswa, Class, Year, Student } from "../../midleware/api";
 import Swal from "sweetalert2";
 import { formatTime } from "../../utils/date";
 import { FaPencil } from "react-icons/fa6";
@@ -14,6 +14,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { getAcademicYears, getCurrentAcademicYear } from "../../utils/common";
+// import { setYear } from "date-fns/esm";
 
 const certificateExts = ["pdf", "jpeg", "jpg", "png"];
 
@@ -73,7 +74,19 @@ const PrestasiSiswa = () => {
     } catch {}
   };
 
+  const [YearList, setYearList] = useState<any[]>([]);
+  const getYearList = async () => {
+    try {
+      const response = await Year.getYear(token, "", 1000);
+      const { result } = response.data.data;
+      setYearList(result);
+      console.log(YearList);
+    } catch (err) {
+      console.log(`error: ${err}`);
+    }
+  };
   useEffect(() => {
+    getYearList();
     getClasses();
   }, []);
 
@@ -262,7 +275,22 @@ const PrestasiSiswa = () => {
                 value={academicYear}
                 onChange={(e) => setAcademicYear(e.target.value)}
               />
-
+              {/* <select
+                id="Tahun pelajaran"
+                name="Tahun pelajaran"
+                className="input input-sm input-bordered items-center gap-2 grow mt-1 block w-full border  rounded-md shadow-sm sm:text-sm"
+                onChange={(e) => setAcademicYear(e.target.value)}
+                value={academicYear}
+              >
+                <option disabled value="">
+                  Pilih tahun ajaran
+                </option>
+                {YearList?.map((year: any) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select> */}
               <Select
                 label="Kelas"
                 value={filter.classId}

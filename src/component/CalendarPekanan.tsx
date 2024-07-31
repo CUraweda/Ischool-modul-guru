@@ -331,7 +331,17 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
               onChange={formik.handleChange}
               errorMessage={formik.errors.semester}
             />
-
+            {/* <select
+              value={formik.values.semester}
+              onChange={formik.handleChange}
+              className="input input-sm input-bordered items-center gap-2 grow mt-1 block w-full border rounded-md shadow-sm sm:text-sm"
+            >
+              <option disabled value="">
+                Pilih semester
+              </option>
+              <option value={1}>Ganjil</option>
+              <option value={2}>Genap</option>
+            </select> */}
             <Select
               label="Kelas"
               name="kelas"

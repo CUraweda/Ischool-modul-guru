@@ -197,12 +197,13 @@ const Task = {
     page: number | null,
     limit: number | null,
     withAssign: string | null = "N",
+    // is_active: string | null = "Y",
     withSubject: string = "Y",
     withFormClass: string = "Y"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/classes?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}&with_subject=${withSubject}&with_form_class=${withFormClass}`,
+      url: `/api/classes?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}&with_subject=${withSubject}&with_form_class=${withFormClass}&is_active=Y`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1584,9 +1585,29 @@ const AchievementSiswa = {
     }),
 };
 
+const Year = {
+  getYear: (
+    token: string | null,
+    querysearch: string,
+    limit: number
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/academic-year`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        search_query: querysearch,
+        limit: limit,
+      },
+    }),
+};
+
 export {
   Auth,
   Task,
+  Year,
   Kalender,
   Student,
   Raport,
