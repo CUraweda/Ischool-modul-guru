@@ -103,7 +103,7 @@ const PresensiSiswa = () => {
 
   const generateAcademicYears = () => {
     const currentYear = new Date().getFullYear();
-    const startYear = currentYear + 1;
+    const startYear = currentYear;
 
     setTahun(
       Array.from(
