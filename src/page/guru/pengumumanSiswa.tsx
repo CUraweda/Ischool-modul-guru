@@ -33,7 +33,7 @@ const PengumumanSiswa = () => {
     },
     validationSchema,
     onSubmit: (values, { setFieldError }) => {
-      console.log(values)
+      console.log(values);
       if (role == "6" && !values.class_id)
         setFieldError("class_id", "Kelas tidak boleh kosong");
     },
@@ -65,7 +65,7 @@ const PengumumanSiswa = () => {
   }, [filter]);
 
   const getClassByEmployee = async () => {
-    const response = await Task.GetAllClass(token, 0, 20, "Y");
+    const response = await Task.GetAllClass(token, 0, 2000, "Y");
     setClasses(response.data.data.result);
   };
 
