@@ -46,7 +46,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             type={type}
             placeholder={placeholder}
-            className={"input input-ghost grow !border-0 w-full " + className}
+            className={
+              (type == "file"
+                ? "file-input file-input-ghost"
+                : "input input-ghost") +
+              " grow !border-0 w-full " +
+              className
+            }
             ref={ref}
             {...props}
           />
@@ -113,6 +119,7 @@ interface SelectProps<T>
   options: T[];
   keyValue?: string;
   keyDisplay?: string;
+  displayBuilder?: (t: T) => any;
 }
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps<any>>(
@@ -127,6 +134,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps<any>>(
       options,
       keyValue,
       keyDisplay,
+      displayBuilder,
       ...props
     },
     ref
@@ -157,8 +165,12 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps<any>>(
                   : option
               }
             >
-              {typeof option != "string" && keyDisplay
-                ? option[keyDisplay]
+              {typeof option !== "string"
+                ? displayBuilder
+                  ? displayBuilder(option)
+                  : keyDisplay
+                    ? option[keyDisplay]
+                    : option
                 : option}
             </option>
           ))}
