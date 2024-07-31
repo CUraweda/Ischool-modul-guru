@@ -1383,7 +1383,7 @@ const ForCountryDetail = {
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/for-country-detail?search_query=${search}&page=${page}&limit=${limit}`,
+      url: `/api/for-country-detail?search_query=${search}&page=${page}&limit=${limit}&with_assign=Y`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

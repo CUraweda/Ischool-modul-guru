@@ -80,7 +80,7 @@ const ODFYC = () => {
   const [filter, setFilter] = useState({
     search: "",
     page: 0,
-    limit: 0,
+    limit: 10,
   });
 
   const handleFilter = (key: string, value: any) => {
