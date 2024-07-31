@@ -1582,6 +1582,18 @@ const AchievementSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  downloadCertificate: (
+    token: string | null,
+    path: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/achievement/download?filepath=${path}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    }),
 };
 
 export {
