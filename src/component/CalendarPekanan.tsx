@@ -244,7 +244,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
     getTimeTableById(id);
   };
 
-  const [tooltipVisible, setTooltipVisible] = useState(true);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
 
   const handleTooltipVisibilityChange = (visible: boolean) => {
     setTooltipVisible(visible);
