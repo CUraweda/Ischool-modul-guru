@@ -85,7 +85,7 @@ const PrestasiSiswa = () => {
   const [YearList, setYearList] = useState<any[]>([]);
   const getYearList = async () => {
     try {
-      const response = await Year.getYear(token, "", 1000);
+      const response = await Year.getYear(token, "", 1000, 1);
       const { result } = response.data.data;
       setYearList(result);
       console.log(YearList);

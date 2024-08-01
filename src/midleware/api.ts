@@ -1614,7 +1614,8 @@ const Year = {
   getYear: (
     token: string | null,
     querysearch: string,
-    limit: number
+    limit: number,
+    page: number
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
@@ -1625,6 +1626,7 @@ const Year = {
       params: {
         search_query: querysearch,
         limit: limit,
+        page: page
       },
     }),
 };

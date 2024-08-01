@@ -63,11 +63,40 @@ const DetailTugasSswa = () => {
     return formattedDate;
   };
 
-  const showFileTugas = async () => {
+  const downloadFileTugas = async () => {
     try {
       const path = task?.task_file;
       const response = await Task.downloadTugas(token, path);
-      const blob = new Blob([response.data], { type: "application/pdf" }); //
+      const urlParts = path.split("/");
+      const fileName = urlParts.pop() || "";
+      const blobUrl = window.URL.createObjectURL(response.data);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.setAttribute("download", fileName);
+      link.style.display = "none";
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const showFileTugas = async () => {
+    try {
+      downloadFileTugas();
+      const path = task?.task_file;
+      const response = await Task.downloadTugas(token, path);
+
+      let mimeType = "application/pdf";
+      if (path.endsWith(".png")) {
+        mimeType = "image/png";
+      } else if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
+        mimeType = "image/jpeg";
+      }
+
+      const blob = new Blob([response.data], { type: mimeType });
       const blobUrl = window.URL.createObjectURL(blob);
 
       setShowFile(blobUrl);
