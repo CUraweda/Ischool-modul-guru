@@ -15,6 +15,14 @@ const Auth = {
         password,
       },
     }),
+  MeData: (token: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: "/api/user/me",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 const Student = {
@@ -189,12 +197,13 @@ const Task = {
     page: number | null,
     limit: number | null,
     withAssign: string | null = "N",
+    // is_active: string | null = "Y",
     withSubject: string = "Y",
     withFormClass: string = "Y"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/classes?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}&with_subject=${withSubject}&with_form_class=${withFormClass}`,
+      url: `/api/classes?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}&with_subject=${withSubject}&with_form_class=${withFormClass}&is_active=Y`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -458,6 +467,16 @@ const Kalender = {
       data,
     }),
 
+  duplicateTimetable: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/timetable/duplicate-create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+
   EditTimeTable: (
     token: string | null,
     id: string | null,
@@ -521,11 +540,12 @@ const Raport = {
     semester: string,
     page: number | null,
     limit: number | null,
-    withAssign: string | null = "N"
+    withAssign: string | null = "N",
+    academic: string
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-report?search_query=&page=${page}&class_id=${classId}&semester=${semester}&limit=${limit}&with_assign=${withAssign}`,
+      url: `/api/student-report?search_query=&page=${page}&class_id=${classId}&semester=${semester}&limit=${limit}&with_assign=${withAssign}&academic=${academic}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -629,7 +649,7 @@ const Raport = {
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/narrative-category/show-by-class/${id}`,
+      url: `/api/narrative-category/show-by-class/${id} `,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1370,11 +1390,12 @@ const ForCountryDetail = {
     token: string | null,
     search?: string,
     page: number = 0,
-    limit: number = 10
+    limit: number = 10,
+    withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/for-country-detail?search_query=${search}&page=${page}&limit=${limit}`,
+      url: `/api/for-country-detail?search_query=${search}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1448,11 +1469,170 @@ const DashboardKeuangan = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  getChart: (
+    token: string | null,
+    startDate: string,
+    endDate: string,
+    postPaymentId: string
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `api/dashboard/admin-keuangan-chart?start_date=${startDate}&end_date=${endDate}&post_payment_id=${postPaymentId}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
+const CustomerCare = {
+  GetAllUserChat: (
+    token: string | null,
+    id: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/user-chat/show-by-user/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  GetMessage: (
+    token: string | null,
+    id: string | null,
+    withId: number
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/user-chat/show-conversation?userid=${id}&withid=${withId}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  GetUserToChat: (token: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/user?limit=10000`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  GetUserToChatGuru: (token: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/user-chat/show-by-guru`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  PostMessage: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/message/create`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
+const AchievementSiswa = {
+  create: (token: string | null, data: any) =>
+    instance({
+      method: "POST",
+      url: "/api/achievement/create",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  showAll: (
+    token: string | null,
+    search?: string,
+    classId?: string,
+    page: number = 0,
+    limit: number = 10,
+    withAssign: string = "N"
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/achievement?search_query=${search}&class_id=${classId}&with_assign=${withAssign}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/achievement/show/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  update: (
+    token: string | null,
+    id: string | number | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: "/api/achievement/update/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  delete: (
+    token: string | null,
+    id: string | number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: "/api/achievement/delete/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  downloadCertificate: (
+    token: string | null,
+    path: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/achievement/download?filepath=${path}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    }),
+};
+
+const Year = {
+  getYear: (
+    token: string | null,
+    querysearch: string,
+    limit: number
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/academic-year`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        search_query: querysearch,
+        limit: limit,
+      },
+    }),
 };
 
 export {
   Auth,
   Task,
+  Year,
   Kalender,
   Student,
   Raport,
@@ -1466,4 +1646,6 @@ export {
   TagihanSiswa,
   ForCountryDetail,
   DashboardKeuangan,
+  CustomerCare,
+  AchievementSiswa,
 };

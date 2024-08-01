@@ -9,16 +9,15 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
+import { FaSearch } from "react-icons/fa";
 
 const PresensiSiswa = () => {
   const { token } = Store();
   const today = new Date();
   const [date, setDate] = useState<any>(today.toISOString().substr(0, 10));
-  const [semester, setSemester] = useState(1);
   const [kelas, setKelas] = useState<any[]>([]);
   const [siswa, setSiswa] = useState<any[]>([]);
   const [dataSiswa, setDataSiswa] = useState<any[]>([]);
-  const [idClass, setIdClass] = useState<string>("");
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
   const [totalCreate, setTotalCreate] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -31,9 +30,12 @@ const PresensiSiswa = () => {
     getClass();
   }, []);
 
+  const [search, setSearch] = useState("");
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
     classId: "",
+    search: "",
+    semester: 1,
     attDate: today.toISOString().substr(0, 10),
     page: 0,
     limit: 10,
@@ -87,7 +89,7 @@ const PresensiSiswa = () => {
     const formattedDate = isoDate.slice(0, 10);
     const response = await Student.showAllPresensi(
       token,
-      "",
+      filter.search,
       filter.page,
       filter.limit,
       filter.classId,
@@ -98,10 +100,28 @@ const PresensiSiswa = () => {
     setDataSiswa(result);
     setPageMeta(meta);
   };
+  const [Tahun, setTahun] = useState<any[]>([]);
 
+  const generateAcademicYears = () => {
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear + 1;
+
+    setTahun(
+      Array.from(
+        { length: 1 }, // Menghasilkan array dengan panjang 1
+        (_, index) => `${startYear + index}/${startYear + index + 1}`
+      )
+    );
+  };
+  useEffect(() => generateAcademicYears(), []);
   const getStudent = async () => {
+    if (!filter.classId) return;
     try {
-      const response = await Student.GetStudentByClass(token, idClass, "2023/2024");
+      const response = await Student.GetStudentByClass(
+        token,
+        filter.classId,
+        Tahun.toString()
+      );
       setSiswa(response.data.data);
     } catch (error) {
       closeModal("add-presensi");
@@ -126,14 +146,11 @@ const PresensiSiswa = () => {
         if (dataStatus.length === 0) {
           const createPromises = selectedStudents.map((item: any) => {
             const dataRest = {
-              student_class_id: item.student.id,
-              remark:
-                item.transportasi != "Hadir"
-                  ? item.transportasi || "🚶‍♂️jalan kaki"
-                  : "-",
+              student_class_id: item.class_id,
               att_date: new Date(date).setHours(0, 0, 0, 0),
+              remark: item.transportasi ? item.transportasi : "🚶‍♂️Jalan Kaki",
               status: item.presensi ? item.presensi : "Hadir",
-              semester: semester ? semester : "1",
+              semester: filter.semester ? filter.semester : "1",
             };
 
             if (dataRest.status !== "Hadir") {
@@ -211,26 +228,35 @@ const PresensiSiswa = () => {
     const response = await Student.GetPresensiById(token, id);
     const data = response.data.data[0];
     setPresensi(data.status);
-    setTransport(data.remark || "🚶‍♂️jalan kaki");
+    setTransport(data.remark || "🚶‍♂️jalan kaki"); // Set default value for transport if it's null
     setIdPresensi(id);
     setIdSiswa(data.student_class_id);
   };
 
   const handleEditPresensi = async () => {
     try {
+      console.log("Status Presensi:", presensi);
+      console.log("Transportasi:", transport);
+
       const data: any = {
         student_class_id: idSiswa,
         status: presensi,
         att_date: new Date(date).setHours(0, 0, 0, 0),
-        semester: semester,
+        semester: filter.semester,
       };
 
+      // Jika statusnya adalah "Hadir", tambahkan remark
       if (presensi === "Hadir") {
         data.remark = transport || "🚶‍♂️jalan kaki";
+      } else {
+        data.remark = "";
       }
 
-      await Student.UpdatePresensi(token, idPresensi, data);
+      // Kirim data ke API
+      const response = await Student.UpdatePresensi(token, idPresensi, data);
+      console.log("Response:", response);
 
+      // Tutup modal dan perbarui data presensi
       closeModal("edit-presensi");
       getPresensiData();
     } catch (error) {
@@ -243,8 +269,24 @@ const PresensiSiswa = () => {
       <div className="flex justify-center w-full mt-5 flex-col items-center">
         <span className="text-3xl font-bold">Presensi Siswa</span>
         <span className="text-xl">{formattedDate}</span>
-        <div className="overflow-x-auto my-10 w-full p-5 bg-white">
-          <div className="join w-full flex justify-end mb-5">
+        <div className="my-10 w-full p-5 bg-white rounded-md">
+          <div className="join w-full flex-wrap flex-col [&>*]:w-full sm:flex-row sm:[&>*]:w-auto justify-end mb-5">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleFilter("search", search);
+              }}
+              className="join-item input input-bordered flex items-center gap-2"
+            >
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                type="text"
+                placeholder="Cari"
+                className="grow"
+              />
+              <FaSearch />
+            </form>
             <select
               className="select select-bordered w-36 join-item"
               value={filter.classId}
@@ -278,54 +320,56 @@ const PresensiSiswa = () => {
             </button>
           </div>
 
-          <table className="table">
-            {/* head */}
-            <thead className="bg-blue-400 text-white">
-              <tr>
-                <th>No</th>
-                <th>Name</th>
-                <th>NIS</th>
-                <th>Kelas</th>
-                <th>Presensi</th>
-                <th>Transportasi</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dataSiswa && dataSiswa.length > 0 ? (
-                dataSiswa.map((item: any, index: number) => (
-                  <tr key={index}>
-                    <th>{index + 1}</th>
-                    <td>{item?.studentclass?.student?.full_name}</td>
-                    <td>{item?.studentclass?.student?.nis}</td>
-                    <td>{item?.studentclass?.student?.class}</td>
-                    <td>{item?.status}</td>
-                    <td>{item?.remark ? item?.remark : "-"}</td>
-                    <td className="join text-white">
-                      <button
-                        className="btn btn-sm btn-ghost bg-orange-600 text-xl join-item"
-                        onClick={() => handlePresensi(item.id)}
-                      >
-                        <BiPencil />
-                      </button>
-                      <button
-                        className="btn btn-sm btn-ghost bg-red-600 text-xl join-item"
-                        onClick={() => deletePresensi(item.id)}
-                      >
-                        <BiTrash />
-                      </button>
+          <div className="overflow-x-auto">
+            <table className="table">
+              {/* head */}
+              <thead className="bg-blue-400 text-white">
+                <tr>
+                  <th>No</th>
+                  <th>Name</th>
+                  <th>NIS</th>
+                  <th>Kelas</th>
+                  <th>Presensi</th>
+                  <th>Transportasi</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dataSiswa && dataSiswa.length > 0 ? (
+                  dataSiswa.map((item: any, index: number) => (
+                    <tr key={index}>
+                      <th>{index + 1}</th>
+                      <td>{item?.studentclass?.student?.full_name}</td>
+                      <td>{item?.studentclass?.student?.nis}</td>
+                      <td>{item?.studentclass?.student?.class}</td>
+                      <td>{item?.status}</td>
+                      <td>{item?.remark ? item?.remark : "-"}</td>
+                      <td className="join text-white">
+                        <button
+                          className="btn btn-sm btn-ghost bg-orange-600 text-xl join-item"
+                          onClick={() => handlePresensi(item.id)}
+                        >
+                          <BiPencil />
+                        </button>
+                        <button
+                          className="btn btn-sm btn-ghost bg-red-600 text-xl join-item"
+                          onClick={() => deletePresensi(item.id)}
+                        >
+                          <BiTrash />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={7} className="text-center">
+                      Tidak ada data
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={7} className="text-center">
-                    Tidak ada data
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
 
           <PaginationControl
             meta={pageMeta}
@@ -344,7 +388,8 @@ const PresensiSiswa = () => {
             <label className="mt-4 font-bold">Kelas</label>
             <select
               className="select select-bordered w-full"
-              onChange={(e) => setIdClass(e.target.value)}
+              value={filter.classId}
+              onChange={(e) => handleFilter("classId", e.target.value)}
             >
               <option disabled selected>
                 Kelas
@@ -371,14 +416,14 @@ const PresensiSiswa = () => {
             <label className="mt-4 font-bold">Semester</label>
             <select
               className="select select-bordered w-full"
-              value={semester}
-              onChange={(e) => setSemester(+e.target.value)}
+              value={filter.semester}
+              onChange={(e) => handleFilter("semester", +e.target.value)}
             >
               <option disabled selected>
                 Semester
               </option>
-              <option value="1">Ganjil</option>
-              <option value="2">Genap </option>
+              <option value={1}>Ganjil</option>
+              <option value={2}>Genap </option>
             </select>
           </div>
           <div className="w-full max-h-[400px] mt-10 overflow-auto">
@@ -580,8 +625,8 @@ const PresensiSiswa = () => {
           <label className="mt-4 font-bold">Semester</label>
           <select
             className="select select-bordered w-full"
-            value={semester}
-            onChange={(e) => setSemester(+e.target.value)}
+            value={filter.semester}
+            onChange={(e) => handleFilter("semester", +e.target.value)}
           >
             <option disabled>Semester</option>
             <option value="1">Ganjil</option>

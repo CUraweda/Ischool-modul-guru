@@ -13,6 +13,8 @@ interface Menu {
   title: string;
   url: string;
   icon: string;
+  roles?: number[];
+  hide?: boolean;
   submenu: boolean;
   subtitle?: subtitle[];
 }
@@ -73,59 +75,66 @@ const Sidebar = () => {
               </label>
             </div>
             <ul className="menu font-bold rounded-lg max-w-xs w-full text-gray-500">
-              {data.map((item: Menu, index: number) => (
-                <React.Fragment key={`menu-` + index}>
-                  {item.submenu ? (
-                    <li className="my-2">
-                      <details>
-                        <summary>
-                          <span className="text-2xl">
-                            {iconMapping[item.icon]}
-                          </span>
-                          <a>{item.title}</a>
-                        </summary>
-                        <ul>
-                          {item.subtitle?.map(
-                            (Item: subtitle, Index: number) => (
-                              <Link to={Item.url} key={`link-` + Index}>
-                                <li
-                                  key={`subtitle-` + Index}
-                                  className={`my-2 transition duration-200 rounded-md ${
-                                    activeMenuItem === Item.url
-                                      ? "bg-blue-100 text-blue-600"
-                                      : ""
-                                  }`}
-                                  onClick={() => handleMenuItemClick(Item.url)}
-                                >
-                                  <p>{Item.name}</p>
-                                </li>
-                              </Link>
-                            )
-                          )}
-                        </ul>
-                      </details>
-                    </li>
-                  ) : (
-                    <Link to={item.url} key={`link-` + index}>
-                      <li
-                        className={`my-2 transition duration-200 rounded-md ${
-                          activeMenuItem === item.url
-                            ? "bg-blue-100 text-blue-600"
-                            : ""
-                        }`}
-                        onClick={() => handleMenuItemClick(item.url)}
-                      >
-                        <div>
-                          <span className="text-2xl">
-                            {iconMapping[item.icon]}
-                          </span>
-                          <p>{item.title}</p>
-                        </div>
+              {data
+                .filter((item) => !item.hide)
+                .filter((item) =>
+                  item.roles && role ? item.roles.map(r => r.toString()).includes(role) : true
+                )
+                .map((item: Menu, index: number) => (
+                  <React.Fragment key={`menu-` + index}>
+                    {item.submenu ? (
+                      <li className="my-2">
+                        <details>
+                          <summary>
+                            <span className="text-2xl">
+                              {iconMapping[item.icon]}
+                            </span>
+                            <a>{item.title}</a>
+                          </summary>
+                          <ul>
+                            {item.subtitle?.map(
+                              (Item: subtitle, Index: number) => (
+                                <Link to={Item.url} key={`link-` + Index}>
+                                  <li
+                                    key={`subtitle-` + Index}
+                                    className={`my-2 transition duration-200 rounded-md ${
+                                      activeMenuItem === Item.url
+                                        ? "bg-blue-100 text-blue-600"
+                                        : ""
+                                    }`}
+                                    onClick={() =>
+                                      handleMenuItemClick(Item.url)
+                                    }
+                                  >
+                                    <p>{Item.name}</p>
+                                  </li>
+                                </Link>
+                              )
+                            )}
+                          </ul>
+                        </details>
                       </li>
-                    </Link>
-                  )}
-                </React.Fragment>
-              ))}
+                    ) : (
+                      <Link to={item.url} key={`link-` + index}>
+                        <li
+                          className={`my-2 transition duration-200 rounded-md ${
+                            activeMenuItem === item.url
+                              ? "bg-blue-100 text-blue-600"
+                              : ""
+                          }`}
+                          onClick={() => handleMenuItemClick(item.url)}
+                        >
+                          <div>
+                            <span className="text-2xl">
+                              {iconMapping[item.icon]}
+                            </span>
+                            <p>{item.title}</p>
+                          </div>
+                        </li>
+                      </Link>
+                    )}
+                  </React.Fragment>
+                ))}
             </ul>
           </ul>
         </div>

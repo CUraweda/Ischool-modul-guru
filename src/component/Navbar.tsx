@@ -2,15 +2,18 @@ import { BsList } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { FaBell } from "react-icons/fa";
+import { employeeStore } from "../store/Store";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const empStore = employeeStore();
 
   moment.locale("id");
   // const date = moment().format('llll');
 
   const logout = () => {
     sessionStorage.clear();
+    empStore.clearStore();
     navigate("/");
   };
 
@@ -26,8 +29,6 @@ const Navbar = () => {
           </label>
         </div>
         <div className="mr-3 ">
-          
-        
           <button className="btn btn-ghost btn-circle text-xl">
             <FaBell />
           </button>
@@ -42,7 +43,7 @@ const Navbar = () => {
               <div className="w-10 rounded-full">
                 <img
                   alt="Tailwind CSS Navbar component"
-                  src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                 />
               </div>
             </div>
@@ -51,9 +52,10 @@ const Navbar = () => {
               className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
             >
               <li>
-                <a className="justify-between">Profile</a>
+                <a href="/profile" className="justify-between">
+                  Profile
+                </a>
               </li>
-
               <li onClick={logout} className="text-red-500">
                 <a>Logout</a>
               </li>

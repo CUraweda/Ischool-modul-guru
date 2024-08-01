@@ -12,7 +12,7 @@ import {
   DateNavigator,
   TodayButton,
 } from "@devexpress/dx-react-scheduler-material-ui";
-import { Store } from "../store/Store";
+import { employeeStore, Store } from "../store/Store";
 import { Kalender } from "../midleware/api";
 import { FaPencil } from "react-icons/fa6";
 import { BiTrash } from "react-icons/bi";
@@ -67,6 +67,7 @@ interface propsColor {
 }
 
 const Demo: React.FC = () => {
+  const { isHeadmaster } = employeeStore();
   const { token, setTanggalPekanan, tanggalPekanan } = Store();
   const [Dataappointment, setData] = useState<any[]>([]);
   const [topik, setTopik] = useState<any[]>([]);
@@ -150,6 +151,7 @@ const Demo: React.FC = () => {
 
   useEffect(() => {
     getKalenderPendidikan();
+    // isHeadmaster()
   }, []);
 
   const formatDateFormik = (date: any) => {
@@ -167,7 +169,7 @@ const Demo: React.FC = () => {
   const editAgenda = async () => {
     try {
       const { edu_id, start_date, end_date, agenda } = formik.values;
-      const color = Color ? Color.value : '';
+      const color = Color ? Color.value : "";
       const dataRest = {
         edu_id: parseInt(edu_id),
         start_date,
@@ -182,7 +184,7 @@ const Demo: React.FC = () => {
       Swal.fire({
         title: "Error",
         text: error.massage,
-        icon: "error"
+        icon: "error",
       });
       console.log(error);
     }
@@ -234,9 +236,7 @@ const Demo: React.FC = () => {
   const DayCell: React.FC<any> = (props) => (
     <MonthView.TimeTableCell
       {...props}
-      onClick={() => {
-        showModal("add-kalender");
-      }}
+      onClick={isHeadmaster() ? () => showModal("add-kalender") : ''}
     />
   );
   const handlePerubahanTanggal = (tanggal: any) => {
@@ -248,22 +248,24 @@ const Demo: React.FC = () => {
       <div className="w-full p-3">
         <div className="w-full flex gap-1 justify-between items-center pl-3">
           <div className="text-xl font-bold ">{appointmentData.title}</div>
-          <div className="flex">
-            <button
-              onClick={() => {
-                handleOpen(appointmentData.id);
-              }}
-              className="btn btn-ghost btn-circle text-xl text-orange-500 "
-            >
-              <FaPencil />
-            </button>
-            <button
-              onClick={() => deleteDetail(appointmentData.id)}
-              className="btn btn-ghost btn-circle text-xl text-red-500 "
-            >
-              <BiTrash />
-            </button>
-          </div>
+          {isHeadmaster() && (
+            <div className="flex">
+              <button
+                onClick={() => {
+                  handleOpen(appointmentData.id);
+                }}
+                className="btn btn-ghost btn-circle text-xl text-orange-500 "
+              >
+                <FaPencil />
+              </button>
+              <button
+                onClick={() => deleteDetail(appointmentData.id)}
+                className="btn btn-ghost btn-circle text-xl text-red-500 "
+              >
+                <BiTrash />
+              </button>
+            </div>
+          )}
         </div>
         <div className="mt-4 flex pl-3 items-center gap-3">
           <span className="text-2xl ">
