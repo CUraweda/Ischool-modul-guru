@@ -1,22 +1,22 @@
-import { io, Socket } from 'socket.io-client';
+import { io, Socket } from "socket.io-client";
 
 class WebSocketService {
   private socket: Socket;
 
   constructor(url: string) {
     this.socket = io(url, {
-      transports: ['websocket']
+      transports: ["websocket"],
     });
   }
 
   connect(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.socket.on('connect', () => {
-        console.log('Connected to WS');
+      this.socket.on("connect", () => {
+        console.log("Connected to WS");
         resolve();
       });
 
-      this.socket.on('connect_error', (error: Error) => {
+      this.socket.on("connect_error", (error: Error) => {
         console.log(error);
         reject(error);
       });
@@ -28,7 +28,7 @@ class WebSocketService {
   }
 
   on(event: string, callback: (...args: any[]) => void): void {
-    console.log('kdjskagdask')
+    console.log("kdjskagdask");
     this.socket.on(event, callback);
   }
 
@@ -42,7 +42,6 @@ class WebSocketService {
   }
 }
 
-console.log(import.meta.env.VITE_REACT_API_BASE_URL)
-const socketService = new WebSocketService(import.meta.env.VITE_REACT_API_BASE_URL);
+const socketService = new WebSocketService(import.meta.env.VITE_REACT_API_URL);
 
 export default socketService;
