@@ -1000,7 +1000,10 @@ const AdmSiswa = () => {
             <div className="w-full mt-5 gap-2 flex flex-col">
               <div className="flex items-center mt-4 gap-2">
                 <label className=" font-bold">Upload File</label>
-                <div className="tooltip" data-tip="Only PDF">
+                <div
+                  className="tooltip"
+                  data-tip="Only PDF, JPG, JPEG, PNG are allowed"
+                >
                   <IoInformationCircleOutline />
                 </div>
               </div>
