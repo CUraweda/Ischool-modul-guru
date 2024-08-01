@@ -1469,6 +1469,19 @@ const DashboardKeuangan = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  getChart: (
+    token: string | null,
+    startDate: string,
+    endDate: string,
+    postPaymentId: string
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `api/dashboard/admin-keuangan-chart?start_date=${startDate}&end_date=${endDate}&post_payment_id=${postPaymentId}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 const CustomerCare = {
