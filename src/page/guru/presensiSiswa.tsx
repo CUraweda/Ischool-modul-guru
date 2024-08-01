@@ -103,11 +103,11 @@ const PresensiSiswa = () => {
 
   const generateAcademicYears = () => {
     const currentYear = new Date().getFullYear();
-    const startYear = currentYear + 1;
+    const startYear = currentYear;
 
     setTahun(
       Array.from(
-        { length: 1 }, // Menghasilkan array dengan panjang 1
+        { length: 1 },
         (_, index) => `${startYear + index}/${startYear + index + 1}`
       )
     );
@@ -145,7 +145,7 @@ const PresensiSiswa = () => {
         if (dataStatus.length === 0) {
           const createPromises = selectedStudents.map((item: any) => {
             const dataRest = {
-              student_class_id: item.class_id,
+              student_class_id: item.id,
               att_date: new Date(date).setHours(0, 0, 0, 0),
               remark: item.transportasi ? item.transportasi : "🚶‍♂️Jalan Kaki",
               status: item.presensi ? item.presensi : "Hadir",
@@ -155,7 +155,6 @@ const PresensiSiswa = () => {
             if (dataRest.status !== "Hadir") {
               delete dataRest.remark;
             }
-
             const isExist = dataSiswa.some(
               (data) =>
                 data.studentclass.student.id === item.student.id &&
