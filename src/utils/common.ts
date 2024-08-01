@@ -56,3 +56,23 @@ export const getReversedNumbersByLen = (length: number) => {
 
   return result;
 };
+
+export const getMonday = (date: Date) => {
+  const day = date.getDay();
+  const diff = (day === 0 ? -6 : 1) - day;
+  date.setDate(date.getDate() + diff);
+  return date;
+};
+
+export const getSemesters = () => {
+  return [
+    {
+      value: 1,
+      label: "Ganjil",
+    },
+    {
+      value: 2,
+      label: "Genap",
+    },
+  ];
+};

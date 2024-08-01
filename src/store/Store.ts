@@ -1,5 +1,6 @@
 import create, { SetState } from "zustand";
 import { StoreState, StoreProps, IemployeeState } from "./Utils";
+import { getMonday } from "../utils/common";
 
 const Store = create<StoreState>((set: SetState<StoreState>) => ({
   token: localStorage.getItem("token"),
@@ -36,7 +37,7 @@ const Store = create<StoreState>((set: SetState<StoreState>) => ({
     set({ id });
   },
 
-  tanggalPekanan: new Date(),
+  tanggalPekanan: getMonday(new Date()),
   setTanggalPekanan: (data) => set({ tanggalPekanan: data }),
 
   tanggalStartDate: new Date(),
