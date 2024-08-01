@@ -101,7 +101,7 @@ const Student = {
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-attendance?search_query=${search}&page=${page}&limit=${limit}&student_class_id=${classId}&att_date=${attDate}&with_assign=${withAssign}`,
+      url: `/api/student-attendance?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&att_date=${attDate}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1626,7 +1626,7 @@ const Year = {
       params: {
         search_query: querysearch,
         limit: limit,
-        page: page
+        page: page,
       },
     }),
 };
