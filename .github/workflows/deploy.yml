@@ -1,0 +1,41 @@
+name: CI/CD Pipeline for Modul Guru
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  security-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run security checks
+        run: npm audit --audit-level=high
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: security-check
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy to Domain
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "Deploying to https://guru.sekolahalamdepok.sch.id"
+            # FTP or SCP command to deploy to cPanel Sade
+          elif [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+            echo "Deploying to https://sade-gukar.curaweda.com"
+            # FTP or SCP command to deploy to cPanel Curaweda
+          fi

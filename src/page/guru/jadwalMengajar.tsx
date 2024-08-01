@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 import moment from "moment";
 import { formatTime } from "../../utils/date";
 import { Input, Select, Textarea } from "../../component/Input";
-import { getAcademicYears } from "../../utils/common";
+import { getAcademicYears, getSemesters } from "../../utils/common";
 import ModalCreateRencanaPekananByHistory from "../../component/guru/ModalCreateRencanaPekananByHistory";
 
 const schema = Yup.object({
@@ -24,8 +24,9 @@ const schema = Yup.object({
 });
 
 const jadwalMengajar = () => {
-  const { token, tanggalPekanan, tanggalStartDate } = Store();
-  const [triggerShow, setTriggerShow] = useState(true)
+  const { token, tanggalPekanan, tanggalStartDate, setTanggalStartDate } =
+    Store();
+  const [triggerShow, setTriggerShow] = useState(true);
   const [kelas, setKelas] = useState<any[]>([]);
   const [smt, setSmt] = useState<string>("1");
   const [idClass, setIdClass] = useState<string>("");
@@ -69,7 +70,7 @@ const jadwalMengajar = () => {
       try {
         await Kalender.createTimeTable(token, data);
         formik.resetForm();
-        setIdClass(data.class_id);
+        setTriggerShow(!triggerShow)
 
         Swal.fire({
           icon: "success",
@@ -93,6 +94,7 @@ const jadwalMengajar = () => {
   }, []);
 
   useEffect(() => {
+    console.log(tanggalStartDate);
     if (tanggalStartDate) {
       const hours = new Date(tanggalStartDate)
         .getHours()
@@ -133,17 +135,6 @@ const jadwalMengajar = () => {
     setKelas(response.data.data.result);
   };
 
-  const getDate = () => {
-    const options: Intl.DateTimeFormatOptions = {
-      month: "long",
-      year: "numeric",
-    };
-    const date = new Date(tanggalPekanan)
-      .toLocaleDateString("id-ID", options)
-      .toUpperCase();
-    return date;
-  };
-
   const formatDateCreate = (props: any) => {
     const dateObject = new Date(tanggalStartDate);
     const tanggalFormatted = dateObject.toLocaleDateString("en-CA");
@@ -161,7 +152,9 @@ const jadwalMengajar = () => {
       <div className="my-10 w-full flex flex-col items-center">
         <div className=" flex flex-col items-center w-full text-3xl font-bold text-center">
           <span>RENCANA PEKANAN</span>
-          <span className="text-xl">Bulan {getDate()}</span>
+          <span className="text-xl">
+            Bulan {moment(tanggalPekanan).format("MMMM YYYY")}
+          </span>
         </div>
         <div className="w-full p-6">
           <div className="text-right">
@@ -189,8 +182,11 @@ const jadwalMengajar = () => {
                 <option value="" selected>
                   Semester
                 </option>
-                <option value={1}>1</option>
-                <option value={2}>2</option>
+                {getSemesters().map((dat, i) => (
+                  <option key={i} value={dat.value}>
+                    {dat.label}
+                  </option>
+                ))}
               </select>
 
               <div className="dropdown dropdown-end">
@@ -206,7 +202,12 @@ const jadwalMengajar = () => {
                   className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg"
                 >
                   <li>
-                    <button onClick={() => openModal("add-rencana")}>
+                    <button
+                      onClick={() => {
+                        setTanggalStartDate(new Date());
+                        openModal("add-rencana");
+                      }}
+                    >
                       Hari ini
                     </button>
                   </li>
@@ -221,7 +222,11 @@ const jadwalMengajar = () => {
           </div>
 
           <div className={`w-full bg-white mt-5`}>
-            <KalenderPekanan smt={smt} kelas={idClass} triggerShow={triggerShow} />
+            <KalenderPekanan
+              smt={smt}
+              kelas={idClass}
+              triggerShow={triggerShow}
+            />
           </div>
         </div>
 
@@ -232,7 +237,7 @@ const jadwalMengajar = () => {
           >
             <span className="text-xl font-bold">Tambah Rencana Pekanan</span>
             <span className="text-xl font-bold">
-              {formatTime(moment(), "DD MMMM YYYY")}
+              {formatTime(moment(tanggalStartDate), "DD MMMM YYYY")}
             </span>
 
             <div className="flex w-full mt-5 flex-col">
@@ -248,7 +253,9 @@ const jadwalMengajar = () => {
               <Select
                 label="Semester"
                 name="semester"
-                options={[1, 2]}
+                keyValue="value"
+                keyDisplay="label"
+                options={getSemesters()}
                 value={formik.values.semester}
                 onChange={formik.handleChange}
                 errorMessage={formik.errors.semester}
