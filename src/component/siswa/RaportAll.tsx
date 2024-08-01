@@ -235,9 +235,8 @@ const RaportAll = () => {
                 <td>{item?.semester == 1 ? "Ganjil" : "Genap"}</td>
                 <td>
                   <button
-                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${
-                      !item?.number_path ? "btn-disabled" : ""
-                    }`}
+                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${!item?.number_path ? "btn-disabled" : ""
+                      }`}
                     data-tip="Download Rapor Angka"
                     onClick={() => downloadTugas(item?.number_path)}
                   >
@@ -248,9 +247,8 @@ const RaportAll = () => {
                 </td>
                 <td>
                   <button
-                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${
-                      !item?.narrative_path ? "btn-disabled" : ""
-                    }`}
+                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${!item?.narrative_path ? "btn-disabled" : ""
+                      }`}
                     data-tip="Download Rapor Narasi"
                     onClick={() => downloadTugas(item?.narrative_path)}
                   >
@@ -261,9 +259,8 @@ const RaportAll = () => {
                 </td>
                 <td>
                   <button
-                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${
-                      !item?.portofolio_path ? "btn-disabled" : ""
-                    }`}
+                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${!item?.portofolio_path ? "btn-disabled" : ""
+                      }`}
                     data-tip="Download Rapor Portofolio"
                     onClick={() => downloadTugas(item?.portofolio_path)}
                   >
@@ -275,9 +272,8 @@ const RaportAll = () => {
 
                 <td>
                   <button
-                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${
-                      !item?.merged_path ? "btn-disabled" : ""
-                    }`}
+                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${!item?.merged_path ? "btn-disabled" : ""
+                      }`}
                     data-tip="Download Rapor Siswa"
                     onClick={() => downloadTugas(item?.merged_path)}
                   >
@@ -288,13 +284,12 @@ const RaportAll = () => {
                 </td>
                 <td className="flex items-center justify-center">
                   <button
-                    className={`btn btn-sm join-item bg-orange-500 text-white tooltip ${
-                      !item?.number_path ||
-                      !item?.narrative_path ||
-                      !item?.portofolio_path
+                    className={`btn btn-sm join-item bg-orange-500 text-white tooltip ${!item?.number_path ||
+                        !item?.narrative_path ||
+                        !item?.portofolio_path
                         ? "btn-disabled"
                         : ""
-                    }`}
+                      }`}
                     onClick={() => downloadRaportMerge(item?.id)}
                   >
                     <span className="text-xl">

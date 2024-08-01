@@ -2,6 +2,7 @@ import { BsSend } from "react-icons/bs";
 import { CustomerCare } from "../../midleware/api";
 import { Store } from "../../store/Store";
 import { useEffect, useState } from "react";
+import socketService from "../../utils/socket";
 import Modal from "../../component/modal";
 
 const PesanCs = () => {
@@ -20,6 +21,15 @@ const PesanCs = () => {
       modalElement.showModal();
     }
   };
+
+  const SocketConnect = async () => {
+    await socketService.connect()
+    socketService.on("cc_refresh", () => {
+      FetchData()
+      FetchChatList()
+      GetMessage()
+    })
+  }
 
   const closeModal = (props: string) => {
     const modalElement = document.getElementById(props) as HTMLDialogElement;
@@ -51,12 +61,10 @@ const PesanCs = () => {
     }
   };
 
-  const GetMessage = async (item: any) => {
+  const GetMessage = async () => {
     try {
-      const withId = item.withUser.id;
-      setCurrentChatUser(item.withUser.full_name);
-      setCurrentWithId(withId);
-      const response = await CustomerCare.GetMessage(token, id, withId);
+      if(!currentWithId) return
+      const response = await CustomerCare.GetMessage(token, id, +currentWithId);
       if (
         response.data &&
         response.data.data[0] &&
@@ -95,10 +103,19 @@ const PesanCs = () => {
       ]);
       setChatMessage("");
       FetchData();
+      socketService.emit("cc", {})
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
+
+  useEffect(() => {
+    SocketConnect()
+  }, [])
+
+  useEffect(() => {
+    SocketConnect()
+  }, [currentWithId])
 
   useEffect(() => {
     FetchData();
@@ -121,7 +138,11 @@ const PesanCs = () => {
                 {fetch.map((item) => (
                   <div
                     className="w-full p-3 bg-blue-300 flex gap-2 cursor-pointer"
-                    onClick={() => GetMessage(item)}
+                    onClick={() => {
+                      setCurrentWithId(item.withUser.id)
+                      setCurrentChatUser(item.withUser.full_name)
+                      GetMessage()
+                    }}
                     key={item.id}
                   >
                     <div className="chat-image avatar">
@@ -181,11 +202,10 @@ const PesanCs = () => {
                       }
                     >
                       <div
-                        className={`chat-bubble ${
-                          msg.sender_id != id
-                            ? "chat-bubble-accent"
-                            : "chat-bubble-primary"
-                        }`}
+                        className={`chat-bubble ${msg.sender_id != id
+                          ? "chat-bubble-accent"
+                          : "chat-bubble-primary"
+                          }`}
                       >
                         {msg.message}
                         {/* <div>
@@ -229,29 +249,8 @@ const PesanCs = () => {
             <ul className="space-y-2 max-h-[400px] overflow-y-auto">
               {role === "2"
                 ? fetchKeuangan
-                    .filter((item) => [1, 2, 3, 5, 10].includes(item.role_id))
-                    .map((item) => (
-                      <li
-                        key={item.id}
-                        className="p-3 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer flex justify-between items-center"
-                        onClick={() => {
-                          setCurrentWithId(item.user ? item.user.id : item.id);
-                          setCurrentChatUser(
-                            item.user ? item.user.full_name : item.full_name
-                          );
-                          closeModal("daftar-chat");
-                          GetMessage(item);
-                        }}
-                      >
-                        <span className="font-semibold">
-                          {item.user ? item.user.full_name : item.full_name}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {item.user ? item.user.email : item.email}
-                        </span>
-                      </li>
-                    ))
-                : fetchGuru.map((item) => (
+                  .filter((item) => [1, 2, 3, 5, 10].includes(item.role_id))
+                  .map((item) => (
                     <li
                       key={item.id}
                       className="p-3 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer flex justify-between items-center"
@@ -261,7 +260,7 @@ const PesanCs = () => {
                           item.user ? item.user.full_name : item.full_name
                         );
                         closeModal("daftar-chat");
-                        GetMessage(item);
+                        GetMessage();
                       }}
                     >
                       <span className="font-semibold">
@@ -271,7 +270,28 @@ const PesanCs = () => {
                         {item.user ? item.user.email : item.email}
                       </span>
                     </li>
-                  ))}
+                  ))
+                : fetchGuru.map((item) => (
+                  <li
+                    key={item.id}
+                    className="p-3 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer flex justify-between items-center"
+                    onClick={() => {
+                      setCurrentWithId(item.user ? item.user.id : item.id);
+                      setCurrentChatUser(
+                        item.user ? item.user.full_name : item.full_name
+                      );
+                      closeModal("daftar-chat");
+                      GetMessage();
+                    }}
+                  >
+                    <span className="font-semibold">
+                      {item.user ? item.user.full_name : item.full_name}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {item.user ? item.user.email : item.email}
+                    </span>
+                  </li>
+                ))}
             </ul>
           </div>
         </Modal>
