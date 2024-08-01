@@ -57,7 +57,7 @@ const PresensiSiswa = () => {
   }, [filter]);
 
   const formattedDate = new Date(date).toLocaleDateString("id-ID", {
-    weekday: "long",  
+    weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -80,7 +80,6 @@ const PresensiSiswa = () => {
   const getClass = async () => {
     const response = await Task.GetAllClass(token, 0, 20, "Y");
     setKelas(response.data.data.result);
-    setIdClass(response.data.data.result[0].id)
   };
 
   const getPresensiData = async () => {
