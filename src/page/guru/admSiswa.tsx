@@ -97,12 +97,12 @@ const AdmSiswa = () => {
       subjectId: "",
       tahun: "",
       semester: "",
+      description: "",
       topik: "",
       jenis: "",
       startDate: "",
       endDate: "",
       status: "",
-      description: "",
     },
     validationSchema: schema,
     onSubmit: (values) => {
@@ -224,12 +224,12 @@ const AdmSiswa = () => {
     const {
       classId,
       subjectId,
+      description,
       topik,
       startDate,
       endDate,
       status,
       jenis,
-      description,
     } = formik.values;
 
     const formData = new FormData();
@@ -272,6 +272,7 @@ const AdmSiswa = () => {
       subjectId,
       tahun,
       topik,
+      description,
       startDate,
       endDate,
       status,
@@ -285,6 +286,7 @@ const AdmSiswa = () => {
     formData.append("semester", semester);
     formData.append("subject_id", subjectId);
     formData.append("topic", topik);
+    formData.append("description", description);
     formData.append("task_category_id", jenis);
     formData.append("characteristic", jenis);
     formData.append("start_date", startDate);
@@ -412,20 +414,29 @@ const AdmSiswa = () => {
     navigate("/guru/task/siswa");
   };
 
-  const handleEdit = async (id: string) => {
+  const handleEdit = async (data: any) => {
     showModal("edit-task");
-    setIdTugas(id);
-    getTaskById(id);
+    setIdTugas(data.id);
+    getTaskById(data.id);
   };
 
   const handleEditTaskClass = async () => {
-    const { classId, subjectId, topik, startDate, endDate, status, jenis } =
-      formik.values;
+    const {
+      classId,
+      subjectId,
+      topik,
+      startDate,
+      endDate,
+      status,
+      jenis,
+      description,
+    } = formik.values;
 
     const formData = new FormData();
     formData.append("class_id", classId);
     formData.append("subject_id", subjectId);
     formData.append("topic", topik);
+    formData.append("description", description);
     formData.append("task_category_id", jenis);
     formData.append("start_date", startDate);
     formData.append("end_date", endDate);
@@ -473,11 +484,11 @@ const AdmSiswa = () => {
       formik.setFieldValue("classId", data.class.id);
       formik.setFieldValue("subjectId", data.subject.id);
       formik.setFieldValue("topik", data.topic);
+      formik.setFieldValue("description", data.description);
       formik.setFieldValue("jenis", data.task_category_id);
       formik.setFieldValue("startDate", formatDateFormik(data.start_date));
       formik.setFieldValue("endDate", formatDateFormik(data.end_date));
       formik.setFieldValue("status", data.status == "Open" ? "1" : "2");
-      formik.setFieldValue("description", data.description);
     } catch (error) {
       console.log(error);
     }
@@ -660,7 +671,7 @@ const AdmSiswa = () => {
                         <button
                           className="btn btn-sm btn-ghost bg-orange-600 text-xl join-item tooltip"
                           data-tip="Edit"
-                          onClick={() => handleEdit(item.id)}
+                          onClick={() => handleEdit(item)}
                         >
                           <FaPenClip />
                         </button>
@@ -1071,7 +1082,21 @@ const AdmSiswa = () => {
                 ))}
               </select>
             </div>
-
+            <div
+              className={`w-full flex flex-col gap-2 ${
+                siswa !== "all-student" ? "hidden" : ""
+              }`}
+            >
+              <label className="mt-4 font-bold">Deskripsi</label>
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                value={formik.values.description}
+                onChange={(e) =>
+                  formik.setFieldValue("description", e.target.value)
+                }
+              />
+            </div>
             <div
               className={`w-full flex flex-col gap-2 ${
                 siswa === "all-student" ? "hidden" : ""
@@ -1084,6 +1109,7 @@ const AdmSiswa = () => {
                 onChange={(e) => formik.setFieldValue("tahun", e.target.value)}
               />
             </div>
+
             <div
               className={`w-full flex flex-col gap-2 ${
                 siswa === "all-student" ? "hidden" : ""
