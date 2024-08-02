@@ -62,7 +62,7 @@ const RaportAngka = () => {
   const [search, setSearch] = useState("");
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
-    semester: "1",
+    semester: "",
     classId: "",
     subjectId: "",
     search: "",
@@ -543,6 +543,7 @@ const RaportAngka = () => {
             value={filter.semester}
             onChange={(e) => {
               handleFilter("semester", e.target.value),
+              sessionStorage.setItem("smt", e.target.value);
                 setSemesterProps(e.target.value);
             }}
           >
