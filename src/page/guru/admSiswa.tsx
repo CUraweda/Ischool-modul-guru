@@ -117,8 +117,11 @@ const AdmSiswa = () => {
 
   useEffect(() => {
     getMapel();
-    getTask();
   }, [level]);
+
+  useEffect(() => {
+    getTask();
+  }, [level, academicYear]);
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(props) as HTMLDialogElement;
@@ -141,6 +144,7 @@ const AdmSiswa = () => {
         token,
         filterSiswa.search,
         filter.classId,
+        academicYear,
         filterSiswa.page,
         filterSiswa.limit,
         "Y"
@@ -183,7 +187,7 @@ const AdmSiswa = () => {
   };
 
   const getMapel = async () => {
-    const response = await Task.GetAllMapel(token, 0, 100);
+    const response = await Task.GetAllMapel(token, 0, "Y", 100);
     const mapelData = response.data.data.result;
     const mapelFilter = mapelData.filter((value: any) => value.level == level);
     setMapel(mapelFilter);
@@ -244,8 +248,8 @@ const AdmSiswa = () => {
         timer: 3000,
       });
       getTaskClass();
-      await delay(2500);
-      location.reload();
+      // await delay(2500);
+      // location.reload();
     } catch (error: any) {
       closeModal("add-task");
       Swal.fire({
@@ -296,7 +300,7 @@ const AdmSiswa = () => {
       });
       getClass();
       await delay(2500);
-      location.reload();
+      // location.reload();
     } catch (error: any) {
       closeModal("add-task");
       Swal.fire({
@@ -709,6 +713,7 @@ const AdmSiswa = () => {
                     <th>No</th>
                     <th>Nama Siswa</th>
                     <th>Topik</th>
+                    <th>Deskripsi</th>
                     <th>Mapel</th>
                     <th>Tgl Mulai</th>
                     <th>Tgl Selesai</th>
@@ -723,6 +728,7 @@ const AdmSiswa = () => {
                       <th>{index + 1}</th>
                       <td>{item?.studentclass?.student?.full_name}</td>
                       <td>{item?.topic}</td>
+                      <td>{item?.description}</td>
                       <td>{item?.subject.name}</td>
                       <td>{formatDate(item?.start_date)}</td>
                       <td>{formatDate(item?.end_date)}</td>
@@ -896,16 +902,18 @@ const AdmSiswa = () => {
                 onChange={(e) => formik.setFieldValue("topik", e.target.value)}
               />
             </div>
+            {/* {siswa === "all-student" ? ( */}
             <div className="w-full flex flex-col gap-2">
-                <label className="mt-4 font-bold">Deskripsi</label>
-                <input
-                  type="text"
-                  className="input input-bordered w-full"
-                  onChange={(e) =>
-                    formik.setFieldValue("description", e.target.value)
-                  }
-                />
-              </div>
+              <label className="mt-4 font-bold">Deskripsi</label>
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                onChange={(e) =>
+                  formik.setFieldValue("description", e.target.value)
+                }
+              />
+            </div>
+            {/* ) : null} */}
           </div>
           <div className="w-full">
             <div className="w-full flex flex-col gap-2">
@@ -964,7 +972,10 @@ const AdmSiswa = () => {
             <div className="w-full mt-5 gap-2 flex flex-col">
               <div className="flex items-center mt-4 gap-2">
                 <label className=" font-bold">Upload File</label>
-                <div className="tooltip" data-tip="Only PDF">
+                <div
+                  className="tooltip"
+                  data-tip="Only PDF, JPG, JPEG, PNG are allowed"
+                >
                   <IoInformationCircleOutline />
                 </div>
               </div>
@@ -1046,9 +1057,7 @@ const AdmSiswa = () => {
                 ))}
               </select>
             </div>
-            <div
-              className={`w-full flex flex-col gap-2`}
-            >
+            <div className={`w-full flex flex-col gap-2`}>
               <label className="mt-4 font-bold">Deskripsi</label>
               <input
                 type="text"

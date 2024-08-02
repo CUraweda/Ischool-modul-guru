@@ -167,13 +167,14 @@ const Task = {
     token: string | null,
     search: string | null,
     classId: string | null,
+    academic: string | null,
     page: number | null,
     limit: number | null,
     withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-task?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
+      url: `/api/student-task?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -212,11 +213,12 @@ const Task = {
   GetAllMapel: (
     token: string | null,
     page: number | null,
+    withAssign: string | null = "Y",
     limit: number | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/subject?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/subject?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -987,13 +989,14 @@ const DashboardSiswa = {
   getAllOverView: (
     token: string | null,
     classId: string | null,
+    academic: string | null,
     page: number | null,
     limit: number | null,
     withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/overview?search_query=&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
+      url: `/api/overview?academic=${academic}&search_query=&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
