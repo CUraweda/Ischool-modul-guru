@@ -442,9 +442,7 @@ const RaportNarasi = () => {
                       <button
                         className={`btn join-item btn-ghost btn-sm text-xl text-white bg-cyan-500 tooltip`}
                         data-tip="Generate PDF"
-                        onClick={() =>
-                          hanldegeneratePdf(item.studentclass.student_id)
-                        }
+                        onClick={() => hanldegeneratePdf(item.studentclass.id)}
                       >
                         <FaFilePdf />
                       </button>
