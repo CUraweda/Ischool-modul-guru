@@ -25,6 +25,17 @@ const Auth = {
     }),
 };
 
+const User = {
+  showAll: (token: string | null, search: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/user?search_query=${search}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
 const Student = {
   GetStudentByClass: (
     token: string | null,
@@ -1616,6 +1627,64 @@ const AchievementSiswa = {
     }),
 };
 
+const ForCountry = {
+  create: (token: string | null, data: any) =>
+    instance({
+      method: "POST",
+      url: "/api/for-country/create",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  showAll: (
+    token: string | null,
+    search?: string | null,
+    academic?: string | null,
+    page: number = 0,
+    limit: number = 10
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/for-country?search_query=${search}&academic=${academic}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/for-country/show/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  update: (
+    token: string | null,
+    id: string | number | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: "/api/for-country/update/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  delete: (
+    token: string | null,
+    id: string | number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: "/api/for-country/delete/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
 const Year = {
   getYear: (
     token: string | null,
@@ -1638,6 +1707,7 @@ const Year = {
 };
 
 export {
+  User,
   Auth,
   Task,
   Year,
@@ -1656,4 +1726,5 @@ export {
   DashboardKeuangan,
   CustomerCare,
   AchievementSiswa,
+  ForCountry,
 };

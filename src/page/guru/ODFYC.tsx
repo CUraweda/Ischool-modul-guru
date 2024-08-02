@@ -21,6 +21,7 @@ import { useFormik } from "formik";
 import { Input, Select, Textarea } from "../../component/Input";
 import "react-day-picker/dist/style.css";
 import { formatTime } from "../../utils/date";
+import { Link } from "react-router-dom";
 
 type TformNav = "data" | "schedule" | "certificate" | "profile";
 
@@ -424,7 +425,11 @@ const ODFYC = () => {
         </div>
         <div className="w-full bg-white p-3 rounded-md">
           {/* filter bar  */}
-          <div className="w-full flex justify-end my-3 gap-2">
+          <div className="w-full flex justify-between my-3 gap-2">
+            <Link to={"/guru/one-day-partisipan"} className="btn btn-link">
+              Partisipan
+            </Link>
+
             {/* search  */}
             <form
               onSubmit={(e) => {
