@@ -12,7 +12,7 @@ import {
   DateNavigator,
   TodayButton,
 } from "@devexpress/dx-react-scheduler-material-ui";
-import { employeeStore, Store } from "../store/Store";
+import { employeeStore, globalStore, Store } from "../store/Store";
 import { Kalender } from "../midleware/api";
 import { FaPencil } from "react-icons/fa6";
 import { BiTrash } from "react-icons/bi";
@@ -67,6 +67,7 @@ interface propsColor {
 }
 
 const Demo: React.FC = () => {
+  const { academicYear } = globalStore();
   const { isHeadmaster } = employeeStore();
   const { token, setTanggalPekanan, tanggalPekanan } = Store();
   const [Dataappointment, setData] = useState<any[]>([]);
@@ -121,7 +122,7 @@ const Demo: React.FC = () => {
 
   const getKalenderPendidikan = async () => {
     try {
-      const response = await Kalender.GetAllDetail(token, 0, 20);
+      const response = await Kalender.GetAllDetail(token, academicYear, 0, 20);
       const dataList = response.data.data.result;
 
       const newData = dataList.map((item: any) => ({
@@ -152,7 +153,7 @@ const Demo: React.FC = () => {
   useEffect(() => {
     getKalenderPendidikan();
     // isHeadmaster()
-  }, []);
+  }, [academicYear]);
 
   const formatDateFormik = (date: any) => {
     const tanggal = new Date(date);
@@ -229,14 +230,14 @@ const Demo: React.FC = () => {
   };
 
   const getTopik = async () => {
-    const response = await Kalender.GetAllTopik(token, 0, 10);
+    const response = await Kalender.GetAllTopik(token, academicYear, 0, 10);
     setTopik(response.data.data.result);
   };
 
   const DayCell: React.FC<any> = (props) => (
     <MonthView.TimeTableCell
       {...props}
-      onClick={isHeadmaster() ? () => showModal("add-kalender") : ''}
+      onClick={isHeadmaster() ? () => showModal("add-kalender") : ""}
     />
   );
   const handlePerubahanTanggal = (tanggal: any) => {

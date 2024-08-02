@@ -6,8 +6,8 @@ import "react-day-picker/dist/style.css";
 import { FaListCheck, FaPenClip } from "react-icons/fa6";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { BiDownload, BiTrash } from "react-icons/bi";
-import { Task, Student, Year } from "../../midleware/api";
-import { Store } from "../../store/Store";
+import { Task, Student } from "../../midleware/api";
+import { globalStore, Store } from "../../store/Store";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
@@ -18,6 +18,7 @@ import {
   PaginationControl,
 } from "../../component/PaginationControl";
 import { FaSearch } from "react-icons/fa";
+import { Input } from "../../component/Input";
 
 const schema = Yup.object({
   classId: Yup.string().required("required"),
@@ -33,6 +34,7 @@ const schema = Yup.object({
 });
 
 const AdmSiswa = () => {
+  const { academicYear } = globalStore();
   const { token } = Store();
   const navigate = useNavigate();
 
@@ -54,12 +56,6 @@ const AdmSiswa = () => {
     search: "",
     page: 0,
     limit: 10,
-  });
-  const [filterList, setFilterList] = useState({
-    classId: "",
-    search: "",
-    page: 0,
-    limit: 1000,
   });
 
   const handleFilter = (key: string, value: any) => {
@@ -95,7 +91,7 @@ const AdmSiswa = () => {
     initialValues: {
       classId: "",
       subjectId: "",
-      tahun: "",
+      tahun: academicYear,
       semester: "",
       description: "",
       topik: "",
@@ -112,7 +108,7 @@ const AdmSiswa = () => {
   useEffect(() => {
     getStudent();
     getClass();
-  }, [formik?.values.classId]);
+  }, [formik?.values.classId, academicYear]);
 
   useEffect(() => {
     getTask();
@@ -173,18 +169,6 @@ const AdmSiswa = () => {
       console.log(error);
     }
   };
-  const [Tahun, setTahun] = useState<string>("");
-
-  const generateAcademicYears = () => {
-    const currentYear = new Date().getFullYear();
-
-    setTahun(`${currentYear}/${currentYear + 1}`);
-  };
-
-  useEffect(() => {
-    generateAcademicYears();
-    getTahunAjaran();
-  }, []);
 
   const getClass = async () => {
     const response = await Task.GetAllClass(token, 0, 20, "Y");
@@ -206,7 +190,12 @@ const AdmSiswa = () => {
   };
   const getStudent = async () => {
     const classId = formik.values.classId;
-    const response = await Student.GetStudentByClass(token, classId, Tahun);
+    if (!classId || !academicYear) return;
+    const response = await Student.GetStudentByClass(
+      token,
+      classId,
+      academicYear
+    );
     setDataSiswa(response.data.data);
   };
 
@@ -534,35 +523,9 @@ const AdmSiswa = () => {
     }
   };
 
-  const [TahunAjaran, setTahunAjaran] = useState<any[]>([]);
-  const getTahunAjaran = async () => {
-    try {
-      const response = await Year.getYear(
-        token,
-        "",
-        filterList.limit,
-        filterList.page
-      );
-      const { result, ...meta } = response.data.data;
-      console.log(result);
-      setTahunAjaran(result);
-      setFilterList(meta);
-    } catch (err) {
-      console.error("error :" + err);
-    }
-    // const currentYear = new Date().getFullYear();
-    // const start = currentYear - startYear;
-    // const end = currentYear + endYear;
-    // const years = [];
-
-    // for (let year = start; year <= end; year++) {
-    //   const year1 = year;
-    //   const year2 = year1 + 1;
-    //   years.push(`${year1}/${year2}`);
-    // }
-
-    // return years;
-  };
+  useEffect(() => {
+    formik.setFieldValue("tahun", academicYear);
+  }, [academicYear]);
 
   const handleAddFeedback = async () => {
     try {
@@ -601,7 +564,7 @@ const AdmSiswa = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 border rounded-box p-6"
+            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
           >
             <div className="w-full gap-3 flex flex-wrap">
               <span className="text-2xl font-bold me-auto">Tugas Siswa</span>
@@ -714,7 +677,7 @@ const AdmSiswa = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 border rounded-box p-6"
+            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
           >
             <div className="flex gap-3 items-center flex-wrap">
               <p className="text-xl font-bold me-auto">
@@ -836,6 +799,8 @@ const AdmSiswa = () => {
         <div className="w-full flex flex-col items-center">
           <span className="text-xl font-bold">Tugas</span>
           <div className="flex w-full mt-5 flex-col">
+            <Input label="Tahun pelajaran" value={academicYear} disabled />
+
             <div className="w-full flex flex-col gap-2">
               <label className="mt-4 font-bold">Kelas</label>
               <select
@@ -884,7 +849,7 @@ const AdmSiswa = () => {
                 ))}
               </select>
             </div>
-
+            {/* 
             <div
               className={`w-full flex flex-col gap-2 ${
                 siswa === "all-student" ? "hidden" : ""
@@ -893,6 +858,7 @@ const AdmSiswa = () => {
               <label className="mt-4 font-bold">Tahun Pelajaran</label>
               <select
                 className="input input-bordered w-full"
+                value={formik.values.tahun}
                 onChange={(e) => formik.setFieldValue("tahun", e.target.value)}
               >
                 <option value="" disabled selected>
@@ -904,7 +870,7 @@ const AdmSiswa = () => {
                   </option>
                 ))}
               </select>
-            </div>
+            </div> */}
             <div
               className={`w-full flex flex-col gap-2 ${
                 siswa === "all-student" ? "hidden" : ""
@@ -930,8 +896,7 @@ const AdmSiswa = () => {
                 onChange={(e) => formik.setFieldValue("topik", e.target.value)}
               />
             </div>
-            {siswa === "all-student" ? (
-              <div className="w-full flex flex-col gap-2">
+            <div className="w-full flex flex-col gap-2">
                 <label className="mt-4 font-bold">Deskripsi</label>
                 <input
                   type="text"
@@ -941,7 +906,6 @@ const AdmSiswa = () => {
                   }
                 />
               </div>
-            ) : null}
           </div>
           <div className="w-full">
             <div className="w-full flex flex-col gap-2">
@@ -1083,9 +1047,7 @@ const AdmSiswa = () => {
               </select>
             </div>
             <div
-              className={`w-full flex flex-col gap-2 ${
-                siswa !== "all-student" ? "hidden" : ""
-              }`}
+              className={`w-full flex flex-col gap-2`}
             >
               <label className="mt-4 font-bold">Deskripsi</label>
               <input
@@ -1105,6 +1067,7 @@ const AdmSiswa = () => {
               <label className="mt-4 font-bold">Tahun Pelajaran</label>
               <input
                 type="text"
+                value={formik.values.tahun}
                 className="input input-bordered w-full"
                 onChange={(e) => formik.setFieldValue("tahun", e.target.value)}
               />
@@ -1118,6 +1081,7 @@ const AdmSiswa = () => {
               <label className="mt-4 font-bold">Semester</label>
               <select
                 className="select select-bordered bg-white"
+                value={formik.values.semester}
                 onChange={(e) =>
                   formik.setFieldValue("semester", e.target.value)
                 }
