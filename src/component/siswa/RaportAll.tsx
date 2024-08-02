@@ -16,7 +16,6 @@ const RaportAll = () => {
   const [siswa, setSiswa] = useState<any[]>([]);
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
   const [dataRaport, setDataRaport] = useState<any>([]);
-  const [academic, setAcademic] = useState("");
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
@@ -53,7 +52,7 @@ const RaportAll = () => {
   useEffect(() => {
     getStudent();
     getDataRaport();
-  }, [filter, academicYear, academic]);
+  }, [filter, academicYear]);
 
   useEffect(() => {
     getDataRaport();
@@ -64,20 +63,7 @@ const RaportAll = () => {
     const response = await Task.GetAllClass(token, 0, 20, "Y", "N", "Y");
     setClass(response.data.data.result);
   };
-  const [Tahun, setTahun] = useState<any[]>([]);
 
-  const generateAcademicYears = () => {
-    const currentYear = new Date().getFullYear();
-    const startYear = currentYear;
-
-    setTahun(
-      Array.from(
-        { length: 1 }, // Menghasilkan array dengan panjang 1
-        (_, index) => `${startYear + index}/${startYear + index + 1}`
-      )
-    );
-  };
-  useEffect(() => generateAcademicYears(), []);
   const getStudent = async () => {
     if (!filter.classId) return;
 
@@ -107,7 +93,7 @@ const RaportAll = () => {
         filter.page,
         filter.limit,
         "Y",
-        academic
+        academicYear
       );
       const { result, ...meta } = response.data.data;
       setDataRaport(result);
@@ -172,15 +158,6 @@ const RaportAll = () => {
     <div>
       <div className="w-full flex justify-between gap-2">
         <div className="join gap-2">
-          <select
-            className="select select-bordered w-full"
-            value={academic}
-            onChange={(e) => setAcademic(e.target.value)}
-          >
-            <option selected>Tahun Ajaran</option>
-            <option value="2023/2024">2023/2024</option>
-            <option value="2024/2025">2024/2025</option>
-          </select>
           <select
             className="select select-bordered w-full"
             value={filter.classId}
