@@ -334,12 +334,13 @@ const Task = {
 const Kalender = {
   GetAllDetail: (
     token: string | null,
+    academic: string | null,
     page: number | null,
     limit: number | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/edu-calendar-detail?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/edu-calendar-detail?academic=${academic}&search_query=&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -357,12 +358,13 @@ const Kalender = {
     }),
   GetAllTopik: (
     token: string | null,
+    academic: string | null,
     page: number | null,
     limit: number | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/edu-calendar?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/edu-calendar?academic=${academic}&search_query=&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

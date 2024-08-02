@@ -33,12 +33,13 @@ const KalenderKegiatan = () => {
   });
 
   const getTopik = async () => {
-    const response = await Kalender.GetAllTopik(token, 0, 10);
+    const response = await Kalender.GetAllTopik(token, academicYear, 0, 10);
     setTopik(response.data.data.result);
   };
   useEffect(() => {
     getTopik();
-  }, []);
+  }, [academicYear]);
+  
   const formik = useFormik({
     initialValues: {
       edu_id: "",
@@ -134,8 +135,8 @@ const KalenderKegiatan = () => {
   };
 
   useEffect(() => {
-    formik.setFieldValue("tahun", academicYear)
-  }, [academicYear])
+    formik.setFieldValue("tahun", academicYear);
+  }, [academicYear]);
 
   const createAgenda = async () => {
     const { edu_id, start_date, end_date, agenda } = formik.values;
