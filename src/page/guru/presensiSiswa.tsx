@@ -95,26 +95,14 @@ const PresensiSiswa = () => {
       filter.limit,
       filter.classId,
       formattedDate,
+      academicYear,
       "Y"
     );
     const { result, ...meta } = response.data.data;
     setDataSiswa(result);
     setPageMeta(meta);
   };
-  const [Tahun, setTahun] = useState<any[]>([]);
-
-  const generateAcademicYears = () => {
-    const currentYear = new Date().getFullYear();
-    const startYear = currentYear;
-
-    setTahun(
-      Array.from(
-        { length: 1 },
-        (_, index) => `${startYear + index}/${startYear + index + 1}`
-      )
-    );
-  };
-  useEffect(() => generateAcademicYears(), []);
+  
   const getStudent = async () => {
     if (!filter.classId) return;
     try {

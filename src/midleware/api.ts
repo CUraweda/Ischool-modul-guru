@@ -97,11 +97,12 @@ const Student = {
     limit: number | null,
     classId: string | null,
     attDate: string | null,
+    academic: string | null,
     withAssign: string | null = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-attendance?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&att_date=${attDate}&with_assign=${withAssign}`,
+      url: `/api/student-attendance?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&att_date=${attDate}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
