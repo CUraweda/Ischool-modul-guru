@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { IoDocumentTextOutline } from "react-icons/io5";
-import { Store } from "../../store/Store";
+import { globalStore, Store } from "../../store/Store";
 import {
   IpageMeta,
   PaginationControl,
@@ -72,6 +72,7 @@ const scheduleDateSchema = Yup.object().shape({
 
 const ODFYC = () => {
   const { token } = Store(),
+    { academicYear } = globalStore(),
     modalDetailEdit = "form-detail-edit";
 
   // main
@@ -98,6 +99,7 @@ const ODFYC = () => {
       const res = await ForCountryDetail.showAll(
         token,
         filter.search,
+        academicYear,
         filter.page,
         filter.limit,
         "Y"
@@ -118,7 +120,7 @@ const ODFYC = () => {
 
   useEffect(() => {
     getDataList();
-  }, [filter]);
+  }, [filter, academicYear]);
 
   // handle detail edit
   const [formNav, setFormNav] = useState<TformNav>("data");
@@ -459,6 +461,7 @@ const ODFYC = () => {
                   <th>No</th>
                   <th>Nama</th>
                   <th>Aktivitas</th>
+                  <th>Tahun Pelajaran</th>
                   <th>Tanggal Pelaksanaan</th>
                   <th>Durasi</th>
                   <th>Status</th>
@@ -471,6 +474,7 @@ const ODFYC = () => {
                     <th>{i + 1}</th>
                     <td>{dat.forcountry?.user?.full_name ?? "-"}</td>
                     <td>{dat.activity ?? "-"}</td>
+                    <td>{dat.forcountry?.academic_year ?? "-"}</td>
                     <td>
                       <div className="flex flex-wrap gap-2 max-w-72">
                         {dat.plan_date ? renderDatesOnTable(dat) : "-"}
