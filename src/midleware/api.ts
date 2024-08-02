@@ -212,11 +212,12 @@ const Task = {
   GetAllMapel: (
     token: string | null,
     page: number | null,
+    withAssign: string | null = "Y",
     limit: number | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/subject?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/subject?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
