@@ -117,8 +117,11 @@ const AdmSiswa = () => {
 
   useEffect(() => {
     getMapel();
-    getTask();
   }, [level]);
+
+  useEffect(() => {
+    getTask();
+  }, [level, academicYear]);
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(props) as HTMLDialogElement;
@@ -141,6 +144,7 @@ const AdmSiswa = () => {
         token,
         filterSiswa.search,
         filter.classId,
+        academicYear,
         filterSiswa.page,
         filterSiswa.limit,
         "Y"
