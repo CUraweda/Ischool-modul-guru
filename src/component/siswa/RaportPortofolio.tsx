@@ -42,7 +42,7 @@ const RaportPortofolio = () => {
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
     classId: "",
-    semester: "1",
+    semester: "",
     page: 0,
     limit: 10,
   });
@@ -203,7 +203,8 @@ const RaportPortofolio = () => {
             value={filter.semester}
             onChange={(e) => {
               handleFilter("semester", e.target.value),
-                setSemesterProps(e.target.value);
+                sessionStorage.setItem("smt", e.target.value);
+              setSemesterProps(e.target.value);
             }}
           >
             <option selected>Semester</option>
