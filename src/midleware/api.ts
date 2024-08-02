@@ -987,13 +987,14 @@ const DashboardSiswa = {
   getAllOverView: (
     token: string | null,
     classId: string | null,
+    academic: string | null,
     page: number | null,
     limit: number | null,
     withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/overview?search_query=&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
+      url: `/api/overview?academic=${academic}&search_query=&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
