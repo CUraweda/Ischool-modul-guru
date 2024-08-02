@@ -21,7 +21,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import Modal, { closeModal, openModal } from "../component/modal";
 import { Input, Select, Textarea } from "./Input";
-import { getAcademicYears, getSemesters } from "../utils/common";
+import { getSemesters } from "../utils/common";
 import { formatTime } from "../utils/date";
 import Swal from "sweetalert2";
 
@@ -331,13 +331,11 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
           <span className="text-xl font-bold">Edit Rencana Pekanan</span>
 
           <div className="flex w-full mt-5 flex-col">
-            <Select
+            <Input
               label="Tahun pelajaran"
               name="tahun"
-              options={getAcademicYears()}
               value={formik.values.tahun}
-              onChange={formik.handleChange}
-              errorMessage={formik.errors.tahun}
+              disabled
             />
 
             <Select

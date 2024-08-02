@@ -3,14 +3,14 @@ import { FaChevronDown } from "react-icons/fa";
 import KalenderPekanan from "../../component/CalendarPekanan";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { Kalender, Task } from "../../midleware/api";
-import { Store } from "../../store/Store";
+import { globalStore, Store } from "../../store/Store";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
 import moment from "moment";
 import { formatTime } from "../../utils/date";
 import { Input, Select, Textarea } from "../../component/Input";
-import { getAcademicYears, getSemesters } from "../../utils/common";
+import { getSemesters } from "../../utils/common";
 import ModalCreateRencanaPekananByHistory from "../../component/guru/ModalCreateRencanaPekananByHistory";
 
 const schema = Yup.object({
@@ -24,6 +24,7 @@ const schema = Yup.object({
 });
 
 const jadwalMengajar = () => {
+  const { academicYear } = globalStore();
   const { token, tanggalPekanan, tanggalStartDate, setTanggalStartDate } =
     Store();
   const [triggerShow, setTriggerShow] = useState(true);
@@ -33,7 +34,7 @@ const jadwalMengajar = () => {
 
   const formik = useFormik({
     initialValues: {
-      tahun: "",
+      tahun: academicYear,
       kelas: "",
       semester: "",
       title: "",
@@ -70,7 +71,7 @@ const jadwalMengajar = () => {
       try {
         await Kalender.createTimeTable(token, data);
         formik.resetForm();
-        setTriggerShow(!triggerShow)
+        setTriggerShow(!triggerShow);
 
         Swal.fire({
           icon: "success",
@@ -92,6 +93,10 @@ const jadwalMengajar = () => {
   useEffect(() => {
     getClass();
   }, []);
+
+  useEffect(() => {
+    formik.setFieldValue("tahun", academicYear);
+  }, [academicYear]);
 
   useEffect(() => {
     console.log(tanggalStartDate);
@@ -241,13 +246,11 @@ const jadwalMengajar = () => {
             </span>
 
             <div className="flex w-full mt-5 flex-col">
-              <Select
+              <Input
                 label="Tahun pelajaran"
                 name="tahun"
-                options={getAcademicYears()}
                 value={formik.values.tahun}
-                onChange={formik.handleChange}
-                errorMessage={formik.errors.tahun}
+                disabled
               />
 
               <Select

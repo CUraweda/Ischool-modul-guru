@@ -7,8 +7,8 @@ import menu from "../data/menu.json";
 import menuKeuangan from "../data/keuangan.json";
 import menuHRD from "../data/hrd.json";
 import { globalStore, Store } from "../store/Store";
-import { Select } from "./Input";
-import { getAcademicYears } from "../utils/common";
+import { getAcademicYears, getCurrentAcademicYear } from "../utils/common";
+import { Year } from "../midleware/api";
 // import karywan from "../data/karyawan.json"
 
 interface Menu {
@@ -31,7 +31,8 @@ const Sidebar = () => {
   const Side = sessionStorage.getItem("side") || "/";
   const [data, setData] = useState<Menu[]>([]);
   const [activeMenuItem, setActiveMenuItem] = useState<string>(Side);
-  const { role } = Store();
+  const { role, token } = Store();
+  const [years, setYears] = useState<any[]>([]);
 
   const handleMenuItemClick = (name: string) => {
     setActiveMenuItem(name);
@@ -39,6 +40,26 @@ const Sidebar = () => {
   };
 
   const Role = role ? parseInt(role, 10) : 0;
+
+  const getYears = async () => {
+    try {
+      const res = await Year.getYear(token, "", 10000, 0);
+      const { result } = res.data.data;
+      setYears(result);
+    } catch (error) {
+      console.log("ERR: get academic years from server", error);
+
+      const fallBackYears = getAcademicYears().map((dat) => ({
+        name: dat,
+        status: dat == getCurrentAcademicYear() ? "Aktif" : "Tidak aktif",
+      }));
+      setYears(fallBackYears);
+    }
+  };
+
+  useEffect(() => {
+    getYears();
+  }, []);
 
   useEffect(() => {
     if (Role === 6) {
@@ -63,7 +84,7 @@ const Sidebar = () => {
             className="drawer-overlay"
           />
           <ul className="menu p-4 w-80 bg-base-100 min-h-screen">
-            <div className="w-full flex justify-between mb-10 items-center  pb-6">
+            <div className="w-full flex justify-between mb-3 items-center  pb-6">
               <div className="flex justify-center items-center gap-1">
                 <img src={logo} alt="logo" className="w-20" />
                 <p className="sm:text-xl text-xl font-bold">
@@ -77,6 +98,22 @@ const Sidebar = () => {
                 <BsListNested />
               </label>
             </div>
+            <select
+              value={academicYear}
+              onChange={(e) => setAcademicYear(e.target.value)}
+              className="text-small select select-bordered w-full mb-6"
+            >
+              {years.map((year, i) => (
+                <option
+                  key={i}
+                  className="text-small"
+                  value={year.name}
+                  selected={year.status == "Aktif"}
+                >
+                  {year.name}
+                </option>
+              ))}
+            </select>
             <ul className="menu font-bold rounded-lg max-w-xs w-full text-gray-500">
               {data
                 .filter((item) => !item.hide)
@@ -141,14 +178,7 @@ const Sidebar = () => {
                   </React.Fragment>
                 ))}
             </ul>
-            <div className="mt-auto">
-              <Select
-                placeholder="Tahun pelajaran"
-                value={academicYear}
-                options={getAcademicYears()}
-                onChange={(e) => setAcademicYear(e.target.value)}
-              />
-            </div>
+            <div className="mt-auto"></div>
           </ul>
         </div>
       </div>
