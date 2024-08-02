@@ -21,7 +21,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import Modal, { closeModal, openModal } from "../component/modal";
 import { Input, Select, Textarea } from "./Input";
-import { getAcademicYears } from "../utils/common";
+import { getAcademicYears, getSemesters } from "../utils/common";
 import { formatTime } from "../utils/date";
 import Swal from "sweetalert2";
 
@@ -78,6 +78,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
   const [Dataappointment, setData] = useState<any[]>([]);
   const [Class, setClass] = useState<any[]>([]);
   const [dateProps, setDateProps] = useState<any>();
+  const [triggerShow2, setTriggerShow2] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -115,9 +116,9 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
           title: "Berhasil",
           text: "Berhasil memperbarui rencana pekanan",
           showCloseButton: true,
-        }).then(() => {
-          window.location.reload();
         });
+
+        setTriggerShow2(!triggerShow2);
       } catch (error) {
         Swal.fire({
           icon: "error",
@@ -158,7 +159,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
 
   useEffect(() => {
     getKalenderPendidikan();
-  }, [smt, kelas, triggerShow, academicYear]);
+  }, [smt, kelas, triggerShow, triggerShow2, academicYear]);
 
   const formatDateCreate = (props: any) => {
     const dateObject = new Date(dateProps);
@@ -174,10 +175,9 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
         icon: "success",
         title: "Berhasil",
         text: "Berhasil menghapus rencana pekanan",
-        showCloseButton: true,
-      }).then(() => {
-        window.location.reload();
       });
+
+      setTriggerShow2(!triggerShow2);
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -245,40 +245,52 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
     getTimeTableById(id);
   };
 
-  const CustomTooltip: React.FC<any> = ({ appointmentData }) => (
-    <>
-      <div className="w-full p-3">
-        <div className="w-full flex gap-1 justify-between items-center pl-3">
-          <div className="text-xl font-bold ">{appointmentData.title}</div>
-          <div className="flex">
-            <button
-              onClick={() => {
-                handleOpen(appointmentData.id);
-              }}
-              className="btn btn-ghost btn-square text-xl text-orange-500 "
-            >
-              <FaPencil />
-            </button>
-            <button
-              onClick={() => deleteDetail(appointmentData.id)}
-              className="btn btn-ghost btn-square text-xl text-red-500 "
-            >
-              <BiTrash />
-            </button>
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+
+  const handleTooltipVisibilityChange = (visible: boolean) => {
+    setTooltipVisible(visible);
+  };
+
+  const CustomTooltip: React.FC<any> = ({ appointmentData }) => {
+    return (
+      <>
+        <div className="w-full p-3">
+          <div className="w-full flex gap-1 justify-between items-center pl-3">
+            <div className="text-xl font-bold ">{appointmentData.title}</div>
+            <div className="flex">
+              <button
+                onClick={() => {
+                  handleTooltipVisibilityChange(false);
+                  handleOpen(appointmentData.id);
+                }}
+                className="btn btn-ghost btn-square text-xl text-orange-500 "
+              >
+                <FaPencil />
+              </button>
+              <button
+                onClick={() => {
+                  handleTooltipVisibilityChange(false);
+                  deleteDetail(appointmentData.id);
+                }}
+                className="btn btn-ghost btn-square text-xl text-red-500 "
+              >
+                <BiTrash />
+              </button>
+            </div>
+          </div>
+          <div className="mt-2 flex pl-3 pb-3 items-center gap-3">
+            <span className="text-2xl ">
+              <CiClock2 />
+            </span>
+            <span className="">
+              {formatTime(appointmentData.startDate, "hh:mm")} -
+              {formatTime(appointmentData.endDate, "hh:mm")}
+            </span>
           </div>
         </div>
-        <div className="mt-2 flex pl-3 pb-3 items-center gap-3">
-          <span className="text-2xl ">
-            <CiClock2 />
-          </span>
-          <span className="">
-            {formatTime(appointmentData.startDate, "hh:mm")} -
-            {formatTime(appointmentData.endDate, "hh:mm")}
-          </span>
-        </div>
-      </div>
-    </>
-  );
+      </>
+    );
+  };
 
   return (
     <>
@@ -303,7 +315,11 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
           <ViewSwitcher />
           <DateNavigator />
           <TodayButton />
-          <AppointmentTooltip contentComponent={CustomTooltip} />
+          <AppointmentTooltip
+            visible={tooltipVisible}
+            onVisibilityChange={handleTooltipVisibilityChange}
+            contentComponent={CustomTooltip}
+          />
         </Scheduler>
       </Paper>
 
@@ -327,7 +343,9 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
             <Select
               label="Semester"
               name="semester"
-              options={[1, 2]}
+              keyValue="value"
+              keyDisplay="label"
+              options={getSemesters()}
               value={formik.values.semester}
               onChange={formik.handleChange}
               errorMessage={formik.errors.semester}

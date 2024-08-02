@@ -6,7 +6,7 @@ import "react-day-picker/dist/style.css";
 import { FaListCheck, FaPenClip } from "react-icons/fa6";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { BiDownload, BiTrash } from "react-icons/bi";
-import { Task, Student } from "../../midleware/api";
+import { Task, Student, Year } from "../../midleware/api";
 import { globalStore, Store } from "../../store/Store";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -57,6 +57,12 @@ const AdmSiswa = () => {
     page: 0,
     limit: 10,
   });
+  const [filterList, setFilterList] = useState({
+    classId: "",
+    search: "",
+    page: 0,
+    limit: 1000,
+  });
 
   const handleFilter = (key: string, value: any) => {
     const obj = {
@@ -93,12 +99,12 @@ const AdmSiswa = () => {
       subjectId: "",
       tahun: "",
       semester: "",
+      description: "",
       topik: "",
       jenis: "",
       startDate: "",
       endDate: "",
       status: "",
-      description: "",
     },
     validationSchema: schema,
     onSubmit: (values) => {
@@ -169,6 +175,18 @@ const AdmSiswa = () => {
       console.log(error);
     }
   };
+  const [Tahun, setTahun] = useState<string>("");
+
+  const generateAcademicYears = () => {
+    const currentYear = new Date().getFullYear();
+
+    setTahun(`${currentYear}/${currentYear + 1}`);
+  };
+
+  useEffect(() => {
+    generateAcademicYears();
+    getTahunAjaran();
+  }, []);
 
   const getClass = async () => {
     const response = await Task.GetAllClass(token, 0, 20, "Y");
@@ -188,7 +206,6 @@ const AdmSiswa = () => {
     const mapelFilter = mapelData.filter((value: any) => value.level == level);
     setMapel(mapelFilter);
   };
-
   const getStudent = async () => {
     const classId = formik.values.classId;
     const response = await Student.GetStudentByClass(
@@ -213,12 +230,12 @@ const AdmSiswa = () => {
     const {
       classId,
       subjectId,
+      description,
       topik,
       startDate,
       endDate,
       status,
       jenis,
-      description,
     } = formik.values;
 
     const formData = new FormData();
@@ -261,6 +278,7 @@ const AdmSiswa = () => {
       subjectId,
       tahun,
       topik,
+      description,
       startDate,
       endDate,
       status,
@@ -274,6 +292,7 @@ const AdmSiswa = () => {
     formData.append("semester", semester);
     formData.append("subject_id", subjectId);
     formData.append("topic", topik);
+    formData.append("description", description);
     formData.append("task_category_id", jenis);
     formData.append("characteristic", jenis);
     formData.append("start_date", startDate);
@@ -317,7 +336,14 @@ const AdmSiswa = () => {
   const handleFile = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
-      if (selectedFile.type !== "application/pdf") {
+      const allowedTypes = [
+        "application/pdf",
+        "image/png",
+        "image/jpg",
+        "image/jpeg",
+      ];
+
+      if (!allowedTypes.includes(selectedFile.type)) {
         console.warn("Please upload a PDF file");
         setFile(null);
         return;
@@ -394,20 +420,29 @@ const AdmSiswa = () => {
     navigate("/guru/task/siswa");
   };
 
-  const handleEdit = async (id: string) => {
+  const handleEdit = async (data: any) => {
     showModal("edit-task");
-    setIdTugas(id);
-    getTaskById(id);
+    setIdTugas(data.id);
+    getTaskById(data.id);
   };
 
   const handleEditTaskClass = async () => {
-    const { classId, subjectId, topik, startDate, endDate, status, jenis } =
-      formik.values;
+    const {
+      classId,
+      subjectId,
+      topik,
+      startDate,
+      endDate,
+      status,
+      jenis,
+      description,
+    } = formik.values;
 
     const formData = new FormData();
     formData.append("class_id", classId);
     formData.append("subject_id", subjectId);
     formData.append("topic", topik);
+    formData.append("description", description);
     formData.append("task_category_id", jenis);
     formData.append("start_date", startDate);
     formData.append("end_date", endDate);
@@ -455,17 +490,17 @@ const AdmSiswa = () => {
       formik.setFieldValue("classId", data.class.id);
       formik.setFieldValue("subjectId", data.subject.id);
       formik.setFieldValue("topik", data.topic);
+      formik.setFieldValue("description", data.description);
       formik.setFieldValue("jenis", data.task_category_id);
       formik.setFieldValue("startDate", formatDateFormik(data.start_date));
       formik.setFieldValue("endDate", formatDateFormik(data.end_date));
       formik.setFieldValue("status", data.status == "Open" ? "1" : "2");
-      formik.setFieldValue("description", data.description);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const downloadTugas = async (path: string) => {
+  const downloadFileTugas = async (path: string) => {
     try {
       const response = await Task.downloadTugas(token, path);
       const urlParts = path.split("/");
@@ -486,8 +521,17 @@ const AdmSiswa = () => {
   };
   const showFileTugas = async (path: string) => {
     try {
+      downloadFileTugas(path);
       const response = await Task.downloadTugas(token, path);
-      const blob = new Blob([response.data], { type: "application/pdf" }); //
+
+      let mimeType = "application/pdf";
+      if (path.endsWith(".png")) {
+        mimeType = "image/png";
+      } else if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
+        mimeType = "image/jpeg";
+      }
+
+      const blob = new Blob([response.data], { type: mimeType });
       const blobUrl = window.URL.createObjectURL(blob);
 
       setShowFile(blobUrl);
@@ -495,22 +539,37 @@ const AdmSiswa = () => {
       console.log(error);
     }
   };
-  const getTahunAjaran = (startYear: any, endYear: any) => {
-    const currentYear = new Date().getFullYear();
-    const start = currentYear - startYear;
-    const end = currentYear + endYear;
-    const years = [];
 
-    for (let year = start; year <= end; year++) {
-      const year1 = year;
-      const year2 = year1 + 1;
-      years.push(`${year1}/${year2}`);
+  const [TahunAjaran, setTahunAjaran] = useState<any[]>([]);
+  const getTahunAjaran = async () => {
+    try {
+      const response = await Year.getYear(
+        token,
+        "",
+        filterList.limit,
+        filterList.page
+      );
+      const { result, ...meta } = response.data.data;
+      console.log(result);
+      setTahunAjaran(result);
+      setFilterList(meta);
+    } catch (err) {
+      console.error("error :" + err);
     }
+    // const currentYear = new Date().getFullYear();
+    // const start = currentYear - startYear;
+    // const end = currentYear + endYear;
+    // const years = [];
 
-    return years;
+    // for (let year = start; year <= end; year++) {
+    //   const year1 = year;
+    //   const year2 = year1 + 1;
+    //   years.push(`${year1}/${year2}`);
+    // }
+
+    // return years;
   };
 
-  const tahunAjaranOptions = getTahunAjaran(1, 0);
   const handleAddFeedback = async () => {
     try {
       const data = {
@@ -618,7 +677,7 @@ const AdmSiswa = () => {
                         <button
                           className="btn btn-sm btn-ghost bg-orange-600 text-xl join-item tooltip"
                           data-tip="Edit"
-                          onClick={() => handleEdit(item.id)}
+                          onClick={() => handleEdit(item)}
                         >
                           <FaPenClip />
                         </button>
@@ -741,7 +800,7 @@ const AdmSiswa = () => {
                             !item?.down_file ? "btn-disabled" : ""
                           } btn btn-sm btn-ghost bg-blue-600 text-xl join-item tooltip`}
                           data-tip="download tugas siswa"
-                          onClick={() => downloadTugas(item?.down_file)}
+                          onClick={() => downloadFileTugas(item?.down_file)}
                         >
                           <BiDownload />
                         </button>
@@ -847,9 +906,9 @@ const AdmSiswa = () => {
                 <option value="" disabled selected>
                   Pilih Tahun Pelajaran
                 </option>
-                {tahunAjaranOptions.map((tahun, index) => (
-                  <option key={index} value={tahun}>
-                    {tahun}
+                {TahunAjaran?.map((list: any, index: any) => (
+                  <option key={index} value={list.name}>
+                    {list.name}
                   </option>
                 ))}
               </select>
@@ -881,7 +940,7 @@ const AdmSiswa = () => {
             </div>
             {siswa === "all-student" ? (
               <div className="w-full flex flex-col gap-2">
-                <label className="mt-4 font-bold">deskripsi</label>
+                <label className="mt-4 font-bold">Deskripsi</label>
                 <input
                   type="text"
                   className="input input-bordered w-full"
@@ -957,7 +1016,7 @@ const AdmSiswa = () => {
                 type="file"
                 onChange={handleFile}
                 className="file-input file-input-bordered w-full"
-                accept=".pdf"
+                accept=".pdf,.png,.jpg,.jpeg"
               />
             </div>
           </div>
@@ -1026,12 +1085,26 @@ const AdmSiswa = () => {
                 </option>
                 {mapel?.map((item: any, index: number) => (
                   <option value={item.id} key={index}>
-                    {item.name}
+                    {item.name} - {item.level}
                   </option>
                 ))}
               </select>
             </div>
-
+            <div
+              className={`w-full flex flex-col gap-2 ${
+                siswa !== "all-student" ? "hidden" : ""
+              }`}
+            >
+              <label className="mt-4 font-bold">Deskripsi</label>
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                value={formik.values.description}
+                onChange={(e) =>
+                  formik.setFieldValue("description", e.target.value)
+                }
+              />
+            </div>
             <div
               className={`w-full flex flex-col gap-2 ${
                 siswa === "all-student" ? "hidden" : ""
@@ -1044,6 +1117,7 @@ const AdmSiswa = () => {
                 onChange={(e) => formik.setFieldValue("tahun", e.target.value)}
               />
             </div>
+
             <div
               className={`w-full flex flex-col gap-2 ${
                 siswa === "all-student" ? "hidden" : ""

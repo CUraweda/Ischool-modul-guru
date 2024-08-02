@@ -1,7 +1,6 @@
 // import React from 'react'
 
 import { useEffect, useState } from "react";
-import ChartMap from "../../component/ChartMap";
 import {
   FaChartPie,
   FaExclamationTriangle,
@@ -14,6 +13,8 @@ import { Store } from "../../store/Store";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import { Input, Select } from "../../component/Input";
+import { ApexOptions } from "apexcharts";
+import ReactApexChart from "react-apexcharts";
 
 const Dashboard = () => {
   const { token } = Store();
@@ -63,6 +64,72 @@ const Dashboard = () => {
   useEffect(() => {
     getPostPayments();
   }, []);
+
+  const [chartOptions, setChartOptions] = useState<ApexOptions>({
+    chart: {
+      type: "area",
+      height: 400,
+      zoom: {
+        enabled: true,
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    stroke: {
+      curve: "straight",
+    },
+    title: {
+      text: "Perolehan Pendapatan",
+      align: "left",
+    },
+
+    // labels: monthDataSeries1.dates,
+    xaxis: {
+      type: "datetime",
+    },
+    yaxis: {
+      opposite: false,
+    },
+    legend: {
+      horizontalAlign: "right",
+    },
+  });
+
+  const [chartSeries, setChartSeries] = useState<
+    { name: string; data: number[] }[]
+  >([]);
+
+  const getCharts = async () => {
+    let seriesTitle: string = "Pendapatan (Rp)",
+      dates: any[] = [],
+      values: any[] = [];
+
+    try {
+      const res = await DashboardKeuangan.getChart(
+        token,
+        chartStartDate,
+        chartEndDate,
+        postPaymentId
+      );
+
+      values = res.data?.map((d: any) => d.sum) ?? [];
+      dates = res.data?.map((d: any) => d.paidoff_date) ?? [];
+
+      setChartOptions({
+        ...chartOptions,
+        title: {
+          ...chartOptions.title,
+        },
+        labels: dates,
+      });
+      setChartSeries([{ name: seriesTitle, data: values }]);
+    } catch {}
+  };
+
+  useEffect(() => {
+    getCharts();
+  }, [chartStartDate, chartEndDate, postPaymentId]);
 
   return (
     <>
@@ -146,8 +213,16 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="w-full bg-white p-3 rounded-md border">
-              <ChartMap />
+            <div className="w-full bg-white p-3 rounded-md">
+              <div id="chart" className="">
+                <ReactApexChart
+                  options={chartOptions}
+                  series={chartSeries}
+                  type="area"
+                  height={450}
+                />
+              </div>
+              <div id="html-dist"></div>
             </div>
           </div>
 
