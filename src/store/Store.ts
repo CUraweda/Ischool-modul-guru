@@ -1,5 +1,6 @@
 import create, { SetState } from "zustand";
-import { StoreState, StoreProps, IemployeeState } from "./Utils";
+import { StoreState, StoreProps, IemployeeState, IglobalState } from "./Utils";
+import { getCurrentAcademicYear } from "../utils/common";
 import { getMonday } from "../utils/common";
 
 const Store = create<StoreState>((set: SetState<StoreState>) => ({
@@ -114,4 +115,14 @@ const employeeStore = create<IemployeeState>((set, get) => ({
     }),
 }));
 
-export { Store, useProps, employeeStore };
+const globalStore = create<IglobalState>((set) => ({
+  academicYear: getCurrentAcademicYear(),
+  setAcademicYear: (academicYear: string) => set({ academicYear }),
+
+  clearStore: () =>
+    set({
+      academicYear: getCurrentAcademicYear(),
+    }),
+}));
+
+export { Store, useProps, employeeStore, globalStore };

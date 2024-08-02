@@ -3,11 +3,13 @@ import Modal from "../modal";
 import { FaCodeMerge } from "react-icons/fa6";
 import { FaFilePdf } from "react-icons/fa";
 import { Task, Student, Raport } from "../../midleware/api";
-import { Store, useProps } from "../../store/Store";
+import { globalStore, Store, useProps } from "../../store/Store";
 import Swal from "sweetalert2";
 import { IpageMeta, PaginationControl } from "../PaginationControl";
+import { Input, Select } from "../Input";
 
 const RaportAll = () => {
+  const { academicYear } = globalStore();
   const { token } = Store();
   const { setKelasProps } = useProps();
   const [Class, setClass] = useState<any[]>([]);
@@ -51,7 +53,7 @@ const RaportAll = () => {
   useEffect(() => {
     getStudent();
     getDataRaport();
-  }, [filter, academic]);
+  }, [filter, academicYear, academic]);
 
   useEffect(() => {
     getDataRaport();
@@ -83,7 +85,7 @@ const RaportAll = () => {
       const response = await Student.GetStudentByClass(
         token,
         filter.classId,
-        Tahun.toString()
+        academicYear
       );
       setSiswa(response.data.data);
     } catch (error) {
@@ -235,8 +237,9 @@ const RaportAll = () => {
                 <td>{item?.semester == 1 ? "Ganjil" : "Genap"}</td>
                 <td>
                   <button
-                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${!item?.number_path ? "btn-disabled" : ""
-                      }`}
+                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${
+                      !item?.number_path ? "btn-disabled" : ""
+                    }`}
                     data-tip="Download Rapor Angka"
                     onClick={() => downloadTugas(item?.number_path)}
                   >
@@ -247,8 +250,9 @@ const RaportAll = () => {
                 </td>
                 <td>
                   <button
-                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${!item?.narrative_path ? "btn-disabled" : ""
-                      }`}
+                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${
+                      !item?.narrative_path ? "btn-disabled" : ""
+                    }`}
                     data-tip="Download Rapor Narasi"
                     onClick={() => downloadTugas(item?.narrative_path)}
                   >
@@ -259,8 +263,9 @@ const RaportAll = () => {
                 </td>
                 <td>
                   <button
-                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${!item?.portofolio_path ? "btn-disabled" : ""
-                      }`}
+                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${
+                      !item?.portofolio_path ? "btn-disabled" : ""
+                    }`}
                     data-tip="Download Rapor Portofolio"
                     onClick={() => downloadTugas(item?.portofolio_path)}
                   >
@@ -272,8 +277,9 @@ const RaportAll = () => {
 
                 <td>
                   <button
-                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${!item?.merged_path ? "btn-disabled" : ""
-                      }`}
+                    className={`btn btn-sm join-item bg-green-500 text-white tooltip ${
+                      !item?.merged_path ? "btn-disabled" : ""
+                    }`}
                     data-tip="Download Rapor Siswa"
                     onClick={() => downloadTugas(item?.merged_path)}
                   >
@@ -284,12 +290,13 @@ const RaportAll = () => {
                 </td>
                 <td className="flex items-center justify-center">
                   <button
-                    className={`btn btn-sm join-item bg-orange-500 text-white tooltip ${!item?.number_path ||
-                        !item?.narrative_path ||
-                        !item?.portofolio_path
+                    className={`btn btn-sm join-item bg-orange-500 text-white tooltip ${
+                      !item?.number_path ||
+                      !item?.narrative_path ||
+                      !item?.portofolio_path
                         ? "btn-disabled"
                         : ""
-                      }`}
+                    }`}
                     onClick={() => downloadRaportMerge(item?.id)}
                   >
                     <span className="text-xl">
@@ -327,36 +334,24 @@ const RaportAll = () => {
       <Modal id="add-raport-siswa" width="w-11/12 max-w-5xl">
         <div className="w-full flex flex-col items-center">
           <p className="text-xl font-bold">Tambah Raport Siswa</p>
-          <div className="w-full flex flex-col gap-2">
-            <label className="mt-4 font-bold">Kelas</label>
-            <select
-              className="select select-bordered w-full"
-              value={filter.classId}
-              onChange={(e) => handleFilter("classId", e.target.value)}
-            >
-              <option value={""} selected>
-                Kelas
-              </option>
-              {Class?.map((item: any, index: number) => (
-                <option
-                  value={item.id}
-                  key={index}
-                >{`${item.level}-${item.class_name}`}</option>
-              ))}
-            </select>
-          </div>
-          <div className="w-full flex flex-col gap-2">
-            <label className="mt-4 font-bold">Semester</label>
-            <select
-              className="select select-bordered w-full"
-              value={filter.semester}
-              onChange={(e) => handleFilter("semester", e.target.value)}
-            >
-              <option selected>Semester</option>
-              <option value={"1"}>Semester 1</option>
-              <option value={"2"}>Semester 2</option>
-            </select>
-          </div>
+
+          <Input label="Tahun pelajaran" value={academicYear} disabled />
+
+          <Select
+            label="Kelas"
+            keyValue="id"
+            displayBuilder={(opt) => `${opt.level}-${opt.class_name}`}
+            options={Class}
+            value={filter.classId}
+            onChange={(e) => handleFilter("classId", e.target.value)}
+          />
+
+          <Select
+            label="Semester"
+            options={[1, 2]}
+            value={filter.semester}
+            onChange={(e) => handleFilter("semester", e.target.value)}
+          />
 
           <div className="w-full max-h-[400px] mt-10 overflow-auto">
             <table className="table shadow-lg">
