@@ -896,8 +896,7 @@ const AdmSiswa = () => {
                 onChange={(e) => formik.setFieldValue("topik", e.target.value)}
               />
             </div>
-            {siswa === "all-student" ? (
-              <div className="w-full flex flex-col gap-2">
+            <div className="w-full flex flex-col gap-2">
                 <label className="mt-4 font-bold">Deskripsi</label>
                 <input
                   type="text"
@@ -907,7 +906,6 @@ const AdmSiswa = () => {
                   }
                 />
               </div>
-            ) : null}
           </div>
           <div className="w-full">
             <div className="w-full flex flex-col gap-2">
@@ -1049,9 +1047,7 @@ const AdmSiswa = () => {
               </select>
             </div>
             <div
-              className={`w-full flex flex-col gap-2 ${
-                siswa !== "all-student" ? "hidden" : ""
-              }`}
+              className={`w-full flex flex-col gap-2`}
             >
               <label className="mt-4 font-bold">Deskripsi</label>
               <input
