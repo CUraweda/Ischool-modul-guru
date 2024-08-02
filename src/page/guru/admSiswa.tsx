@@ -117,8 +117,11 @@ const AdmSiswa = () => {
 
   useEffect(() => {
     getMapel();
-    getTask();
   }, [level]);
+
+  useEffect(() => {
+    getTask();
+  }, [level, academicYear]);
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(props) as HTMLDialogElement;
@@ -141,6 +144,7 @@ const AdmSiswa = () => {
         token,
         filterSiswa.search,
         filter.classId,
+        academicYear,
         filterSiswa.page,
         filterSiswa.limit,
         "Y"
@@ -897,15 +901,15 @@ const AdmSiswa = () => {
               />
             </div>
             <div className="w-full flex flex-col gap-2">
-                <label className="mt-4 font-bold">Deskripsi</label>
-                <input
-                  type="text"
-                  className="input input-bordered w-full"
-                  onChange={(e) =>
-                    formik.setFieldValue("description", e.target.value)
-                  }
-                />
-              </div>
+              <label className="mt-4 font-bold">Deskripsi</label>
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                onChange={(e) =>
+                  formik.setFieldValue("description", e.target.value)
+                }
+              />
+            </div>
           </div>
           <div className="w-full">
             <div className="w-full flex flex-col gap-2">
@@ -1046,9 +1050,7 @@ const AdmSiswa = () => {
                 ))}
               </select>
             </div>
-            <div
-              className={`w-full flex flex-col gap-2`}
-            >
+            <div className={`w-full flex flex-col gap-2`}>
               <label className="mt-4 font-bold">Deskripsi</label>
               <input
                 type="text"
