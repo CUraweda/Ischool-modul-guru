@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FaPencilAlt, FaPlus, FaRegTrashAlt, FaSearch } from "react-icons/fa";
 import Modal from "../modal";
 import { MdCloudUpload } from "react-icons/md";
-import { Store, useProps } from "../../store/Store";
+import { globalStore, Store, useProps } from "../../store/Store";
 import {
   Task,
   Raport,
@@ -38,8 +38,8 @@ const validationPersonalitySchema = Yup.object({
 
 const RaportAngka = () => {
   const { token } = Store();
-  const { setTahunProps, setSemesterProps, setKelasProps, setMapelProps } =
-    useProps();
+  const { academicYear } = globalStore();
+  const { setSemesterProps, setKelasProps, setMapelProps } = useProps();
 
   const [kelas, setKelas] = useState<any[]>([]);
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
@@ -62,7 +62,6 @@ const RaportAngka = () => {
   const [search, setSearch] = useState("");
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
-    academic: "",
     semester: "1",
     classId: "",
     subjectId: "",
@@ -98,20 +97,20 @@ const RaportAngka = () => {
   useEffect(() => {
     getStudent();
     getClass();
-  }, [formik.values.classId, arrayKelas]);
+  }, [formik.values.classId, arrayKelas, academicYear]);
 
   useEffect(() => {
     getMapel();
   }, [level]);
 
-  useEffect(() => {
-    getClass();
-    getNumberRaport();
-  }, []);
+  // useEffect(() => {
+  //   getClass();
+  //   getNumberRaport();
+  // }, []);
 
   useEffect(() => {
     getNumberRaport();
-  }, [filter, arrayKelas]);
+  }, [filter, arrayKelas, academicYear]);
 
   useEffect(() => {
     getStudentPersonalities();
@@ -151,7 +150,7 @@ const RaportAngka = () => {
         token,
         idClass,
         null,
-        ""
+        academicYear
       );
       setDataSiswa(response.data.data);
     } catch (error) {
@@ -171,7 +170,7 @@ const RaportAngka = () => {
       token,
       filter.search,
       filter.classId,
-      filter.academic,
+      academicYear,
       filter.semester,
       filter.subjectId,
       filter.page,
@@ -539,20 +538,6 @@ const RaportAngka = () => {
     <div>
       <div className="w-full flex flex-wrap gap-3">
         <div className="join">
-          <select
-            className="select join-item w-32 max-w-md select-bordered"
-            value={filter.academic}
-            onChange={(e) => {
-              handleFilter("academic", e.target.value),
-                setTahunProps(e.target.value);
-            }}
-          >
-            <option value={""} selected>
-              Tahun Pelajaran
-            </option>
-            <option value={"2023/2024"}>2023/2024</option>
-            <option value={"2024/2025"}>2024/2025</option>
-          </select>
           <select
             className="select join-item w-32 max-w-md select-bordered"
             value={filter.semester}

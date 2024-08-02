@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Demo from "../../component/CalendarEdit";
 import Modal from "../../component/modal";
-import { Store } from "../../store/Store";
+import { globalStore, Store } from "../../store/Store";
 import { Kalender } from "../../midleware/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -23,6 +23,7 @@ interface propsColor {
   title: string;
 }
 const KalenderKegiatan = () => {
+  const { academicYear } = globalStore();
   const { token, tanggalPekanan } = Store();
   const [topik, setTopik] = useState<any[]>([]);
   const [Color, setColor] = useState<propsColor>({
@@ -32,19 +33,20 @@ const KalenderKegiatan = () => {
   });
 
   const getTopik = async () => {
-    const response = await Kalender.GetAllTopik(token, 0, 10);
+    const response = await Kalender.GetAllTopik(token, academicYear, 0, 10);
     setTopik(response.data.data.result);
   };
   useEffect(() => {
     getTopik();
-  }, []);
+  }, [academicYear]);
+  
   const formik = useFormik({
     initialValues: {
       edu_id: "",
       agenda: "",
       start_date: "",
       end_date: "",
-      tahun: "",
+      tahun: academicYear,
       level: "",
       smt: "",
     },
@@ -131,6 +133,10 @@ const KalenderKegiatan = () => {
       modalElement.close();
     }
   };
+
+  useEffect(() => {
+    formik.setFieldValue("tahun", academicYear);
+  }, [academicYear]);
 
   const createAgenda = async () => {
     const { edu_id, start_date, end_date, agenda } = formik.values;
@@ -298,9 +304,10 @@ const KalenderKegiatan = () => {
               <label className="mt-4 font-bold">Tahun Pelajaran</label>
               <input
                 type="text"
-                placeholder="2023/2024"
+                value={formik.values.tahun}
                 className="input input-bordered bg-white shadow-md"
-                onChange={(e) => formik.setFieldValue("tahun", e.target.value)}
+                disabled
+                // onChange={(e) => formik.setFieldValue("tahun", e.target.value)}
               />
             </div>
             <div className="w-full flex flex-col gap-2">

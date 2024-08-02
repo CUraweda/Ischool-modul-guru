@@ -97,11 +97,12 @@ const Student = {
     limit: number | null,
     classId: string | null,
     attDate: string | null,
+    academic: string | null,
     withAssign: string | null = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-attendance?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&att_date=${attDate}&with_assign=${withAssign}`,
+      url: `/api/student-attendance?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&att_date=${attDate}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -333,12 +334,13 @@ const Task = {
 const Kalender = {
   GetAllDetail: (
     token: string | null,
+    academic: string | null,
     page: number | null,
     limit: number | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/edu-calendar-detail?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/edu-calendar-detail?academic=${academic}&search_query=&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -356,12 +358,13 @@ const Kalender = {
     }),
   GetAllTopik: (
     token: string | null,
+    academic: string | null,
     page: number | null,
     limit: number | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/edu-calendar?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/edu-calendar?academic=${academic}&search_query=&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

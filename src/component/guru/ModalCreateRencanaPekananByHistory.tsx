@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Modal, { closeModal } from "../modal";
 import * as Yup from "yup";
 import { Class, Kalender } from "../../midleware/api";
-import { Store } from "../../store/Store";
+import { globalStore, Store } from "../../store/Store";
 import { Input, Select } from "../Input";
 import { useFormik } from "formik";
 import { formatTime } from "../../utils/date";
@@ -21,6 +21,7 @@ const ModalCreateRencanaPekananByHistory = ({
   modalId: string;
   postCreate: () => void;
 }) => {
+  const { academicYear } = globalStore();
   const { token } = Store();
 
   // filter data
@@ -54,7 +55,7 @@ const ModalCreateRencanaPekananByHistory = ({
         token,
         classId,
         semester,
-        "2023/2024"
+        academicYear,
       );
       setTimetables(res.data.data);
     } catch {}
@@ -62,7 +63,7 @@ const ModalCreateRencanaPekananByHistory = ({
 
   useEffect(() => {
     getTimetables();
-  }, [classId, semester]);
+  }, [classId, semester, academicYear]);
 
   // form
   const formik = useFormik({
@@ -107,6 +108,8 @@ const ModalCreateRencanaPekananByHistory = ({
         className="flex flex-col items-center"
       >
         <h4 className="text-xl font-bold">Duplikat Rencana Pekanan</h4>
+
+        <Input label="Tahun pelajaran" value={academicYear} disabled />
 
         <Select
           label="Kelas"
