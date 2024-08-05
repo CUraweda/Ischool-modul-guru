@@ -119,7 +119,7 @@ const DetailJenisPembayaran = () => {
         });
 
         getDataList();
-        resetForm()
+        resetForm();
         const lenCreated = res.data.data.length;
 
         lenCreated == 0
@@ -151,10 +151,10 @@ const DetailJenisPembayaran = () => {
   });
 
   const resetForm = () => {
-    tambahSiswaForm.resetForm()
-    setStudentsToAdd([])
-    setStudentsToAddShow([])
-  }
+    tambahSiswaForm.resetForm();
+    setStudentsToAdd([]);
+    setStudentsToAddShow([]);
+  };
 
   const parseHandleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -354,10 +354,9 @@ const DetailJenisPembayaran = () => {
           <Input
             label="Angkatan"
             name="nis_prefix"
-            helpMessage="Klik Enter untuk filter"
             placeholder="ex: 1617, 2324"
             maxLength={4}
-            hint="Dicocokan berdasarkan awalan NIS"
+            hint="Dicocokan berdasarkan awalan NIS, panjang minimal 4 karakter"
             disabled={!tambahSiswaForm.values.level}
             value={tambahSiswaForm.values.nis_prefix}
             onChange={tambahSiswaForm.handleChange}
