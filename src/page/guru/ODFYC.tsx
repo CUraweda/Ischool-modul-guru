@@ -6,6 +6,7 @@ import {
   FaRegFileAlt,
   FaSearch,
   FaTrash,
+  FaPlus,
 } from "react-icons/fa";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { IoDocumentTextOutline } from "react-icons/io5";
@@ -424,7 +425,7 @@ const ODFYC = () => {
         </div>
         <div className="w-full bg-white p-3 rounded-md">
           {/* filter bar  */}
-          <div className="w-full flex justify-end my-3 gap-2">
+          <div className="w-full flex justify-end my-3 gap-2 items-center">
             {/* search  */}
             <form
               onSubmit={(e) => {
@@ -443,6 +444,10 @@ const ODFYC = () => {
                 <FaSearch />
               </label>
             </form>
+            <button className="btn btn-ghost bg-blue-500 btn-sm text-white ">
+              <FaPlus />
+              Tambah
+            </button>
           </div>
 
           {/* data list  */}
