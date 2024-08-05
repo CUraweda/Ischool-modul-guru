@@ -5,7 +5,7 @@ import { MdInsertPhoto } from "react-icons/md";
 import { Class, Student, TagihanSiswa } from "../../midleware/api";
 import { Store } from "../../store/Store";
 import Modal, { closeModal, openModal } from "../../component/modal";
-import { Select } from "../../component/Input";
+import { Input, Select } from "../../component/Input";
 import { Link, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
@@ -20,12 +20,13 @@ import { formatTime } from "../../utils/date";
 const apiAssets = import.meta.env.VITE_REACT_API_URL + "/";
 
 const tambahSiswaSchema = Yup.object().shape({
-  academic_year: Yup.string().oneOf(getAcademicYears()).optional(),
+  academic_year: Yup.string().optional(),
   level: Yup.string()
     .oneOf(["TK", "SD", "SM"], "Pilih antara TK, SD, atau SM")
     .required("Pilih antara TK, SD, atau SM"),
   class_id: Yup.number().optional(),
   student_id: Yup.number().optional(),
+  nis_prefix: Yup.string().optional(),
 });
 
 const DetailJenisPembayaran = () => {
@@ -104,6 +105,7 @@ const DetailJenisPembayaran = () => {
       class_id: 0,
       student_id: 0,
       academic_year: getCurrentAcademicYear(),
+      nis_prefix: "",
     },
     validateOnChange: false,
     validationSchema: tambahSiswaSchema,
@@ -117,6 +119,7 @@ const DetailJenisPembayaran = () => {
         });
 
         getDataList();
+        resetForm()
         const lenCreated = res.data.data.length;
 
         lenCreated == 0
@@ -147,6 +150,12 @@ const DetailJenisPembayaran = () => {
     },
   });
 
+  const resetForm = () => {
+    tambahSiswaForm.resetForm()
+    setStudentsToAdd([])
+    setStudentsToAddShow([])
+  }
+
   const parseHandleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     tambahSiswaForm.setFieldValue(
@@ -159,7 +168,8 @@ const DetailJenisPembayaran = () => {
     let result;
 
     try {
-      const { class_id, level, academic_year } = tambahSiswaForm.values;
+      const { class_id, level, academic_year, nis_prefix } =
+        tambahSiswaForm.values;
 
       if (class_id) {
         result = await Student.GetStudentByClass(
@@ -176,11 +186,25 @@ const DetailJenisPembayaran = () => {
 
       if (!result) return;
 
-      const students = result.data.data.map((dat: any) => dat.student);
+      let students = result.data.data.map((dat: any) => dat.student);
+
+      if (nis_prefix && nis_prefix.length == 4) {
+        students = students.filter((st: any) => st.nis.startsWith(nis_prefix));
+      }
+
       setStudentsToAdd(students);
       setStudentsToAddShow(students);
     } catch {}
   };
+
+  const filterStudentByNis = async () => {
+    const len = tambahSiswaForm.values.nis_prefix.length;
+    if (len == 4 || len == 0) getStudentsToAdd();
+  };
+
+  useEffect(() => {
+    filterStudentByNis();
+  }, [tambahSiswaForm.values.nis_prefix]);
 
   const getClassesInForm = async () => {
     try {
@@ -306,7 +330,7 @@ const DetailJenisPembayaran = () => {
         </form>
       </Modal>
 
-      <Modal id={modalFormTambah} onClose={() => tambahSiswaForm.resetForm()}>
+      <Modal id={modalFormTambah} onClose={() => resetForm()}>
         <form onSubmit={tambahSiswaForm.handleSubmit}>
           <h3 className="text-xl font-bold mb-6">Tambah Siswa</h3>
           <Select
@@ -325,6 +349,19 @@ const DetailJenisPembayaran = () => {
             value={tambahSiswaForm.values.level}
             onChange={tambahSiswaForm.handleChange}
             errorMessage={tambahSiswaForm.errors.level}
+          />
+
+          <Input
+            label="Angkatan"
+            name="nis_prefix"
+            helpMessage="Klik Enter untuk filter"
+            placeholder="ex: 1617, 2324"
+            maxLength={4}
+            hint="Dicocokan berdasarkan awalan NIS"
+            disabled={!tambahSiswaForm.values.level}
+            value={tambahSiswaForm.values.nis_prefix}
+            onChange={tambahSiswaForm.handleChange}
+            errorMessage={tambahSiswaForm.errors.nis_prefix}
           />
 
           <Select
