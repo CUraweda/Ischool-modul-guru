@@ -2,10 +2,9 @@
 import { useEffect, useState } from "react";
 import { FaFileAlt, FaLock, FaLockOpen, FaSearch } from "react-icons/fa";
 import { Class, Raport, Student, TagihanSiswa } from "../../midleware/api";
-import { Store } from "../../store/Store";
+import { globalStore, Store } from "../../store/Store";
 import Swal from "sweetalert2";
 import ilusNoData from "../../assets/ilus/no-data.svg";
-import { getAcademicYears, getCurrentAcademicYear } from "../../utils/common";
 import { FaMoneyBill1Wave } from "react-icons/fa6";
 import Modal, { openModal } from "../../component/modal";
 import {
@@ -22,6 +21,7 @@ const getReport = (arr: any[], semester: any) => {
 
 const DataSiswa = () => {
   const { token } = Store(),
+    { academicYear } = globalStore(),
     modalDetailPembayaranId = "modal-detail-pembayaran";
 
   // page states
@@ -31,7 +31,6 @@ const DataSiswa = () => {
   const [filter, setFilter] = useState({
     search: "",
     classId: "",
-    academicYear: getCurrentAcademicYear(),
     page: 0,
     limit: 10,
   });
@@ -54,7 +53,7 @@ const DataSiswa = () => {
         token,
         filter.search,
         filter.classId,
-        filter.academicYear,
+        academicYear,
         filter.page,
         filter.limit
       );
@@ -102,9 +101,10 @@ const DataSiswa = () => {
 
   // entry point
   useEffect(() => {
+    console.log(academicYear)
     getStudents();
     getClasses();
-  }, [filter]);
+  }, [filter, academicYear]);
 
   const [studentInModal, setStudentInModal] = useState<any>(null);
   const [studentPayments, setStudentPayments] = useState<any[]>([]);
@@ -224,13 +224,6 @@ const DataSiswa = () => {
                 options={classes}
                 keyValue="id"
                 keyDisplay="class_name"
-              />
-            </div>
-            <div>
-              <Select
-                value={filter.academicYear}
-                onChange={(e) => handleFilter("academicYear", e.target.value)}
-                options={getAcademicYears()}
               />
             </div>
             <form

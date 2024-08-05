@@ -3,13 +3,13 @@ import { FaChevronDown, FaRegFileAlt, FaSearch, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaPencil } from "react-icons/fa6";
 import { useEffect, useState } from "react";
-import { getAcademicYears, moneyFormat } from "../../utils/common";
+import { moneyFormat } from "../../utils/common";
 import Modal, { openModal, closeModal } from "../../component/modal";
 import { Input, Select } from "../../component/Input";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { PosJenisPembayaran, PosPembayaran } from "../../midleware/api";
-import { Store } from "../../store/Store";
+import { globalStore, Store } from "../../store/Store";
 import Swal from "sweetalert2";
 import {
   IpageMeta,
@@ -28,6 +28,7 @@ const jenisPembayaranSchema = Yup.object().shape({
 
 const JenisPembayaran = () => {
   const { token } = Store(),
+    { academicYear } = globalStore(),
     modalFormId = "form-jenis-pembayaran",
     modalBulkFormId = "form-bulk-jenis-pembayran";
 
@@ -39,7 +40,6 @@ const JenisPembayaran = () => {
     page: 0,
     limit: 10,
     search: "",
-    academicYear: "",
     paymentPostId: "",
   });
 
@@ -60,7 +60,7 @@ const JenisPembayaran = () => {
         token,
         filter.search,
         filter.paymentPostId,
-        filter.academicYear,
+        academicYear,
         filter.page,
         filter.limit
       );
@@ -81,7 +81,7 @@ const JenisPembayaran = () => {
   useEffect(() => {
     getDataList();
     getPostPayments();
-  }, [filter]);
+  }, [filter, academicYear]);
 
   // state in modal form
   const [postPayments, setPostPayments] = useState<any[]>([]);
@@ -91,7 +91,7 @@ const JenisPembayaran = () => {
       name: "",
       payment_post_id: 0,
       due_date: "",
-      academic_year: "",
+      academic_year: academicYear,
       total: "",
     },
     validateOnChange: false,
@@ -128,6 +128,10 @@ const JenisPembayaran = () => {
       }
     },
   });
+
+  useEffect(() => {
+    jenisPembayaranForm.setFieldValue("academic_year", academicYear);
+  }, [academicYear]);
 
   const getPostPayments = async () => {
     try {
@@ -262,14 +266,7 @@ const JenisPembayaran = () => {
             errorMessage={jenisPembayaranForm.errors.due_date}
           />
 
-          <Select
-            label="Tahun pembelajaran"
-            name="academic_year"
-            options={getAcademicYears()}
-            value={jenisPembayaranForm.values.academic_year}
-            onChange={jenisPembayaranForm.handleChange}
-            errorMessage={jenisPembayaranForm.errors.academic_year}
-          />
+          <Input label="Tahun pelajaran" value={academicYear} disabled />
 
           <Input
             type="number"
@@ -324,15 +321,6 @@ const JenisPembayaran = () => {
                 slotRight={<FaSearch />}
               />
             </form>
-
-            <div>
-              <Select
-                value={filter.academicYear}
-                placeholder="Tahun pembelajaran"
-                onChange={(e) => handleFilter("academicYear", e.target.value)}
-                options={getAcademicYears()}
-              />
-            </div>
 
             <div>
               <Select
