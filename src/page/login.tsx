@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import logo from "../assets/sade.png";
 import bg from "../assets/bg2.png";
 import { Auth } from "../midleware/api";
@@ -7,6 +8,7 @@ import * as Yup from "yup";
 import { employeeStore, Store } from "../store/Store";
 import Swal from "sweetalert2";
 import { Input } from "../component/Input";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const schema = Yup.object({
   email: Yup.string().email("Email tidak valid").required("Email harus diisi"),
@@ -23,6 +25,8 @@ const Login = () => {
     setFormXtras,
     setHeadmaster,
   } = employeeStore();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -86,6 +90,8 @@ const Login = () => {
     },
   });
 
+  const toggleShowPassword = () => setShowPassword(!showPassword);
+
   return (
     <div
       className="w-full flex flex-col justify-center items-center min-h-screen"
@@ -108,15 +114,29 @@ const Login = () => {
             onChange={formik.handleChange}
             errorMessage={formik.errors.email}
           />
-          <Input
-            label="Password"
-            type="password"
-            name="password"
-            placeholder="password"
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            errorMessage={formik.errors.password}
-          />
+          <div className="relative w-full">
+            <Input
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              errorMessage={formik.errors.password}
+              className="pr-10" // Add padding-right to prevent text overlap
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-[3.7rem] transform -translate-y-1/2"
+              onClick={toggleShowPassword}
+            >
+              {showPassword ? (
+                <FaEyeSlash size="1.5rem" />
+              ) : (
+                <FaEye size="1.5rem" />
+              )}
+            </button>
+          </div>
           <button
             disabled={formik.isSubmitting}
             className="btn btn-ghost bg-green-500 text-white w-full mt-10"

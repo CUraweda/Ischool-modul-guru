@@ -6,6 +6,7 @@ import {
   FaRegFileAlt,
   FaSearch,
   FaTrash,
+  FaPlus,
 } from "react-icons/fa";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { IoDocumentTextOutline } from "react-icons/io5";
@@ -450,6 +451,10 @@ const ODFYC = () => {
                 <FaSearch />
               </label>
             </form>
+            <button className="btn btn-ghost bg-blue-500 btn-sm text-white ">
+              <FaPlus />
+              Tambah
+            </button>
           </div>
 
           {/* data list  */}
