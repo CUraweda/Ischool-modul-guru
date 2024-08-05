@@ -42,19 +42,24 @@ const Sidebar = () => {
   const Role = role ? parseInt(role, 10) : 0;
 
   const getYears = async () => {
+    let years = [];
     try {
       const res = await Year.getYear(token, "", 10000, 0);
       const { result } = res.data.data;
-      setYears(result);
+      years = result;
     } catch (error) {
       console.log("ERR: get academic years from server", error);
-
       const fallBackYears = getAcademicYears().map((dat) => ({
         name: dat,
         status: dat == getCurrentAcademicYear() ? "Aktif" : "Tidak aktif",
       }));
-      setYears(fallBackYears);
+      years = fallBackYears;
     }
+
+    setYears(years);
+    years.forEach((y: any) => {
+      if (y.status == "Aktif") setAcademicYear(y.name);
+    });
   };
 
   useEffect(() => {
