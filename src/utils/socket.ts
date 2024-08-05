@@ -42,6 +42,6 @@ class WebSocketService {
   }
 }
 
-const socketService = new WebSocketService(import.meta.env.VITE_REACT_API_URL);
+const socketService = new WebSocketService(import.meta.env.VITE_REACT_API_BASE_URL);
 
 export default socketService;
