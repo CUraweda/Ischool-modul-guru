@@ -32,6 +32,7 @@ const Laporan = () => {
     startPaid: "",
     endPaid: "",
     status: "",
+    nisPrefix: "",
   });
   const [filterInForm, setFilterInForm] = useState({
     academicYear: "",
@@ -41,6 +42,7 @@ const Laporan = () => {
     startPaid: "",
     endPaid: "",
     status: "",
+    nisPrefix: "",
   });
 
   const applyFilterInForm = () => {
@@ -60,6 +62,7 @@ const Laporan = () => {
       startPaid: "",
       endPaid: "",
       status: "",
+      nisPrefix: "",
     });
   };
 
@@ -130,6 +133,7 @@ const Laporan = () => {
         filter.startPaid,
         filter.endPaid,
         filter.status,
+        filter.nisPrefix,
         filter.page,
         filter.limit
       );
@@ -158,7 +162,8 @@ const Laporan = () => {
         filter.studentId,
         filter.startPaid,
         filter.endPaid,
-        filter.status
+        filter.status,
+        filter.nisPrefix,
       );
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
@@ -277,6 +282,15 @@ const Laporan = () => {
             options={getAcademicYears()}
             value={filterInForm.academicYear}
             onChange={(e) => handleFilterInForm("academicYear", e.target.value)}
+          />
+
+          <Input
+            label="Angkatan"
+            placeholder="ex: 1617, 2324"
+            maxLength={4}
+            hint="Dicocokan berdasarkan awalan NIS, panjang minimal 4 karakter"
+            value={filterInForm.nisPrefix}
+            onChange={(e) => handleFilterInForm("nisPrefix", e.target.value)}
           />
 
           <Select
