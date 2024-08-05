@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Class, DashboardSiswa } from "../../midleware/api";
-import { Store } from "../../store/Store";
+import { globalStore, Store } from "../../store/Store";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import Modal from "../../component/modal";
 import { useFormik } from "formik";
@@ -23,6 +23,7 @@ const validationSchema = Yup.object({
 });
 
 const OverviewSiswa = () => {
+  const { academicYear } = globalStore();
   const { token, role } = Store();
   const [overview, setOverview] = useState<any>([]);
   const [idOverview, setIdOverview] = useState<string>("");
@@ -61,7 +62,7 @@ const OverviewSiswa = () => {
 
   useEffect(() => {
     getOverview();
-  }, [filter]);
+  }, [filter, academicYear]);
 
   const [classes, setClasses] = useState<any[]>([]);
 
@@ -94,6 +95,7 @@ const OverviewSiswa = () => {
     const response = await DashboardSiswa.getAllOverView(
       token,
       filter.classId,
+      academicYear,
       filter.page,
       filter.limit,
       "Y"
@@ -102,6 +104,10 @@ const OverviewSiswa = () => {
     setOverview(result);
     setPageMeta(meta);
   };
+
+  useEffect(() => {
+    formik.setFieldValue("period", academicYear);
+  }, [academicYear]);
 
   const handleCreateOverview = async () => {
     try {
@@ -362,21 +368,16 @@ const OverviewSiswa = () => {
                 Periode
               </label>
               <div className="flex gap-1 justify-center items-center w-full ">
-                <select
-                  className={`select select-bordered w-full ${
+                <input
+                  className={`input input-bordered w-full ${
                     formik.touched.period && formik.errors.period
-                      ? "select-error"
+                      ? "input-error"
                       : ""
                   }`}
                   name="period"
                   value={formik.values.period}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                >
-                  <option value={""}>Pilih periode</option>
-                  <option value={"2023/2024"}>2023/2024</option>
-                  <option value={"2024/2025"}>2024/2025</option>
-                </select>
+                  disabled
+                />
               </div>
               {formik.touched.period && formik.errors.period ? (
                 <div className="text-red-500 text-xs">
@@ -531,21 +532,16 @@ const OverviewSiswa = () => {
                 Periode
               </label>
               <div className="flex gap-1 justify-center items-center w-full ">
-                <select
-                  className={`select select-bordered w-full ${
+                <input
+                  className={`input input-bordered w-full ${
                     formik.touched.period && formik.errors.period
-                      ? "select-error"
+                      ? "input-error"
                       : ""
                   }`}
                   name="period"
                   value={formik.values.period}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                >
-                  <option value={""}>Pilih periode</option>
-                  <option value={"2023/2024"}>2023/2024</option>
-                  <option value={"2024/2025"}>2024/2025</option>
-                </select>
+                  disabled
+                />
               </div>
               {formik.touched.period && formik.errors.period ? (
                 <div className="text-red-500 text-xs">

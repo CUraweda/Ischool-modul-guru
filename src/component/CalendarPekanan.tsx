@@ -12,7 +12,7 @@ import {
   MonthView,
   ViewSwitcher,
 } from "@devexpress/dx-react-scheduler-material-ui";
-import { Store } from "../store/Store";
+import { globalStore, Store } from "../store/Store";
 import { Kalender, Task } from "../midleware/api";
 import { FaPencil } from "react-icons/fa6";
 import { BiTrash } from "react-icons/bi";
@@ -21,7 +21,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import Modal, { closeModal, openModal } from "../component/modal";
 import { Input, Select, Textarea } from "./Input";
-import { getAcademicYears, getSemesters } from "../utils/common";
+import { getSemesters } from "../utils/common";
 import { formatTime } from "../utils/date";
 import Swal from "sweetalert2";
 
@@ -72,6 +72,7 @@ const schema = Yup.object({
 });
 
 const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
+  const { academicYear } = globalStore();
   const { token, setTanggalPekanan, tanggalPekanan, setTanggalStartDate } =
     Store();
   const [Dataappointment, setData] = useState<any[]>([]);
@@ -137,7 +138,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
         token,
         kelas,
         smt,
-        "2023/2024",
+        academicYear,
         "Y"
       );
       const dataList = response.data.data;
@@ -158,7 +159,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
 
   useEffect(() => {
     getKalenderPendidikan();
-  }, [smt, kelas, triggerShow, triggerShow2]);
+  }, [smt, kelas, triggerShow, triggerShow2, academicYear]);
 
   const formatDateCreate = (props: any) => {
     const dateObject = new Date(dateProps);
@@ -330,13 +331,11 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
           <span className="text-xl font-bold">Edit Rencana Pekanan</span>
 
           <div className="flex w-full mt-5 flex-col">
-            <Select
+            <Input
               label="Tahun pelajaran"
               name="tahun"
-              options={getAcademicYears()}
               value={formik.values.tahun}
-              onChange={formik.handleChange}
-              errorMessage={formik.errors.tahun}
+              disabled
             />
 
             <Select

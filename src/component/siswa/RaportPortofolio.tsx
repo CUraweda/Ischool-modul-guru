@@ -4,12 +4,13 @@ import { MdCloudUpload } from "react-icons/md";
 import Modal from "../modal";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { Task, Raport } from "../../midleware/api";
-import { Store, useProps } from "../../store/Store";
+import { globalStore, Store, useProps } from "../../store/Store";
 import { CiFolderOff } from "react-icons/ci";
 import Swal from "sweetalert2";
 import { IpageMeta, PaginationControl } from "../PaginationControl";
 
 const RaportPortofolio = () => {
+  const { academicYear } = globalStore();
   const { token } = Store();
   const { setSemesterProps, setKelasProps, semesterProps } = useProps();
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
@@ -24,7 +25,6 @@ const RaportPortofolio = () => {
   const [smt, setSmt] = useState<string>(semesterProps || "1");
   const [merge, setMerge] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [academic, setAcademic] = useState("");
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
@@ -42,7 +42,7 @@ const RaportPortofolio = () => {
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
     classId: "",
-    semester: "1",
+    semester: "",
     page: 0,
     limit: 10,
   });
@@ -62,7 +62,7 @@ const RaportPortofolio = () => {
 
   useEffect(() => {
     getStudent();
-  }, [filter, academic]);
+  }, [filter, academicYear]);
 
   const getClass = async () => {
     const response = await Task.GetAllClass(token, 0, 20, "Y", "N");
@@ -78,7 +78,7 @@ const RaportPortofolio = () => {
         filter.page,
         filter.limit,
         "Y",
-        academic
+        academicYear
       );
       const { result, ...meta } = response.data.data;
       setDataSiswa(result);
@@ -199,20 +199,12 @@ const RaportPortofolio = () => {
       <div className="w-full flex justify-between gap-2">
         <div className="join">
           <select
-            className="select select-bordered w-full"
-            value={academic}
-            onChange={(e) => setAcademic(e.target.value)}
-          >
-            <option selected>Tahun Ajaran</option>
-            <option value="2023/2024">2023/2024</option>
-            <option value="2024/2025">2024/2025</option>
-          </select>
-          <select
             className="select join-item w-32 max-w-md select-bordered"
             value={filter.semester}
             onChange={(e) => {
               handleFilter("semester", e.target.value),
-                setSemesterProps(e.target.value);
+                sessionStorage.setItem("smt", e.target.value);
+              setSemesterProps(e.target.value);
             }}
           >
             <option selected>Semester</option>

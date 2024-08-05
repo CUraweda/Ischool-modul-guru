@@ -25,6 +25,17 @@ const Auth = {
     }),
 };
 
+const User = {
+  showAll: (token: string | null, search: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/user?search_query=${search}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
 const Student = {
   GetStudentByClass: (
     token: string | null,
@@ -97,11 +108,12 @@ const Student = {
     limit: number | null,
     classId: string | null,
     attDate: string | null,
+    academic: string | null,
     withAssign: string | null = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-attendance?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&att_date=${attDate}&with_assign=${withAssign}`,
+      url: `/api/student-attendance?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&att_date=${attDate}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -166,13 +178,14 @@ const Task = {
     token: string | null,
     search: string | null,
     classId: string | null,
+    academic: string | null,
     page: number | null,
     limit: number | null,
     withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/student-task?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
+      url: `/api/student-task?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -211,11 +224,12 @@ const Task = {
   GetAllMapel: (
     token: string | null,
     page: number | null,
+    withAssign: string | null = "Y",
     limit: number | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/subject?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/subject?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -333,12 +347,13 @@ const Task = {
 const Kalender = {
   GetAllDetail: (
     token: string | null,
+    academic: string | null,
     page: number | null,
     limit: number | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/edu-calendar-detail?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/edu-calendar-detail?academic=${academic}&search_query=&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -356,12 +371,13 @@ const Kalender = {
     }),
   GetAllTopik: (
     token: string | null,
+    academic: string | null,
     page: number | null,
     limit: number | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/edu-calendar?search_query=&page=${page}&limit=${limit}`,
+      url: `/api/edu-calendar?academic=${academic}&search_query=&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -984,13 +1000,14 @@ const DashboardSiswa = {
   getAllOverView: (
     token: string | null,
     classId: string | null,
+    academic: string | null,
     page: number | null,
     limit: number | null,
     withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/overview?search_query=&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
+      url: `/api/overview?academic=${academic}&search_query=&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1389,13 +1406,14 @@ const ForCountryDetail = {
   showAll: (
     token: string | null,
     search?: string,
+    academic?: string | null,
     page: number = 0,
     limit: number = 10,
     withAssign: string = "N"
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/for-country-detail?search_query=${search}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
+      url: `/api/for-country-detail?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1610,6 +1628,64 @@ const AchievementSiswa = {
     }),
 };
 
+const ForCountry = {
+  create: (token: string | null, data: any) =>
+    instance({
+      method: "POST",
+      url: "/api/for-country/create",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  showAll: (
+    token: string | null,
+    search?: string | null,
+    academic?: string | null,
+    page: number = 0,
+    limit: number = 10
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/for-country?search_query=${search}&academic=${academic}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/for-country/show/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  update: (
+    token: string | null,
+    id: string | number | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: "/api/for-country/update/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  delete: (
+    token: string | null,
+    id: string | number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: "/api/for-country/delete/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
 const Year = {
   getYear: (
     token: string | null,
@@ -1632,6 +1708,7 @@ const Year = {
 };
 
 export {
+  User,
   Auth,
   Task,
   Year,
@@ -1650,4 +1727,5 @@ export {
   DashboardKeuangan,
   CustomerCare,
   AchievementSiswa,
+  ForCountry,
 };

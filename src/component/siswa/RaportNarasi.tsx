@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Modal from "../modal";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { Task, Raport } from "../../midleware/api";
-import { Store, useProps } from "../../store/Store";
+import { globalStore, Store, useProps } from "../../store/Store";
 import { FaGear } from "react-icons/fa6";
 import { PiNotePencilBold } from "react-icons/pi";
 import { BiTrash } from "react-icons/bi";
@@ -25,6 +25,7 @@ const schema = Yup.object({
 });
 
 const RaportNarasi = () => {
+  const { academicYear } = globalStore();
   const { token } = Store();
   const { setKelasProps, kelasProps } = useProps();
   const [kelas, setKelas] = useState<any[]>([]);
@@ -42,11 +43,10 @@ const RaportNarasi = () => {
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
     classId: "",
-    semester: "1",
+    semester: "",
     page: 0,
     limit: 10,
   });
-  const [academic, setAcademic] = useState("");
 
   const handleFilter = (key: string, value: any) => {
     const obj = {
@@ -75,7 +75,7 @@ const RaportNarasi = () => {
   useEffect(() => {
     getStudent();
     getKategori();
-  }, [filter, academic]);
+  }, [filter, academicYear]);
 
   useEffect(() => {
     getClass();
@@ -113,7 +113,7 @@ const RaportNarasi = () => {
         filter.page,
         filter.limit,
         "Y",
-        academic
+        academicYear
       );
 
       sessionStorage.setItem("idClass", filter.classId);
@@ -311,15 +311,6 @@ const RaportNarasi = () => {
     <div>
       <div className="w-full flex justify-between gap-2">
         <div className="join">
-          <select
-            className="select select-bordered w-full"
-            value={academic}
-            onChange={(e) => setAcademic(e.target.value)}
-          >
-            <option selected>Tahun Ajaran</option>
-            <option value="2023/2024">2023/2024</option>
-            <option value="2024/2025">2024/2025</option>
-          </select>
           <select
             className="select join-item w-32 max-w-md select-bordered"
             value={filter.semester}
