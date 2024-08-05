@@ -3,14 +3,13 @@ import { useEffect, useState } from "react";
 import { FaCheck, FaSearch, FaTrash } from "react-icons/fa";
 import { MdInsertPhoto } from "react-icons/md";
 import { Class, Student, TagihanSiswa } from "../../midleware/api";
-import { Store } from "../../store/Store";
+import { globalStore, Store } from "../../store/Store";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { Input, Select } from "../../component/Input";
 import { Link, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { getAcademicYears, getCurrentAcademicYear } from "../../utils/common";
 import {
   IpageMeta,
   PaginationControl,
@@ -31,6 +30,7 @@ const tambahSiswaSchema = Yup.object().shape({
 
 const DetailJenisPembayaran = () => {
   const { token } = Store(),
+    { academicYear } = globalStore(),
     { id: billId } = useParams(),
     modalFormTambah = "form-tambah-siswa",
     modalBuktiBayar = "form-bukti-bayar";
@@ -104,7 +104,7 @@ const DetailJenisPembayaran = () => {
       level: "",
       class_id: 0,
       student_id: 0,
-      academic_year: getCurrentAcademicYear(),
+      academic_year: academicYear,
       nis_prefix: "",
     },
     validateOnChange: false,
@@ -149,6 +149,10 @@ const DetailJenisPembayaran = () => {
       }
     },
   });
+
+  useEffect(() => {
+    tambahSiswaForm.setFieldValue("academic_year", academicYear);
+  }, [academicYear]);
 
   const resetForm = () => {
     tambahSiswaForm.resetForm();
@@ -333,14 +337,8 @@ const DetailJenisPembayaran = () => {
       <Modal id={modalFormTambah} onClose={() => resetForm()}>
         <form onSubmit={tambahSiswaForm.handleSubmit}>
           <h3 className="text-xl font-bold mb-6">Tambah Siswa</h3>
-          <Select
-            label="Tahun pembelajaran"
-            name="academic_year"
-            options={getAcademicYears()}
-            value={tambahSiswaForm.values.academic_year}
-            onChange={tambahSiswaForm.handleChange}
-            errorMessage={tambahSiswaForm.errors.academic_year}
-          />
+
+          <Input label="Tahun pelajaran" value={academicYear} disabled />
 
           <Select
             label="Jenjang"
