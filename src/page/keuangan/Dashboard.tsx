@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   FaChartPie,
   FaExclamationTriangle,
+  FaFileExcel,
   FaMoneyBillWave,
   FaWallet,
 } from "react-icons/fa";
@@ -19,6 +20,24 @@ import ReactApexChart from "react-apexcharts";
 const Dashboard = () => {
   const { token } = Store();
 
+  // filters
+  const [postPayments, setPostPayments] = useState<any[]>([]);
+
+  const [postPaymentId, setPostPaymentId] = useState(""),
+    [startDate, setStartDate] = useState(""),
+    [endDate, setEndDate] = useState("");
+
+  const getPostPayments = async () => {
+    try {
+      const res = await PosPembayaran.showAll(token, "", 0, 1000);
+      setPostPayments(res.data?.data?.result ?? []);
+    } catch {}
+  };
+
+  useEffect(() => {
+    getPostPayments();
+  }, []);
+
   // cards
   const [totalIncome, setTotalIncome] = useState(0),
     [monthIncome, setMonthIncome] = useState(0),
@@ -31,7 +50,12 @@ const Dashboard = () => {
 
   const getCards = async () => {
     try {
-      const res = await DashboardKeuangan.getCards(token);
+      const res = await DashboardKeuangan.getCards(
+        token,
+        startDate,
+        endDate,
+        postPaymentId
+      );
       const data = res.data;
 
       setTotalIncome(data.income?.total?.sum ?? 0);
@@ -45,26 +69,9 @@ const Dashboard = () => {
 
   useEffect(() => {
     getCards();
-  }, []);
+  }, [startDate, endDate, postPaymentId]);
 
   // charts
-  const [postPayments, setPostPayments] = useState<any[]>([]);
-
-  const [postPaymentId, setPostPaymentId] = useState(""),
-    [chartStartDate, setChartStartDate] = useState(""),
-    [chartEndDate, setChartEndDate] = useState("");
-
-  const getPostPayments = async () => {
-    try {
-      const res = await PosPembayaran.showAll(token, "", 0, 1000);
-      setPostPayments(res.data?.data?.result ?? []);
-    } catch {}
-  };
-
-  useEffect(() => {
-    getPostPayments();
-  }, []);
-
   const [chartOptions, setChartOptions] = useState<ApexOptions>({
     chart: {
       type: "area",
@@ -108,8 +115,8 @@ const Dashboard = () => {
     try {
       const res = await DashboardKeuangan.getChart(
         token,
-        chartStartDate,
-        chartEndDate,
+        startDate,
+        endDate,
         postPaymentId
       );
 
@@ -129,19 +136,54 @@ const Dashboard = () => {
 
   useEffect(() => {
     getCharts();
-  }, [chartStartDate, chartEndDate, postPaymentId]);
+  }, [startDate, endDate, postPaymentId]);
+
+  const handleDownload = () => {};
 
   return (
     <>
       <div className="w-full p-5">
+        <div className="w-full flex items-center justify-end gap-3 flex-wrap">
+          <div>
+            <Select
+              placeholder="Pos Keuangan"
+              keyValue="id"
+              keyDisplay="name"
+              value={postPaymentId}
+              onChange={(e) => setPostPaymentId(e.target.value)}
+              options={postPayments}
+            />
+          </div>
+          <div className="flex items-center">
+            <Input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+            <div className="w-4 h-1 bg-gray-400 relative -top-1"></div>
+            <Input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={handleDownload}
+            className="btn bg-[#1d6f42] text-white"
+          >
+            <FaFileExcel size={18} />
+            Export
+          </button>
+        </div>
+
         <div className="w-full flex flex-wrap gap-3 mt-3">
           <div className="stat w-fit grow bg-base-100 rounded-lg border">
             <div className="stat-figure text-primary">
-              <FaWallet size={28} />
+              <FaMoneyBillWave size={28} />
             </div>
-            <div className="stat-title">Total pendapatan</div>
+            <div className="stat-title">Pendapatan bulan ini</div>
             <div className="stat-value overflow-hidden text-ellipsis text-primary">
-              {moneyFormat(totalIncome)}
+              {moneyFormat(monthIncome)}
             </div>
           </div>
           <div className="stat w-fit grow bg-base-100 rounded-lg border">
@@ -155,11 +197,11 @@ const Dashboard = () => {
           </div>
           <div className="stat w-fit grow bg-base-100 rounded-lg border">
             <div className="stat-figure text-primary">
-              <FaMoneyBillWave size={28} />
+              <FaWallet size={28} />
             </div>
-            <div className="stat-title">Pendapatan bulan ini</div>
+            <div className="stat-title">Total pendapatan</div>
             <div className="stat-value overflow-hidden text-ellipsis text-primary">
-              {moneyFormat(monthIncome)}
+              {moneyFormat(totalIncome)}
             </div>
           </div>
           <div className="stat w-fit grow bg-base-100 rounded-lg border">
@@ -186,33 +228,6 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
           <div className="col-span-2">
-            {/* chart filter  */}
-            <div className="w-full flex items-center justify-end gap-3 flex-wrap">
-              <div>
-                <Select
-                  placeholder="Pos Keuangan"
-                  keyValue="id"
-                  keyDisplay="name"
-                  value={postPaymentId}
-                  onChange={(e) => setPostPaymentId(e.target.value)}
-                  options={postPayments}
-                />
-              </div>
-              <div className="flex items-center">
-                <Input
-                  type="date"
-                  value={chartStartDate}
-                  onChange={(e) => setChartStartDate(e.target.value)}
-                />
-                <div className="w-4 h-1 bg-gray-400 relative -top-1"></div>
-                <Input
-                  type="date"
-                  value={chartEndDate}
-                  onChange={(e) => setChartEndDate(e.target.value)}
-                />
-              </div>
-            </div>
-
             <div className="w-full bg-white p-3 rounded-md">
               <div id="chart" className="">
                 <ReactApexChart
