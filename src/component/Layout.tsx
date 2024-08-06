@@ -47,7 +47,7 @@ const Layout: FC<Props> = ({ children }) => {
             <Sidebar />
           </div>
           <div
-            className="w-full"
+            className="w-full overflow-x-hidden"
             style={{
               ...(Role !== 5
                 ? { backgroundImage: `url('${bg}')`, backgroundSize: "cover" }

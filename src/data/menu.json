@@ -93,7 +93,7 @@
         "badge": "dev",
         "title": "Pelatihan",
         "icon": "<FaRegStar />",
-        "url": "/guru/pelatihan",
+        "url": "/karyawan/daftar-pelatihan",
         "subtitle": []
     },
     {
