@@ -15,12 +15,12 @@
         "subtitle": [
             {
                 "name": "Kehadiran",
-                "badge": "on progress",
+                "hide": true,
                 "url": "/guru/rekap-kehadiran"
             },
             {
                 "name": "Pengajuan Cuti / Izin",
-                "badge": "on progress",
+                "badge": "dev",
                 "url": "/karyawan/daftar-cuti-izin"
             }
         ]
@@ -89,7 +89,8 @@
     },
     {
         "submenu": false,
-        "hide": true,
+        "hide": false,
+        "badge": "dev",
         "title": "Pelatihan",
         "icon": "<FaRegStar />",
         "url": "/guru/pelatihan",
