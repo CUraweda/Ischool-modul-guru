@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   IpageMeta,
   PaginationControl,
@@ -27,6 +27,8 @@ const statuses = [
   "Tuntas",
 ];
 
+const evidenceExts = ["jpeg", "jpg", "png"];
+
 const schema = Yup.object().shape({
   id: Yup.string().optional(),
   type: Yup.string().required("Nama pelatihan harus diisi"),
@@ -41,10 +43,32 @@ const schema = Yup.object().shape({
   location: Yup.string().required("Lokasi harus diisi"),
 });
 
+const schemaEvidence = Yup.object().shape({
+  description: Yup.string().required("Deskripsi harus diisi"),
+  file: Yup.mixed<File>()
+    .required()
+    .test(
+      "is-valid-type",
+      "File harus pdf atau gambar",
+      (value) =>
+        !value ||
+        (value &&
+          evidenceExts.includes(
+            value.name.split(".").pop()?.toLowerCase() || ""
+          ))
+    )
+    .test(
+      "is-valid-size",
+      "Ukuran melebihi batas 5MB",
+      (value) => !value || (value && value.size <= 5000000)
+    ),
+});
+
 const DaftarPelatihan = () => {
   const {} = Store(),
     modalFormId = "form-pelatihan",
-    modalAttendance = "form-kehadiran-pelatihan";
+    modalAttendance = "form-kehadiran-pelatihan",
+    modalEvidence = "form-bukti";
 
   // filter
   const [search, setSearch] = useState("");
@@ -67,7 +91,7 @@ const DaftarPelatihan = () => {
 
   // retrieve data
   const [dataList, setDataList] = useState<any[]>([
-    // temp
+    // temp-data
     {
       id: 0,
       title: "Eksplorasi Bakat Anak",
@@ -210,11 +234,24 @@ const DaftarPelatihan = () => {
   };
 
   // get attendance evidences
+  const [attEvidences, setAttEvidences] = useState<any[]>([]);
+
   const [isGetAttEvLoading, setIsGetAttEvLoading] = useState(false);
   const getAttendEvidences = (id: string) => {
     setIsGetAttEvLoading(true);
     try {
       console.log(id);
+      setAttEvidences(
+        // temp-data
+        [
+          {
+            img_path:
+              "https://asset-2.tstatic.net/tribunnewswiki/foto/bank/images/kampus-uniga-malang-53.jpg",
+            description: "Datang...",
+            created_at: "2024-08-05T12:30:00",
+          },
+        ]
+      );
       openModal(modalAttendance);
     } catch (error) {
       Swal.fire({
@@ -227,12 +264,143 @@ const DaftarPelatihan = () => {
     }
   };
 
+  const [evidencePreview, setEvidencePreview] = useState<string | undefined>(
+    undefined
+  );
+  const inpEvidence = useRef<HTMLInputElement>(null);
+
+  const formEvidence = useFormik({
+    initialValues: {
+      description: "",
+      file: "",
+    },
+    validationSchema: schemaEvidence,
+    validateOnChange: false,
+    onSubmit: async () => {},
+  });
+
+  const handleResetEvidence = () => {
+    formEvidence.resetForm();
+    setEvidencePreview(undefined);
+    if (inpEvidence.current) inpEvidence.current.value = "";
+  };
+
+  useEffect(() => {
+    if (formEvidence.values.file) {
+      try {
+        // @ts-ignore
+        setEvidencePreview(URL.createObjectURL(formEvidence.values.file));
+      } catch {}
+    }
+  }, [formEvidence.values.file]);
+
+  // delete
+  const [isDelEvidenceLoading, setIsDelEvidenceLoading] = useState(false);
+  const deleteEvidence = async (id: string) => {
+    setIsDelEvidenceLoading(true);
+
+    try {
+      // fetch delete one
+      console.log(id);
+
+      getDataList();
+    } catch {
+    } finally {
+      setIsDelEvidenceLoading(false);
+    }
+  };
+
   return (
     <>
+      <Modal id={modalEvidence} onClose={() => handleResetEvidence()}>
+        <h3 className="text-xl font-bold mb-6">Tambah Bukti Kehadiran</h3>
+
+        <form onSubmit={formEvidence.handleSubmit}>
+          <div
+            onClick={() => inpEvidence.current?.click()}
+            className="w-40 h-40 mb-3"
+          >
+            {evidencePreview ? (
+              <img
+                src={evidencePreview}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full border border-dashed border-neutral-300 flex rounded">
+                <p className="m-auto text-sm text-neutral-500">Pratinjau</p>
+              </div>
+            )}
+          </div>
+
+          <Input
+            label="File"
+            type="file"
+            name="file"
+            ref={inpEvidence}
+            accept={evidenceExts.map((ext) => "." + ext).join(", ")}
+            // value={form.values.file}
+            onChange={(e) => {
+              if (e.target.files) {
+                formEvidence.setFieldValue("file", e.target.files[0]);
+              }
+            }}
+            errorMessage={formEvidence.errors.file}
+          />
+
+          <Textarea
+            label="Deskripsi"
+            name="description"
+            value={formEvidence.values.description}
+            onChange={formEvidence.handleChange}
+            errorMessage={formEvidence.errors.description}
+          />
+
+          <button type="submit" className="btn btn-primary w-full mt-10">
+            {formEvidence.isSubmitting ? "Menyimpan..." : "Simpan"}
+          </button>
+        </form>
+      </Modal>
       <Modal id={modalAttendance}>
         <h3 className="text-xl font-bold mb-6">Bukti Kehadiran</h3>
 
-        <button className="btn btn-primary w-full mt-10">Tambah</button>
+        <div className="flex flex-col overflow-x-auto">
+          {attEvidences.map((dat, i) => (
+            <>
+              <div key={i} className="flex items-center gap-3">
+                <div className="avatar">
+                  <div className="w-24 rounded">
+                    <img src={dat.img_path} />
+                  </div>
+                </div>
+                <div>
+                  <p>{dat.description}</p>
+                  <p className="text-sm text-neutral-500">
+                    {dat.created_at
+                      ? formatTime(dat.created_at, "dddd, DD MMMM YYYY HH:mm")
+                      : "-"}
+                  </p>
+                  <button
+                    disabled={isDelEvidenceLoading}
+                    onClick={() => deleteEvidence(dat.id)}
+                    className="btn btn-error btn-xs btn-outline mt-2"
+                  >
+                    Hapus
+                  </button>
+                </div>
+              </div>
+              <div className="divider"></div>
+            </>
+          ))}
+          <div className="flex gap-3"></div>
+        </div>
+
+        <button
+          className="btn btn-primary w-full"
+          onClick={() => openModal(modalEvidence)}
+        >
+          Tambah
+        </button>
       </Modal>
 
       <Modal id={modalFormId} onClose={handleReset}>
