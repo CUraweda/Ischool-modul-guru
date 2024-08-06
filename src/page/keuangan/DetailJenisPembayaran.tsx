@@ -523,8 +523,6 @@ const DetailJenisPembayaran = () => {
                           className="btn btn-ghost btn-sm join-item bg-success text-white tooltip"
                           data-tip="Terima"
                           disabled={
-                            (dat.evidence_path == null &&
-                              dat.paidoff_at == null) ||
                             dat.status?.toLowerCase() == "lunas" ||
                             loadingConfirm
                           }

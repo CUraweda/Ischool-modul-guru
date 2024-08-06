@@ -1311,7 +1311,7 @@ const TagihanSiswa = {
     startPaid?: string,
     endPaid?: string,
     status?: string,
-    nisPrefix?: string,
+    nisPrefix?: string
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
@@ -1481,10 +1481,15 @@ const ForCountryDetail = {
 };
 
 const DashboardKeuangan = {
-  getCards: (token: string | null): AxiosPromise<any> =>
+  getCards: (
+    token: string | null,
+    startDate: string,
+    endDate: string,
+    postPaymentId: string
+  ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `api/dashboard/admin-keuangan`,
+      url: `api/dashboard/admin-keuangan?start_date=${startDate}&end_date=${endDate}&post_payment_id=${postPaymentId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
