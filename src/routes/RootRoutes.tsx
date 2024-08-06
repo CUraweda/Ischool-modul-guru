@@ -47,6 +47,9 @@ const PengajuanCutiHRD = lazy(() => import("../page/hrd/PengajuanCuti"));
 
 const Profile = lazy(() => import("../page/profile"));
 
+// karyawan
+const DaftarCutiIzin = lazy(() => import("../page/karyawan/DaftarCutiIzin"))
+
 const RootRoutes = () => {
   return (
     <BrowserRouter>
@@ -378,6 +381,18 @@ const RootRoutes = () => {
             <Suspense fallback={<Loading />}>
               <Layout>
                 <PengajuanCutiHRD />
+              </Layout>
+            </Suspense>
+          }
+        />
+
+        {/* karyawan */}
+        <Route
+          path="/karyawan/daftar-cuti-izin"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <DaftarCutiIzin />
               </Layout>
             </Suspense>
           }

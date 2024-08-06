@@ -23,6 +23,7 @@ interface Menu {
 
 type subtitle = {
   name: string;
+  badge?: string;
   url: string;
 };
 
@@ -153,7 +154,14 @@ const Sidebar = () => {
                                       handleMenuItemClick(Item.url)
                                     }
                                   >
-                                    <p>{Item.name}</p>
+                                    <p>
+                                      {Item.name}
+                                      {Item.badge && (
+                                        <span className="badge badge-warning badge-sm">
+                                          {Item.badge}
+                                        </span>
+                                      )}
+                                    </p>
                                   </li>
                                 </Link>
                               )

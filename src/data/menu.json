@@ -8,18 +8,20 @@
     },
     {
         "submenu": true,
-        "hide": true,
+        "hide": false,
         "title": "Kehadiran",
         "icon": "<FaPersonCircleCheck />",
         "url": "/guru/invenstment",
         "subtitle": [
             {
                 "name": "Kehadiran",
+                "badge": "on progress",
                 "url": "/guru/rekap-kehadiran"
             },
             {
                 "name": "Pengajuan Cuti / Izin",
-                "url": "/guru/pengajuan-cuti"
+                "badge": "on progress",
+                "url": "/karyawan/daftar-cuti-izin"
             }
         ]
     },
