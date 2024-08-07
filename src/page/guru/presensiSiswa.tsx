@@ -137,7 +137,7 @@ const PresensiSiswa = () => {
             const dataRest = {
               student_class_id: item.id,
               att_date: new Date(date).setHours(0, 0, 0, 0),
-              remark: item.transportasi ? item.transportasi : "🚶‍♂️Jalan Kaki",
+              remark: item.transportasi ? item.transportasi : "🚗antar jemput",
               status: item.presensi ? item.presensi : "Hadir",
               semester: filter.semester ? filter.semester : "1",
             };
@@ -216,7 +216,7 @@ const PresensiSiswa = () => {
     const response = await Student.GetPresensiById(token, id);
     const data = response.data.data[0];
     setPresensi(data.status);
-    setTransport(data.remark || "🚶‍♂️jalan kaki"); // Set default value for transport if it's null
+    setTransport(data.remark || "🚗antar jemput"); // Set default value for transport if it's null
     setIdPresensi(id);
     setIdSiswa(data.student_class_id);
   };
@@ -235,7 +235,7 @@ const PresensiSiswa = () => {
 
       // Jika statusnya adalah "Hadir", tambahkan remark
       if (presensi === "Hadir") {
-        data.remark = transport || "🚶‍♂️jalan kaki";
+        data.remark = transport || "🚗antar jemput";
       } else {
         data.remark = "";
       }
@@ -382,8 +382,8 @@ const PresensiSiswa = () => {
               value={filter.classId}
               onChange={(e) => handleFilter("classId", e.target.value)}
             >
-              <option disabled selected>
-                Kelas
+              <option>
+                Pilih Kelas
               </option>
               {kelas?.map((item: any, index: number) => (
                 <option
@@ -410,8 +410,8 @@ const PresensiSiswa = () => {
               value={filter.semester}
               onChange={(e) => handleFilter("semester", +e.target.value)}
             >
-              <option disabled selected>
-                Semester
+              <option >
+               Pilih Semester
               </option>
               <option value={1}>Ganjil</option>
               <option value={2}>Genap </option>
@@ -537,9 +537,9 @@ const PresensiSiswa = () => {
                           item.presensi == "Izin"
                         }
                       >
+                        <option value="🚗antar jemput">Antar Jemput</option>
                         <option value="🚶‍♂️jalan kaki">Jalan Kaki</option>
                         <option value="🚌kendaraan umum">Kendaraan Umum</option>
-                        <option value="🚗antar jemput">Antar Jemput</option>
                         <option value="🚲sepeda">Sepeda</option>
                       </select>
                     </td>
