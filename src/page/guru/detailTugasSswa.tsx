@@ -109,7 +109,6 @@ const DetailTugasSswa = () => {
     let modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
-      showFileTugas();
     }
   };
 
@@ -165,6 +164,11 @@ const DetailTugasSswa = () => {
     setIdSiswa(idSiswa);
     showModal("add-feedback-detail");
     setFeedback(feed);
+  };
+
+  const handleModal = () => {
+    showModal("show-file");
+    showFileTugas();
   };
 
   return (
@@ -235,7 +239,7 @@ const DetailTugasSswa = () => {
                       <td>
                         <button
                           className="btn btn-sm btn-ghost bg-green-600 text-white text-xl join-item"
-                          onClick={() => showModal("show-file")}
+                          onClick={() => handleModal()}
                         >
                           <BsEye />
                         </button>
@@ -280,7 +284,7 @@ const DetailTugasSswa = () => {
                             : "Mandiri"}
                       </td>
                       <td>{formatDate(item?.createdAt)}</td>
-                      <td className="join text-white">
+                      <td className="flex items-center gap-2">
                         <button
                           className="btn btn-sm btn-ghost bg-blue-600 text-xl join-item tooltip"
                           data-tip="Download"
