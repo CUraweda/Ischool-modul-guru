@@ -116,7 +116,7 @@ const DataSiswa = () => {
     setStudentPayments([]);
 
     try {
-      const res = await TagihanSiswa.showByStudentId(token, studentInModal?.id);
+      const res = await TagihanSiswa.showByStudentId(token, studentInModal.student_id);
       setStudentPayments(res.data.data);
       openModal(modalDetailPembayaranId);
     } catch (error) {
