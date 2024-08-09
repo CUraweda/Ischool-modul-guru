@@ -925,27 +925,23 @@ const AdmSiswa = () => {
                 <option disabled selected>
                   Pick one
                 </option>
-                {siswa === "all-student" ? (
                   <>
                     <option value={2}>Project Kelompok</option>
                     <option value={1}>WWP</option>
                     <option value={3}>Mandiri</option>
                   </>
-                ) : (
-                  <option value={3}>Mandiri</option>
-                )}
               </select>
               <label className="mt-4 w-full font-bold">Periode</label>
-              <div className="flex gap-2 justify-center items-center">
+              <div className="w-full flex gap-2 justify-center items-center">
                 <input
                   type="datetime-local"
-                  className="input input-bordered bg-white"
+                  className="input input-bordered bg-white w-2/4"
                   onChange={(e) =>
                     formik.setFieldValue("startDate", e.target.value)
                   }
                 />
                 <span>-</span>
-                <input
+              <input
                   type="datetime-local"
                   value={formik.values.endDate}
                   className="input input-bordered bg-white"
@@ -974,7 +970,7 @@ const AdmSiswa = () => {
                 <label className=" font-bold">Upload File</label>
                 <div
                   className="tooltip"
-                  data-tip="Only PDF, JPG, JPEG, PNG are allowed"
+                  data-tip="Format Penugasan PDF, JPG, JPEG, PNG"
                 >
                   <IoInformationCircleOutline />
                 </div>
