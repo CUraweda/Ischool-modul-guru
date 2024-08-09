@@ -23,6 +23,15 @@ const Auth = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  EditProfile: (token: string | null, id: any, data: any): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/employee/update/${id}`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 const User = {
@@ -851,11 +860,12 @@ const Raport = {
   generatePdfNarasi: (
     token: string | null,
     id: string | null,
-    smt: string | null
+    smt: string | null,
+    report_id: string | null
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/narrative-report/generate/${id}?semester=${smt}`,
+      url: `/api/narrative-report/generate/${id}?semester=${smt}&report_id=${report_id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

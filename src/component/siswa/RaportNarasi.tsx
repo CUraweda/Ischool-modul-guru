@@ -287,9 +287,9 @@ const RaportNarasi = () => {
     }
   };
 
-  const hanldegeneratePdf = async (id: string) => {
+  const hanldegeneratePdf = async (id: string, report_id: string) => {
     try {
-      await Raport.generatePdfNarasi(token, id, formik.values.smt);
+      await Raport.generatePdfNarasi(token, id, formik.values.smt, report_id);
       Swal.fire({
         position: "center",
         icon: "success",
@@ -433,7 +433,9 @@ const RaportNarasi = () => {
                       <button
                         className={`btn join-item btn-ghost btn-sm text-xl text-white bg-cyan-500 tooltip`}
                         data-tip="Generate PDF"
-                        onClick={() => hanldegeneratePdf(item.studentclass.id)}
+                        onClick={() =>
+                          hanldegeneratePdf(item.studentclass.id, item.id)
+                        }
                       >
                         <FaFilePdf />
                       </button>
