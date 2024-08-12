@@ -17,12 +17,15 @@ interface Menu {
   icon: string;
   roles?: number[];
   hide?: boolean;
+  badge?: string;
   submenu: boolean;
   subtitle?: subtitle[];
 }
 
 type subtitle = {
   name: string;
+  badge?: string;
+  hide?: boolean;
   url: string;
 };
 
@@ -137,10 +140,16 @@ const Sidebar = () => {
                               {iconMapping[item.icon]}
                             </span>
                             <a>{item.title}</a>
+                            {item.badge && (
+                              <span className="badge badge-warning badge-sm">
+                                {item.badge}
+                              </span>
+                            )}
                           </summary>
                           <ul>
-                            {item.subtitle?.map(
-                              (Item: subtitle, Index: number) => (
+                            {item.subtitle
+                              ?.filter((s) => !s.hide)
+                              .map((Item: subtitle, Index: number) => (
                                 <Link to={Item.url} key={`link-` + Index}>
                                   <li
                                     key={`subtitle-` + Index}
@@ -153,11 +162,17 @@ const Sidebar = () => {
                                       handleMenuItemClick(Item.url)
                                     }
                                   >
-                                    <p>{Item.name}</p>
+                                    <p>
+                                      {Item.name}
+                                      {Item.badge && (
+                                        <span className="badge badge-warning badge-sm">
+                                          {Item.badge}
+                                        </span>
+                                      )}
+                                    </p>
                                   </li>
                                 </Link>
-                              )
-                            )}
+                              ))}
                           </ul>
                         </details>
                       </li>
@@ -176,6 +191,11 @@ const Sidebar = () => {
                               {iconMapping[item.icon]}
                             </span>
                             <p>{item.title}</p>
+                            {item.badge && (
+                              <span className="badge badge-warning badge-sm">
+                                {item.badge}
+                              </span>
+                            )}
                           </div>
                         </li>
                       </Link>
