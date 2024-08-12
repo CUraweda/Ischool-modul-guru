@@ -14,7 +14,9 @@ const RaportAll = () => {
   const { setKelasProps } = useProps();
   const [Class, setClass] = useState<any[]>([]);
   const [siswa, setSiswa] = useState<any[]>([]);
+  // const [rapot, setRapot] = useState<any[]>([]);
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
+  const [selectedReports, setSelectedReports] = useState<any[]>([]);
   const [dataRaport, setDataRaport] = useState<any>([]);
 
   const showModal = (props: string) => {
@@ -121,6 +123,48 @@ const RaportAll = () => {
     getDataRaport();
   };
 
+  const confirmDelete = async () => {
+    try {
+      const result = await Swal.fire({
+        title: "Apakah anda yakin?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Ya!",
+        cancelButtonText: "Tidak",
+      });
+  
+      if (result.isConfirmed) {
+        await deleteRaport();
+        setSelectedReports([]);
+        Swal.fire({
+          title: "Data raport sukses terhapus!",
+          icon: "success",
+          showCancelButton: false,
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Ok!",
+        });
+      }
+    } catch (error) {
+      console.error('Terjadi kesalahan saat konfirmasi penghapusan:', error);
+    }
+  };
+
+  const deleteRaport = async () => {
+    if (selectedReports) {
+      const createPromise = selectedReports.map((item: any) => {
+        return hapus(item.id);
+      });
+      await Promise.all(createPromise);
+    }
+  };
+
+  const hapus = async (id: any) => {
+    await Raport.deleteStudentRaport(token, id);
+    getDataRaport();
+  };
+
   const downloadTugas = async (path: string) => {
     try {
       const response = await Task.downloadTugas(token, path);
@@ -184,17 +228,45 @@ const RaportAll = () => {
             <option value={2}>Genap</option>
           </select>
         </div>
-        <button
-          className="btn btn-ghost bg-green-500 text-white"
-          onClick={() => showModal("add-raport-siswa")}
-        >
-          Tambah
-        </button>
+        <div className="flex justify-end gap-2">
+          <button
+            className="btn btn-ghost bg-green-500 text-white"
+            onClick={() => showModal("add-raport-siswa")}
+          >
+            Tambah
+          </button>
+          <button
+            className="btn btn-ghost bg-red-600 text-white"
+            onClick={confirmDelete}
+          >
+            Hapus
+          </button>
+        </div>
       </div>
+      <div className="mt-5">
+      <h2>Selected Reports (JSON)</h2>
+      <pre>{JSON.stringify(selectedReports.map(item => item.id), null, 2)}</pre>
+    </div>
       <div className="overflow-x-auto mt-5">
         <table className="table table-md">
           <thead>
             <tr className="bg-blue-300">
+              <th>
+                <input
+                  type="checkbox"
+                  className="checkbox"
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      // Set all reports to selected
+                      setSelectedReports(dataRaport); // Menggunakan dataRaport yang merupakan daftar semua item di tabel
+                    } else {
+                      // Deselect all reports
+                      setSelectedReports([]);
+                    }
+                  }}
+                />
+              </th>
+
               <th>No</th>
               <th>Nama Siswa</th>
               <th>Semester</th>
@@ -209,6 +281,26 @@ const RaportAll = () => {
           <tbody>
             {dataRaport?.map((item: any, index: number) => (
               <tr key={index}>
+                <th>
+                  <input
+                    checked={selectedReports.some(
+                      (report) => report.id === item.id
+                    )}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedReports([...selectedReports, item]);
+                      } else {
+                        setSelectedReports(
+                          selectedReports.filter(
+                            (report) => report.id !== item.id
+                          )
+                        );
+                      }
+                    }}
+                    type="checkbox"
+                    className="form-checkbox h-5 w-5 text-blue-600"
+                  />
+                </th>
                 <th>{index + 1}</th>
                 <td>{item?.studentclass.student.full_name}</td>
                 <td>{item?.semester == 1 ? "Ganjil" : "Genap"}</td>
@@ -265,7 +357,7 @@ const RaportAll = () => {
                     </span>
                   </button>
                 </td>
-                <td className="flex items-center justify-center">
+                <td className="flex items-center justify-between">
                   <button
                     className={`btn btn-sm join-item bg-orange-500 text-white tooltip ${
                       !item?.number_path ||
@@ -280,6 +372,15 @@ const RaportAll = () => {
                       <FaCodeMerge />
                     </span>
                   </button>
+
+                  {/* <button
+                    className={`btn btn-sm join-item bg-red-600 text-white tooltip`}
+                    onClick={() => downloadRaportMerge(item?.id)}
+                  >
+                    <span className="text-xl">
+                      <FaRegTrashAlt />
+                    </span>
+                  </button> */}
                 </td>
                 {/* <td>
                   <button

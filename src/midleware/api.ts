@@ -526,6 +526,7 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
+
   createStudentRaport: (token: string | null, data: any): AxiosPromise<any> =>
     instance({
       method: "POST",
@@ -535,6 +536,16 @@ const Raport = {
       },
       data,
     }),
+
+  deleteStudentRaport: (token: string | null, id: any): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: `/api/student-report/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
   updateStudentReportAccess: (
     token: string | null,
     id: string | null
