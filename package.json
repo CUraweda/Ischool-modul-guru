@@ -12,6 +12,7 @@
   "dependencies": {
     "@devexpress/dx-react-scheduler-material-ui": "^4.0.8",
     "@hookform/resolvers": "^3.4.2",
+    "@react-pdf-viewer/core": "^3.12.0",
     "@wojtekmaj/react-daterange-picker": "^5.5.0",
     "apexcharts": "^3.49.1",
     "axios": "^1.6.8",
@@ -30,6 +31,7 @@
     "react-hook-form": "^7.51.5",
     "react-icons": "^5.0.1",
     "react-leaflet": "^4.2.1",
+    "react-pdf": "^9.1.0",
     "react-router-dom": "^6.22.1",
     "react-webcam": "^7.2.0",
     "rsuite": "^5.54.0",
