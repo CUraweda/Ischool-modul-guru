@@ -1,4 +1,5 @@
 import { useState, useEffect, ChangeEvent } from "react";
+import { Document, Page } from "react-pdf";
 import { useNavigate } from "react-router-dom";
 import { FiPlus } from "react-icons/fi";
 import Modal from "../../component/modal";
@@ -47,9 +48,11 @@ const AdmSiswa = () => {
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
   const [feedback, setFeedback] = useState<string>("");
   const [idTugas, setIdTugas] = useState<string>("");
-  const [showFile, setShowFile] = useState<any>();
+  // const [showFile, setShowFile] = useState<any>();
   const [level, setLevel] = useState<string>("");
-
+  const [showFile, setShowFile] = useState<{ url?: string; isPdf: boolean }>({
+    isPdf: false,
+  });
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
     classId: "",
@@ -492,7 +495,11 @@ const AdmSiswa = () => {
       const response = await Task.downloadTugas(token, path);
       const urlParts = path.split("/");
       const fileName = urlParts.pop() || "";
-      const blobUrl = window.URL.createObjectURL(response.data);
+      const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Simpan URL blob ke state
+
+      // Tetap menyediakan opsi download jika diperlukan
       const link = document.createElement("a");
       link.href = blobUrl;
       link.setAttribute("download", fileName);
@@ -503,27 +510,40 @@ const AdmSiswa = () => {
       link.remove();
       window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
-      console.log(error);
+      console.error("Download Error:", error);
     }
   };
+
   const showFileTugas = async (path: string) => {
     try {
-      downloadFileTugas(path);
       const response = await Task.downloadTugas(token, path);
+      downloadFileTugas(path);
+      // Convert path to lowercase to make comparison case-insensitive
+      const lowerCasePath = path.toLowerCase();
 
       let mimeType = "application/pdf";
-      if (path.endsWith(".png")) {
+      let isPdf = false;
+
+      if (lowerCasePath.endsWith(".png")) {
         mimeType = "image/png";
-      } else if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
+      } else if (
+        lowerCasePath.endsWith(".jpg") ||
+        lowerCasePath.endsWith(".jpeg")
+      ) {
         mimeType = "image/jpeg";
+      } else if (lowerCasePath.endsWith(".pdf")) {
+        isPdf = true;
+      } else {
+        throw new Error("Unsupported file type");
       }
 
       const blob = new Blob([response.data], { type: mimeType });
       const blobUrl = window.URL.createObjectURL(blob);
 
-      setShowFile(blobUrl);
+      setShowFile({ url: blobUrl, isPdf });
+      console.log(showFile.url, showFile.isPdf);
     } catch (error) {
-      console.log(error);
+      console.error("Show File Error:", error);
     }
   };
 
@@ -551,7 +571,7 @@ const AdmSiswa = () => {
   };
   return (
     <>
-      <div className="w-full flex flex-col items-center p-3">
+      <div className="w-full flex flex-col items-center p-3 overflow-x-auto">
         <div className="my-10 flex flex-col text-center">
           <span className="text-4xl font-bold">Daftar Tugas</span>
           {/* <span>Kelas II</span> */}
@@ -925,11 +945,11 @@ const AdmSiswa = () => {
                 <option disabled selected>
                   Pick one
                 </option>
-                  <>
-                    <option value={2}>Project Kelompok</option>
-                    <option value={1}>WWP</option>
-                    <option value={3}>Mandiri</option>
-                  </>
+                <>
+                  <option value={2}>Project Kelompok</option>
+                  <option value={1}>WWP</option>
+                  <option value={3}>Mandiri</option>
+                </>
               </select>
               <label className="mt-4 w-full font-bold">Periode</label>
               <div className="w-full flex gap-2 justify-center items-center">
@@ -941,7 +961,7 @@ const AdmSiswa = () => {
                   }
                 />
                 <span>-</span>
-              <input
+                <input
                   type="datetime-local"
                   value={formik.values.endDate}
                   className="input input-bordered bg-white"
@@ -1200,7 +1220,16 @@ const AdmSiswa = () => {
 
       <Modal id={"show-file"} width="w-11/12 max-w-5xl">
         <div className="w-full flex flex-col items-center min-h-svh">
-          <iframe className="w-full min-h-svh mt-5" src={showFile} />
+          {showFile.isPdf ? (
+            <div className="w-full min-h-svh mt-5">
+              <Document file={showFile.url} onLoadError={console.error}>
+                <Page pageNumber={1} />
+              </Document>
+              <iframe className="w-full min-h-svh mt-5" src={showFile.url} />
+            </div>
+          ) : (
+            <iframe className="w-full min-h-svh mt-5" src={showFile.url} />
+          )}
         </div>
       </Modal>
     </>

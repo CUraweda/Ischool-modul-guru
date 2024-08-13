@@ -87,21 +87,36 @@ const DetailTugasSswa = () => {
     try {
       downloadFileTugas();
       const path = task?.task_file;
+      if (!path) throw new Error("File tidak tersedia");
+
       const response = await Task.downloadTugas(token, path);
+      const lowerCasePath = path.toLowerCase();
 
       let mimeType = "application/pdf";
-      if (path.endsWith(".png")) {
+      if (lowerCasePath.endsWith(".png")) {
         mimeType = "image/png";
-      } else if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
+      } else if (
+        lowerCasePath.endsWith(".jpg") ||
+        lowerCasePath.endsWith(".jpeg")
+      ) {
         mimeType = "image/jpeg";
+      } else if (!lowerCasePath.endsWith(".pdf")) {
+        throw new Error("Unsupported file type");
       }
 
       const blob = new Blob([response.data], { type: mimeType });
       const blobUrl = window.URL.createObjectURL(blob);
-
+      console.log(blob);
       setShowFile(blobUrl);
+
+      showModal("show-file");
     } catch (error) {
       console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Terjadi kesalahan saat menampilkan file",
+      });
     }
   };
 
