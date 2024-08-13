@@ -243,10 +243,10 @@ const RaportAll = () => {
           </button>
         </div>
       </div>
-      <div className="mt-5">
+      {/* <div className="mt-5">
       <h2>Selected Reports (JSON)</h2>
       <pre>{JSON.stringify(selectedReports.map(item => item.id), null, 2)}</pre>
-    </div>
+    </div> */}
       <div className="overflow-x-auto mt-5">
         <table className="table table-md">
           <thead>
