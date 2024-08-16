@@ -69,15 +69,23 @@ const DaftarTunggakan = () => {
     }
   };
 
+  const dataFilter = dataList.filter((item) => {
+    const searchValue = filter.search.toLowerCase();
+    return (
+      item.student?.full_name.toLowerCase().includes(searchValue) ||
+      item.student?.nis.toLowerCase().includes(searchValue)
+    );
+  });
+
   useEffect(() => {
     getDataList();
-  }, [filter]);
-
+  }, []);
   const handleExport = async () => {
     try {
       const res = await TagihanSiswa.exportArrears(
         token,
-        filter.search,
+        // filter.search,
+        "",
         filter.classId
       );
       const url = window.URL.createObjectURL(new Blob([res.data]));
@@ -154,7 +162,7 @@ const DaftarTunggakan = () => {
                 </tr>
               </thead>
               <tbody>
-                {dataList.map((dat, i) => (
+                {dataFilter.map((dat, i) => (
                   <tr key={i}>
                     <th>{i + 1}</th>
                     <td>
