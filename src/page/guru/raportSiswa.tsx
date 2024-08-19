@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { lazy, Suspense } from "react";
 import Loading from "../../component/Loading";
+import RaportFile from "../../component/siswa/RaportFile";
 
 const RaportAngka = lazy(() => import("../../component/siswa/RaportAngka"));
 const RaportNarasi = lazy(() => import("../../component/siswa/RaportNarasi"));
@@ -88,6 +89,23 @@ const RaportSiswa = () => {
           >
             <Suspense fallback={<Loading />}>
               <RaportPortofolio />
+            </Suspense>
+          </div>
+          <input
+            type="radio"
+            name="my_tabs_2"
+            role="tab"
+            className="tab bg-blue-300 font-bold"
+            aria-label="File"
+            checked={tab == "file"}
+            onClick={() => setTab("file")}
+          />
+          <div
+            role="tabpanel"
+            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+          >
+            <Suspense fallback={<Loading />}>
+              <RaportFile />
             </Suspense>
           </div>
         </div>
