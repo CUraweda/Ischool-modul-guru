@@ -15,7 +15,7 @@
         "subtitle": [
             {
                 "name": "Kehadiran",
-                "hide": true,
+                "badge": "dev",
                 "url": "/guru/rekap-kehadiran"
             },
             {
