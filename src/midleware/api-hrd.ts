@@ -57,4 +57,44 @@ const CutiIzin = {
     }),
 };
 
-export { CutiIzin };
+const PengajuanPelatihanKaryawan = {
+  request: (token: string | null, data: any) =>
+    instance.post("/api/training-suggestion/request", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showAll: (
+    token: string | null,
+    search: string,
+    employeeId: string,
+    page: number = 0,
+    limit: number = 10
+  ) =>
+    instance.get("/api/training-suggestion", {
+      params: { search, employee_id: employeeId, page, limit },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showOne: (token: string | null, id: string | null) =>
+    instance.get("/api/training-suggestion/" + id, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  update: (token: string | null, id: string | number | null, data: any) =>
+    instance.put("/api/training-suggestion/update/" + id, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  delete: (token: string | null, id: string | number | null) =>
+    instance.delete("/api/training-suggestion/delete/" + id, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
+export { CutiIzin, PengajuanPelatihanKaryawan };
