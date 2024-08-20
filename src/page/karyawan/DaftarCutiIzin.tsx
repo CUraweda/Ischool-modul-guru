@@ -68,7 +68,8 @@ const schema = Yup.object().shape({
 const DaftarCutiIzin = () => {
   const { token } = Store(),
     { employee } = employeeStore(),
-    modalFormId = "form-cuti-izin";
+    modalFormId = "form-cuti-izin",
+    modEvidence = "form-bukti-cuti-izin";
 
   // filter
   const [search, setSearch] = useState("");
@@ -186,6 +187,7 @@ const DaftarCutiIzin = () => {
     form.resetForm();
     setIsFilePathExist(false);
     setEvidencePreview(undefined);
+    setFileView("");
     if (inpEvidence.current) inpEvidence.current.value = "";
   };
 
@@ -220,7 +222,15 @@ const DaftarCutiIzin = () => {
           : "",
         evidence: "",
       });
-      if (dat.file_path) setIsFilePathExist(true);
+      if (dat.file_path) {
+        setIsFilePathExist(true);
+
+        try {
+          const resEvidence = await CutiIzin.downloadFile(token, dat.file_path);
+          const blob = new Blob([resEvidence.data]);
+          setEvidencePreview(URL.createObjectURL(blob));
+        } catch {}
+      }
 
       openModal(modalFormId);
     } catch (error) {
@@ -270,8 +280,54 @@ const DaftarCutiIzin = () => {
     });
   };
 
+  // view evidence file
+  const [isFileLoading, setIsFileLoading] = useState(false),
+    [fileView, setFileView] = useState("");
+
+  const viewFile = async (path?: string) => {
+    setFileView("");
+    if (!path) return;
+
+    setIsFileLoading(true);
+    try {
+      const response = await CutiIzin.downloadFile(token, path);
+      const blob = new Blob([response.data]);
+      setFileView(URL.createObjectURL(blob));
+      openModal(modEvidence);
+    } catch (error: any) {
+      let message = "Gagal mengunduh file bukti";
+      if (error.response?.status == 404) message = "File bukti tidak ditemukan";
+
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: message,
+      });
+    } finally {
+      setIsFileLoading(false);
+    }
+  };
+
   return (
     <>
+      <Modal id={modEvidence} onClose={handleReset}>
+        <h3 className="text-xl font-bold mb-6">File Bukti</h3>
+
+        <iframe
+          src={fileView}
+          frameBorder="0"
+          width="100%"
+          height="450px"
+          className="mt-4"
+        />
+        <button
+          onClick={() => closeModal(modEvidence)}
+          className="btn w-full btn-primary mt-10"
+        >
+          Tutup
+        </button>
+      </Modal>
+
       <Modal id={modalFormId} onClose={handleReset}>
         <form onSubmit={form.handleSubmit}>
           <h3 className="text-xl font-bold mb-6">
@@ -488,6 +544,8 @@ const DaftarCutiIzin = () => {
                         <button
                           className="btn btn-primary btn-sm join-item tooltip"
                           data-tip="Lihat bukti"
+                          disabled={!dat.file_path || isFileLoading}
+                          onClick={() => viewFile(dat.file_path)}
                         >
                           <FaImage />
                         </button>
