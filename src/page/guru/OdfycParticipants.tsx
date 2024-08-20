@@ -134,7 +134,7 @@ const OdfycParticipants = () => {
         const payload: any = { academic_year, target };
 
         if (!id) {
-          payload.user_id = selectedUsers;
+          payload.user_ids = selectedUsers;
           await ForCountry.create(token, payload);
         } else {
           await ForCountry.update(token, id, payload);
