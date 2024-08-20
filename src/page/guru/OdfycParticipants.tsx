@@ -13,7 +13,8 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { Link } from "react-router-dom";
-
+import { IoChevronBack } from "react-icons/io5";
+import { FaPlus } from "react-icons/fa";
 const schema = Yup.object().shape({
   id: Yup.string().optional(),
   user_id: Yup.string().required("User harus dipilih"),
@@ -59,7 +60,7 @@ const OdfycParticipants = () => {
       );
 
       const { result, ...meta } = res.data.data;
-
+      console.log(result);
       setDataList(result);
       setPageMeta(meta);
     } catch (error) {
@@ -83,8 +84,25 @@ const OdfycParticipants = () => {
     form.setFieldValue("user_id", "");
     try {
       const res = await User.showAll(token, searchUser);
-      setUsers(res.data?.data?.result ?? []);
-    } catch {}
+
+      const filteredUsers = (res.data?.data?.result ?? [])
+        .filter((user: { id: any; role_id: any }) => {
+          return (
+            user.role_id === 8 &&
+            !dataList.some(
+              (data) =>
+                data.user_id === user.id && data.academic_year === academicYear
+            )
+          );
+        })
+        .map((user: any) => ({
+          ...user,
+          displayName: `${user.full_name} - (${user.email})`, // Gabungkan full_name dan email
+        }));
+      setUsers(filteredUsers);
+    } catch (error) {
+      console.error("Gagal mencari user", error);
+    }
   };
 
   const form = useFormik({
@@ -97,6 +115,7 @@ const OdfycParticipants = () => {
     validationSchema: schema,
     validateOnChange: false,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
+      form.setFieldValue("academic_year", academicYear);
       const { id, academic_year, target, user_id } = values;
       setSubmitting(false);
 
@@ -133,7 +152,13 @@ const OdfycParticipants = () => {
   }, [academicYear]);
 
   const handleReset = () => {
-    form.resetForm();
+    const savedAcademicYear = form.values.academic_year;
+    form.resetForm({
+      values: {
+        ...form.initialValues,
+        academic_year: savedAcademicYear,
+      },
+    });
     setSearchUser("");
   };
 
@@ -237,7 +262,7 @@ const OdfycParticipants = () => {
                 label="User"
                 name="user_id"
                 keyValue="id"
-                keyDisplay="full_name"
+                keyDisplay="displayName"
                 hint={`Terdapat ${users.length} user`}
                 options={users}
                 value={form.values.user_id}
@@ -280,31 +305,37 @@ const OdfycParticipants = () => {
           ONE DAY FOR YOUR COUNTRY PARTISIPAN
         </span>
         <div className="w-full p-3 bg-white rounded-lg">
-          <div className="w-full flex my-3 gap-3">
-            <Link to={"/guru/one-day"} className="btn btn-link me-auto">
+          <div className="w-full flex my-3 gap-3 justify-between">
+            <Link
+              to={"/guru/one-day"}
+              className="btn btn-ghost bg-blue-500 text-white btn-md"
+            >
+              <IoChevronBack />
               Kembali
             </Link>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleFilter("search", search);
-              }}
-              className="join"
-            >
-              <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Cari"
-                slotRight={<FaSearch />}
-              />
-            </form>
-            <button
-              onClick={() => openModal(modalFormId)}
-              className="btn btn-ghost bg-blue-500 text-white"
-            >
-              Tambah
-            </button>
+            <div className="flex gap-5">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleFilter("search", search);
+                }}
+                className="join"
+              >
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Cari"
+                  slotRight={<FaSearch />}
+                />
+              </form>
+              <button
+                onClick={() => openModal(modalFormId)}
+                className="btn btn-ghost bg-blue-500 text-white"
+              >
+                <FaPlus />
+                Tambah
+              </button>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="table table-zebra">

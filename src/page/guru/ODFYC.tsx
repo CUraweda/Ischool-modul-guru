@@ -6,7 +6,6 @@ import {
   FaRegFileAlt,
   FaSearch,
   FaTrash,
-  FaPlus,
 } from "react-icons/fa";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { IoDocumentTextOutline } from "react-icons/io5";
@@ -121,7 +120,11 @@ const ODFYC = () => {
 
   useEffect(() => {
     getDataList();
-  }, [filter, academicYear]);
+  }, []);
+
+  useEffect(() => {
+    getDataList();
+  }, [filter, academicYear, search]);
 
   // handle detail edit
   const [formNav, setFormNav] = useState<TformNav>("data");
@@ -429,18 +432,25 @@ const ODFYC = () => {
         <div className="w-full bg-white p-3 rounded-md">
           {/* filter bar  */}
           <div className="w-full flex justify-between my-3 gap-2">
-            <Link to={"/guru/one-day-partisipan"} className="btn btn-link">
-              Partisipan
-            </Link>
-
-            {/* search  */}
+            <div className="flex gap-2">
+              <Link
+                to={"/guru/one-day-partisipan"}
+                className="btn btn-ghost bg-blue-500 btn-md text-white "
+              >
+                Partisipan
+              </Link>
+              {/* <button className="btn btn-ghost bg-blue-500 btn-sm text-white ">
+                <FaPlus />
+                Tambah
+              </button> */}
+            </div>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleFilter("search", search);
               }}
             >
-              <label className="input input-bordered flex items-center gap-2">
+              <label className="input input-md input-bordered flex items-center gap-2">
                 <input
                   type="text"
                   value={search}
@@ -451,10 +461,6 @@ const ODFYC = () => {
                 <FaSearch />
               </label>
             </form>
-            <button className="btn btn-ghost bg-blue-500 btn-sm text-white ">
-              <FaPlus />
-              Tambah
-            </button>
           </div>
 
           {/* data list  */}
