@@ -375,6 +375,7 @@ const AdmSiswa = () => {
       console.log(error);
     }
   };
+  
   const deleteTaskClass = async (id: number) => {
     await Task.deleteTaskClass(token, id);
     Swal.fire({

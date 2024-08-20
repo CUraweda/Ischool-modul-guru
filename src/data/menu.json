@@ -8,18 +8,20 @@
     },
     {
         "submenu": true,
-        "hide": true,
+        "hide": false,
         "title": "Kehadiran",
         "icon": "<FaPersonCircleCheck />",
         "url": "/guru/invenstment",
         "subtitle": [
             {
                 "name": "Kehadiran",
+                "hide": true,
                 "url": "/guru/rekap-kehadiran"
             },
             {
                 "name": "Pengajuan Cuti / Izin",
-                "url": "/guru/pengajuan-cuti"
+                "badge": "dev",
+                "url": "/karyawan/daftar-cuti-izin"
             }
         ]
     },
@@ -87,10 +89,11 @@
     },
     {
         "submenu": false,
-        "hide": true,
+        "hide": false,
+        "badge": "dev",
         "title": "Pelatihan",
         "icon": "<FaRegStar />",
-        "url": "/guru/pelatihan",
+        "url": "/karyawan/daftar-pelatihan",
         "subtitle": []
     },
     {

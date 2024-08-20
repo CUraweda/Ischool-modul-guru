@@ -16,7 +16,6 @@ const NilaiSiswa = lazy(() => import("../page/guru/nilaiSiswa"));
 const BahanAjar = lazy(() => import("../page/guru/bahanAjar"));
 const AgendaKegiatan = lazy(() => import("../page/guru/agendaKegiatan"));
 const AdmGuru = lazy(() => import("../page/guru/admGuru"));
-const DaftarPelatihan = lazy(() => import("../page/guru/daftarPelatihan"));
 const PesanCs = lazy(() => import("../page/guru/pesanCs"));
 const RaportSiswa = lazy(() => import("../page/guru/raportSiswa"));
 const RaportNarasi = lazy(() => import("../page/guru/DetailRaportNarasi"));
@@ -46,6 +45,10 @@ const RekapPresensi = lazy(() => import("../page/hrd/Presensi"));
 const PengajuanCutiHRD = lazy(() => import("../page/hrd/PengajuanCuti"));
 
 const Profile = lazy(() => import("../page/profile"));
+
+// karyawan
+const DaftarCutiIzin = lazy(() => import("../page/karyawan/DaftarCutiIzin"));
+const DaftarPelatihan = lazy(() => import("../page/karyawan/DaftarPelatihan"));
 
 const RootRoutes = () => {
   return (
@@ -211,17 +214,6 @@ const RootRoutes = () => {
             </Suspense>
           }
         />
-
-        <Route
-          path="/guru/pelatihan"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <DaftarPelatihan />
-              </Layout>
-            </Suspense>
-          }
-        />
         <Route
           path="/guru/rapor-siswa"
           element={
@@ -378,6 +370,28 @@ const RootRoutes = () => {
             <Suspense fallback={<Loading />}>
               <Layout>
                 <PengajuanCutiHRD />
+              </Layout>
+            </Suspense>
+          }
+        />
+
+        {/* karyawan */}
+        <Route
+          path="/karyawan/daftar-cuti-izin"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <DaftarCutiIzin />
+              </Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/karyawan/daftar-pelatihan"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <DaftarPelatihan />
               </Layout>
             </Suspense>
           }
