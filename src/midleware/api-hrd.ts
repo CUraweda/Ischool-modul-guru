@@ -55,6 +55,16 @@ const CutiIzin = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  downloadFile: (token: string | null, path: string | null) =>
+    instance.get("/api/employee-vacation/download", {
+      params: {
+        file_path: path,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    }),
 };
 
 const PengajuanPelatihanKaryawan = {
