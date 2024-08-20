@@ -1,19 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import bg from "../../assets/bg2.png";
 import ApexChart from "../../component/ApexChart";
 import FaceDetection from "../../component/FaceRegocnition";
-
+import { DashboardGuru } from "../../midleware/api";
 import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
 
 import Modal from "../../component/modal";
-import { employeeStore, useProps } from "../../store/Store";
+import { employeeStore, useProps, Store } from "../../store/Store";
 
 const Dashboard = () => {
   const { employee, formTeachers } = employeeStore();
-
+  const { token, id } = Store();
+  const [DataAttendance, setDataAttendance] = useState<any[]>([]);
   const [camera, setCamera] = useState<boolean>(false);
   const { inArea, distance } = useProps();
 
+  const getDataAttendance = async () => {
+    if (id && token) {
+      try {
+        const response = await DashboardGuru.getAttendance(token, id);
+        setDataAttendance(response.data.data.result);
+        console.log(DataAttendance);
+      } catch (error) {
+        console.error("Failed to fetch attendance data", error);
+      }
+    } else {
+      console.error("Missing id or token in sessionStorage");
+    }
+  };
+  useEffect(() => {
+    getDataAttendance();
+  }, []);
   const showModalAdd = (props: string) => {
     let modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {

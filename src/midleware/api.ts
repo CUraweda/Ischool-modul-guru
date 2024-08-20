@@ -1,7 +1,9 @@
 import axios, { AxiosPromise } from "axios";
 import { LoginResponse } from "./Utils";
 const instance = axios.create({ baseURL: import.meta.env.VITE_REACT_API_URL });
-
+const local = axios.create({
+  baseURL: import.meta.env.VITE_REACT_API_URL_LOCAL,
+});
 const Auth = {
   Login: (
     email: string | null,
@@ -28,6 +30,16 @@ const Auth = {
       method: "PUT",
       url: `/api/employee/update/${id}`,
       data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+const DashboardGuru = {
+  getAttendance: (token: string | null, id: string | null): AxiosPromise<any> =>
+    local({
+      method: "GET",
+      url: `/api/employee-attendance/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1726,6 +1738,7 @@ const Year = {
 
 export {
   User,
+  DashboardGuru,
   Auth,
   Task,
   Year,
