@@ -97,4 +97,27 @@ const PengajuanPelatihanKaryawan = {
     }),
 };
 
-export { CutiIzin, PengajuanPelatihanKaryawan };
+const PelatihanKaryawan = {
+  showAll: (
+    token: string | null,
+    search: string,
+    employeeId: string,
+    status: string,
+    page: number = 0,
+    limit: number = 10
+  ) =>
+    instance.get("/api/training", {
+      params: { search, employee_id: employeeId, status, page, limit },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showOne: (token: string | null, id: string | null) =>
+    instance.get("/api/training/" + id, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
+export { CutiIzin, PengajuanPelatihanKaryawan, PelatihanKaryawan };
