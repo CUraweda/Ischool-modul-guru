@@ -16,7 +16,7 @@
             {
                 "name": "Kehadiran",
                 "badge": "dev",
-                "url": "/guru/rekap-kehadiran"
+                "url": "/karyawan/rekap-kehadiran"
             },
             {
                 "name": "Pengajuan Cuti / Izin",
