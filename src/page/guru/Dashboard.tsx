@@ -7,6 +7,7 @@ import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
 
 import Modal from "../../component/modal";
 import { employeeStore, useProps } from "../../store/Store";
+import { FaDoorClosed, FaDoorOpen } from "react-icons/fa";
 
 const Dashboard = () => {
   const { employee, formTeachers } = employeeStore();
@@ -46,140 +47,174 @@ const Dashboard = () => {
 
   return (
     <div
-      className="flex min-h-screen items-start flex-wrap p-5"
+      className="flex min-h-screen items-start flex-wrap p-3"
       style={{ backgroundImage: `url('${bg}')`, backgroundSize: "cover" }}
     >
-      <div className="w-full flex flex-col">
-        <div className="w-full flex flex-col sm:flex-row ">
-          <div className="w-full sm:w-2/5 p-3 ">
-            <div className="rounded-md glass bg-green-400 shadow-lg flex flex-col justify-center items-center p-3 text-white">
-              <div className="my-3 flex flex-col items-center justify-center">
-                <span className="text-3xl font-bold">11.20</span>
-                <span>selasa, 4 Juni 2024</span>
-              </div>
-              <div className="avatar">
-                <div className="w-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+      <div className="w-full flex flex-col gap-3">
+        <div className="w-full items-stretch flex gap-3 flex-col sm:flex-row ">
+          {/* main card  */}
+          <div className="w-full flex flex-col bg-base-100 rounded-md overflow-hidden border sm:w-2/5">
+            {/* profile  */}
+            <div className="glass bg-secondary flex flex-col items-center p-6 text-white">
+              <div className="avatar mb-3">
+                <div className="w-28 rounded-full">
                   <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
                 </div>
               </div>
-              <div className="my-3 flex flex-col items-center justify-center">
-                <span className="text-2xl font-bold">
-                  {employee?.full_name ?? "-"}
-                </span>
-                <span className="text-md">
-                  {formTeachers
-                    ?.map((ft) => `Wali Kelas ${ft.class?.class_name ?? "-"}`)
-                    .join(" | ")}
-                </span>
-              </div>
-              <div className="my-3 px-5 w-full gap-3 flex flex-col items-center justify-center text-white">
-                <div className="w-full glass bg-green-500 flex flex-col items-center p-3 rounded-md justify-center ">
-                  <span className="font-bold text-sm sm:text-md">
+              <h3 className="text-2xl font-bold">
+                {employee?.full_name ?? "-"}
+              </h3>
+              <p className="text-center">
+                {formTeachers
+                  ?.map((ft) => `Wali Kelas ${ft.class?.class_name ?? "-"}`)
+                  .join(" | ")}
+              </p>
+            </div>
+
+            {/* division attendance schedule  */}
+            <div className="p-6 grow">
+              {/* clock in  */}
+              <div className="w-full flex items-center bg-base-200 p-3 rounded-md mb-3">
+                <div className="grow">
+                  <h6 className="font-bold text-md">
                     Jadwal Masuk (07.00 - 08.00)
-                  </span>
-                  <p className="text-sm sm:text-md">
-                    Presensi Masuk : <span className="font-bold">07.20</span>
+                  </h6>
+                  <p className="text-sm">
+                    Presensi anda : <span className="font-bold">07.20</span>
                   </p>
-                  <div className="badge badge-secondary text-sm sm:text-md">
-                    Tepat Waktu
+                  <div className="badge badge-error mt-3 text-white font-bold">
+                    Terlambat
                   </div>
                 </div>
-                <div className="w-full glass bg-green-500 flex flex-col items-center p-3 rounded-md justify-center">
-                  <span className="font-bold text-sm sm:text-md">
-                    Jadwal Pulang (07.00 - 08.00)
-                  </span>
-                  <p className="text-sm sm:text-md">
-                    Presensi Pulang : <span className="font-bold">07.20</span>
-                  </p>
-                  <div className="badge badge-secondary">Tepat Waktu</div>
-                </div>
+                <FaDoorOpen size={32} className="grow opacity-20" />
               </div>
-              <div className="w-full flex justify-center mt-5 gap-2">
-                <button
-                  className="btn bg-blue-500 hover:bg-blue-800 btn-ghost w-32 text-white"
-                  onClick={() => showModalAdd("modal-absen")}
-                >
-                  Presensi
-                </button>
-                <button className="btn  btn-warning w-32 text-white">
-                  Ajukan Cuti
-                </button>
+
+              {/* clock out  */}
+              <div className="w-full flex items-center bg-base-200 p-3 rounded-md">
+                <div className="grow">
+                  <h6 className="font-bold text-md">
+                    Jadwal Pulang (16.00 - 17.00)
+                  </h6>
+                  <p className="text-sm">
+                    Presensi anda : <span className="font-bold">16.01</span>
+                  </p>
+                  <div className="badge badge-success mt-3 text-white font-bold">
+                    Tepat waktu
+                  </div>
+                </div>
+                <FaDoorClosed size={32} className="grow opacity-20" />
               </div>
             </div>
+
+            <div className="px-6 pb-3 flex flex-col gap-2">
+              <button
+                className="btn btn-primary grow"
+                onClick={() => showModalAdd("modal-absen")}
+              >
+                Presensi
+              </button>
+              <button className="btn  btn-warning grow">Ajukan Cuti</button>
+            </div>
           </div>
-          <div className="w-full flex flex-col sm:w-3/5 p-3 gap-3 ">
-            <div className="w-full flex flex-wrap gap-3 sm:gap-0 ">
-              <div className="flex w-full sm:w-1/2 pr-0 sm:pr-2">
-                <div className="shadow-lg glass bg-cyan-600 text-white flex w-full  p-3 flex-col items-center rounded-md">
-                  <span className="text-xl font-bold">Rekap Presensi </span>
-                  <span className="text-md">Bulan Juni</span>
-                  <div className="overflow-x-auto w-full">
-                    <table className="table table-zebra ">
-                      <thead className="text-white">
+
+          {/* row  */}
+          <div className="w-full flex flex-col sm:w-3/5 gap-3 ">
+            {/* row  */}
+            <div className="w-full grid md:grid-cols-2 gap-3 ">
+              {/* attendance summary  */}
+              <div className="bg-base-100 flex flex-col rounded-md overflow-hidden border">
+                <div className="px-3 py-1 bg-primary text-white glass">
+                  <h3 className="text-lg font-bold">Rekap Presensi</h3>
+                  <p className="text-sm font-medium">Bulan Juni 2024</p>
+                </div>
+                <div className="px-3 py-1 grow">
+                  <div className="overflow-x-auto">
+                    <table className="table">
+                      <tbody>
                         <tr>
                           <th>Hadir</th>
-                          <th>9 Hari</th>
+                          <td>9 Hari</td>
                         </tr>
                         <tr>
                           <th>Izin</th>
-                          <th>2 Hari</th>
+                          <td>9 Hari</td>
                         </tr>
                         <tr>
                           <th>Cuti</th>
-                          <th>4 Hari</th>
+                          <td>9 Hari</td>
                         </tr>
-                      </thead>
+                      </tbody>
                     </table>
                   </div>
                 </div>
               </div>
-              <div className="flex w-full sm:w-1/2 pl-0 sm:pl-2 ">
-                <div className="glass bg-cyan-500 text-white shadow-lg flex w-full flex-col p-3 items-center rounded-md">
-                  <span className="text-xl font-bold">Daftar Pelatihan</span>
-                  <div className="overflow-x-auto w-full">
-                    <table className="table table-zebra">
-                      <thead className="text-white">
+
+              {/* latest training  */}
+              <div className="bg-base-100 flex flex-col rounded-md overflow-hidden border">
+                <div className="px-3 py-1 bg-accent text-white glass">
+                  <h3 className="text-lg font-bold">Daftar Pelatihan</h3>
+                  <p className="text-sm font-medium">Terbaru</p>
+                </div>
+                <div className="px-3 py-1 grow">
+                  <div className="overflow-x-auto">
+                    <table className="table">
+                      <tbody>
                         <tr>
-                          <th>Pelatihan Managent</th>
-                          <th>04-06-2024</th>
+                          <th>
+                            <p className="line-clamp-2 text-ellipsis overflow-hidden">
+                              Pelatihan Management{" "}
+                            </p>
+                          </th>
+                          <td className="whitespace-nowrap">9 Agustus 2024</td>
                         </tr>
                         <tr>
-                          <th>Pelatihan Managent</th>
-                          <th>04-06-2024</th>
+                          <th>
+                            <p className="line-clamp-2 text-ellipsis overflow-hidden">
+                              Pelatihan Management{" "}
+                            </p>
+                          </th>
+                          <td className="whitespace-nowrap">9 Agustus 2024</td>
                         </tr>
                         <tr>
-                          <th>Pelatihan Managent</th>
-                          <th>04-06-2024</th>
+                          <th>
+                            <p className="line-clamp-2 text-ellipsis overflow-hidden">
+                              Pelatihan Management{" "}
+                            </p>
+                          </th>
+                          <td className="whitespace-nowrap">9 Agustus 2024</td>
                         </tr>
-                      </thead>
+                      </tbody>
                     </table>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="w-full flex glass bg-cyan-300 shadow-lg h-full rounded-md p-3">
-              <div className="w-full flex flex-col items-center justify-center">
-                <span className="text-xl font-bold">Chart Absensi</span>
-                <div className="h-full min-h-52 w-full bg-white rounded-md">
-                  <ApexChart />
-                </div>
+
+            {/* attendance rate chart  */}
+            <div className="bg-base-100 flex flex-col rounded-md overflow-hidden border">
+              <div className="px-3 py-1 bg-primary text-white glass">
+                <h3 className="text-lg font-bold">Chart Presensi</h3>
+              </div>
+              <div className="px-3 py-1 grow">
+                <ApexChart />
               </div>
             </div>
           </div>
         </div>
-        <div className=" w-full flex min-h-60">
-          <div className="w-full p-3">
-            <div className="glass bg-green-300 shadow-lg p-3 flex-col rounded-md flex">
-              <span className="text-xl font-bold">Pengumuman</span>
-              <div className="h-52 w-full bg-white rounded-md flex justify-center items-center">
-                <span className="text-gray-300 font-bold">
-                  tidak ada pengumuman
-                </span>
-              </div>
+
+        {/* annoucement  */}
+        <div className="bg-base-100 flex w-full min-h-60 flex-col rounded-md overflow-hidden border">
+          <div className="px-3 py-1 bg-secondary text-white glass">
+            <h3 className="text-lg font-bold">Pengumuman</h3>
+          </div>
+          <div className="px-3 py-1 grow">
+            <div className="flex p-12">
+              <p className="opacity-40 m-auto">Tidak ada pengumuman</p>
             </div>
           </div>
         </div>
       </div>
+
       <Modal id="modal-absen">
         <div className={`mt-4 flex justify-center`}>
           {camera ? (
