@@ -8,7 +8,6 @@ const Layout = lazy(() => import("../component/Layout"));
 const Dashboard = lazy(() => import("../page/guru/Dashboard"));
 const JadwalMengajar = lazy(() => import("../page/guru/jadwalMengajar"));
 const JadwalDinas = lazy(() => import("../page/guru/jadwalDinas"));
-const RekapKehadiran = lazy(() => import("../page/guru/rekapKehadiran"));
 const PengajuanCuti = lazy(() => import("../page/guru/pengajuanCuti"));
 const AdmSiswa = lazy(() => import("../page/guru/admSiswa"));
 const PresensiSiswa = lazy(() => import("../page/guru/presensiSiswa"));
@@ -54,6 +53,9 @@ const DaftarPelatihanKaryawan = lazy(
 );
 const PengajuanPelatihanKaryawan = lazy(
   () => import("../page/karyawan/pelatihan/Pengajuan")
+);
+const RekapKehadiranKaryawan = lazy(
+  () => import("../page/karyawan/RekapKehadiran")
 );
 
 const RootRoutes = () => {
@@ -106,16 +108,6 @@ const RootRoutes = () => {
             <Suspense fallback={<Loading />}>
               <Layout>
                 <JadwalDinas />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/rekap-kehadiran"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <RekapKehadiran />
               </Layout>
             </Suspense>
           }
@@ -388,6 +380,16 @@ const RootRoutes = () => {
             <Suspense fallback={<Loading />}>
               <Layout>
                 <DaftarCutiIzin />
+              </Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/karyawan/rekap-kehadiran"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <RekapKehadiranKaryawan />
               </Layout>
             </Suspense>
           }
