@@ -15,12 +15,10 @@
         "subtitle": [
             {
                 "name": "Kehadiran",
-                "badge": "dev",
                 "url": "/karyawan/rekap-kehadiran"
             },
             {
                 "name": "Pengajuan Cuti / Izin",
-                "badge": "dev",
                 "url": "/karyawan/daftar-cuti-izin"
             }
         ]
@@ -90,7 +88,6 @@
     {
         "submenu": false,
         "hide": false,
-        "badge": "dev",
         "title": "Pelatihan",
         "icon": "<FaRegStar />",
         "url": "/karyawan/daftar-pelatihan",
