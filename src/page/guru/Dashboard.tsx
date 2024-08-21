@@ -9,10 +9,14 @@ import Modal from "../../component/modal";
 import { employeeStore, Store, useProps } from "../../store/Store";
 import { FaDoorClosed, FaDoorOpen } from "react-icons/fa";
 import { Rekapan } from "../../midleware/api-hrd";
+import moment from "moment";
+import { formatTime } from "../../utils/date";
 
 const Dashboard = () => {
   const { token } = Store(),
     { employee, formTeachers } = employeeStore();
+
+  const currentDate = moment();
 
   const [camera, setCamera] = useState<boolean>(false);
   const { inArea, distance } = useProps();
@@ -147,7 +151,9 @@ const Dashboard = () => {
               <div className="bg-base-100 flex flex-col rounded-md overflow-hidden border">
                 <div className="px-3 py-1 bg-primary text-white glass">
                   <h3 className="text-lg font-bold">Rekap Presensi</h3>
-                  <p className="text-sm font-medium">Bulan Juni 2024</p>
+                  <p className="text-sm font-medium">
+                    Bulan {formatTime(currentDate.toString(), "MMMM YYYY")}
+                  </p>
                 </div>
                 <div className="px-3 py-1 grow">
                   <div className="overflow-x-auto">
