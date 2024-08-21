@@ -142,6 +142,15 @@ const Rekapan = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  jumlahPresensi: (token: string | null, employeeId: string) =>
+    instance.get(
+      "/api/employee-attendance/recap-month-employee/" + employeeId,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    ),
 };
 
 export { CutiIzin, PengajuanPelatihanKaryawan, PelatihanKaryawan, Rekapan };
