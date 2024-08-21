@@ -130,4 +130,18 @@ const PelatihanKaryawan = {
     }),
 };
 
-export { CutiIzin, PengajuanPelatihanKaryawan, PelatihanKaryawan };
+const Rekapan = {
+  kalendarKehadiran: (
+    token: string | null,
+    startDate: string,
+    endDate: string
+  ) =>
+    instance.get("/api/employee-attendance/recap-calendar-by-token", {
+      params: { start_date: startDate, end_date: endDate },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
+export { CutiIzin, PengajuanPelatihanKaryawan, PelatihanKaryawan, Rekapan };
