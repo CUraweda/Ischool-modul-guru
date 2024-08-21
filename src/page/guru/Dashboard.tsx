@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import bg from "../../assets/bg2.png";
 import ApexChart from "../../component/ApexChart";
 import FaceDetection from "../../component/FaceRegocnition";
@@ -6,11 +6,13 @@ import FaceDetection from "../../component/FaceRegocnition";
 import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
 
 import Modal from "../../component/modal";
-import { employeeStore, useProps } from "../../store/Store";
+import { employeeStore, Store, useProps } from "../../store/Store";
 import { FaDoorClosed, FaDoorOpen } from "react-icons/fa";
+import { Rekapan } from "../../midleware/api-hrd";
 
 const Dashboard = () => {
-  const { employee, formTeachers } = employeeStore();
+  const { token } = Store(),
+    { employee, formTeachers } = employeeStore();
 
   const [camera, setCamera] = useState<boolean>(false);
   const { inArea, distance } = useProps();
@@ -45,15 +47,35 @@ const Dashboard = () => {
       });
   };
 
+  // get attendance summary
+  const [rekapPresensi, setRekapPresensi] = useState<any>(null);
+  const getRekapPresensi = async () => {
+    if (!employee) return;
+
+    try {
+      const res = await Rekapan.jumlahPresensi(token, employee.id);
+      setRekapPresensi(res.data.data);
+    } catch {}
+  };
+
+  // entry point concurrently get many data
+  const getData = async () => {
+    await Promise.all([getRekapPresensi()]);
+  };
+
+  useEffect(() => {
+    getData();
+  }, [employee]);
+
   return (
     <div
       className="flex min-h-screen items-start flex-wrap p-3"
       style={{ backgroundImage: `url('${bg}')`, backgroundSize: "cover" }}
     >
       <div className="w-full flex flex-col gap-3">
-        <div className="w-full items-stretch flex gap-3 flex-col sm:flex-row ">
+        <div className="w-full items-stretch flex gap-3 flex-col md:flex-row ">
           {/* main card  */}
-          <div className="w-full flex flex-col bg-base-100 rounded-md overflow-hidden border sm:w-2/5">
+          <div className="w-full flex flex-col bg-base-100 rounded-md overflow-hidden border md:w-2/5">
             {/* profile  */}
             <div className="glass bg-secondary flex flex-col items-center p-6 text-white">
               <div className="avatar mb-3">
@@ -61,7 +83,7 @@ const Dashboard = () => {
                   <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
                 </div>
               </div>
-              <h3 className="text-2xl font-bold">
+              <h3 className="text-2xl text-center font-bold">
                 {employee?.full_name ?? "-"}
               </h3>
               <p className="text-center">
@@ -118,7 +140,7 @@ const Dashboard = () => {
           </div>
 
           {/* row  */}
-          <div className="w-full flex flex-col sm:w-3/5 gap-3 ">
+          <div className="w-full flex flex-col md:w-3/5 gap-3 ">
             {/* row  */}
             <div className="w-full grid md:grid-cols-2 gap-3 ">
               {/* attendance summary  */}
@@ -133,15 +155,15 @@ const Dashboard = () => {
                       <tbody>
                         <tr>
                           <th>Hadir</th>
-                          <td>9 Hari</td>
+                          <td>{rekapPresensi?.HADIR ?? "0"} Hari</td>
                         </tr>
                         <tr>
                           <th>Izin</th>
-                          <td>9 Hari</td>
+                          <td>{rekapPresensi?.IZIN ?? "0"} Hari</td>
                         </tr>
                         <tr>
                           <th>Cuti</th>
-                          <td>9 Hari</td>
+                          <td>{rekapPresensi?.CUTI ?? "0"} Hari</td>
                         </tr>
                       </tbody>
                     </table>
