@@ -44,6 +44,13 @@ const DashboardGuru = {
         Authorization: `Bearer ${token}`,
       },
     }),
+    getWorkTimeOne: (token: string | null, id: any | null): AxiosPromise<any> => local({
+      method: "GET",
+      url: `/api/worktime/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
 };
 
 const User = {
