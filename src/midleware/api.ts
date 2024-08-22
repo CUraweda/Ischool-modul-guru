@@ -1735,6 +1735,80 @@ const Year = {
     }),
 };
 
+const FileRaporSiswa = {
+  create: (token: string | null, data: any) =>
+    instance({
+      method: "POST",
+      url: "/api/student-report-file/create",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  showAll: (
+    token: string | null,
+    page: number = 0,
+    limit: number = 10,
+    search: string = "",
+    studentId: string = "",
+    academic: string = "",
+    semester: string = "",
+    classId: string = "",
+    withAssign: string = "Y"
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-report-file?search_query=${search}&student_id=${studentId}&academic=${academic}&semester=${semester}&class_id=${classId}&with_assign=${withAssign}&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-report-file/show/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  update: (
+    token: string | null,
+    id: string | number | null,
+    data: any
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: "/api/student-report-file/update/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  delete: (
+    token: string | null,
+    id: string | number | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "DELETE",
+      url: "/api/student-report-file/delete/" + id,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  downloadFile: (
+    token: string | null,
+    path: string | null
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/student-report-file/download?file_path=${path}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    }),
+};
+
 export {
   User,
   Auth,
@@ -1756,4 +1830,5 @@ export {
   CustomerCare,
   AchievementSiswa,
   ForCountry,
+  FileRaporSiswa,
 };
