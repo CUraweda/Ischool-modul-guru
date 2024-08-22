@@ -1,4 +1,3 @@
-import { BsList } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { FaBell } from "react-icons/fa";

@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import "react-day-picker/dist/style.css";
 import Instruction from "../../component/guru/InstructionTrainFace";
-import axios from 'axios';
-import { DayPicker } from 'react-day-picker';
 import * as faceapi from 'face-api.js';
 import ChangeExpression from '../../component/guru/InstructionTrainFace2'
 import TrainFace from '../../component/guru/TrainFace'
@@ -11,15 +9,6 @@ import { employeeStore, Store } from "../../store/Store";
 import { Auth } from "../../midleware/api";
 import { Player } from '@lottiefiles/react-lottie-player';
 import { BASE_URL_TRAINING_FACE } from '../../config/config';
-
-interface Detection {
-  box: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-}
 
 const TrainFaceGuru: React.FC = () => {
 
@@ -33,8 +22,8 @@ const TrainFaceGuru: React.FC = () => {
   } = employeeStore();
 
   const [dataUser, setDataUser] = useState<any>(null);
-  const [updatedName, setUpdatedName] = useState<string>("");
-  const [idEmployee, setIdEmployee] = useState();
+  const [, setUpdatedName] = useState<string>("");
+  const [, setIdEmployee] = useState();
 
   const getMe = async () => {
     try {
@@ -173,7 +162,7 @@ const TrainFaceGuru: React.FC = () => {
     IsNoneRef.current = isNone;
   }, [isNone]);
 
-  const [croppedImagesDisplay, setCroppedImagesDisplay] = useState<string[]>([]);
+  const [, setCroppedImagesDisplay] = useState<string[]>([]);
 
   const handleSubmit = useCallback(async () => {
     setIsNone(true);

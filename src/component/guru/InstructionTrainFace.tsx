@@ -13,7 +13,7 @@ interface InstructionProps {
 
 const InstructionFaceGuru: React.FC<InstructionProps> = ({ onShowForm }) => {
     const [instructionStep, setInstructionStep] = useState(0);
-    const [activeCardIndex, setActiveCardIndex] = useState(-1);
+    const [, setActiveCardIndex] = useState(-1);
     const cardIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     const steps: Step[] = [
