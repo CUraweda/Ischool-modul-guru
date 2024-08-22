@@ -7,7 +7,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
 
 import Modal from "../../component/modal";
-import { employeeStore, Store, useProps } from "../../store/Store";
+import { employeeStore, Store } from "../../store/Store";
 import { FaDoorClosed, FaDoorOpen } from "react-icons/fa";
 import { Rekapan } from "../../midleware/api-hrd";
 import moment from "moment";

@@ -26,8 +26,8 @@
     } = employeeStore();
 
     const [dataUser, setDataUser] = useState<any>(null);
-    const [updatedName, setUpdatedName] = useState<string>("");
-    const [idEmployee, setIdEmployee] = useState();
+    const [, setUpdatedName] = useState<string>("");
+    const [, setIdEmployee] = useState();
 
     const getMe = async () => {
       try {

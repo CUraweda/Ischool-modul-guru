@@ -13,8 +13,8 @@ const InstructionTrainFace2: React.FC<InstructionTrainFace2Props> = ({
   onShowInput3,
   onStartVideo,
 }) => {
-  const [instructionStep, setInstructionStep] = useState(initialInstructionStep);
-  const [activeCardIndex, setActiveCardIndex] = useState(0);
+  const [instructionStep] = useState(initialInstructionStep);
+  const [, setActiveCardIndex] = useState(0);
   const cardIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const steps = ["Memilih kelas", "Memilih nama", "Praktek latih wajah"];
@@ -49,7 +49,6 @@ const InstructionTrainFace2: React.FC<InstructionTrainFace2Props> = ({
     });
   };
 
-  const progressWidth = `${((instructionStep + 1) / 3) * 100}%`;
 
   return (
     <div className="instruction-container relative w-full h-screen m-0 py-10 px-5 text-center bg-[#f9f9f9] flex flex-col justify-between overflow-y-auto maxw768:py-[20px] maxw768:px-[10px]">

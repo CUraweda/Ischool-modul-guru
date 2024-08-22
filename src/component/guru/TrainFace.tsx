@@ -16,15 +16,12 @@ const TrainFace: React.FC<TrainFaceProps> = ({
     isVideo: initialIsVideo,
     isNone: initialIsNone,
     updateCapturedImages,
-    updateIsVideo,
-    updateIsNone,
-    InstructionChange,
     handleSubmit,
     CropImage,
 }) => {
     const [captureFinished, setCaptureFinished] = useState(false);
     const [borderProgress, setBorderProgress] = useState(0);
-    const [cameraAccessStatus, setCameraAccessStatus] = useState<'default' | 'granted' | 'denied' | 'notAvailable'>('default');
+    const [, setCameraAccessStatus] = useState<'default' | 'granted' | 'denied' | 'notAvailable'>('default');
 
     const captureStageRef = useRef(0);
     const correctMovementRef = useRef<boolean>(false);
@@ -43,9 +40,9 @@ const TrainFace: React.FC<TrainFaceProps> = ({
     const [correctMovement, setCorrectMovement] = useState(false);
 
     const [localIsVideo, setLocalIsVideo] = useState(initialIsVideo);
-    const [localIsNone, setLocalIsNone] = useState(initialIsNone);
+    const [, setLocalIsNone] = useState(initialIsNone);
     const [lightingCondition, setLightingCondition] = useState("good");
-    const [capturedImages, setCapturedImages] = useState<string[]>([]);
+    const [, setCapturedImages] = useState<string[]>([]);
     const [targetBorderProgress, setTargetBorderProgress] = useState(0);
 
     const lightSensitivity = 0.25;
@@ -62,7 +59,6 @@ const TrainFace: React.FC<TrainFaceProps> = ({
     const movementCooldown = 500; // in milliseconds
     const yawSensitivity = 0.8;
     const pitchSensitivity = 0.8;
-    const [stream, setStream] = useState<MediaStream | null>(null);
 
     const minFaceSize = 250;
     const videoRef = useRef<HTMLVideoElement>(null);
