@@ -44,13 +44,55 @@ const DashboardGuru = {
         Authorization: `Bearer ${token}`,
       },
     }),
-    getWorkTimeOne: (token: string | null, id: any | null): AxiosPromise<any> => local({
+  getWorkTimeOne: (token: string | null, id: any | null): AxiosPromise<any> =>
+    local({
       method: "GET",
       url: `/api/worktime/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    }),
+  getRecapMonthly: (token: string | null, id: any | null): AxiosPromise<any> =>
+    local({
+      method: "GET",
+      url: `/api/employee-attendance/recap-month-employee/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getTrainingOne: (token: string | null, id: any | null): AxiosPromise<any> =>
+    local({
+      method: "GET",
+      url: `/api/training-attendance/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  requestCuti: (
+    token: string | null,
+    id: any | null,
+    data: any
+  ): AxiosPromise<any> =>
+    local({
+      method: "POST",
+      url: `/api/employee-vacation/request/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+      data,
+    }),
+  getAnnouncementOne: (
+    token: string | null,
+    id: any | null
+  ): AxiosPromise<any> =>
+    local({
+      method: "GET",
+      url: `/api/employee-announcement/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 const User = {

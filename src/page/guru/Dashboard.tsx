@@ -33,6 +33,30 @@ const Dashboard = () => {
       console.error("Missing id or token in sessionStorage");
     }
   };
+  const getRecap = async () => {
+    if (id && token) {
+      try {
+        const response = await DashboardGuru.getRecapMonthly(token, id);
+        console.log(response.data.data.result);
+      } catch (err) {
+        console.log("error:" + err);
+      }
+    } else {
+      console.error("Missing id or token in sessionStorage");
+    }
+  };
+  const getTraining = async () => {
+    if (id && token) {
+      try {
+        const response = await DashboardGuru.getTrainingOne(token, id);
+        console.log(response.data.data.result);
+      } catch (err) {
+        console.log("error:" + err);
+      }
+    } else {
+      console.error("Missing id or token in sessionStorage");
+    }
+  };
   const getDataAttendance = async () => {
     if (id && token) {
       try {
@@ -46,8 +70,32 @@ const Dashboard = () => {
       console.error("Missing id or token in sessionStorage");
     }
   };
+  const requestCuti = async (data: any) => {
+    try {
+      const response = await DashboardGuru.requestCuti(token, id, data);
+      console.log(response.data.data.result);
+    } catch (err) {
+      console.log("error:" + err);
+    }
+  };
+  const getAnnouncement = async () => {
+    if (id && token) {
+      try {
+        const response = await DashboardGuru.getAnnouncementOne(token, id);
+        console.log(response.data.data.result);
+      } catch (error) {
+        console.error("Failed to fetch attendance data", error);
+      }
+    } else {
+      console.error("Missing id or token in sessionStorage");
+    }
+  };
   useEffect(() => {
     getDataAttendance();
+    getRecap();
+    getWorkTime();
+    getTraining();
+    getAnnouncement();
   }, []);
   const showModalAdd = (props: string) => {
     let modalElement = document.getElementById(props) as HTMLDialogElement;
