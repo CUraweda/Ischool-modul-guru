@@ -13,8 +13,11 @@ import { Rekapan } from "../../midleware/api-hrd";
 import moment from "moment";
 import { formatTime } from "../../utils/date";
 
+const currentDate = moment();
+
 const Dashboard = () => {
   const { employee, formTeachers } = employeeStore();
+  const { token } = Store();
 
   const [inAreas, setInAreas] = useState<boolean>(false);
   const handleInAreas = () => {
@@ -83,8 +86,8 @@ const Dashboard = () => {
     if (!employee) return;
 
     try {
-      // const res = await Rekapan.jumlahPresensi(token, employee.id);
-      // setRekapPresensi(res.data.data);
+      const res = await Rekapan.jumlahPresensi(token, employee.id);
+      setRekapPresensi(res.data.data);
     } catch {}
   };
 
@@ -178,7 +181,7 @@ const Dashboard = () => {
                 <div className="px-3 py-1 bg-primary text-white glass">
                   <h3 className="text-lg font-bold">Rekap Presensi</h3>
                   <p className="text-sm font-medium">
-                    {/* Bulan {formatTime(currentDate.toString(), "MMMM YYYY")} */}
+                    Bulan {formatTime(currentDate.toString(), "MMMM YYYY")}
                   </p>
                 </div>
                 <div className="px-3 py-1 grow">
