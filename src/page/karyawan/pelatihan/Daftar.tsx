@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { employeeStore, Store } from "../../../store/Store";
 import {
   IpageMeta,
@@ -11,16 +11,43 @@ import {
   FaArrowRight,
   FaEye,
   FaMapPin,
+  FaPlus,
   FaSearch,
   FaSmile,
 } from "react-icons/fa";
 import { formatTime } from "../../../utils/date";
 import Modal, { closeModal, openModal } from "../../../component/modal";
+import * as y from "yup";
+import { useFormik } from "formik";
+
+const attendFileExts = ["jpeg", "jpg", "png"];
+const schemaAttend = y.object().shape({
+  title: y.string().required("Judul wajib diisi"),
+  file: y
+    .mixed<File>()
+    .required("Bukti file harus disertakan")
+    .test(
+      "is-valid-type",
+      "File harus berupa gambar",
+      (value) =>
+        !value ||
+        (value &&
+          attendFileExts.includes(
+            value.name.split(".").pop()?.toLowerCase() || ""
+          ))
+    )
+    .test(
+      "is-valid-size",
+      "Ukuran melebihi batas 5MB",
+      (value) => !value || (value && value.size <= 5000000)
+    ),
+});
 
 const DaftarPelatihan = () => {
   const { token } = Store(),
     { employee } = employeeStore(),
-    modDetail = "detail-pelatihan-karyawan";
+    modDetail = "detail-pelatihan-karyawan",
+    modUpAttendance = "upload-kehadiran-pelatihan";
 
   // filter
   const [search, setSearch] = useState("");
@@ -115,8 +142,8 @@ const DaftarPelatihan = () => {
     setIsGetAttendLoading(true);
 
     try {
-      console.log(attendanceList);
-      setAttendanceList([]);
+      const res = await PelatihanKaryawan.showAllDokumentasi(token, idDetail);
+      setAttendanceList(res.data.data?.result ?? []);
       openModal(modDetail);
     } catch (error) {
       Swal.fire({
@@ -127,6 +154,64 @@ const DaftarPelatihan = () => {
       closeModal(modDetail);
     } finally {
       setIsGetAttendLoading(false);
+    }
+  };
+
+  const formAttend = useFormik({
+    initialValues: {
+      title: "",
+      file: "",
+    },
+    validateOnChange: false,
+    validationSchema: schemaAttend,
+    onSubmit: async (values, { setSubmitting }) => {
+      if (!idDetail) return;
+
+      setSubmitting(false);
+
+      try {
+        const formData = new FormData();
+        formData.append("title", values.title);
+        formData.append("file", values.file);
+
+        await PelatihanKaryawan.uploadDokumentasi(token, idDetail, formData);
+
+        handleResetAttend();
+        getAttendances();
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `Gagal menambahkan dokumentasi pelatihan`,
+        });
+        closeModal(modDetail);
+      } finally {
+        setSubmitting(true);
+        closeModal(modUpAttendance);
+      }
+    },
+  });
+
+  const handleResetAttend = () => {
+    formAttend.resetForm();
+    setFileAttendPreview("");
+    if (inpFileAttend.current) inpFileAttend.current.value = "";
+  };
+
+  const [fileAttendPreview, setFileAttendPreview] = useState("");
+  const inpFileAttend = useRef<HTMLInputElement>(null);
+
+  const delAttendance = async (id: string) => {
+    try {
+      await PelatihanKaryawan.hapusDokumentasi(token, id);
+      getAttendances();
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Gagal menambahkan dokumentasi pelatihan`,
+      });
+      closeModal(modDetail);
     }
   };
 
@@ -270,7 +355,7 @@ const DaftarPelatihan = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 border-base-300 rounded-box p-3"
+            className="tab-content bg-base-100 border-base-300 rounded-e-box rounded-b-box p-3"
           >
             <div className="overflow-x-auto">
               <table className="table table-zebra">
@@ -334,11 +419,101 @@ const DaftarPelatihan = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+            className="tab-content bg-base-100 relative border-base-300 rounded-e-box rounded-b-box pb-16 p-6"
           >
-            Tab content 2
+            {attendanceList.map((dat, i) => (
+              <div key={i}>
+                <div className="w-full max-h-[300px] rounded-md overflow-hidden">
+                  <img
+                    src={
+                      import.meta.env.VITE_REACT_API_HRD_URL +
+                      "/training-attendance/" +
+                      dat.img_path?.split("/").at(-1)
+                    }
+                    alt=""
+                  />
+                </div>
+                <div className="flex gap-3 justify-between flex-wrap items-center mt-3 mb-6">
+                  <div>
+                    <p className="font-bold">{dat.title ?? "-"}</p>
+                    <p className="text-xs opacity-60">
+                      {formatTime(dat.created_at, "dddd, DD MMMM YYYY")}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-error btn-sm"
+                    onClick={() => delAttendance(dat.id)}
+                  >
+                    Hapus
+                  </button>
+                </div>
+              </div>
+            ))}
+            <button
+              className="flex btn btn-secondary absolute bottom-3 right-3 z-10 btn-circle tooltip"
+              data-tip="Tambah"
+              onClick={() => openModal(modUpAttendance)}
+            >
+              <FaPlus size={20} />
+            </button>
           </div>
         </div>
+      </Modal>
+
+      <Modal id={modUpAttendance} onClose={handleResetAttend}>
+        <h3 className="text-xl font-bold mb-6">Tambah dokumentasi</h3>
+
+        <form onSubmit={formAttend.handleSubmit}>
+          {fileAttendPreview ? (
+            <img
+              src={fileAttendPreview}
+              width="100%"
+              className="rounded-lg bg-base-200"
+            />
+          ) : (
+            <div
+              onClick={() => {
+                inpFileAttend.current?.click();
+              }}
+              className="flex h-[300px] border border-dashed justify-center items-center rounded-lg"
+            >
+              <p className="text-neutral-500 text-sm">Pratinjau bukti</p>
+            </div>
+          )}
+
+          <Input
+            label="Bukti"
+            type="file"
+            name="file"
+            ref={inpFileAttend}
+            accept={attendFileExts.map((ext) => "." + ext).join(", ")}
+            // value={form.values.file}
+            onChange={(e) => {
+              if (e.target.files) {
+                formAttend.setFieldValue("file", e.target.files[0]);
+                setFileAttendPreview(URL.createObjectURL(e.target.files[0]));
+              }
+            }}
+            errorMessage={formAttend.errors.file}
+          />
+
+          <Input
+            label="Judul"
+            name="title"
+            value={formAttend.values.title}
+            onChange={formAttend.handleChange}
+            errorMessage={formAttend.errors.title}
+          />
+
+          <button
+            type="submit"
+            className="btn btn-secondary w-full mt-6"
+            disabled={formAttend.isSubmitting}
+          >
+            {formAttend.isSubmitting ? "Menyimpan..." : "Simpan"}
+          </button>
+        </form>
       </Modal>
     </>
   );
