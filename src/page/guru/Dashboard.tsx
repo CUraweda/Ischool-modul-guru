@@ -170,7 +170,7 @@ const Dashboard = () => {
               </button>
               <button className="btn  btn-warning grow">Ajukan Cuti</button>
             </div>
-          </div>
+          </div>z
 
           {/* row  */}
           <div className="w-full flex flex-col md:w-3/5 gap-3 ">

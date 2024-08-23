@@ -8,7 +8,7 @@ import TrainFace from '../../component/guru/TrainFace'
 import { employeeStore, Store } from "../../store/Store";
 import { Auth } from "../../midleware/api";
 import { Player } from '@lottiefiles/react-lottie-player';
-import { BASE_URL_TRAINING_FACE } from '../../config/config';
+// import { BASE_URL_TRAINING_FACE } from '../../config/config';
 
 const TrainFaceGuru: React.FC = () => {
 
@@ -193,7 +193,7 @@ const TrainFaceGuru: React.FC = () => {
 
     try {
       const response = await fetch(
-        `${BASE_URL_TRAINING_FACE}/stg-server1/api/face/train`,
+        `${import.meta.env.VITE_REACT_API_HRD_URL}/api/face/train`,
         {
           method: "POST",
           headers: {

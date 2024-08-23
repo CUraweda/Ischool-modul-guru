@@ -4,7 +4,6 @@
   import { Auth } from "../midleware/api";
   import * as faceapi from "face-api.js";
   import axios from "axios";
-  import { BASE_URL_FACE } from '../config/config';
 
   interface FaceDetectionProps {
     onSuccess: () => void;
@@ -132,7 +131,7 @@
 
     const sendToBackend = async (dataUser: any, faceDescriptor: Float32Array) => {
       try {
-        const response = await axios.post(`${BASE_URL_FACE}/stg-server1/api/face/detect`, {
+        const response = await axios.post(`${import.meta.env.VITE_REACT_API_HRD_URL}/stg-server1/api/face/detect`, {
           teacher: dataUser?.full_name,
           descriptor: Array.from(faceDescriptor)
         });
