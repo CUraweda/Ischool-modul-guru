@@ -1,22 +1,48 @@
+import React from "react";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
-const ApexChart = () => {
+interface ApexChartProps {
+  data: {
+    cuti: number[];
+    izin: number[];
+    hadir: number[];
+    categories: string[];
+    maxValue: number;
+  };
+}
+
+const ApexChart: React.FC<ApexChartProps> = ({ data }) => {
+  // Cek apakah semua data adalah nol
+  const allZero =
+    data.hadir.every((val) => val === 0) &&
+    data.izin.every((val) => val === 0) &&
+    data.cuti.every((val) => val === 0);
+
+  if (allZero) {
+    return (
+      <div className="h-[350px]">
+        Tidak ada data presensi untuk ditampilkan.
+      </div>
+    );
+  }
+
   const series = [
     {
-      name: "Masuk",
-      data: [12, 30, 29, 31, 12, 23, 23, 12, 12],
+      name: "Hadir",
+      data: data.hadir,
     },
     {
       name: "Izin",
-      data: [3, 2, 4, 5, 5, 10, 10, 12, 3],
+      data: data.izin,
     },
     {
       name: "Cuti",
-      data: [4, 2, 1, 0, 12, 12, 8, 1, 12],
+      data: data.cuti,
     },
   ];
-  const option: ApexOptions = {
+
+  const options: ApexOptions = {
     chart: {
       type: "bar",
       height: 350,
@@ -24,7 +50,7 @@ const ApexChart = () => {
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: "90%",
+        columnWidth: "55%",
       },
     },
     dataLabels: {
@@ -36,26 +62,22 @@ const ApexChart = () => {
       colors: ["transparent"],
     },
     xaxis: {
-      categories: [
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-      ],
+      categories: data.categories,
     },
-
+    yaxis: {
+      min: 0,
+      max: data.maxValue, // Atur sumbu Y berdasarkan nilai maksimum
+      title: {
+        text: "Jumlah Hari",
+      },
+    },
     fill: {
       opacity: 1,
     },
     tooltip: {
       y: {
         formatter: function (val) {
-          return +val + " hari";
+          return val + " hari";
         },
       },
     },
@@ -65,13 +87,12 @@ const ApexChart = () => {
     <div>
       <div id="chart">
         <ReactApexChart
-          options={option}
+          options={options}
           series={series}
           type="bar"
-          height={300}
+          height={350}
         />
       </div>
-      <div id="html-dist"></div>
     </div>
   );
 };

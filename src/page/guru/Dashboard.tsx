@@ -11,6 +11,7 @@ import { FaDoorClosed, FaDoorOpen } from "react-icons/fa";
 import moment from "moment";
 import { formatTime } from "../../utils/date";
 import * as Yup from "yup";
+import Swal from "sweetalert2";
 import dayjs from "dayjs";
 const Dashboard = () => {
   const { token, id } = Store(),
@@ -25,29 +26,24 @@ const Dashboard = () => {
   const [workTime, setWorkTime] = useState<any[]>([]);
   const [User, setUser] = useState<any>(null);
   const [DataTraining, setDataTraining] = useState<any[]>([]);
+  const [rekapYear, setRekapYear] = useState({
+    cuti: [],
+    izin: [],
+    hadir: [],
+    categories: [],
+    maxValue: 0,
+  });
   const today = dayjs().format("YYYY-MM-DD");
-
   const filteredAttendance = DataAttendance.filter(
     (attendance) => dayjs(attendance.createdAt).format("YYYY-MM-DD") === today
     //  &&
     //   attendance.worktime.type === "MASUK"
   );
-  // const getWorkTimeOne = async () => {
-  //   if (id && token) {
-  //     try {
-  //       const response = await DashboardGuru.getWorkTimeOne(token, id);
-  //     } catch (err) {
-  //       console.log("error:" + err);
-  //     }
-  //   } else {
-  //     console.error("Missing id or token in sessionStorage");
-  //   }
-  // };
   const getWorkTime = async () => {
     if (id && token) {
       try {
         const response = await DashboardGuru.getWorkTime(token);
-        setWorkTime(response.data.data.result);
+        setWorkTime(response.data.data);
       } catch (err) {
         console.log("error:" + err);
       }
@@ -111,7 +107,15 @@ const Dashboard = () => {
   };
   const requestCuti = async (data: any) => {
     try {
-      await DashboardGuru.requestCuti(token, data);
+      const response = await DashboardGuru.requestCuti(token, data);
+      if (response.status === 201) {
+        Swal.fire({
+          icon: "success",
+          title: "Request Cuti Berhasil",
+          text: response.data.message,
+        });
+        closeModalAdd("modal-cuti");
+      }
     } catch (err) {
       console.log("error:" + err);
     }
@@ -119,7 +123,7 @@ const Dashboard = () => {
   const getAnnouncement = async () => {
     if (id && token) {
       try {
-        const response = await DashboardGuru.getAnnouncement(token, 0, 20);
+        const response = await DashboardGuru.getAnnouncement(token, 1);
         setDataAnnouncment(response.data.data.result);
         console.log(DataAnnouncment);
       } catch (error) {
@@ -137,14 +141,6 @@ const Dashboard = () => {
       console.log("error:" + err);
     }
   };
-  useEffect(() => {
-    getDataAttendance();
-    getRecap();
-    getWorkTime();
-    getTraining();
-    getAnnouncement();
-    getProfile();
-  }, []);
   const showModalAdd = (props: string, type: string) => {
     let modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {
@@ -161,6 +157,52 @@ const Dashboard = () => {
       setCamera(false);
     }
   };
+  const getAllRecapYear = async () => {
+    if (id && token) {
+      try {
+        const response = await DashboardGuru.getRecapYear(token, id);
+        const data = response.data.data;
+
+        const cutiData: any = [];
+        const izinData: any = [];
+        const hadirData: any = [];
+        const categories: any = [];
+
+        Object.keys(data).forEach((key) => {
+          categories.push(data[key].name);
+          cutiData.push(Number(data[key].cuti));
+          izinData.push(Number(data[key].izin));
+          hadirData.push(Number(data[key].hadir));
+        });
+
+        // Hitung nilai maksimum untuk sumbu Y
+        const maxDataValue = Math.max(...cutiData, ...izinData, ...hadirData);
+
+        // Tambahkan sedikit padding pada nilai maksimum
+        const maxValue = maxDataValue > 0 ? Math.ceil(maxDataValue * 1.1) : 5;
+
+        setRekapYear({
+          cuti: cutiData,
+          izin: izinData,
+          hadir: hadirData,
+          categories,
+          maxValue,
+        });
+      } catch (err) {
+        console.log("error:" + err);
+      }
+    }
+  };
+
+  useEffect(() => {
+    getDataAttendance();
+    getRecap();
+    getWorkTime();
+    getTraining();
+    getAnnouncement();
+    getProfile();
+    getAllRecapYear();
+  }, []);
   const kamera = () => {
     navigator.mediaDevices
       .getUserMedia({ video: true })
@@ -361,7 +403,7 @@ const Dashboard = () => {
                               </p>
                             </th>
                             <td className="whitespace-nowrap">
-                              {item.start_date} - {item.end_date}
+                              {item.start_date.split("T")[0]}
                             </td>
                           </tr>
                         ))}
@@ -378,7 +420,7 @@ const Dashboard = () => {
                 <h3 className="text-lg font-bold">Chart Presensi</h3>
               </div>
               <div className="px-3 py-1 grow">
-                <ApexChart />
+                <ApexChart data={rekapYear} />
               </div>
             </div>
           </div>
