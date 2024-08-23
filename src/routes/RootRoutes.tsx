@@ -41,7 +41,7 @@ const Ke_DaftarTunggakan = lazy(
 );
 const Ke_Laporan = lazy(() => import("../page/keuangan/Laporan"));
 
-const AbsenKaryawan = lazy(() => import("../page/admin/AbsenKaryawan"));
+// const AbsenKaryawan = lazy(() => import("../page/admin/AbsenKaryawan"));
 const RekapPresensi = lazy(() => import("../page/hrd/Presensi"));
 const PengajuanCutiHRD = lazy(() => import("../page/hrd/PengajuanCuti"));
 
@@ -284,7 +284,7 @@ const RootRoutes = () => {
             </Suspense>
           }
         />
-        <Route
+        {/* <Route
           path="/admin/absen-karyawan"
           element={
             <Suspense fallback={<Loading />}>
@@ -293,7 +293,7 @@ const RootRoutes = () => {
               </Layout>
             </Suspense>
           }
-        />
+        /> */}
         <Route
           path="/keuangan/"
           element={
