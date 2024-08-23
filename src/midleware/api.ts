@@ -36,10 +36,14 @@ const Auth = {
     }),
 };
 const DashboardGuru = {
-  getAttendance: (token: string | null, id: string | null): AxiosPromise<any> =>
+  getAttendance: (
+    token: string | null,
+id: any
+  ): AxiosPromise<any> =>
     local({
       method: "GET",
-      url: `/api/employee-attendance/${id}`,
+      // url: `/api/employee-attendance/${id}`,
+      url: `/api/employee-attendance?employee_id=${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -52,6 +56,15 @@ const DashboardGuru = {
         Authorization: `Bearer ${token}`,
       },
     }),
+    
+    getWorkTime: (token: string | null): AxiosPromise<any> =>
+      local({
+        method: "GET",
+        url: `api/worktime`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
   getRecapMonthly: (token: string | null, id: any | null): AxiosPromise<any> =>
     local({
       method: "GET",
@@ -60,35 +73,32 @@ const DashboardGuru = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  getTrainingOne: (token: string | null, id: any | null): AxiosPromise<any> =>
+  getAnnouncement: (
+    token: string | null,
+    page: number,
+    limit: number
+  ): AxiosPromise<any> =>
     local({
       method: "GET",
-      url: `/api/training-attendance/${id}`,
+      url: `/api/employee-announcement?page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }),
-  requestCuti: (
-    token: string | null,
-    id: any | null,
-    data: any
-  ): AxiosPromise<any> =>
+  requestCuti: (token: string | null, data: any): AxiosPromise<any> =>
     local({
       method: "POST",
-      url: `/api/employee-vacation/request/${id}`,
+      url: `/api/employee-vacation/request`,
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
       data,
     }),
-  getAnnouncementOne: (
-    token: string | null,
-    id: any | null
-  ): AxiosPromise<any> =>
+  getTraining: (token: string | null, id: any): AxiosPromise<any> =>
     local({
       method: "GET",
-      url: `/api/employee-announcement/${id}`,
+      url: `/api/employee-attendance?employee_id=${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

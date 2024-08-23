@@ -2,30 +2,52 @@ import { useEffect, useState } from "react";
 import bg from "../../assets/bg2.png";
 import ApexChart from "../../component/ApexChart";
 import FaceDetection from "../../component/FaceRegocnition";
-import { DashboardGuru } from "../../midleware/api";
+import { DashboardGuru, Auth } from "../../midleware/api";
 import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
-
+import { Formik, Field, Form, ErrorMessage } from "formik";
 import Modal from "../../component/modal";
 import { employeeStore, Store, useProps } from "../../store/Store";
 import { FaDoorClosed, FaDoorOpen } from "react-icons/fa";
-import { Rekapan } from "../../midleware/api-hrd";
 import moment from "moment";
 import { formatTime } from "../../utils/date";
-
+import * as Yup from "yup";
+import dayjs from "dayjs";
 const Dashboard = () => {
   const { token, id } = Store(),
-    { employee, formTeachers } = employeeStore();
+    { formTeachers } = employeeStore();
 
   const currentDate = moment();
-  const [DataAttendance, setDataAttendance] = useState<[]>([]);
+  const [DataAttendance, setDataAttendance] = useState<any[]>([]);
   const [camera, setCamera] = useState<boolean>(false);
+  const [DataAnnouncment, setDataAnnouncment] = useState<any[]>([]);
   const { inArea, distance } = useProps();
+  const [rekapPresensi, setRekapPresensi] = useState<any>(null);
+  const [workTime, setWorkTime] = useState<any[]>([]);
+  const [User, setUser] = useState<any>(null);
+  const [DataTraining, setDataTraining] = useState<any[]>([]);
+  const today = dayjs().format("YYYY-MM-DD");
 
+  const filteredAttendance = DataAttendance.filter(
+    (attendance) => dayjs(attendance.createdAt).format("YYYY-MM-DD") === today
+    //  &&
+    //   attendance.worktime.type === "MASUK"
+  );
+  // const getWorkTimeOne = async () => {
+  //   if (id && token) {
+  //     try {
+  //       const response = await DashboardGuru.getWorkTimeOne(token, id);
+  //     } catch (err) {
+  //       console.log("error:" + err);
+  //     }
+  //   } else {
+  //     console.error("Missing id or token in sessionStorage");
+  //   }
+  // };
   const getWorkTime = async () => {
     if (id && token) {
       try {
-        const response = await DashboardGuru.getWorkTimeOne(token, id);
-        console.log(response.data.data.result);
+        const response = await DashboardGuru.getWorkTime(token);
+        setWorkTime(response.data.data.result);
       } catch (err) {
         console.log("error:" + err);
       }
@@ -37,7 +59,7 @@ const Dashboard = () => {
     if (id && token) {
       try {
         const response = await DashboardGuru.getRecapMonthly(token, id);
-        console.log(response.data.data.result);
+        setRekapPresensi(response.data.data);
       } catch (err) {
         console.log("error:" + err);
       }
@@ -48,8 +70,8 @@ const Dashboard = () => {
   const getTraining = async () => {
     if (id && token) {
       try {
-        const response = await DashboardGuru.getTrainingOne(token, id);
-        console.log(response.data.data.result);
+        const response = await DashboardGuru.getTraining(token, id);
+        setDataTraining(response.data.data.result);
       } catch (err) {
         console.log("error:" + err);
       }
@@ -61,8 +83,8 @@ const Dashboard = () => {
     if (id && token) {
       try {
         const response = await DashboardGuru.getAttendance(token, id);
-        setDataAttendance(response.data.data.result);
-        console.log(DataAttendance);
+        const data = response.data.data.result;
+        setDataAttendance(data);
       } catch (error) {
         console.error("Failed to fetch attendance data", error);
       }
@@ -70,10 +92,26 @@ const Dashboard = () => {
       console.error("Missing id or token in sessionStorage");
     }
   };
+
+  const handleSubmit = (values: any) => {
+    const formData = new FormData();
+    formData.append("type", "CUTI");
+    formData.append("start_date", values.start_date);
+    formData.append("end_date", values.end_date);
+    formData.append("description", values.deskripsi);
+    if (id) {
+      formData.append("employee_id", id);
+    } else {
+      console.error("Employee ID is missing");
+    }
+    if (values.file) {
+      formData.append("file", values.file);
+    }
+    requestCuti(formData);
+  };
   const requestCuti = async (data: any) => {
     try {
-      const response = await DashboardGuru.requestCuti(token, id, data);
-      console.log(response.data.data.result);
+      await DashboardGuru.requestCuti(token, data);
     } catch (err) {
       console.log("error:" + err);
     }
@@ -81,13 +119,22 @@ const Dashboard = () => {
   const getAnnouncement = async () => {
     if (id && token) {
       try {
-        const response = await DashboardGuru.getAnnouncementOne(token, id);
-        console.log(response.data.data.result);
+        const response = await DashboardGuru.getAnnouncement(token, 0, 20);
+        setDataAnnouncment(response.data.data.result);
+        console.log(DataAnnouncment);
       } catch (error) {
         console.error("Failed to fetch attendance data", error);
       }
     } else {
       console.error("Missing id or token in sessionStorage");
+    }
+  };
+  const getProfile = async () => {
+    try {
+      const response = await Auth.MeData(token);
+      setUser(response.data.data);
+    } catch (err) {
+      console.log("error:" + err);
     }
   };
   useEffect(() => {
@@ -96,12 +143,15 @@ const Dashboard = () => {
     getWorkTime();
     getTraining();
     getAnnouncement();
+    getProfile();
   }, []);
-  const showModalAdd = (props: string) => {
+  const showModalAdd = (props: string, type: string) => {
     let modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
-      kamera();
+      if (type === "camera") {
+        kamera();
+      }
     }
   };
   const closeModalAdd = (props: string) => {
@@ -126,26 +176,12 @@ const Dashboard = () => {
         console.log("Izin kamera ditolak atau tidak diberikan");
       });
   };
-
-  // get attendance summary
-  const [rekapPresensi, setRekapPresensi] = useState<any>(null);
-  const getRekapPresensi = async () => {
-    if (!employee) return;
-
-    try {
-      const res = await Rekapan.jumlahPresensi(token, employee.id);
-      setRekapPresensi(res.data.data);
-    } catch {}
-  };
-
-  // entry point concurrently get many data
-  const getData = async () => {
-    await Promise.all([getRekapPresensi()]);
-  };
-
-  useEffect(() => {
-    getData();
-  }, [employee]);
+  const validationSchema = Yup.object({
+    start_date: Yup.string().required("Tanggal mulai diperlukan"),
+    end_date: Yup.string().required("Tanggal berakhir diperlukan"),
+    file: Yup.mixed().required("File diperlukan").nullable(),
+    deskripsi: Yup.string().required("Deskripsi diperlukan"),
+  });
 
   return (
     <div
@@ -164,7 +200,10 @@ const Dashboard = () => {
                 </div>
               </div>
               <h3 className="text-2xl text-center font-bold">
-                {employee?.full_name ?? "-"}
+                {User?.full_name ?? "-"} <br />
+                <span className="text-sm font-semibold">
+                  {User?.email ?? "-"}
+                </span>
               </h3>
               <p className="text-center">
                 {formTeachers
@@ -172,50 +211,100 @@ const Dashboard = () => {
                   .join(" | ")}
               </p>
             </div>
-
-            {/* division attendance schedule  */}
             <div className="p-6 grow">
-              {/* clock in  */}
-              <div className="w-full flex items-center bg-base-200 p-3 rounded-md mb-3">
+              <div>
                 <div className="grow">
-                  <h6 className="font-bold text-md">
-                    Jadwal Masuk (07.00 - 08.00)
-                  </h6>
-                  <p className="text-sm">
-                    Presensi anda : <span className="font-bold">07.20</span>
-                  </p>
-                  <div className="badge badge-error mt-3 text-white font-bold">
-                    Terlambat
-                  </div>
-                </div>
-                <FaDoorOpen size={32} className="grow opacity-20" />
-              </div>
+                  {workTime.map((item: any, index: any) => {
+                    // Filter attendance sesuai dengan tipe worktime
+                    const relevantAttendance = filteredAttendance.filter(
+                      (attendance) => attendance.worktime.type === item.type
+                    );
 
-              {/* clock out  */}
-              <div className="w-full flex items-center bg-base-200 p-3 rounded-md">
-                <div className="grow">
-                  <h6 className="font-bold text-md">
-                    Jadwal Pulang (16.00 - 17.00)
-                  </h6>
-                  <p className="text-sm">
-                    Presensi anda : <span className="font-bold">16.01</span>
-                  </p>
-                  <div className="badge badge-success mt-3 text-white font-bold">
-                    Tepat waktu
-                  </div>
+                    return (
+                      <div className="w-full flex items-center bg-base-200 p-3 rounded-md mb-3">
+                        <div key={index} className="mb-4">
+                          <h6 className="font-bold text-md">
+                            Jadwal {item.type} (
+                            {item.start_time.split(":")[0] +
+                              ":" +
+                              item.start_time.split(":")[1]}{" "}
+                            -{" "}
+                            {item.end_time.split(":")[0] +
+                              ":" +
+                              item.end_time.split(":")[1]}
+                            )
+                          </h6>
+
+                          {relevantAttendance.length > 0 ? (
+                            relevantAttendance.map((attendance, index) => (
+                              <div key={index} className="mt-2">
+                                <p className="text-sm">
+                                  Presensi anda:
+                                  <span className="font-bold px-2">
+                                    {
+                                      attendance.createdAt
+                                        .split("T")[1]
+                                        .split(".")[0]
+                                    }
+                                  </span>
+                                </p>
+
+                                {/* Conditional Rendering for Badge */}
+                                <div className="flex justify-between w-full">
+                                  <div
+                                    className={`badge mt-3 text-white font-bold ${
+                                      attendance.status.toLowerCase() ===
+                                      "tepat waktu"
+                                        ? "badge-success"
+                                        : attendance.status.toLowerCase() ===
+                                            "terlambat"
+                                          ? "badge-error"
+                                          : "badge-warning"
+                                    }`}
+                                  >
+                                    {attendance.status}
+                                  </div>
+
+                                  {attendance.worktime.type === "MASUK" ? (
+                                    <FaDoorOpen
+                                      size={32}
+                                      className="grow opacity-20"
+                                    />
+                                  ) : (
+                                    <FaDoorClosed
+                                      size={32}
+                                      className="grow opacity-20"
+                                    />
+                                  )}
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-sm text-gray-500 mt-2">
+                              Belum ada presensi
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-                <FaDoorClosed size={32} className="grow opacity-20" />
               </div>
             </div>
 
             <div className="px-6 pb-3 flex flex-col gap-2">
               <button
                 className="btn btn-primary grow"
-                onClick={() => showModalAdd("modal-absen")}
+                onClick={() => showModalAdd("modal-absen", "camera")}
               >
                 Presensi
               </button>
-              <button className="btn  btn-warning grow">Ajukan Cuti</button>
+              <button
+                className="btn btn-warning grow"
+                onClick={() => showModalAdd("modal-cuti", "cuti")}
+              >
+                Ajukan Cuti
+              </button>
             </div>
           </div>
 
@@ -263,30 +352,19 @@ const Dashboard = () => {
                   <div className="overflow-x-auto">
                     <table className="table">
                       <tbody>
-                        <tr>
-                          <th>
-                            <p className="line-clamp-2 text-ellipsis overflow-hidden">
-                              Pelatihan Management{" "}
-                            </p>
-                          </th>
-                          <td className="whitespace-nowrap">9 Agustus 2024</td>
-                        </tr>
-                        <tr>
-                          <th>
-                            <p className="line-clamp-2 text-ellipsis overflow-hidden">
-                              Pelatihan Management{" "}
-                            </p>
-                          </th>
-                          <td className="whitespace-nowrap">9 Agustus 2024</td>
-                        </tr>
-                        <tr>
-                          <th>
-                            <p className="line-clamp-2 text-ellipsis overflow-hidden">
-                              Pelatihan Management{" "}
-                            </p>
-                          </th>
-                          <td className="whitespace-nowrap">9 Agustus 2024</td>
-                        </tr>
+                        {DataTraining.map((item: any, index: any) => (
+                          <tr key={index}>
+                            <th>
+                              <p className="line-clamp-2 text-ellipsis overflow-hidden">
+                                {item.title} <br /> {item.purpose}{" "}
+                                {item.location}
+                              </p>
+                            </th>
+                            <td className="whitespace-nowrap">
+                              {item.start_date} - {item.end_date}
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>
@@ -312,13 +390,138 @@ const Dashboard = () => {
             <h3 className="text-lg font-bold">Pengumuman</h3>
           </div>
           <div className="px-3 py-1 grow">
-            <div className="flex p-12">
-              <p className="opacity-40 m-auto">Tidak ada pengumuman</p>
+            <table className="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th className="py-2 px-4 border-b">ID</th>
+                  <th className="py-2 px-4 border-b">Plan Date</th>
+                  <th className="py-2 px-4 border-b">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {DataAnnouncment.map((announcement: any, index: number) => (
+                  <tr key={index}>
+                    <td className="py-2 px-4 border-b text-center">
+                      {index + 1}
+                    </td>
+                    <td className="py-2 px-4 border-b text-center">
+                      {announcement.plan_date.split("T")[0]}
+                    </td>
+                    <td className="py-2 px-4 border-b">{announcement.notes}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="flex p-12">
+            <div className="m-auto">
+              {/* <div className="m-auto">Tidak Ada Pengumuman</div> */}
             </div>
           </div>
         </div>
       </div>
 
+      <Modal id="modal-cuti">
+        <div className={`mt-4 flex justify-center`}>
+          <div className="w-full gap-2 block">
+            <h2 className="text-lg font-bold mb-4">Ajukan Cuti</h2>
+            <Formik
+              initialValues={{
+                start_date: "",
+                end_date: "",
+                file: null,
+                deskripsi: "",
+              }}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+            >
+              {({ setFieldValue }) => (
+                <Form>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">
+                      Tanggal Mulai
+                    </label>
+                    <Field
+                      type="date"
+                      name="start_date"
+                      className="w-full p-2 border rounded"
+                    />
+                    <ErrorMessage
+                      name="start_date"
+                      component="div"
+                      className="text-red-600 text-sm"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">
+                      Tanggal Berakhir
+                    </label>
+                    <Field
+                      type="date"
+                      name="end_date"
+                      className="w-full p-2 border rounded"
+                    />
+                    <ErrorMessage
+                      name="end_date"
+                      component="div"
+                      className="text-red-600 text-sm"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">
+                      Deskripsi
+                    </label>
+                    <Field
+                      type="textarea"
+                      name="deskripsi"
+                      className="w-full p-2 border rounded"
+                    />
+                    <ErrorMessage
+                      name="deskripsi"
+                      component="div"
+                      className="text-red-600 text-sm"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">
+                      File (Image/PDF)
+                    </label>
+                    <input
+                      type="file"
+                      className="w-full p-2 border rounded"
+                      accept="image/*,.pdf"
+                      onChange={(event) => {
+                        setFieldValue("file", event.currentTarget.files![0]);
+                      }}
+                    />
+                    <ErrorMessage
+                      name="file"
+                      component="div"
+                      className="text-red-600 text-sm"
+                    />
+                  </div>
+                  <div className="mt-4 flex justify-center">
+                    <div className="w-full flex gap-2">
+                      <button
+                        className={`btn bg-gray-500 text-white `}
+                        onClick={() => closeModalAdd("modal-cuti")}
+                      >
+                        Close
+                      </button>
+                      <button
+                        type="submit"
+                        className="btn bg-blue-500 text-white"
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </div>
+                </Form>
+              )}
+            </Formik>
+          </div>
+        </div>
+      </Modal>
       <Modal id="modal-absen">
         <div className={`mt-4 flex justify-center`}>
           {camera ? (

@@ -35,8 +35,6 @@ const AdmGuru = () => {
   return (
     <>
       <div className="w-full flex flex-col items-center">
-        
-      
         <div className="overflow-x-auto w-full flex flex-col p-5 my-10 justify-center">
           <div className="w-full justify-between bg-red flex">
             <span className="text-2xl font-bold">Task List</span>
@@ -145,8 +143,6 @@ const AdmGuru = () => {
                     </button>
                   </td>
                 </tr>
-               
-               
               </tbody>
             </table>
           </div>
