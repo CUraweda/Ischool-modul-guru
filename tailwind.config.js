@@ -2,7 +2,11 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        'maxw768': {'max': '768px'},
+      }
+    },
   },
   plugins: [require("daisyui"), require("tailwind-scrollbar-hide")],
   daisyui: {

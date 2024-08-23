@@ -45,8 +45,8 @@ const schema = Yup.object().shape({
   evidence: Yup.mixed<File>()
     .when("id", {
       is: (id: any) => !!id,
-      then: () => Yup.string().optional(),
-      otherwise: () => Yup.string().required("Bukti file harus disertakan"),
+      then: () => Yup.mixed<File>().optional(),
+      otherwise: () => Yup.mixed<File>().required("Bukti file harus disertakan"),
     })
     .test(
       "is-valid-type",
