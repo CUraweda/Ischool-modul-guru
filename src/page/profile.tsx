@@ -38,7 +38,11 @@ const ProfilePage = () => {
       if (formteachers) setFormTeachers(formteachers);
       if (formsubjects) setFormSubjects(formsubjects);
       if (formextras) setFormXtras(formextras);
-    } catch {}
+
+
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const EditProfile = async () => {
@@ -193,6 +197,13 @@ const ProfilePage = () => {
           Edit Profile
         </button>
       </div>
+
+      {dataUser?.full_name && (
+        <div className="relative w-full">
+          <a href="/guru/train-face" className="absolute left-6 top-3 btn btn-secondary">Train Face</a>
+        </div>
+      )}
+
 
       <Modal id="editProfile">
         <div className="p-4">
