@@ -67,6 +67,12 @@ const ApexChart: React.FC<ApexChartProps> = ({ data }) => {
     yaxis: {
       min: 0,
       max: data.maxValue, // Atur sumbu Y berdasarkan nilai maksimum
+      tickAmount: data.maxValue, // Tentukan jumlah tick sesuai nilai maksimum
+      labels: {
+        formatter: function (val) {
+          return Math.floor(val).toString(); // label bilangan bulat
+        },
+      },
       title: {
         text: "Jumlah Hari",
       },
@@ -90,7 +96,7 @@ const ApexChart: React.FC<ApexChartProps> = ({ data }) => {
           options={options}
           series={series}
           type="bar"
-          height={350}
+          height={400}
         />
       </div>
     </div>

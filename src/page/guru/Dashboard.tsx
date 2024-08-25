@@ -25,6 +25,7 @@ const Dashboard = () => {
   const [rekapPresensi, setRekapPresensi] = useState<any>(null);
   const [workTime, setWorkTime] = useState<any[]>([]);
   const [User, setUser] = useState<any>(null);
+  const [DetTraining, setDetTraining] = useState<any>(null);
   const [DataTraining, setDataTraining] = useState<any[]>([]);
   const [rekapYear, setRekapYear] = useState({
     cuti: [],
@@ -125,7 +126,6 @@ const Dashboard = () => {
       try {
         const response = await DashboardGuru.getAnnouncement(token, 1);
         setDataAnnouncment(response.data.data.result);
-        console.log(DataAnnouncment);
       } catch (error) {
         console.error("Failed to fetch attendance data", error);
       }
@@ -396,15 +396,23 @@ const Dashboard = () => {
                       <tbody>
                         {DataTraining.map((item: any, index: any) => (
                           <tr key={index}>
-                            <th>
-                              <p className="line-clamp-2 text-ellipsis overflow-hidden">
-                                {item.title} <br /> {item.purpose}{" "}
-                                {item.location}
-                              </p>
-                            </th>
-                            <td className="whitespace-nowrap">
-                              {item.start_date.split("T")[0]}
-                            </td>
+                            <div
+                              className="cursor-pointer"
+                              onClick={() => {
+                                showModalAdd("modal-Training", "");
+                                setDetTraining(item);
+                              }}
+                            >
+                              <th>
+                                <p className="line-clamp-2 text-ellipsis overflow-hidden">
+                                  {item.title} <br /> {item.purpose}{" "}
+                                  {item.location}
+                                </p>
+                              </th>
+                              <td className="whitespace-nowrap">
+                                {item.start_date.split("T")[0]}
+                              </td>
+                            </div>
                           </tr>
                         ))}
                       </tbody>
@@ -564,6 +572,39 @@ const Dashboard = () => {
           </div>
         </div>
       </Modal>
+      <Modal id="modal-Training">
+        <h2 className="text-lg font-bold mb-4">Detail Pelatihan </h2>
+        <div className={`mt-4 flex justify-center`}>
+          <table className="min-w-full bg-white">
+            <tbody>
+              <tr>
+                <td className="py-2 px-4 border-b">Judul</td>
+                <td className="py-2 px-4 border-b">{DetTraining?.title}</td>
+              </tr>
+              <tr>
+                <td className="py-2 px-4 border-b">Lokasi</td>
+                <td className="py-2 px-4 border-b">{DetTraining?.location}</td>
+              </tr>
+              <tr>
+                <td className="py-2 px-4 border-b">Deskripsi</td>
+                <td className="py-2 px-4 border-b">{DetTraining?.purpose}</td>
+              </tr>
+              <tr>
+                <td className="py-2 px-4 border-b">Status</td>
+                <td className="py-2 px-4 border-b">{DetTraining?.status}</td>
+              </tr>
+              <tr>
+                <td className="py-2 px-4 border-b">Tanggal</td>
+                <td className="py-2 px-4 border-b">
+                  {DetTraining?.start_date.split("T")[0]} s/d{" "}
+                  {DetTraining?.end_date.split("T")[0]}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Modal>
+
       <Modal id="modal-absen">
         <div className={`mt-4 flex justify-center`}>
           {camera ? (
