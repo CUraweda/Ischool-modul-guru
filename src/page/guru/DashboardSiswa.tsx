@@ -20,7 +20,7 @@ const DashboardSiswa = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 overflow-x-hidden border-base-300 rounded-box p-6"
+            className="tab-content bg-base-100 overflow-x-hidden border-base-300 rounded-box rounded-ss-none p-6"
           >
             <PengumumanSiswa />
           </div>
@@ -35,7 +35,7 @@ const DashboardSiswa = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 overflow-x-hidden border-base-300 rounded-box p-6"
+            className="tab-content bg-base-100 overflow-x-hidden border-base-300 rounded-box rounded-ss-none p-6"
           >
             <OverviewSiswa />
           </div>
