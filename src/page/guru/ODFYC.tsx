@@ -6,7 +6,6 @@ import {
   FaRegFileAlt,
   FaSearch,
   FaTrash,
-  FaPlus,
 } from "react-icons/fa";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { IoDocumentTextOutline } from "react-icons/io5";
@@ -99,7 +98,7 @@ const ODFYC = () => {
     try {
       const res = await ForCountryDetail.showAll(
         token,
-        filter.search,
+        "",
         academicYear,
         filter.page,
         filter.limit,
@@ -121,7 +120,24 @@ const ODFYC = () => {
 
   useEffect(() => {
     getDataList();
-  }, [filter, academicYear]);
+  }, []);
+
+  const dataFilter = search
+    ? dataList.filter(
+        (item) =>
+          item.forcountry.user.full_name
+            .toLowerCase()
+            .includes(search.toLowerCase()) ||
+          item.activity.toLowerCase().includes(search.toLowerCase()) ||
+          item.forcountry.academic_year
+            .toLowerCase()
+            .includes(search.toLowerCase())
+      )
+    : dataList;
+
+  useEffect(() => {
+    getDataList();
+  }, [filter, academicYear, search]);
 
   // handle detail edit
   const [formNav, setFormNav] = useState<TformNav>("data");
@@ -428,19 +444,14 @@ const ODFYC = () => {
         </div>
         <div className="w-full bg-white p-3 rounded-md">
           {/* filter bar  */}
-          <div className="w-full flex justify-between my-3 gap-2">
-            <Link to={"/guru/one-day-partisipan"} className="btn btn-link">
-              Partisipan
-            </Link>
-
-            {/* search  */}
+          <div className="w-full flex justify-end my-3 gap-2">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleFilter("search", search);
               }}
             >
-              <label className="input input-bordered flex items-center gap-2">
+              <label className="input input-md input-bordered flex items-center gap-2">
                 <input
                   type="text"
                   value={search}
@@ -451,10 +462,18 @@ const ODFYC = () => {
                 <FaSearch />
               </label>
             </form>
-            <button className="btn btn-ghost bg-blue-500 btn-sm text-white ">
-              <FaPlus />
-              Tambah
-            </button>
+            <div className="flex gap-2">
+              <Link
+                to={"/guru/one-day-partisipan"}
+                className="btn btn-ghost bg-blue-500 btn-md text-white "
+              >
+                Partisipan
+              </Link>
+              {/* <button className="btn btn-ghost bg-blue-500 btn-sm text-white ">
+                <FaPlus />
+                Tambah
+              </button> */}
+            </div>
           </div>
 
           {/* data list  */}
@@ -474,7 +493,7 @@ const ODFYC = () => {
                 </tr>
               </thead>
               <tbody>
-                {dataList.map((dat, i) => (
+                {dataFilter.map((dat, i) => (
                   <tr key={i}>
                     <th>{i + 1}</th>
                     <td>{dat.forcountry?.user?.full_name ?? "-"}</td>

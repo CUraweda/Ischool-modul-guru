@@ -4,7 +4,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { Input, Select } from "../../component/Input";
+import { Input } from "../../component/Input";
 import { FaSearch, FaTrash } from "react-icons/fa";
 import { ForCountry, User } from "../../midleware/api";
 import Swal from "sweetalert2";
@@ -13,10 +13,11 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { Link } from "react-router-dom";
-
+import { IoChevronBack } from "react-icons/io5";
+import { FaPlus } from "react-icons/fa";
 const schema = Yup.object().shape({
   id: Yup.string().optional(),
-  user_id: Yup.string().required("User harus dipilih"),
+  user_id: Yup.array().of(Yup.string()).required("User harus dipilih"),
   academic_year: Yup.string().required("Tahun pelajaran harus diisi"),
   target: Yup.number()
     .min(8, "Minimal 8 jam")
@@ -42,7 +43,7 @@ const OdfycParticipants = () => {
       ...filter,
       [key]: value,
     };
-    if (key != "page") obj["page"] = 0;
+    if (key !== "page") obj["page"] = 0;
     setFilter(obj);
   };
 
@@ -59,7 +60,6 @@ const OdfycParticipants = () => {
       );
 
       const { result, ...meta } = res.data.data;
-
       setDataList(result);
       setPageMeta(meta);
     } catch (error) {
@@ -78,34 +78,67 @@ const OdfycParticipants = () => {
   // create update
   const [searchUser, setSearchUser] = useState("");
   const [users, setUsers] = useState<any[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+
+  const handleUserSelection = (userId: string) => {
+    setSelectedUsers((prevSelected) => {
+      if (prevSelected.includes(userId)) {
+        return prevSelected.filter((id) => id !== userId);
+      } else {
+        return [...prevSelected, userId];
+      }
+    });
+  };
 
   const handleSearchUser = async () => {
-    form.setFieldValue("user_id", "");
+    form.setFieldValue("user_id", []);
     try {
       const res = await User.showAll(token, searchUser);
-      setUsers(res.data?.data?.result ?? []);
-    } catch {}
+
+      const filteredUsers = (res.data?.data?.result ?? [])
+        .filter((user: { id: any; role_id: any }) => {
+          return (
+            user.role_id === 8 &&
+            !dataList.some(
+              (data) =>
+                data.user_id === user.id && data.academic_year === academicYear
+            )
+          );
+        })
+        .map((user: any) => ({
+          ...user,
+          displayName: `${user.full_name} - (${user.email})`, // Gabungkan full_name dan email
+        }));
+      setUsers(filteredUsers);
+    } catch (error) {
+      console.error("Gagal mencari user", error);
+    }
   };
 
   const form = useFormik({
     initialValues: {
       id: "",
-      user_id: "",
+      user_id: [] as string[], // Memastikan tipe array string
       academic_year: "",
       target: 0,
     },
     validationSchema: schema,
     validateOnChange: false,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
-      const { id, academic_year, target, user_id } = values;
+      form.setFieldValue("academic_year", academicYear);
+      const { id, academic_year, target } = values;
       setSubmitting(false);
 
       try {
-        const payload = { user_id, academic_year, target };
+        const payload: any = { academic_year, target };
 
-        id
-          ? await ForCountry.update(token, id, payload)
-          : await ForCountry.create(token, payload);
+        if (!id) {
+          payload.user_ids = selectedUsers;
+          await ForCountry.create(token, payload);
+        } else {
+          await ForCountry.update(token, id, payload);
+        }
 
         resetForm();
         closeModal(modalFormId);
@@ -133,7 +166,13 @@ const OdfycParticipants = () => {
   }, [academicYear]);
 
   const handleReset = () => {
-    form.resetForm();
+    const savedAcademicYear = form.values.academic_year;
+    form.resetForm({
+      values: {
+        ...form.initialValues,
+        academic_year: savedAcademicYear,
+      },
+    });
     setSearchUser("");
   };
 
@@ -147,7 +186,7 @@ const OdfycParticipants = () => {
 
       form.setValues({
         id: res.data.data?.id ?? "",
-        user_id: res.data.data?.user_id ?? "",
+        user_id: res.data.data?.user_id ? [res.data.data.user_id] : [],
         academic_year: res.data.data?.academic_year ?? "",
         target: res.data.data?.target ?? 0,
       });
@@ -200,7 +239,9 @@ const OdfycParticipants = () => {
       }
     });
   };
-
+  useEffect(() => {
+    setIsButtonDisabled(searchUser.trim() === "");
+  }, [searchUser]);
   return (
     <>
       <Modal id={modalFormId} onClose={() => handleReset()}>
@@ -210,6 +251,51 @@ const OdfycParticipants = () => {
           </h3>
 
           {form.values.id ? (
+            <Input label="User" value={searchUser} disabled />
+          ) : (
+            <>
+              <div className="flex items-center gap-2">
+                <Input
+                  label="Cari user"
+                  placeholder="Cari berdasarkan username"
+                  value={searchUser}
+                  onChange={(e) => setSearchUser(e.target.value)}
+                />
+                <div className="pt-5">
+                  <button
+                    onClick={handleSearchUser}
+                    disabled={isButtonDisabled}
+                    className="btn btn-primary"
+                  >
+                    <FaSearch />
+                  </button>
+                </div>
+              </div>
+
+              {users.length > 0 && (
+                <div className="overflow-y-auto max-h-60">
+                  {users.map((user) => (
+                    <div key={user.id} className="flex items-center mb-2">
+                      <input
+                        type="checkbox"
+                        id={`user-${user.id}`}
+                        name="user_id"
+                        checked={selectedUsers.includes(user.id)}
+                        onChange={() => handleUserSelection(user.id)}
+                      />
+                      <label
+                        htmlFor={`user-${user.id}`}
+                        className="ml-2 cursor-pointer"
+                      >
+                        {user.displayName}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+          {/* {form.values.id ? (
             <Input label="User" value={searchUser} disabled />
           ) : (
             <>
@@ -237,7 +323,7 @@ const OdfycParticipants = () => {
                 label="User"
                 name="user_id"
                 keyValue="id"
-                keyDisplay="full_name"
+                keyDisplay="displayName"
                 hint={`Terdapat ${users.length} user`}
                 options={users}
                 value={form.values.user_id}
@@ -245,7 +331,7 @@ const OdfycParticipants = () => {
                 errorMessage={form.errors.user_id}
               />
             </>
-          )}
+          )} */}
 
           <Input
             label="Tahun pelajaran"
@@ -276,35 +362,41 @@ const OdfycParticipants = () => {
       </Modal>
 
       <div className="w-full flex justify-center flex-col items-center p-3">
-        <span className="font-bold text-xl">
+        <span className="font-bold text-xl my-5">
           ONE DAY FOR YOUR COUNTRY PARTISIPAN
         </span>
-        <div className="w-full p-3 bg-white rounded-lg">
-          <div className="w-full flex my-3 gap-3">
-            <Link to={"/guru/one-day"} className="btn btn-link me-auto">
+        <div className="w-full p-3 bg-white rounded-lg ">
+          <div className="w-full flex gap-3 justify-between">
+            <Link
+              to={"/guru/one-day"}
+              className="btn btn-ghost bg-blue-500 text-white btn-md"
+            >
+              <IoChevronBack />
               Kembali
             </Link>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleFilter("search", search);
-              }}
-              className="join"
-            >
-              <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Cari"
-                slotRight={<FaSearch />}
-              />
-            </form>
-            <button
-              onClick={() => openModal(modalFormId)}
-              className="btn btn-ghost bg-blue-500 text-white"
-            >
-              Tambah
-            </button>
+            <div className="flex gap-5">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleFilter("search", search);
+                }}
+                className="join"
+              >
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Cari"
+                  slotRight={<FaSearch />}
+                />
+              </form>
+              <button
+                onClick={() => openModal(modalFormId)}
+                className="btn btn-ghost bg-blue-500 text-white"
+              >
+                <FaPlus />
+                Tambah
+              </button>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="table table-zebra">
