@@ -14,7 +14,11 @@ import { FaCheckCircle } from "react-icons/fa";
 import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
 import Modal from "../../component/modal";
 import { employeeStore, Store } from "../../store/Store";
-import { FaDoorClosed, FaDoorOpen } from "react-icons/fa";
+import {
+  FaDoorClosed,
+  FaDoorOpen,
+  FaExclamationTriangle,
+} from "react-icons/fa";
 import moment from "moment";
 import { formatTime } from "../../utils/date";
 import Swal from "sweetalert2";
@@ -262,6 +266,12 @@ const Dashboard = () => {
       className="flex min-h-screen items-start flex-wrap p-3"
       style={{ backgroundImage: `url('${bg}')`, backgroundSize: "cover" }}
     >
+      {!employee && (
+        <div role="alert" className="alert alert-warning mb-6">
+          <FaExclamationTriangle />
+          <span>Akun anda belum terhubung ke data karyawan!</span>
+        </div>
+      )}
       <div className="w-full flex flex-col gap-3">
         <div className="w-full items-stretch flex gap-3 flex-col md:flex-row ">
           {/* main card  */}
