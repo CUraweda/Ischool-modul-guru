@@ -135,7 +135,14 @@ const PelatihanKaryawan = {
       },
     }),
 };
-
+const waktukerja = {
+  getWorkTime: (token: string | null) =>
+    instance.get(`api/worktime/today`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
 const Rekapan = {
   kalendarKehadiran: (
     token: string | null,
@@ -157,6 +164,24 @@ const Rekapan = {
         },
       }
     ),
+  getRecapMonthly: (token: string | null, id: any | null) =>
+    instance.get(`/api/employee-attendance/recap-month-employee/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getRecapYear: (token: string | null, id: any | null) =>
+    instance.get(`/api/employee-attendance/recap-year-employee/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
-export { CutiIzin, PengajuanPelatihanKaryawan, PelatihanKaryawan, Rekapan };
+export {
+  CutiIzin,
+  PengajuanPelatihanKaryawan,
+  PelatihanKaryawan,
+  Rekapan,
+  waktukerja,
+};

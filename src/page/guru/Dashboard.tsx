@@ -3,15 +3,18 @@ import bg from "../../assets/bg2.png";
 import ApexChart from "../../component/ApexChart";
 import FaceDetection from "../../component/FaceRegocnition";
 import { DashboardGuru, Auth } from "../../midleware/api";
-import { PelatihanKaryawan, CutiIzin } from "../../midleware/api-hrd";
+import { useNavigate } from "react-router-dom";
+import {
+  PelatihanKaryawan,
+  waktukerja,
+  Rekapan,
+} from "../../midleware/api-hrd";
 import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
-import { Formik, Field, Form, ErrorMessage } from "formik";
 import Modal from "../../component/modal";
 import { employeeStore, Store, useProps } from "../../store/Store";
 import { FaDoorClosed, FaDoorOpen } from "react-icons/fa";
 import moment from "moment";
 import { formatTime } from "../../utils/date";
-import * as Yup from "yup";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 const Dashboard = () => {
@@ -19,6 +22,7 @@ const Dashboard = () => {
     { formTeachers } = employeeStore();
 
   const currentDate = moment();
+  const navigate = useNavigate();
   const [DataAttendance, setDataAttendance] = useState<any[]>([]);
   const [camera, setCamera] = useState<boolean>(false);
   const [DataAnnouncment, setDataAnnouncment] = useState<any[]>([]);
@@ -41,10 +45,16 @@ const Dashboard = () => {
     //  &&
     //   attendance.worktime.type === "MASUK"
   );
+
+  const handleCutiButtonClick = () => {
+    navigate("/karyawan/daftar-cuti-izin", {
+      state: { openModalId: "form-cuti-izin" },
+    });
+  };
   const getWorkTime = async () => {
     if (id && token) {
       try {
-        const response = await DashboardGuru.getWorkTime(token);
+        const response = await waktukerja.getWorkTime(token);
         setWorkTime(response.data.data);
       } catch (err) {
         console.log("error:" + err);
@@ -56,7 +66,7 @@ const Dashboard = () => {
   const getRecap = async () => {
     if (id && token) {
       try {
-        const response = await DashboardGuru.getRecapMonthly(token, id);
+        const response = await Rekapan.getRecapMonthly(token, id);
         setRekapPresensi(response.data.data);
       } catch (err) {
         console.log("error:" + err);
@@ -91,37 +101,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleSubmit = (values: any) => {
-    const formData = new FormData();
-    formData.append("type", "CUTI");
-    formData.append("start_date", values.start_date);
-    formData.append("end_date", values.end_date);
-    formData.append("description", values.deskripsi);
-    if (id) {
-      formData.append("employee_id", id);
-    } else {
-      console.error("Employee ID is missing");
-    }
-    if (values.file) {
-      formData.append("file", values.file);
-    }
-    requestCuti(formData);
-  };
-  const requestCuti = async (data: any) => {
-    try {
-      const response = await CutiIzin.request(token, data);
-      if (response.status === 201) {
-        Swal.fire({
-          icon: "success",
-          title: "Request Cuti Berhasil",
-          text: response.data.message,
-        });
-        closeModalAdd("modal-cuti");
-      }
-    } catch (err) {
-      console.log("error:" + err);
-    }
-  };
   const getAnnouncement = async () => {
     if (id && token) {
       try {
@@ -161,7 +140,7 @@ const Dashboard = () => {
   const getAllRecapYear = async () => {
     if (id && token) {
       try {
-        const response = await DashboardGuru.getRecapYear(token, id);
+        const response = await Rekapan.getRecapYear(token, id);
         const data = response.data.data;
 
         const cutiData: any = [];
@@ -219,23 +198,25 @@ const Dashboard = () => {
         console.log("Izin kamera ditolak atau tidak diberikan");
       });
   };
-  const validationSchema = Yup.object({
-    start_date: Yup.string().required("Tanggal mulai diperlukan"),
-    end_date: Yup.string().required("Tanggal berakhir diperlukan"),
-    file: Yup.mixed().required("File diperlukan").nullable(),
-    deskripsi: Yup.string().required("Deskripsi diperlukan"),
-  });
 
   const triggerCheck = () => {
     const time = new Date();
-    const currentTime = time.toTimeString().split(" ")[0]; // Ambil HH:mm:ss
+    const currentTime = time.toTimeString().split(" ")[0];
 
     const isWithinWorkTime = workTime.some((work) => {
       const { start_time, end_time } = work;
-      return currentTime >= start_time && currentTime <= end_time;
+      return (
+        (currentTime >= start_time && currentTime <= end_time) ||
+        currentTime > end_time
+      );
     });
 
-    if (isWithinWorkTime) {
+    // Memeriksa apakah saat ini sebelum waktu kerja dimulai
+    const isBeforeWorkTime = workTime.every(
+      (work) => currentTime < work.start_time
+    );
+
+    if (isWithinWorkTime && !isBeforeWorkTime) {
       showModalAdd("modal-absen", "camera");
     } else {
       Swal.fire({
@@ -363,8 +344,8 @@ const Dashboard = () => {
                 Presensi
               </button>
               <button
+                onClick={handleCutiButtonClick}
                 className="btn btn-warning grow"
-                onClick={() => showModalAdd("modal-cuti", "cuti")}
               >
                 Ajukan Cuti
               </button>
@@ -492,107 +473,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <Modal id="modal-cuti">
-        <div className={`mt-4 flex justify-center`}>
-          <div className="w-full gap-2 block">
-            <h2 className="text-lg font-bold mb-4">Ajukan Cuti</h2>
-            <Formik
-              initialValues={{
-                start_date: "",
-                end_date: "",
-                file: null,
-                deskripsi: "",
-              }}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-            >
-              {({ setFieldValue }) => (
-                <Form>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium mb-1">
-                      Tanggal Mulai
-                    </label>
-                    <Field
-                      type="date"
-                      name="start_date"
-                      className="w-full p-2 border rounded"
-                    />
-                    <ErrorMessage
-                      name="start_date"
-                      component="div"
-                      className="text-red-600 text-sm"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium mb-1">
-                      Tanggal Berakhir
-                    </label>
-                    <Field
-                      type="date"
-                      name="end_date"
-                      className="w-full p-2 border rounded"
-                    />
-                    <ErrorMessage
-                      name="end_date"
-                      component="div"
-                      className="text-red-600 text-sm"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium mb-1">
-                      Deskripsi
-                    </label>
-                    <Field
-                      type="textarea"
-                      name="deskripsi"
-                      className="w-full p-2 border rounded"
-                    />
-                    <ErrorMessage
-                      name="deskripsi"
-                      component="div"
-                      className="text-red-600 text-sm"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium mb-1">
-                      File (Image/PDF)
-                    </label>
-                    <input
-                      type="file"
-                      className="w-full p-2 border rounded"
-                      accept="image/*,.pdf"
-                      onChange={(event) => {
-                        setFieldValue("file", event.currentTarget.files![0]);
-                      }}
-                    />
-                    <ErrorMessage
-                      name="file"
-                      component="div"
-                      className="text-red-600 text-sm"
-                    />
-                  </div>
-                  <div className="mt-4 flex justify-center">
-                    <div className="w-full flex gap-2">
-                      <button
-                        className={`btn bg-gray-500 text-white `}
-                        onClick={() => closeModalAdd("modal-cuti")}
-                      >
-                        Close
-                      </button>
-                      <button
-                        type="submit"
-                        className="btn bg-blue-500 text-white"
-                      >
-                        Submit
-                      </button>
-                    </div>
-                  </div>
-                </Form>
-              )}
-            </Formik>
-          </div>
-        </div>
-      </Modal>
       <Modal id="modal-Training">
         <h2 className="text-lg font-bold mb-4">Detail Pelatihan </h2>
         <div className={`mt-4 flex justify-center`}>

@@ -45,23 +45,7 @@ const DashboardGuru = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  getWorkTimeOne: (token: string | null, id: any | null): AxiosPromise<any> =>
-    local({
-      method: "GET",
-      url: `/api/worktime/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
 
-  getWorkTime: (token: string | null): AxiosPromise<any> =>
-    local({
-      method: "GET",
-      url: `api/worktime/today`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
   getRecapMonthly: (token: string | null, id: any | null): AxiosPromise<any> =>
     local({
       method: "GET",

@@ -20,7 +20,7 @@ import { useFormik } from "formik";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { CutiIzin } from "../../midleware/api-hrd";
 import { formatTime } from "../../utils/date";
-
+import { useLocation } from "react-router-dom";
 const types = ["CUTI", "IZIN"];
 const statuses = ["Menunggu", "Disetujui", "Ditolak"];
 const evidenceExts = ["pdf", "jpeg", "jpg", "png"];
@@ -70,7 +70,7 @@ const DaftarCutiIzin = () => {
     { employee } = employeeStore(),
     modalFormId = "form-cuti-izin",
     modEvidence = "form-bukti-cuti-izin";
-
+  const location = useLocation();
   // filter
   const [search, setSearch] = useState("");
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
@@ -83,6 +83,12 @@ const DaftarCutiIzin = () => {
     limit: 0,
   });
 
+  useEffect(() => {
+    // Cek apakah ada state `openModalId` yang diteruskan dari halaman sebelumnya
+    if (location.state?.openModalId) {
+      openModal(location.state.openModalId);
+    }
+  }, [location.state]);
   const handleFilter = (key: string, value: any) => {
     const obj = {
       ...filter,

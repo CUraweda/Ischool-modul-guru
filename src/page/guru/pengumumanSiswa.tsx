@@ -264,7 +264,7 @@ const PengumumanSiswa = () => {
           <tbody>
             {dataList.map((item: any, index: number) => (
               <tr key={index}>
-                <th>{index + 1}</th>
+                <th>{index + 1 + filter.page * filter.limit}</th>
 
                 <td>
                   <p className="min-w-80">{item?.announcement_desc}</p>

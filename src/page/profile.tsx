@@ -95,6 +95,13 @@ const ProfilePage = () => {
                     </th>
                     <td>: {dataUser.employee?.full_name ?? "-"}</td>
                   </tr>
+                  <tr>
+                    <th className="w-16 sm:w-24 md:w-32 lg:w-40 xl:w-48">
+                      Status
+                    </th>
+
+                    <td>: {dataUser.employee?.status ?? "-"}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
