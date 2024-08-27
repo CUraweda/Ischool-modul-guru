@@ -326,7 +326,7 @@ const PresensiSiswa = () => {
                 {dataSiswa && dataSiswa.length > 0 ? (
                   dataSiswa.map((item: any, index: number) => (
                     <tr key={index}>
-                      <th>{index + 1}</th>
+                      <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
                       <td>{item?.studentclass?.student?.full_name}</td>
                       <td>{item?.studentclass?.student?.nis}</td>
                       <td>{item?.studentclass?.student?.class}</td>

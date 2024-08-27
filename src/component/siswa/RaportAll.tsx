@@ -301,7 +301,7 @@ const RaportAll = () => {
                     className="form-checkbox h-5 w-5 text-blue-600"
                   />
                 </th>
-                <th>{index + 1}</th>
+                <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
                 <td>{item?.studentclass.student.full_name}</td>
                 <td>{item?.semester == 1 ? "Ganjil" : "Genap"}</td>
                 <td>

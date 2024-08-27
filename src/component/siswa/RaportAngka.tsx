@@ -641,7 +641,7 @@ const RaportAngka = () => {
           <tbody>
             {dataRaport?.map((item: any, index: number) => (
               <tr>
-                <th>{index + 1}</th>
+                <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
 
                 <td>{item?.studentreport?.studentclass?.student?.full_name}</td>
                 <td>{item?.subject?.name}</td>

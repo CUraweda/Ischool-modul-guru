@@ -1040,7 +1040,7 @@ const Pengumuman = {
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/announcement?search_query=${search}&class_id=${classId}&start_date=${start}&end_date=${end}&page=${page}$limit=${limit}&with_assign=${withAssign}`,
+      url: `/api/announcement?search_query=${search}&class_id=${classId}&start_date=${start}&end_date=${end}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

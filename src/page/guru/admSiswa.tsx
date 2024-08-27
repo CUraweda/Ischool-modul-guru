@@ -640,7 +640,7 @@ const AdmSiswa = () => {
                 <tbody>
                   {taskClass?.map((item: any, index: number) => (
                     <tr key={index}>
-                      <th>{index + 1}</th>
+                      <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
                       <td>{item?.topic}</td>
                       <td>{item?.description}</td>
                       <td>{item?.subject.name}</td>
@@ -746,7 +746,7 @@ const AdmSiswa = () => {
                 <tbody>
                   {task?.map((item: any, index: number) => (
                     <tr key={index}>
-                      <th>{index + 1}</th>
+                      <th>{index + 1 + (pageMetaSiswa?.page ?? 0) * (pageMetaSiswa?.limit ?? 0)}</th>
                       <td>{item?.studentclass?.student?.full_name}</td>
                       <td>{item?.topic}</td>
                       <td>{item?.description}</td>
