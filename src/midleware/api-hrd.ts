@@ -128,6 +128,35 @@ const PelatihanKaryawan = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  showAllDokumentasi: (
+    token: string | null,
+    trainingId: string,
+    page: number = 0,
+    limit: number = 10000
+  ) =>
+    instance.get("/api/training-attendance", {
+      params: { training_id: trainingId, page, limit },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  uploadDokumentasi: (token: string | null, training_id: string, data: any) =>
+    instance.post(
+      "/api/training-attendance/attend-specific/" + training_id,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    ),
+  hapusDokumentasi: (token: string | null, id: string) =>
+    instance.delete("/api/training-attendance/delete/" + id, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   getTraining: (token: string | null, id: any) =>
     instance.get(`/api/training?employee_id=${id}`, {
       headers: {

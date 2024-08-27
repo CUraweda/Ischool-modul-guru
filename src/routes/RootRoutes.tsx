@@ -5,6 +5,7 @@ import Test from "../page/guru/Test";
 
 const Home = lazy(() => import("../page/login"));
 const Layout = lazy(() => import("../component/Layout"));
+const LayoutTrainFace = lazy(() => import("../component/LayoutTrainFace"));
 const Dashboard = lazy(() => import("../page/guru/Dashboard"));
 const JadwalMengajar = lazy(() => import("../page/guru/jadwalMengajar"));
 const JadwalDinas = lazy(() => import("../page/guru/jadwalDinas"));
@@ -24,6 +25,7 @@ const OverviewSiswa = lazy(() => import("../page/guru/DashboardSiswa"));
 const ODFYC = lazy(() => import("../page/guru/ODFYC"));
 const PrestasiSiswa = lazy(() => import("../page/guru/prestasiSiswa"));
 const OdfycPartisipants = lazy(() => import("../page/guru/OdfycParticipants"));
+const TrainFaceGuru = lazy(() => import("../page/guru/FormTrainFaceGuru"));
 
 const Ke_Dashbaord = lazy(() => import("../page/keuangan/Dashboard"));
 const Ke_DataSiswa = lazy(() => import("../page/keuangan/DataSiswa"));
@@ -39,7 +41,7 @@ const Ke_DaftarTunggakan = lazy(
 );
 const Ke_Laporan = lazy(() => import("../page/keuangan/Laporan"));
 
-const AbsenKaryawan = lazy(() => import("../page/admin/AbsenKaryawan"));
+// const AbsenKaryawan = lazy(() => import("../page/admin/AbsenKaryawan"));
 const RekapPresensi = lazy(() => import("../page/hrd/Presensi"));
 const PengajuanCutiHRD = lazy(() => import("../page/hrd/PengajuanCuti"));
 
@@ -99,6 +101,16 @@ const RootRoutes = () => {
               <Layout>
                 <JadwalMengajar />
               </Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/guru/train-face"
+          element={
+            <Suspense fallback={<Loading />}>
+              <LayoutTrainFace>
+                <TrainFaceGuru />
+              </LayoutTrainFace>
             </Suspense>
           }
         />
@@ -272,7 +284,7 @@ const RootRoutes = () => {
             </Suspense>
           }
         />
-        <Route
+        {/* <Route
           path="/admin/absen-karyawan"
           element={
             <Suspense fallback={<Loading />}>
@@ -281,7 +293,7 @@ const RootRoutes = () => {
               </Layout>
             </Suspense>
           }
-        />
+        /> */}
         <Route
           path="/keuangan/"
           element={

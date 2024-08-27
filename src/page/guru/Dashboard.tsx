@@ -9,24 +9,54 @@ import {
   waktukerja,
   Rekapan,
 } from "../../midleware/api-hrd";
+import { FaCheckCircle } from "react-icons/fa";
+
 import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
 import Modal from "../../component/modal";
-import { employeeStore, Store, useProps } from "../../store/Store";
+import { employeeStore, Store } from "../../store/Store";
 import { FaDoorClosed, FaDoorOpen } from "react-icons/fa";
 import moment from "moment";
 import { formatTime } from "../../utils/date";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
-const Dashboard = () => {
-  const { token, id } = Store(),
-    { formTeachers } = employeeStore();
 
+const Dashboard = () => {
   const currentDate = moment();
+  const { employee, formTeachers } = employeeStore();
+  const { token, id } = Store();
+
+  const [inAreas, setInAreas] = useState<boolean>(false);
+  const handleInAreas = () => {
+    setInAreas(true);
+  };
+  const handleIsntAreas = () => {
+    setInAreas(false);
+  };
+
   const navigate = useNavigate();
-  const [DataAttendance, setDataAttendance] = useState<any[]>([]);
   const [camera, setCamera] = useState<boolean>(false);
   const [DataAnnouncment, setDataAnnouncment] = useState<any[]>([]);
-  const { inArea, distance } = useProps();
+  const [isAbsen, setIsAbsen] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<string>("");
+  const [isLate, setIsLate] = useState<boolean>(false);
+
+  const handleFaceDetectionSuccess = () => {
+    setIsAbsen(true);
+    const date = new Date();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const formattedTime = `${hours.toString().padStart(2, "0")}.${minutes.toString().padStart(2, "0")}`;
+    setCurrentTime(formattedTime);
+
+    const timeInMinutes = hours * 60 + minutes;
+    const targetTimeInMinutes = 8 * 60; // 08:00
+    if (timeInMinutes > targetTimeInMinutes) {
+      setIsLate(true);
+    } else {
+      setIsLate(false);
+    }
+  };
+  const [DataAttendance, setDataAttendance] = useState<any[]>([]);
   const [rekapPresensi, setRekapPresensi] = useState<any>(null);
   const [workTime, setWorkTime] = useState<any[]>([]);
   const [User, setUser] = useState<any>(null);
@@ -351,8 +381,6 @@ const Dashboard = () => {
               </button>
             </div>
           </div>
-
-          {/* row  */}
           <div className="w-full flex flex-col md:w-3/5 gap-3 ">
             {/* row  */}
             <div className="w-full grid md:grid-cols-2 gap-3 ">
@@ -507,36 +535,90 @@ const Dashboard = () => {
       </Modal>
 
       <Modal id="modal-absen">
-        <div className={`mt-4 flex justify-center`}>
-          {camera ? (
-            <>
-              <MapWithTwoRadiusPins />
-              <FaceDetection />
-            </>
-          ) : (
-            <img
-              src="https://png.pngtree.com/png-clipart/20230917/original/pngtree-flat-vector-illustration-of-photo-camera-icon-and-no-image-available-png-image_12324435.png"
-              alt=""
-            />
-          )}
-        </div>
-        <div className="my-3 w-full flex flex-col justify-center items-center">
-          <img src="" alt="" />
-          <span className={` text-bold`}>
-            Jarak anda ke area presensi terdekat adalah {distance} meter{" "}
-          </span>
-          <span className={`${inArea ? "hidden" : ""} text-bold text-red-500`}>
-            Anda Berada Diluar Area !{" "}
-          </span>
-          <div className="w-full flex gap-2">
-            <button
-              className={`btn bg-gray-500 w-full text-white `}
-              onClick={() => closeModalAdd("modal-absen")}
-            >
-              Close
-            </button>
-          </div>
-        </div>
+        {!isAbsen ? (
+          <>
+            <div className={`mt-4 flex justify-center`}>
+              {camera ? (
+                <>
+                  <div className="flex flex-col">
+                    {inAreas ? (
+                      <FaceDetection onSuccess={handleFaceDetectionSuccess} />
+                    ) : (
+                      <img
+                        src="https://png.pngtree.com/png-clipart/20230917/original/pngtree-flat-vector-illustration-of-photo-camera-icon-and-no-image-available-png-image_12324435.png"
+                        alt=""
+                      />
+                    )}
+                    <MapWithTwoRadiusPins
+                      onAreas={handleInAreas}
+                      notOnAreas={handleIsntAreas}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col">
+                  <div className="camera-blocked-message text-center">
+                    <p>
+                      Izin kamera diblokir. Silakan izinkan akses kamera di
+                      pengaturan browser Anda.
+                    </p>
+                  </div>
+                  <img
+                    src="https://png.pngtree.com/png-clipart/20230917/original/pngtree-flat-vector-illustration-of-photo-camera-icon-and-no-image-available-png-image_12324435.png"
+                    alt=""
+                  />
+                </div>
+              )}
+            </div>
+            {/* <div className="my-3 w-full flex flex-col justify-center items-center">
+              <img src="" alt="" />
+              <span className={` text-bold`}>
+                Jarak anda ke area presensi terdekat adalah {distance} meter{" "}
+              </span>
+              <span className={`${inArea ? "hidden" : ""} text-bold text-red-500`}>
+                Anda Berada Diluar Area !{" "}
+              </span> */}
+            <div className="w-full flex gap-2">
+              <button
+                className={`btn bg-gray-500 w-full text-white `}
+                onClick={() => closeModalAdd("modal-absen")}
+              >
+                Close
+              </button>
+            </div>
+            {/* </div> */}
+          </>
+        ) : (
+          <>
+            <div className="h-full w-full flex items-center justify-center">
+              <div className="flex w-full justify-center items-center flex-col">
+                <span className="text-green-500 text-[300px]">
+                  <FaCheckCircle />
+                </span>
+                <span className="text-2xl font-bold text-white ">
+                  Berhasil Absensi
+                </span>
+                <div className="mt-5 w-full px-6 flex justify-center item-center flex-col gap-3">
+                  <div className="w-full h-14 bg-white p-3 justify-center flex text-black font-bold text-xl shadow-md rounded-md">
+                    {employee?.full_name ?? "-"}
+                  </div>
+                  <div className="w-full h-14 bg-white p-3 justify-center flex flex-col items-center text-black font-bold text-xl shadow-md rounded-md">
+                    <p>{currentTime} WIB</p>
+                    <div className="badge badge-accent badge-outline">
+                      {isLate ? "Tidak Tepat Waktu" : "Tepat Waktu"}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => closeModalAdd("modal-absen")}
+                  className="btn bg-green-500 text-white w-1/2 mt-5"
+                >
+                  Oke
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </Modal>
     </div>
   );
