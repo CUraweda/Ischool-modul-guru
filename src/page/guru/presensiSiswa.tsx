@@ -254,7 +254,7 @@ const PresensiSiswa = () => {
 
   return (
     <>
-      <div className="flex justify-center w-full mt-5 flex-col items-center">
+      <div className="flex justify-center w-full mt-5 p-3 flex-col items-center">
         <span className="text-3xl font-bold">Presensi Siswa</span>
         <span className="text-xl">{formattedDate}</span>
         <div className="my-10 w-full p-5 bg-white rounded-md">

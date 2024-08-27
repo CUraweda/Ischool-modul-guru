@@ -32,7 +32,7 @@ const RaportSiswa = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+            className="tab-content bg-base-100 border-base-300 rounded-box rounded-ss-none p-6"
           >
             <Suspense fallback={<Loading />}>
               <RaportAll />
@@ -49,7 +49,7 @@ const RaportSiswa = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+            className="tab-content bg-base-100 border-base-300 rounded-box rounded-ss-none p-6"
           >
             <Suspense fallback={<Loading />}>
               <RaportAngka />
@@ -67,7 +67,7 @@ const RaportSiswa = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+            className="tab-content bg-base-100 border-base-300 rounded-box rounded-ss-none p-6"
           >
             <Suspense fallback={<Loading />}>
               <RaportNarasi />
@@ -85,7 +85,7 @@ const RaportSiswa = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+            className="tab-content bg-base-100 border-base-300 rounded-box rounded-ss-none p-6"
           >
             <Suspense fallback={<Loading />}>
               <RaportPortofolio />
@@ -102,7 +102,7 @@ const RaportSiswa = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+            className="tab-content bg-base-100 border-base-300 rounded-box rounded-ss-none p-6"
           >
             <Suspense fallback={<Loading />}>
               <RaportFile />

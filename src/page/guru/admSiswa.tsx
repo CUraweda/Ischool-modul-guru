@@ -589,7 +589,7 @@ const AdmSiswa = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+            className="tab-content bg-base-100 border-base-300 rounded-box rounded-ss-none p-6"
           >
             <div className="w-full gap-3 flex flex-wrap">
               <span className="text-2xl font-bold me-auto">Tugas Siswa</span>
@@ -702,7 +702,7 @@ const AdmSiswa = () => {
           />
           <div
             role="tabpanel"
-            className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+            className="tab-content bg-base-100 border-base-300 rounded-box rounded-ss-none p-6"
           >
             <div className="flex gap-3 items-center flex-wrap">
               <p className="text-xl font-bold me-auto">
