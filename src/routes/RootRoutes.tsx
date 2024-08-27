@@ -5,10 +5,10 @@ import Test from "../page/guru/Test";
 
 const Home = lazy(() => import("../page/login"));
 const Layout = lazy(() => import("../component/Layout"));
+const LayoutTrainFace = lazy(() => import("../component/LayoutTrainFace"));
 const Dashboard = lazy(() => import("../page/guru/Dashboard"));
 const JadwalMengajar = lazy(() => import("../page/guru/jadwalMengajar"));
 const JadwalDinas = lazy(() => import("../page/guru/jadwalDinas"));
-const RekapKehadiran = lazy(() => import("../page/guru/rekapKehadiran"));
 const PengajuanCuti = lazy(() => import("../page/guru/pengajuanCuti"));
 const AdmSiswa = lazy(() => import("../page/guru/admSiswa"));
 const PresensiSiswa = lazy(() => import("../page/guru/presensiSiswa"));
@@ -24,7 +24,8 @@ const KalenderKegiatan = lazy(() => import("../page/guru/kalenderKegiatan"));
 const OverviewSiswa = lazy(() => import("../page/guru/DashboardSiswa"));
 const ODFYC = lazy(() => import("../page/guru/ODFYC"));
 const PrestasiSiswa = lazy(() => import("../page/guru/prestasiSiswa"));
-const OdfycPartisipants = lazy(() => import("../page/guru/OdfycParticipants"))
+const OdfycPartisipants = lazy(() => import("../page/guru/OdfycParticipants"));
+const TrainFaceGuru = lazy(() => import("../page/guru/FormTrainFaceGuru"));
 
 const Ke_Dashbaord = lazy(() => import("../page/keuangan/Dashboard"));
 const Ke_DataSiswa = lazy(() => import("../page/keuangan/DataSiswa"));
@@ -40,7 +41,7 @@ const Ke_DaftarTunggakan = lazy(
 );
 const Ke_Laporan = lazy(() => import("../page/keuangan/Laporan"));
 
-const AbsenKaryawan = lazy(() => import("../page/admin/AbsenKaryawan"));
+// const AbsenKaryawan = lazy(() => import("../page/admin/AbsenKaryawan"));
 const RekapPresensi = lazy(() => import("../page/hrd/Presensi"));
 const PengajuanCutiHRD = lazy(() => import("../page/hrd/PengajuanCuti"));
 
@@ -48,7 +49,16 @@ const Profile = lazy(() => import("../page/profile"));
 
 // karyawan
 const DaftarCutiIzin = lazy(() => import("../page/karyawan/DaftarCutiIzin"));
-const DaftarPelatihan = lazy(() => import("../page/karyawan/DaftarPelatihan"));
+const PelatihanKaryawan = lazy(() => import("../page/karyawan/pelatihan"));
+const DaftarPelatihanKaryawan = lazy(
+  () => import("../page/karyawan/pelatihan/Daftar")
+);
+const PengajuanPelatihanKaryawan = lazy(
+  () => import("../page/karyawan/pelatihan/Pengajuan")
+);
+const RekapKehadiranKaryawan = lazy(
+  () => import("../page/karyawan/RekapKehadiran")
+);
 
 const RootRoutes = () => {
   return (
@@ -95,21 +105,21 @@ const RootRoutes = () => {
           }
         />
         <Route
+          path="/guru/train-face"
+          element={
+            <Suspense fallback={<Loading />}>
+              <LayoutTrainFace>
+                <TrainFaceGuru />
+              </LayoutTrainFace>
+            </Suspense>
+          }
+        />
+        <Route
           path="/guru/jadwal-dinas"
           element={
             <Suspense fallback={<Loading />}>
               <Layout>
                 <JadwalDinas />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/rekap-kehadiran"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <RekapKehadiran />
               </Layout>
             </Suspense>
           }
@@ -274,7 +284,7 @@ const RootRoutes = () => {
             </Suspense>
           }
         />
-        <Route
+        {/* <Route
           path="/admin/absen-karyawan"
           element={
             <Suspense fallback={<Loading />}>
@@ -283,7 +293,7 @@ const RootRoutes = () => {
               </Layout>
             </Suspense>
           }
-        />
+        /> */}
         <Route
           path="/keuangan/"
           element={
@@ -387,15 +397,42 @@ const RootRoutes = () => {
           }
         />
         <Route
-          path="/karyawan/daftar-pelatihan"
+          path="/karyawan/rekap-kehadiran"
           element={
             <Suspense fallback={<Loading />}>
               <Layout>
-                <DaftarPelatihan />
+                <RekapKehadiranKaryawan />
               </Layout>
             </Suspense>
           }
         />
+        <Route
+          path="/karyawan/daftar-pelatihan"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Layout>
+                <PelatihanKaryawan />
+              </Layout>
+            </Suspense>
+          }
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<Loading />}>
+                <DaftarPelatihanKaryawan />
+              </Suspense>
+            }
+          />
+          <Route
+            path="pengajuan"
+            element={
+              <Suspense fallback={<Loading />}>
+                <PengajuanPelatihanKaryawan />
+              </Suspense>
+            }
+          />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

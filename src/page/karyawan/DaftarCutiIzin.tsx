@@ -4,16 +4,23 @@ import {
   PaginationControl,
 } from "../../component/PaginationControl";
 import { Input, Select, Textarea } from "../../component/Input";
-import { FaPlus, FaSearch } from "react-icons/fa";
-import { Store } from "../../store/Store";
+import {
+  FaArrowRight,
+  FaExclamationTriangle,
+  FaImage,
+  FaPlus,
+  FaSearch,
+  FaTrash,
+} from "react-icons/fa";
+import { employeeStore, Store } from "../../store/Store";
 import Swal from "sweetalert2";
-import { FaPencil, FaX } from "react-icons/fa6";
+import { FaPencil } from "react-icons/fa6";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import Modal, { closeModal, openModal } from "../../component/modal";
-// import { setYear } from "date-fns/esm";
+import { CutiIzin } from "../../midleware/api-hrd";
+import { formatTime } from "../../utils/date";
 
-// const evidenceExts = ["pdf", "jpeg", "jpg", "png"];
 const types = ["CUTI", "IZIN"];
 const statuses = ["Menunggu", "Disetujui", "Ditolak"];
 const evidenceExts = ["pdf", "jpeg", "jpg", "png"];
@@ -22,7 +29,11 @@ const schema = Yup.object().shape({
   id: Yup.string().optional(),
   type: Yup.string()
     .oneOf(types, "Pilihan tipe tidak sesuai")
-    .required("Tipe harus diisi"),
+    .when("id", {
+      is: (id: any) => !!id,
+      then: () => Yup.string().optional(),
+      otherwise: () => Yup.string().required("Tipe harus diisi"),
+    }),
   start_date: Yup.date().required("Tanggal mulai harus diisi"),
   end_date: Yup.date()
     .min(
@@ -30,9 +41,13 @@ const schema = Yup.object().shape({
       "Tanggal selesai harus lebih dari tanggal mulai"
     )
     .optional(),
-  info: Yup.string().required("Keterangan harus diisi"),
+  description: Yup.string().required("Keterangan harus diisi"),
   evidence: Yup.mixed<File>()
-    .required()
+    .when("id", {
+      is: (id: any) => !!id,
+      then: () => Yup.mixed<File>().optional(),
+      otherwise: () => Yup.mixed<File>().required("Bukti file harus disertakan"),
+    })
     .test(
       "is-valid-type",
       "File harus pdf atau gambar",
@@ -51,13 +66,16 @@ const schema = Yup.object().shape({
 });
 
 const DaftarCutiIzin = () => {
-  const {} = Store(),
-    modalFormId = "form-cuti-izin";
+  const { token } = Store(),
+    { employee } = employeeStore(),
+    modalFormId = "form-cuti-izin",
+    modEvidence = "form-bukti-cuti-izin";
 
   // filter
   const [search, setSearch] = useState("");
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
+    date: "",
     type: "",
     status: "",
     search: "",
@@ -77,9 +95,20 @@ const DaftarCutiIzin = () => {
   // retrieve data
   const [dataList, setDataList] = useState<any[]>([]);
   const getDataList = async () => {
+    if (!employee?.id) return;
+
     try {
       // fetch find all
-      const res: any = {};
+      const res = await CutiIzin.showAll(
+        token,
+        filter.search,
+        employee.id,
+        filter.type,
+        filter.date,
+        filter.status,
+        filter.page,
+        filter.limit
+      );
 
       const { result, ...meta } = res.data.data;
 
@@ -96,7 +125,7 @@ const DaftarCutiIzin = () => {
 
   useEffect(() => {
     getDataList();
-  }, [filter]);
+  }, [filter, employee]);
 
   // create & edit
   const [evidencePreview, setEvidencePreview] = useState<string | undefined>(
@@ -110,7 +139,7 @@ const DaftarCutiIzin = () => {
       type: "",
       start_date: "",
       end_date: "",
-      info: "",
+      description: "",
       evidence: "",
     },
     validationSchema: schema,
@@ -123,12 +152,15 @@ const DaftarCutiIzin = () => {
         formData.append("type", values.type);
         formData.append("start_date", values.start_date);
         formData.append("end_date", values.end_date);
-        formData.append("info", values.info);
+        formData.append("description", values.description);
         formData.append("file", values.evidence);
 
-        // values.id
-        //   ? await AchievementSiswa.update(token, values.id, formData)
-        //   : await AchievementSiswa.create(token, formData);
+        if (values.id) {
+          await CutiIzin.change(token, values.id, formData);
+        } else {
+          formData.append("status", "Menunggu");
+          await CutiIzin.request(token, formData);
+        }
 
         handleReset();
         closeModal(modalFormId);
@@ -137,13 +169,13 @@ const DaftarCutiIzin = () => {
         Swal.fire({
           icon: "success",
           title: "Berhasil",
-          text: `Berhasil ${values.id ? "mengedit" : "menambahkan"} cuti izin`,
+          text: `Berhasil ${values.id ? "mengedit" : "menambahkan"} pengajuan ${values.type ?? "cuti/izin"}`,
         });
       } catch (error) {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: `Gagal ${values.id ? "mengedit" : "menambahkan"} cuti izin`,
+          text: `Gagal ${values.id ? "mengedit" : "menambahkan"} pengajuan ${values.type ?? "cuti/izin"}`,
         });
       } finally {
         setSubmitting(true);
@@ -153,7 +185,9 @@ const DaftarCutiIzin = () => {
 
   const handleReset = () => {
     form.resetForm();
+    setIsFilePathExist(false);
     setEvidencePreview(undefined);
+    setFileView("");
     if (inpEvidence.current) inpEvidence.current.value = "";
   };
 
@@ -167,14 +201,36 @@ const DaftarCutiIzin = () => {
   }, [form.values.evidence]);
 
   // handle get one
+  const [isFilePathExist, setIsFilePathExist] = useState(false);
   const [isGetLoading, setIsGetLoading] = useState(false);
   const getData = async (id: string) => {
     setIsGetLoading(true);
 
     try {
       // fetch get one
-      // set to formik values
-      console.log(id);
+      const res = await CutiIzin.showOne(token, id);
+      const dat = res.data.data;
+      form.setValues({
+        id: dat.id ?? "",
+        type: dat.type,
+        description: dat.description,
+        end_date: dat.end_date
+          ? formatTime(dat.end_date, "YYYY-MM-DD HH:mm")
+          : "",
+        start_date: dat.start_date
+          ? formatTime(dat.start_date, "YYYY-MM-DD HH:mm")
+          : "",
+        evidence: "",
+      });
+      if (dat.file_path) {
+        setIsFilePathExist(true);
+
+        try {
+          const resEvidence = await CutiIzin.downloadFile(token, dat.file_path);
+          const blob = new Blob([resEvidence.data]);
+          setEvidencePreview(URL.createObjectURL(blob));
+        } catch {}
+      }
 
       openModal(modalFormId);
     } catch (error) {
@@ -202,8 +258,7 @@ const DaftarCutiIzin = () => {
       try {
         setIsDelLoading(true);
         if (result.isConfirmed) {
-          // fetch delete one
-          console.log(id);
+          await CutiIzin.remove(token, id);
 
           Swal.fire({
             icon: "success",
@@ -225,8 +280,54 @@ const DaftarCutiIzin = () => {
     });
   };
 
+  // view evidence file
+  const [isFileLoading, setIsFileLoading] = useState(false),
+    [fileView, setFileView] = useState("");
+
+  const viewFile = async (path?: string) => {
+    setFileView("");
+    if (!path) return;
+
+    setIsFileLoading(true);
+    try {
+      const response = await CutiIzin.downloadFile(token, path);
+      const blob = new Blob([response.data]);
+      setFileView(URL.createObjectURL(blob));
+      openModal(modEvidence);
+    } catch (error: any) {
+      let message = "Gagal mengunduh file bukti";
+      if (error.response?.status == 404) message = "File bukti tidak ditemukan";
+
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: message,
+      });
+    } finally {
+      setIsFileLoading(false);
+    }
+  };
+
   return (
     <>
+      <Modal id={modEvidence} onClose={handleReset}>
+        <h3 className="text-xl font-bold mb-6">File Bukti</h3>
+
+        <iframe
+          src={fileView}
+          frameBorder="0"
+          width="100%"
+          height="450px"
+          className="mt-4"
+        />
+        <button
+          onClick={() => closeModal(modEvidence)}
+          className="btn w-full btn-primary mt-10"
+        >
+          Tutup
+        </button>
+      </Modal>
+
       <Modal id={modalFormId} onClose={handleReset}>
         <form onSubmit={form.handleSubmit}>
           <h3 className="text-xl font-bold mb-6">
@@ -235,12 +336,13 @@ const DaftarCutiIzin = () => {
 
           <Select
             label="Tipe"
-            placeholder="- Tipe"
+            placeholder="Tipe"
             name="type"
             options={types}
             value={form.values.type}
             onChange={form.handleChange}
             errorMessage={form.errors.type}
+            disabled={!!form.values.id}
           />
 
           <div className="grid grid-cols-2 gap-3">
@@ -264,10 +366,10 @@ const DaftarCutiIzin = () => {
 
           <Textarea
             label="Keterangan"
-            name="info"
-            value={form.values.info}
+            name="description"
+            value={form.values.description}
             onChange={form.handleChange}
-            errorMessage={form.errors.info}
+            errorMessage={form.errors.description}
           />
 
           {evidencePreview ? (
@@ -300,6 +402,11 @@ const DaftarCutiIzin = () => {
                 form.setFieldValue("evidence", e.target.files[0]);
               }
             }}
+            hint={
+              isFilePathExist
+                ? "File bukti sebelumnya akan tertimpa dengan file bukti baru"
+                : ""
+            }
             errorMessage={form.errors.evidence}
           />
 
@@ -315,6 +422,13 @@ const DaftarCutiIzin = () => {
 
       <div className="w-full flex justify-center flex-col items-center p-3">
         <span className="font-bold text-xl mb-6">PENGAJUAN CUTI dan IZIN</span>
+
+        {!employee && (
+          <div role="alert" className="alert alert-warning mb-6">
+            <FaExclamationTriangle />
+            <span>Akun anda belum terhubung ke data karyawan!</span>
+          </div>
+        )}
 
         <div className="w-full p-3 bg-white rounded-lg">
           {/* filter  */}
@@ -336,7 +450,7 @@ const DaftarCutiIzin = () => {
 
             <div>
               <Select
-                placeholder="- Tipe"
+                placeholder="Tipe"
                 options={types}
                 value={filter.type}
                 onChange={(e) => handleFilter("type", e.target.value)}
@@ -344,8 +458,16 @@ const DaftarCutiIzin = () => {
             </div>
 
             <div>
+              <Input
+                value={filter.date}
+                type="date"
+                onChange={(e) => handleFilter("date", e.target.value)}
+              />
+            </div>
+
+            <div>
               <Select
-                placeholder="- Status"
+                placeholder="Status"
                 options={statuses}
                 value={filter.status}
                 onChange={(e) => handleFilter("status", e.target.value)}
@@ -377,25 +499,78 @@ const DaftarCutiIzin = () => {
               <tbody>
                 {dataList.map((dat, i) => (
                   <tr key={i}>
-                    {/* ...the rest of data  */}
+                    <th>{i + 1}</th>
+                    <td>{dat.type ?? "-"}</td>
+                    <td>
+                      {dat.start_date ? (
+                        <div className="flex items-center flex-wrap gap-2">
+                          <div className="badge whitespace-nowrap">
+                            {formatTime(
+                              dat.start_date,
+                              "dddd, DD MMMM YYYY HH:mm"
+                            )}
+                          </div>
+                          {dat.end_date && (
+                            <div className="flex items-center gap-2">
+                              <FaArrowRight size={10} />
+                              <div className="badge whitespace-nowrap">
+                                {formatTime(
+                                  dat.end_date,
+                                  "dddd, DD MMMM YYYY HH:mm"
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td>{dat.description ?? "-"}</td>
+                    <td
+                      className={
+                        "uppercase font-bold " +
+                        (dat.is_approved != null
+                          ? dat.is_approved
+                            ? "text-success"
+                            : "text-error"
+                          : "")
+                      }
+                    >
+                      {dat.status ?? "-"}
+                    </td>
                     <td>
                       <div className="join">
                         <button
-                          className="btn btn-secondary btn-sm join-item  tooltip"
-                          data-tip="Edit"
-                          disabled={isGetLoading}
-                          onClick={() => getData(dat.id)}
+                          className="btn btn-primary btn-sm join-item tooltip"
+                          data-tip="Lihat bukti"
+                          disabled={!dat.file_path || isFileLoading}
+                          onClick={() => viewFile(dat.file_path)}
                         >
-                          <FaPencil />
+                          <FaImage />
                         </button>
-                        <button
-                          className="btn btn-error btn-sm join-item text-white tooltip"
-                          data-tip="Batalkan"
-                          disabled={isDelLoading}
-                          onClick={() => deleteData(dat.id, "")}
-                        >
-                          <FaX />
-                        </button>
+                        {dat.is_approved == null && (
+                          <>
+                            <button
+                              className="btn btn-secondary btn-sm join-item  tooltip"
+                              data-tip="Edit"
+                              disabled={isGetLoading}
+                              onClick={() => getData(dat.id)}
+                            >
+                              <FaPencil />
+                            </button>
+                            <button
+                              className="btn btn-error btn-sm join-item text-white tooltip"
+                              data-tip="Batalkan"
+                              disabled={isDelLoading}
+                              onClick={() =>
+                                deleteData(dat.id, dat.type ?? "cuti/izin")
+                              }
+                            >
+                              <FaTrash />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
