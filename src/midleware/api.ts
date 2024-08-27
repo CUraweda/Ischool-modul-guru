@@ -99,10 +99,19 @@ const DashboardGuru = {
       },
       data,
     }),
-  getTraining: (token: string | null, id: any): AxiosPromise<any> =>
+  getPengajuancuti: (
+    token: string | null,
+    search: string | null,
+    employeeid: any,
+    type: any,
+    date: any,
+    status: any,
+    page: any,
+    limit: any
+  ): AxiosPromise<any> =>
     local({
       method: "GET",
-      url: `/api/training?employee_id=${id}`,
+      url: `/api/employee-vacation/${employeeid}?type=${type}&status=${status}&page=${page}&limit=${limit}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

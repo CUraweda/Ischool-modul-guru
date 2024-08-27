@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_REACT_API_HRD_URL,
+  baseURL: import.meta.env.VITE_REACT_API_URL_LOCAL,
 });
 
 const CutiIzin = {
@@ -124,6 +124,12 @@ const PelatihanKaryawan = {
     }),
   showOne: (token: string | null, id: string | null) =>
     instance.get("/api/training/" + id, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getTraining: (token: string | null, id: any) =>
+    instance.get(`/api/training?employee_id=${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

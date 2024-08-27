@@ -3,6 +3,7 @@ import bg from "../../assets/bg2.png";
 import ApexChart from "../../component/ApexChart";
 import FaceDetection from "../../component/FaceRegocnition";
 import { DashboardGuru, Auth } from "../../midleware/api";
+import { PelatihanKaryawan, CutiIzin } from "../../midleware/api-hrd";
 import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import Modal from "../../component/modal";
@@ -67,7 +68,7 @@ const Dashboard = () => {
   const getTraining = async () => {
     if (id && token) {
       try {
-        const response = await DashboardGuru.getTraining(token, id);
+        const response = await PelatihanKaryawan.getTraining(token, id);
         setDataTraining(response.data.data.result);
       } catch (err) {
         console.log("error:" + err);
@@ -108,7 +109,7 @@ const Dashboard = () => {
   };
   const requestCuti = async (data: any) => {
     try {
-      const response = await DashboardGuru.requestCuti(token, data);
+      const response = await CutiIzin.request(token, data);
       if (response.status === 201) {
         Swal.fire({
           icon: "success",
@@ -225,6 +226,26 @@ const Dashboard = () => {
     deskripsi: Yup.string().required("Deskripsi diperlukan"),
   });
 
+  const triggerCheck = () => {
+    const time = new Date();
+    const currentTime = time.toTimeString().split(" ")[0]; // Ambil HH:mm:ss
+
+    const isWithinWorkTime = workTime.some((work) => {
+      const { start_time, end_time } = work;
+      return currentTime >= start_time && currentTime <= end_time;
+    });
+
+    if (isWithinWorkTime) {
+      showModalAdd("modal-absen", "camera");
+    } else {
+      Swal.fire({
+        icon: "warning",
+        title: "Waktu presensi di luar jam kerja",
+        text: "Silakan coba lagi.",
+      });
+    }
+  };
+
   return (
     <div
       className="flex min-h-screen items-start flex-wrap p-3"
@@ -337,7 +358,7 @@ const Dashboard = () => {
             <div className="px-6 pb-3 flex flex-col gap-2">
               <button
                 className="btn btn-primary grow"
-                onClick={() => showModalAdd("modal-absen", "camera")}
+                onClick={() => triggerCheck()}
               >
                 Presensi
               </button>
