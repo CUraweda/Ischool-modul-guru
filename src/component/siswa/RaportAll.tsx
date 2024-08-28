@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Modal from "../modal";
 import { FaCodeMerge } from "react-icons/fa6";
 import { FaFilePdf } from "react-icons/fa";
-import { Task, Student, Raport } from "../../midleware/api";
+import { Task, Student, Raport, KepribadianSiswa } from "../../midleware/api";
 import { globalStore, Store, useProps } from "../../store/Store";
 import Swal from "sweetalert2";
 import { IpageMeta, PaginationControl } from "../PaginationControl";
@@ -18,6 +18,7 @@ const RaportAll = () => {
   const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
   const [selectedReports, setSelectedReports] = useState<any[]>([]);
   const [dataRaport, setDataRaport] = useState<any>([]);
+  const [selectedNIS, setSelectedNIS] = useState<string | null>(null);
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
@@ -123,7 +124,7 @@ const RaportAll = () => {
     getDataRaport();
   };
 
-  const confirmDelete = async () => {
+  const confirmDelete = async (nis: any) => {
     try {
       const result = await Swal.fire({
         title: "Apakah anda yakin?",
@@ -134,10 +135,16 @@ const RaportAll = () => {
         confirmButtonText: "Ya!",
         cancelButtonText: "Tidak",
       });
-  
+
       if (result.isConfirmed) {
         await deleteRaport();
         setSelectedReports([]);
+        const relatedPersonalities = await KepribadianSiswa.showAll(token, nis);
+        const data = relatedPersonalities.data.data.result;
+
+        for (const personality of data) {
+          await KepribadianSiswa.delete(token, personality.id);
+        }
         Swal.fire({
           title: "Data raport sukses terhapus!",
           icon: "success",
@@ -147,7 +154,7 @@ const RaportAll = () => {
         });
       }
     } catch (error) {
-      console.error('Terjadi kesalahan saat konfirmasi penghapusan:', error);
+      console.error("Terjadi kesalahan saat konfirmasi penghapusan:", error);
     }
   };
 
@@ -237,7 +244,7 @@ const RaportAll = () => {
           </button>
           <button
             className="btn btn-ghost bg-red-600 text-white"
-            onClick={confirmDelete}
+            onClick={() => confirmDelete(selectedNIS)}
           >
             Hapus
           </button>
@@ -280,7 +287,10 @@ const RaportAll = () => {
           </thead>
           <tbody>
             {dataRaport?.map((item: any, index: number) => (
-              <tr key={index}>
+              <tr
+                key={index}
+                onClick={() => setSelectedNIS(item?.studentclass?.student?.nis)}
+              >
                 <th>
                   <input
                     checked={selectedReports.some(
@@ -301,7 +311,9 @@ const RaportAll = () => {
                     className="form-checkbox h-5 w-5 text-blue-600"
                   />
                 </th>
-                <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
+                <th>
+                  {index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}
+                </th>
                 <td>{item?.studentclass.student.full_name}</td>
                 <td>{item?.semester == 1 ? "Ganjil" : "Genap"}</td>
                 <td>
