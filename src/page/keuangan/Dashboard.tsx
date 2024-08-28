@@ -258,10 +258,7 @@ const Dashboard = () => {
                           {item.studentpaymentbill?.name ?? "-"}
                         </p>
                         <Link
-                          to={
-                            "/keuangan/jenis-pembayaran/" +
-                              item.studentpaymentbill?.id ?? ""
-                          }
+                          to={`/keuangan/jenis-pembayaran/${item.studentpaymentbill?.id ?? ""}`}
                           className="btn btn-link px-0 btn-xs relative -top-1"
                         >
                           Lihat
