@@ -230,11 +230,12 @@ const RaportAngka = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, nis: string) => {
     try {
-      const relatedPersonalities = await Kepribadian.showAll(token);
+      const relatedPersonalities = await KepribadianSiswa.showAll(token, nis);
       const data = relatedPersonalities.data.data.result;
 
+      // Step 2: Delete each related kepribadian entry
       for (const personality of data) {
         await KepribadianSiswa.delete(token, personality.id);
       }
@@ -641,7 +642,9 @@ const RaportAngka = () => {
           <tbody>
             {dataRaport?.map((item: any, index: number) => (
               <tr>
-                <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
+                <th>
+                  {index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}
+                </th>
 
                 <td>{item?.studentreport?.studentclass?.student?.full_name}</td>
                 <td>{item?.subject?.name}</td>
@@ -662,7 +665,12 @@ const RaportAngka = () => {
                     <button
                       className="btn btn-sm join-item bg-red-500 text-white tooltip"
                       data-tip="hapus"
-                      onClick={() => handleDelete(item?.id)}
+                      onClick={() =>
+                        handleDelete(
+                          item?.id,
+                          item?.studentreport?.studentclass?.student?.nis
+                        )
+                      }
                     >
                       <span className="text-xl">
                         <FaRegTrashAlt />
