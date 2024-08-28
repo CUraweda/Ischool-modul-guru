@@ -254,7 +254,7 @@ const PresensiSiswa = () => {
 
   return (
     <>
-      <div className="flex justify-center w-full mt-5 flex-col items-center">
+      <div className="flex justify-center w-full mt-5 p-3 flex-col items-center">
         <span className="text-3xl font-bold">Presensi Siswa</span>
         <span className="text-xl">{formattedDate}</span>
         <div className="my-10 w-full p-5 bg-white rounded-md">
@@ -326,7 +326,7 @@ const PresensiSiswa = () => {
                 {dataSiswa && dataSiswa.length > 0 ? (
                   dataSiswa.map((item: any, index: number) => (
                     <tr key={index}>
-                      <th>{index + 1}</th>
+                      <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
                       <td>{item?.studentclass?.student?.full_name}</td>
                       <td>{item?.studentclass?.student?.nis}</td>
                       <td>{item?.studentclass?.student?.class}</td>

@@ -495,7 +495,9 @@ const ODFYC = () => {
               <tbody>
                 {dataFilter.map((dat, i) => (
                   <tr key={i}>
-                    <th>{i + 1 + filter.page * filter.limit}</th>
+                    <th>
+                      {i + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}
+                    </th>
                     <td>{dat.forcountry?.user?.full_name ?? "-"}</td>
                     <td>{dat.activity ?? "-"}</td>
                     <td>{dat.forcountry?.academic_year ?? "-"}</td>

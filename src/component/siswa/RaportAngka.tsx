@@ -232,32 +232,30 @@ const RaportAngka = () => {
 
   const handleDelete = async (id: string) => {
     try {
+      const relatedPersonalities = await Kepribadian.showAll(token);
+      const data = relatedPersonalities.data.data.result;
+
+      for (const personality of data) {
+        await KepribadianSiswa.delete(token, personality.id);
+      }
+
       await Raport.deleteNumberReport(token, id);
+
       Swal.fire({
         title: "Deleted!",
-        text: "Your file has been deleted.",
+        text: "Your file and related personalities have been deleted.",
         icon: "success",
       });
+
       getNumberRaport();
     } catch (error) {
       console.log(error);
+      Swal.fire({
+        title: "Error!",
+        text: "There was an error deleting the file and related personalities.",
+        icon: "error",
+      });
     }
-  };
-
-  const trigerDelete = async (id: string) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        handleDelete(id);
-      }
-    });
   };
 
   const getNumberId = async (id: string) => {
@@ -543,8 +541,8 @@ const RaportAngka = () => {
             value={filter.semester}
             onChange={(e) => {
               handleFilter("semester", e.target.value),
-              sessionStorage.setItem("smt", e.target.value);
-                setSemesterProps(e.target.value);
+                sessionStorage.setItem("smt", e.target.value);
+              setSemesterProps(e.target.value);
             }}
           >
             <option value={""} selected>
@@ -643,7 +641,7 @@ const RaportAngka = () => {
           <tbody>
             {dataRaport?.map((item: any, index: number) => (
               <tr>
-                <th>{index + 1}</th>
+                <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
 
                 <td>{item?.studentreport?.studentclass?.student?.full_name}</td>
                 <td>{item?.subject?.name}</td>
@@ -664,7 +662,7 @@ const RaportAngka = () => {
                     <button
                       className="btn btn-sm join-item bg-red-500 text-white tooltip"
                       data-tip="hapus"
-                      onClick={() => trigerDelete(item?.id)}
+                      onClick={() => handleDelete(item?.id)}
                     >
                       <span className="text-xl">
                         <FaRegTrashAlt />
