@@ -91,6 +91,11 @@ const Dashboard = () => {
         const response = await waktukerja.getWorkTime(token);
         setWorkTime(response.data.data);
       } catch (err) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
         console.log("error:" + err);
       }
     } else {

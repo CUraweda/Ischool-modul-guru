@@ -243,7 +243,7 @@ const RaportPortofolio = () => {
           <tbody>
             {DataSiswa?.map((item: any, index: number) => (
               <tr key={index}>
-                <th>{index + 1}</th>
+                <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
                 <td>{item?.studentclass?.student.full_name}</td>
                 <td>{item?.studentclass?.class?.class_name}</td>
                 <td className="flex items-center">
