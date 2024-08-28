@@ -413,7 +413,7 @@ const OdfycParticipants = () => {
               <tbody>
                 {dataList.map((dat, i) => (
                   <tr key={i}>
-                    <th>{i + 1}</th>
+                    <th>{i + 1 + filter.page * filter.limit}</th>
                     <td>{dat.user?.full_name ?? "-"}</td>
                     <td>{dat.academic_year ?? "-"}</td>
                     <td>{dat.target ?? "-"} jam</td>
