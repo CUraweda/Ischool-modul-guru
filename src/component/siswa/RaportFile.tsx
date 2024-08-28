@@ -459,7 +459,7 @@ const RaportFile = () => {
           <tbody>
             {dataList.map((dat, i) => (
               <tr key={i}>
-                <th>{i + 1}</th>
+                <th>{i + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
                 <td>{dat.student?.full_name ?? "-"}</td>
                 <td>{dat.academic_year ?? "-"}</td>
                 <td>

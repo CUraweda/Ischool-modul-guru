@@ -269,7 +269,8 @@ const OverviewSiswa = () => {
           <tbody>
             {overview?.map((item: any, index: number) => (
               <tr key={index}>
-                <th>{index + 1 + filter.page * filter.limit}</th>
+                <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
+
                 <td>{item?.topic}</td>
                 <td>{item?.meaningful_understanding}</td>
                 <td>{item?.period}</td>
