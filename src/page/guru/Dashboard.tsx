@@ -285,7 +285,7 @@ const Dashboard = () => {
             <div className="glass bg-secondary flex flex-col items-center p-6 text-white">
               <div className="avatar mb-3">
                 <div className="w-28 rounded-full">
-                  <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                  <img src="https://korpri.padang.go.id/assets/img/dewan_pengurus/no-pict.jpg" />
                 </div>
               </div>
               <h3 className="text-2xl text-center font-bold">
