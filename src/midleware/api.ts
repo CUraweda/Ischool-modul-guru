@@ -3,7 +3,7 @@ import { LoginResponse } from "./Utils";
 const instance = axios.create({ baseURL: import.meta.env.VITE_REACT_API_URL });
 const local = axios.create({
   // baseURL: import.meta.env.VITE_REACT_API_URL_LOCAL,
-  baseURL: 'http://prod.curaweda.com:3005/stg-server1',
+  baseURL: "http://prod.curaweda.com:3005/stg-server1",
 }); // const instance = axios.create({ baseURL: "http://192.168.18.38:5000/stg-server1"});
 
 const Auth = {
@@ -1713,7 +1713,7 @@ const ForCountry = {
   create: (token: string | null, data: any) =>
     instance({
       method: "POST",
-      url: "/api/for-country/create",
+      url: "/api/for-country/create-bulk",
       headers: {
         Authorization: `Bearer ${token}`,
       },
