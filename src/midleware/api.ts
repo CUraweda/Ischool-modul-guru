@@ -2,7 +2,8 @@ import axios, { AxiosPromise } from "axios";
 import { LoginResponse } from "./Utils";
 const instance = axios.create({ baseURL: import.meta.env.VITE_REACT_API_URL });
 const local = axios.create({
-  baseURL: import.meta.env.VITE_REACT_API_URL_LOCAL,
+  // baseURL: import.meta.env.VITE_REACT_API_URL_LOCAL,
+  baseURL: 'http://prod.curaweda.com:3005/stg-server1',
 }); // const instance = axios.create({ baseURL: "http://192.168.18.38:5000/stg-server1"});
 
 const Auth = {
