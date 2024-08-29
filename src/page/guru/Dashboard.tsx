@@ -303,10 +303,10 @@ const Dashboard = () => {
             <div className="p-6 grow">
               <div>
                 <div className="grow">
-                  {workTime.map((item: any, index: any) => {
+                  {workTime?.map((item: any, index: any) => {
                     // Filter attendance sesuai dengan tipe worktime
-                    const relevantAttendance = filteredAttendance.filter(
-                      (attendance) => attendance.worktime.type === item.type
+                    const relevantAttendance = filteredAttendance?.filter(
+                      (attendance) => attendance?.worktime?.type === item.type
                     );
 
                     return (
@@ -325,7 +325,7 @@ const Dashboard = () => {
                           </h6>
 
                           {relevantAttendance.length > 0 ? (
-                            relevantAttendance.map((attendance, index) => (
+                            relevantAttendance?.map((attendance, index) => (
                               <div key={index} className="mt-2">
                                 <p className="text-sm">
                                   Presensi anda:
@@ -439,7 +439,7 @@ const Dashboard = () => {
                   <div className="overflow-x-auto">
                     <table className="table">
                       <tbody>
-                        {DataTraining.map((item: any, index: any) => (
+                        {DataTraining?.map((item: any, index: any) => (
                           <tr key={index}>
                             <div
                               className="cursor-pointer"
@@ -494,7 +494,7 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {DataAnnouncment.map((announcement: any, index: number) => (
+                {DataAnnouncment?.map((announcement: any, index: number) => (
                   <tr key={index}>
                     <td className="py-2 px-4 border-b text-center">
                       {index + 1}
