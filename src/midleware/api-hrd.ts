@@ -1,7 +1,8 @@
 import axios from "axios";
-
+const apilocal = "http://prod.curaweda.com:3005/stg-server1";
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_REACT_API_URL_LOCAL,
+  // baseURL: import.meta.env.VITE_REACT_API_URL_LOCAL,
+  baseURL: apilocal,
 });
 
 const CutiIzin = {
