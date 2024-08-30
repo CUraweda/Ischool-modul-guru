@@ -2,32 +2,84 @@ import { useEffect, useState } from "react";
 import bg from "../../assets/bg2.png";
 import ApexChart from "../../component/ApexChart";
 import FaceDetection from "../../component/FaceRegocnition";
-import { DashboardGuru, Auth } from "../../midleware/api";
-import { useNavigate } from "react-router-dom";
-import {
-  PelatihanKaryawan,
-  waktukerja,
-  Rekapan,
-} from "../../midleware/api-hrd";
 import { FaCheckCircle } from "react-icons/fa";
 
 import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
+import axios from "axios";
 import Modal from "../../component/modal";
 import { employeeStore, Store } from "../../store/Store";
-import {
-  FaDoorClosed,
-  FaDoorOpen,
-  FaExclamationTriangle,
-} from "react-icons/fa";
+import { FaDoorClosed, FaDoorOpen } from "react-icons/fa";
+// import { Rekapan } from "../../midleware/api-hrd";
 import moment from "moment";
 import { formatTime } from "../../utils/date";
-import Swal from "sweetalert2";
-import dayjs from "dayjs";
+import { Auth } from "../../midleware/api";
+// import { set } from "date-fns";
 
-const Dashboard = () => {
-  const currentDate = moment();
+interface RecapData {
+  HADIR: number;
+  IZIN: number;
+  CUTI: number;
+}
+
+interface AttendanceData {
+  id: number;
+  worktime_id: number;
+  description: string;
+  status: string;
+  uid: string;
+  employee_id: number;
+  is_outstation: boolean;
+  updatedAt: string;
+  createdAt: string;
+}
+
+const Dashboard: React.FC = () => {
+  const [dataUser, setDataUser] = useState<any>(null);
+  const [, setUpdatedName] = useState<string>("");
+  const [, setIdEmployee] = useState();
+
+  const { token } = Store();
+  const {
+    setEmployee,
+    setHeadmaster,
+    setFormTeachers,
+    setFormSubjects,
+    setFormXtras,
+  } = employeeStore();
+
+  const getMe = async () => {
+    try {
+      const res = await Auth.MeData(token);
+
+      setDataUser(res.data.data);
+      setUpdatedName(res.data.data.full_name);
+      setIdEmployee(res.data.data.employee.id);
+      const {
+        id,
+        full_name,
+        headmaster,
+        formextras,
+        formsubjects,
+        formteachers,
+      } = res.data.data?.employee ?? {};
+
+      if (id && full_name) setEmployee({ id, full_name });
+      if (headmaster) setHeadmaster(headmaster);
+      if (formteachers) setFormTeachers(formteachers);
+      if (formsubjects) setFormSubjects(formsubjects);
+      if (formextras) setFormXtras(formextras);
+
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    getMe();
+  }, []);
+
   const { employee, formTeachers } = employeeStore();
-  const { token, id } = Store();
+  // const { token } = Store();
 
   const [inAreas, setInAreas] = useState<boolean>(false);
   const handleInAreas = () => {
@@ -37,19 +89,21 @@ const Dashboard = () => {
     setInAreas(false);
   };
 
-  const navigate = useNavigate();
-  const [camera, setCamera] = useState<boolean>(false);
-  const [DataAnnouncment, setDataAnnouncment] = useState<any[]>([]);
   const [isAbsen, setIsAbsen] = useState<boolean>(false);
-  const [currentTime, setCurrentTime] = useState<string>("");
+  const [isReAbsen, setReIsAbsen] = useState<boolean>(false);
+
+  const [currentTime, setCurrentTime] = useState<string>('');
   const [isLate, setIsLate] = useState<boolean>(false);
 
-  const handleFaceDetectionSuccess = () => {
+  const [attendanceData, setAttendanceData] = useState<AttendanceData | null>(null);
+
+  const handleFaceDetectionSuccess = (data: AttendanceData) => {
+    setAttendanceData(data);
     setIsAbsen(true);
     const date = new Date();
     const hours = date.getHours();
     const minutes = date.getMinutes();
-    const formattedTime = `${hours.toString().padStart(2, "0")}.${minutes.toString().padStart(2, "0")}`;
+    const formattedTime = `${hours.toString().padStart(2, '0')}.${minutes.toString().padStart(2, '0')}`;
     setCurrentTime(formattedTime);
 
     const timeInMinutes = hours * 60 + minutes;
@@ -59,114 +113,19 @@ const Dashboard = () => {
     } else {
       setIsLate(false);
     }
+    stopCamera();
   };
-  const [DataAttendance, setDataAttendance] = useState<any[]>([]);
-  const [rekapPresensi, setRekapPresensi] = useState<any>(null);
-  const [workTime, setWorkTime] = useState<any[]>([]);
-  const [User, setUser] = useState<any>(null);
-  const [DetTraining, setDetTraining] = useState<any>(null);
-  const [DataTraining, setDataTraining] = useState<any[]>([]);
-  const [rekapYear, setRekapYear] = useState({
-    cuti: [],
-    izin: [],
-    hadir: [],
-    categories: [],
-    maxValue: 0,
-  });
-  const today = dayjs().format("YYYY-MM-DD");
-  const filteredAttendance = DataAttendance.filter(
-    (attendance) => dayjs(attendance.createdAt).format("YYYY-MM-DD") === today
-    //  &&
-    //   attendance.worktime.type === "MASUK"
-  );
+  const handleReAbsen = () => {
+    setIsAbsen(true)
+    setReIsAbsen(true);
+    stopCamera();
+  }
 
-  const handleCutiButtonClick = () => {
-    navigate("/karyawan/daftar-cuti-izin", {
-      state: { openModalId: "form-cuti-izin" },
-    });
-  };
-  const getWorkTime = async () => {
-    if (id && token) {
-      try {
-        const response = await waktukerja.getWorkTime(token);
-        setWorkTime(response.data.data);
-      } catch (err) {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!",
-        });
-        console.log("error:" + err);
-      }
-    } else {
-      console.error("Missing id or token in sessionStorage");
-    }
-  };
-  const getRecap = async () => {
-    if (id && token) {
-      try {
-        const response = await Rekapan.getRecapMonthly(token, id);
-        setRekapPresensi(response.data.data);
-      } catch (err) {
-        console.log("error:" + err);
-      }
-    } else {
-      console.error("Missing id or token in sessionStorage");
-    }
-  };
-  const getTraining = async () => {
-    if (id && token) {
-      try {
-        const response = await PelatihanKaryawan.getTraining(token, id);
-        setDataTraining(response.data.data.result);
-      } catch (err) {
-        console.log("error:" + err);
-      }
-    } else {
-      console.error("Missing id or token in sessionStorage");
-    }
-  };
-  const getDataAttendance = async () => {
-    if (id && token) {
-      try {
-        const response = await DashboardGuru.getAttendance(token, id);
-        const data = response.data.data.result;
-        setDataAttendance(data);
-      } catch (error) {
-        console.error("Failed to fetch attendance data", error);
-      }
-    } else {
-      console.error("Missing id or token in sessionStorage");
-    }
-  };
-
-  const getAnnouncement = async () => {
-    if (id && token) {
-      try {
-        const response = await DashboardGuru.getAnnouncement(token, 1);
-        setDataAnnouncment(response.data.data.result);
-      } catch (error) {
-        console.error("Failed to fetch attendance data", error);
-      }
-    } else {
-      console.error("Missing id or token in sessionStorage");
-    }
-  };
-  const getProfile = async () => {
-    try {
-      const response = await Auth.MeData(token);
-      setUser(response.data.data);
-    } catch (err) {
-      console.log("error:" + err);
-    }
-  };
-  const showModalAdd = (props: string, type: string) => {
+  const showModalAdd = (props: string) => {
     let modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
-      if (type === "camera") {
-        kamera();
-      }
+      kamera();
     }
   };
   const closeModalAdd = (props: string) => {
@@ -176,59 +135,16 @@ const Dashboard = () => {
       setCamera(false);
     }
   };
-  const getAllRecapYear = async () => {
-    if (id && token) {
-      try {
-        const response = await Rekapan.getRecapYear(token, id);
-        const data = response.data.data;
 
-        const cutiData: any = [];
-        const izinData: any = [];
-        const hadirData: any = [];
-        const categories: any = [];
-
-        Object.keys(data).forEach((key) => {
-          categories.push(data[key].name);
-          cutiData.push(Number(data[key].cuti));
-          izinData.push(Number(data[key].izin));
-          hadirData.push(Number(data[key].hadir));
-        });
-
-        // Hitung nilai maksimum untuk sumbu Y
-        const maxDataValue = Math.max(...cutiData, ...izinData, ...hadirData);
-
-        // Tambahkan sedikit padding pada nilai maksimum
-        const maxValue = maxDataValue > 0 ? Math.ceil(maxDataValue * 1.1) : 5;
-
-        setRekapYear({
-          cuti: cutiData,
-          izin: izinData,
-          hadir: hadirData,
-          categories,
-          maxValue,
-        });
-      } catch (err) {
-        console.log("error:" + err);
-      }
-    }
-  };
-
-  useEffect(() => {
-    getDataAttendance();
-    getRecap();
-    getWorkTime();
-    getTraining();
-    getAnnouncement();
-    getProfile();
-    getAllRecapYear();
-  }, []);
+  const [camera, setCamera] = useState(false);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const kamera = () => {
     navigator.mediaDevices
       .getUserMedia({ video: true })
       .then(function (stream) {
         setCamera(true);
+        setCameraStream(stream);
         console.log("Izin kamera telah diberikan");
-        stream.getTracks().forEach((track) => track.stop());
       })
       .catch(function (err) {
         console.log(err);
@@ -238,45 +154,136 @@ const Dashboard = () => {
       });
   };
 
-  const triggerCheck = () => {
-    const time = new Date();
-    const currentTime = time.toTimeString().split(" ")[0];
-
-    const isWithinWorkTime = workTime.some((work) => {
-      const { start_time, end_time } = work;
-      return (
-        (currentTime >= start_time && currentTime <= end_time) ||
-        currentTime > end_time
-      );
-    });
-
-    // Memeriksa apakah saat ini sebelum waktu kerja dimulai
-    const isBeforeWorkTime = workTime.every(
-      (work) => currentTime < work.start_time
-    );
-
-    if (isWithinWorkTime && !isBeforeWorkTime) {
-      showModalAdd("modal-absen", "camera");
-    } else {
-      Swal.fire({
-        icon: "warning",
-        title: "Waktu presensi di luar jam kerja",
-        text: "Silakan coba lagi.",
-      });
+  const stopCamera = () => {
+    if (cameraStream) {
+      console.log("masuk stop kamera");
+      (cameraStream as MediaStream).getTracks().forEach((track: MediaStreamTrack) => track.stop());
+      setCamera(false);
+      console.log("Kamera telah dihentikan");
     }
   };
+
+  //dengan meminta bulan
+  // const [rekapPresensi, setRekapPresensi] = useState<RecapData | null>(null);
+  // const [fetchedMonth, setFetchedMonth] = useState<string>('');
+
+  // const getRekapPresensi = async () => {
+  //   // if (!employee) return;
+
+  //   try {
+  //     const currentMonth = moment().month() + 1; // Adding 1 because moment().month() returns 0-11
+  //     const url = `${import.meta.env.VITE_REACT_API_HRD_URL}/api/employee-attendance/recap-month-employee/${currentMonth}`;
+
+  //     console.log('Fetching data from URL:', url);
+
+  //     const response = await axios.get<{ data: RecapData }>(url, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     console.log('Response data:', response.data);
+
+  //     setRekapPresensi(response.data.data);
+  //     setFetchedMonth(moment().format('MMMM YYYY')); // Store the month we fetched data for
+  //   } catch (error) {
+  //     console.error("Error fetching recap data:", error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   getRekapPresensi();
+  // }, [employee]);
+
+
+  // tanpa meminta bulan
+  const [rekapPresensi, setRekapPresensi] = useState<RecapData | null>(null);
+  const getRekapPresensi = async () => {
+    // if (!employee) return;
+    try { 
+      const url = `${import.meta.env.VITE_REACT_API_HRD_URL}/api/employee-attendance/recap-month-employee/`;
+
+      const response = await axios.get<{ data: RecapData }>(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setRekapPresensi(response.data.data);
+    } catch (error) {
+      console.error("Error fetching recap data:", error);
+    }
+  };
+
+  const [workTime, setWorkTime] = useState<{ start_time: string; end_time: string } | null>(null);
+  const getWorkTime = async () => {
+    try {
+      const url = `${import.meta.env.VITE_REACT_API_HRD_URL}/api/worktime/1`;
+      const response = await axios.get<{ data: { start_time: string; end_time: string } }>(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setWorkTime(response.data.data);
+    } catch (error) {
+      console.error("Error fetching work time data:", error);
+    }
+  };
+
+  useEffect(() => {
+    getRekapPresensi();
+    getWorkTime();
+  }, [employee]);
+
+  const isBeforeWorkTime = () => {
+    if (!workTime || !currentTime) return false;
+
+    const now = new Date();
+    const [hours, minutes] = currentTime.split(':').map(Number);
+    now.setHours(hours, minutes, 0, 0);
+
+    const [startHours, startMinutes] = workTime.start_time.split(':').map(Number);
+    const startTime = new Date(now);
+    startTime.setHours(startHours, startMinutes, 0, 0);
+
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(23, 59, 59, 999);
+
+    return now < startTime && now > yesterday;
+  };
+
+
+  //punya kang diaz
+  // useEffect(() => {
+  //   getRekapPresensi();
+  // }, [employee]);
+
+  // // get attendance summary
+  // const [rekapPresensi, setRekapPresensi] = useState<any>(null);
+  // const getRekapPresensi = async () => {
+  //   if (!employee) return;
+
+  //   try {
+  //     const res = await Rekapan.jumlahPresensi(token, employee.id);
+  //     setRekapPresensi(res.data.data);
+  //   } catch { }
+  // };
+
+  // // entry point concurrently get many data
+  // const getData = async () => {
+  //   await Promise.all([getRekapPresensi()]);
+  // };
+
+  // useEffect(() => {
+  //   getData();
+  // }, [employee]);
 
   return (
     <div
       className="flex min-h-screen items-start flex-wrap p-3"
       style={{ backgroundImage: `url('${bg}')`, backgroundSize: "cover" }}
     >
-      {!employee && (
-        <div role="alert" className="alert alert-warning mb-6">
-          <FaExclamationTriangle />
-          <span>Akun anda belum terhubung ke data karyawan!</span>
-        </div>
-      )}
       <div className="w-full flex flex-col gap-3">
         <div className="w-full items-stretch flex gap-3 flex-col md:flex-row ">
           {/* main card  */}
@@ -285,14 +292,12 @@ const Dashboard = () => {
             <div className="glass bg-secondary flex flex-col items-center p-6 text-white">
               <div className="avatar mb-3">
                 <div className="w-28 rounded-full">
-                  <img src="https://korpri.padang.go.id/assets/img/dewan_pengurus/no-pict.jpg" />
+                  <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
                 </div>
               </div>
               <h3 className="text-2xl text-center font-bold">
-                {User?.full_name ?? "-"} <br />
-                <span className="text-sm font-semibold">
-                  {User?.email ?? "-"}
-                </span>
+                {employee?.full_name ?? "-"}
+                {dataUser?.full_name ?? "-"}
               </h3>
               <p className="text-center">
                 {formTeachers
@@ -300,102 +305,54 @@ const Dashboard = () => {
                   .join(" | ")}
               </p>
             </div>
+
+            {/* division attendance schedule  */}
             <div className="p-6 grow">
-              <div>
+              {/* clock in  */}
+              <div className="w-full flex items-center bg-base-200 p-3 rounded-md mb-3">
                 <div className="grow">
-                  {workTime?.map((item: any, index: any) => {
-                    // Filter attendance sesuai dengan tipe worktime
-                    const relevantAttendance = filteredAttendance?.filter(
-                      (attendance) => attendance?.worktime?.type === item.type
-                    );
-
-                    return (
-                      <div className="w-full flex items-center bg-base-200 p-3 rounded-md mb-3">
-                        <div key={index} className="mb-4">
-                          <h6 className="font-bold text-md">
-                            Jadwal {item.type} (
-                            {item.start_time.split(":")[0] +
-                              ":" +
-                              item.start_time.split(":")[1]}{" "}
-                            -{" "}
-                            {item.end_time.split(":")[0] +
-                              ":" +
-                              item.end_time.split(":")[1]}
-                            )
-                          </h6>
-
-                          {relevantAttendance.length > 0 ? (
-                            relevantAttendance?.map((attendance, index) => (
-                              <div key={index} className="mt-2">
-                                <p className="text-sm">
-                                  Presensi anda:
-                                  <span className="font-bold px-2">
-                                    {
-                                      attendance.createdAt
-                                        .split("T")[1]
-                                        .split(".")[0]
-                                    }
-                                  </span>
-                                </p>
-
-                                {/* Conditional Rendering for Badge */}
-                                <div className="flex justify-between w-full">
-                                  <div
-                                    className={`badge mt-3 text-white font-bold ${
-                                      attendance.status.toLowerCase() ===
-                                      "tepat waktu"
-                                        ? "badge-success"
-                                        : attendance.status.toLowerCase() ===
-                                            "terlambat"
-                                          ? "badge-error"
-                                          : "badge-warning"
-                                    }`}
-                                  >
-                                    {attendance.status}
-                                  </div>
-
-                                  {attendance.worktime.type === "MASUK" ? (
-                                    <FaDoorOpen
-                                      size={32}
-                                      className="grow opacity-20"
-                                    />
-                                  ) : (
-                                    <FaDoorClosed
-                                      size={32}
-                                      className="grow opacity-20"
-                                    />
-                                  )}
-                                </div>
-                              </div>
-                            ))
-                          ) : (
-                            <p className="text-sm text-gray-500 mt-2">
-                              Belum ada presensi
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
+                  <h6 className="font-bold text-md">
+                    Jadwal Masuk ({workTime ? `${moment(workTime.start_time, 'HH:mm:ss').format('HH:mm').replace(':', '.')} - ${moment(workTime.end_time, 'HH:mm:ss').format('HH:mm').replace(':', '.')}` : 'Loading...'})
+                  </h6>
+                  <p className="text-sm sm:text-md">
+                    Presensi Masuk : <span className="font-bold"> {attendanceData ? new Date(attendanceData.createdAt).toLocaleTimeString() : 'Belum absen'}</span>
+                  </p>
+                  <div className={`${isLate ? 'bg-red-600 text-white border-none' : 'badge-secondary'} badge text-sm sm:text-md`}>
+                    {attendanceData ? attendanceData.status : 'Belum ada status'}
+                  </div>
                 </div>
+                <FaDoorOpen size={32} className="grow opacity-20" />
+              </div>
+
+              {/* clock out  */}
+              <div className="w-full flex items-center bg-base-200 p-3 rounded-md">
+                <div className="grow">
+                  <h6 className="font-bold text-md">
+                    Jadwal Pulang (16.00 - 17.00)
+                  </h6>
+                  <p className="text-sm">
+                    Presensi anda : <span className="font-bold">16.01</span>
+                  </p>
+                  <div className="badge badge-success mt-3 text-white font-bold">
+                    Tepat waktu
+                  </div>
+                </div>
+                <FaDoorClosed size={32} className="grow opacity-20" />
               </div>
             </div>
 
             <div className="px-6 pb-3 flex flex-col gap-2">
               <button
                 className="btn btn-primary grow"
-                onClick={() => triggerCheck()}
+                onClick={() => showModalAdd("modal-absen")}
               >
                 Presensi
               </button>
-              <button
-                onClick={handleCutiButtonClick}
-                className="btn btn-warning grow"
-              >
-                Ajukan Cuti
-              </button>
+              <button className="btn  btn-warning grow">Ajukan Cuti</button>
             </div>
           </div>
+
+          {/* row  */}
           <div className="w-full flex flex-col md:w-3/5 gap-3 ">
             {/* row  */}
             <div className="w-full grid md:grid-cols-2 gap-3 ">
@@ -404,7 +361,7 @@ const Dashboard = () => {
                 <div className="px-3 py-1 bg-primary text-white glass">
                   <h3 className="text-lg font-bold">Rekap Presensi</h3>
                   <p className="text-sm font-medium">
-                    Bulan {formatTime(currentDate.toString(), "MMMM YYYY")}
+                    Bulan {formatTime(moment().toString(), "MMMM YYYY")}
                   </p>
                 </div>
                 <div className="px-3 py-1 grow">
@@ -439,27 +396,30 @@ const Dashboard = () => {
                   <div className="overflow-x-auto">
                     <table className="table">
                       <tbody>
-                        {DataTraining?.map((item: any, index: any) => (
-                          <tr key={index}>
-                            <div
-                              className="cursor-pointer"
-                              onClick={() => {
-                                showModalAdd("modal-Training", "");
-                                setDetTraining(item);
-                              }}
-                            >
-                              <th>
-                                <p className="line-clamp-2 text-ellipsis overflow-hidden">
-                                  {item.title} <br /> {item.purpose}{" "}
-                                  {item.location}
-                                </p>
-                              </th>
-                              <td className="whitespace-nowrap">
-                                {item.start_date.split("T")[0]}
-                              </td>
-                            </div>
-                          </tr>
-                        ))}
+                        <tr>
+                          <th>
+                            <p className="line-clamp-2 text-ellipsis overflow-hidden">
+                              Pelatihan Management{" "}
+                            </p>
+                          </th>
+                          <td className="whitespace-nowrap">9 Agustus 2024</td>
+                        </tr>
+                        <tr>
+                          <th>
+                            <p className="line-clamp-2 text-ellipsis overflow-hidden">
+                              Pelatihan Management{" "}
+                            </p>
+                          </th>
+                          <td className="whitespace-nowrap">9 Agustus 2024</td>
+                        </tr>
+                        <tr>
+                          <th>
+                            <p className="line-clamp-2 text-ellipsis overflow-hidden">
+                              Pelatihan Management{" "}
+                            </p>
+                          </th>
+                          <td className="whitespace-nowrap">9 Agustus 2024</td>
+                        </tr>
                       </tbody>
                     </table>
                   </div>
@@ -473,7 +433,13 @@ const Dashboard = () => {
                 <h3 className="text-lg font-bold">Chart Presensi</h3>
               </div>
               <div className="px-3 py-1 grow">
-                <ApexChart data={rekapYear} />
+                <ApexChart data={{
+                  cuti: [],
+                  izin: [],
+                  hadir: [],
+                  categories: [],
+                  maxValue: 0
+                }} />
               </div>
             </div>
           </div>
@@ -485,98 +451,47 @@ const Dashboard = () => {
             <h3 className="text-lg font-bold">Pengumuman</h3>
           </div>
           <div className="px-3 py-1 grow">
-            <table className="min-w-full bg-white">
-              <thead>
-                <tr>
-                  <th className="py-2 px-4 border-b">ID</th>
-                  <th className="py-2 px-4 border-b">Plan Date</th>
-                  <th className="py-2 px-4 border-b">Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {DataAnnouncment?.map((announcement: any, index: number) => (
-                  <tr key={index}>
-                    <td className="py-2 px-4 border-b text-center">
-                      {index + 1}
-                    </td>
-                    <td className="py-2 px-4 border-b text-center">
-                      {announcement.plan_date.split("T")[0]}
-                    </td>
-                    <td className="py-2 px-4 border-b">{announcement.notes}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="flex p-12">
-            <div className="m-auto">
-              {/* <div className="m-auto">Tidak Ada Pengumuman</div> */}
+            <div className="flex p-12">
+              <p className="opacity-40 m-auto">Tidak ada pengumuman</p>
             </div>
           </div>
         </div>
       </div>
 
-      <Modal id="modal-Training">
-        <h2 className="text-lg font-bold mb-4">Detail Pelatihan </h2>
-        <div className={`mt-4 flex justify-center`}>
-          <table className="min-w-full bg-white">
-            <tbody>
-              <tr>
-                <td className="py-2 px-4 border-b">Judul</td>
-                <td className="py-2 px-4 border-b">{DetTraining?.title}</td>
-              </tr>
-              <tr>
-                <td className="py-2 px-4 border-b">Lokasi</td>
-                <td className="py-2 px-4 border-b">{DetTraining?.location}</td>
-              </tr>
-              <tr>
-                <td className="py-2 px-4 border-b">Deskripsi</td>
-                <td className="py-2 px-4 border-b">{DetTraining?.purpose}</td>
-              </tr>
-              <tr>
-                <td className="py-2 px-4 border-b">Status</td>
-                <td className="py-2 px-4 border-b">{DetTraining?.status}</td>
-              </tr>
-              <tr>
-                <td className="py-2 px-4 border-b">Tanggal</td>
-                <td className="py-2 px-4 border-b">
-                  {DetTraining?.start_date.split("T")[0]} s/d{" "}
-                  {DetTraining?.end_date.split("T")[0]}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Modal>
-
       <Modal id="modal-absen">
-        {!isAbsen ? (
+        {isBeforeWorkTime() && workTime ? (
+          <div className="flex flex-col items-center justify-center h-full">
+            <p className="text-xl font-bold text-center">
+              Absen bisa dimulai dari jam {workTime.start_time}
+            </p>
+            <button
+              className="btn bg-gray-500 w-1/2 text-white mt-4"
+              onClick={() => closeModalAdd("modal-absen")}
+            >
+              Close
+            </button>
+          </div>
+        ) : !isAbsen ? (
           <>
             <div className={`mt-4 flex justify-center`}>
               {camera ? (
                 <>
                   <div className="flex flex-col">
                     {inAreas ? (
-                      <FaceDetection onSuccess={handleFaceDetectionSuccess} />
+                      <FaceDetection onSuccess={handleFaceDetectionSuccess} reAbsen={handleReAbsen} />
                     ) : (
                       <img
                         src="https://png.pngtree.com/png-clipart/20230917/original/pngtree-flat-vector-illustration-of-photo-camera-icon-and-no-image-available-png-image_12324435.png"
                         alt=""
                       />
                     )}
-                    <MapWithTwoRadiusPins
-                      onAreas={handleInAreas}
-                      notOnAreas={handleIsntAreas}
-                    />
+                    <MapWithTwoRadiusPins onAreas={handleInAreas} notOnAreas={handleIsntAreas} />
                   </div>
                 </>
               ) : (
                 <div className="flex flex-col">
                   <div className="camera-blocked-message text-center">
-                    <p>
-                      Izin kamera diblokir. Silakan izinkan akses kamera di
-                      pengaturan browser Anda.
-                    </p>
+                    <p>Izin kamera diblokir. Silakan izinkan akses kamera di pengaturan browser Anda.</p>
                   </div>
                   <img
                     src="https://png.pngtree.com/png-clipart/20230917/original/pngtree-flat-vector-illustration-of-photo-camera-icon-and-no-image-available-png-image_12324435.png"
@@ -585,14 +500,6 @@ const Dashboard = () => {
                 </div>
               )}
             </div>
-            {/* <div className="my-3 w-full flex flex-col justify-center items-center">
-              <img src="" alt="" />
-              <span className={` text-bold`}>
-                Jarak anda ke area presensi terdekat adalah {distance} meter{" "}
-              </span>
-              <span className={`${inArea ? "hidden" : ""} text-bold text-red-500`}>
-                Anda Berada Diluar Area !{" "}
-              </span> */}
             <div className="w-full flex gap-2">
               <button
                 className={`btn bg-gray-500 w-full text-white `}
@@ -601,11 +508,24 @@ const Dashboard = () => {
                 Close
               </button>
             </div>
-            {/* </div> */}
+          </>
+        ) : isReAbsen ? (
+          <>
+            <div className='h-full w-full flex items-center justify-center'>
+              <div className="flex w-full justify-center items-center flex-col gap-10">
+                <span className="text-green-500 text-[200px]">
+                  <FaCheckCircle />
+                </span>
+                <span className="text-xl font-bold text-center">
+                  Anda sudah Melakukan Absen Sebelumnya
+                </span>
+                <button onClick={() => closeModalAdd("modal-absen")} className="btn bg-green-500 text-white w-1/2 mt-5">Oke</button>
+              </div>
+            </div>
           </>
         ) : (
           <>
-            <div className="h-full w-full flex items-center justify-center">
+            <div className='h-full w-full flex items-center justify-center'>
               <div className="flex w-full justify-center items-center flex-col">
                 <span className="text-green-500 text-[300px]">
                   <FaCheckCircle />
@@ -614,22 +534,13 @@ const Dashboard = () => {
                   Berhasil Absensi
                 </span>
                 <div className="mt-5 w-full px-6 flex justify-center item-center flex-col gap-3">
-                  <div className="w-full h-14 bg-white p-3 justify-center flex text-black font-bold text-xl shadow-md rounded-md">
-                    {employee?.full_name ?? "-"}
-                  </div>
+
+                  <div className="w-full h-14 bg-white p-3 justify-center flex text-black font-bold text-xl shadow-md rounded-md">{dataUser?.full_name ?? "-"}</div>
                   <div className="w-full h-14 bg-white p-3 justify-center flex flex-col items-center text-black font-bold text-xl shadow-md rounded-md">
                     <p>{currentTime} WIB</p>
-                    <div className="badge badge-accent badge-outline">
-                      {isLate ? "Tidak Tepat Waktu" : "Tepat Waktu"}
-                    </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => closeModalAdd("modal-absen")}
-                  className="btn bg-green-500 text-white w-1/2 mt-5"
-                >
-                  Oke
-                </button>
+                <button onClick={() => closeModalAdd("modal-absen")} className="btn bg-green-500 text-white w-1/2 mt-5">Oke</button>
               </div>
             </div>
           </>
