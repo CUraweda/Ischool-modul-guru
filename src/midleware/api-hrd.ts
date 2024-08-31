@@ -158,7 +158,7 @@ const PelatihanKaryawan = {
     }),
 };
 const waktukerja = {
-  getWorkTime: (token: string | null) =>
+  today: (token: string | null) =>
     instance.get(`api/worktime/today`, {
       headers: {
         Authorization: `Bearer ${token}`,

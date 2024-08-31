@@ -15,6 +15,7 @@ import {
   PelatihanKaryawan,
   PengumumanKaryawan,
   Rekapan,
+  waktukerja,
 } from "../../midleware/api-hrd";
 import { useNavigate } from "react-router-dom";
 
@@ -130,7 +131,6 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    getRekapPresensi();
     getWorkTime();
   }, [employee]);
 
@@ -154,6 +154,16 @@ const Dashboard: React.FC = () => {
     return now < startTime && now > yesterday;
   };
 
+  // get today worktime
+  const [todayWorktimes, setTodayWorktimes] = useState<any[]>([]);
+  const getTodayWorktime = async () => {
+    try {
+      const res = await waktukerja.today(token);
+      setTodayWorktimes(res.data.data);
+    } catch {}
+  };
+
+  // request cuti action
   const requestCutiClick = () => {
     navigate("/karyawan/daftar-cuti-izin", {
       state: { openModalId: "form-cuti-izin" },
@@ -245,6 +255,7 @@ const Dashboard: React.FC = () => {
     getLatestTraining();
     getAnnouncements();
     getRecapPresensiChart();
+    getTodayWorktime();
   };
 
   useEffect(() => {
@@ -279,53 +290,56 @@ const Dashboard: React.FC = () => {
 
             {/* division attendance schedule  */}
             <div className="p-6 grow">
-              {/* clock in  */}
-              <div className="w-full flex items-center bg-base-200 p-3 rounded-md mb-3">
-                <div className="grow">
-                  <h6 className="font-bold text-md">
-                    Jadwal Masuk (
-                    {workTime
-                      ? `${moment(workTime.start_time, "HH:mm:ss").format("HH:mm").replace(":", ".")} - ${moment(workTime.end_time, "HH:mm:ss").format("HH:mm").replace(":", ".")}`
-                      : "Loading..."}
-                    )
-                  </h6>
-                  <p className="text-sm sm:text-md">
-                    Presensi Masuk :{" "}
-                    <span className="font-bold">
-                      {" "}
-                      {attendanceData
-                        ? new Date(
-                            attendanceData.createdAt
-                          ).toLocaleTimeString()
-                        : "Belum absen"}
-                    </span>
-                  </p>
-                  <div
-                    className={`${isLate ? "bg-red-600 text-white border-none" : "badge-secondary"} badge text-sm sm:text-md`}
-                  >
-                    {attendanceData
-                      ? attendanceData.status
-                      : "Belum ada status"}
-                  </div>
-                </div>
-                <FaDoorOpen size={32} className="grow opacity-20" />
-              </div>
+              {todayWorktimes.map((item, i) => {
+                const attendData = item.employeeattendances?.length
+                  ? item.employeeattendances[0]
+                  : null;
 
-              {/* clock out  */}
-              <div className="w-full flex items-center bg-base-200 p-3 rounded-md">
-                <div className="grow">
-                  <h6 className="font-bold text-md">
-                    Jadwal Pulang (16.00 - 17.00)
-                  </h6>
-                  <p className="text-sm">
-                    Presensi anda : <span className="font-bold">16.01</span>
-                  </p>
-                  <div className="badge badge-success mt-3 text-white font-bold">
-                    Tepat waktu
+                return (
+                  <div
+                    key={i}
+                    className="w-full flex items-center bg-base-200 p-3 rounded-md mb-3"
+                  >
+                    <div className="grow">
+                      <h6 className="font-bold text-md capitalize">
+                        Jadwal {item.type?.toLowerCase()} (
+                        {item.start_time.split(":")[0] +
+                          ":" +
+                          item.start_time.split(":")[1]}{" "}
+                        -{" "}
+                        {item.end_time.split(":")[0] +
+                          ":" +
+                          item.end_time.split(":")[1]}
+                        )
+                      </h6>
+
+                      {/* employee attendance data  */}
+                      <p className="text-sm sm:text-md mb-2">
+                        Presensi Anda :{" "}
+                        <span className="font-bold">
+                          {attendData
+                            ? formatTime(attendData.createdAt, "HH:mm")
+                            : "Belum ada"}
+                        </span>
+                      </p>
+
+                      {/* badge  */}
+                      <div
+                        className={`${attendData ? (attendData.status == "Tepat Waktu" ? "badge-success text-white" : attendData.status == "Terlambat" ? "badge-error text-white" : attendData.status == "Terlalu Cepat" ? "badge-warning" : "") : "badge-primary"} badge text-sm sm:text-md`}
+                      >
+                        {attendData ? attendData.status : "Belum ada status"}
+                      </div>
+                    </div>
+
+                    {/* icon  */}
+                    {item.type == "MASUK" ? (
+                      <FaDoorOpen size={32} className="grow opacity-20" />
+                    ) : (
+                      <FaDoorClosed size={32} className="grow opacity-20" />
+                    )}
                   </div>
-                </div>
-                <FaDoorClosed size={32} className="grow opacity-20" />
-              </div>
+                );
+              })}
             </div>
 
             <div className="px-6 pb-3 flex flex-col gap-2">
