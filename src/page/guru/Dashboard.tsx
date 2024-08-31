@@ -16,11 +16,13 @@ import {
   PengumumanKaryawan,
   Rekapan,
 } from "../../midleware/api-hrd";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard: React.FC = () => {
   const currentDate = moment();
   const { token } = Store();
   const { employee, formTeachers } = employeeStore();
+  const navigate = useNavigate();
 
   const [inAreas, setInAreas] = useState<boolean>(false);
   const handleInAreas = () => {
@@ -150,6 +152,12 @@ const Dashboard: React.FC = () => {
     yesterday.setHours(23, 59, 59, 999);
 
     return now < startTime && now > yesterday;
+  };
+
+  const requestCutiClick = () => {
+    navigate("/karyawan/daftar-cuti-izin", {
+      state: { openModalId: "form-cuti-izin" },
+    });
   };
 
   // get attendance summary
@@ -327,7 +335,12 @@ const Dashboard: React.FC = () => {
               >
                 Presensi
               </button>
-              <button className="btn  btn-warning grow">Ajukan Cuti</button>
+              <button
+                onClick={requestCutiClick}
+                className="btn  btn-warning grow"
+              >
+                Ajukan Cuti
+              </button>
             </div>
           </div>
 
