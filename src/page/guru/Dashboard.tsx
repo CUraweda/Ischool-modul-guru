@@ -78,14 +78,14 @@ const Dashboard: React.FC = () => {
   const getTodayWorktime = async () => {
     try {
       const res = await waktukerja.today(token);
-      setTodayWorktimes(res.data.data);
-      const doneCount = res.data.data?.reduce((count: number, item: any) => {
+      setTodayWorktimes(res.data?.data ?? []);
+      const doneCount = res.data?.data?.reduce((count: number, item: any) => {
         return item.employeeattendances?.length ? count + 1 : count;
       }, 0);
 
       setAttends((d) => ({
         ...d,
-        total: res.data.data.length,
+        total: res.data?.data?.length ?? 0,
         done: doneCount,
       }));
     } catch {}
@@ -105,7 +105,7 @@ const Dashboard: React.FC = () => {
 
     try {
       const res = await Rekapan.jumlahPresensi(token, employee.id);
-      setRekapPresensi(res.data.data);
+      setRekapPresensi(res.data?.data ?? null);
     } catch {}
   };
 
@@ -122,7 +122,7 @@ const Dashboard: React.FC = () => {
         0,
         3
       );
-      setLatestTraining(response.data.data.result);
+      setLatestTraining(response.data?.data?.result ?? []);
     } catch {}
   };
 
@@ -131,7 +131,7 @@ const Dashboard: React.FC = () => {
   const getAnnouncements = async () => {
     try {
       const res = await PengumumanKaryawan.showAll(token, "", "1", "");
-      setAnnouncements(res.data.data.result);
+      setAnnouncements(res.data?.data?.result ?? []);
     } catch {}
   };
 
@@ -147,7 +147,8 @@ const Dashboard: React.FC = () => {
     if (!employee) return;
     try {
       const response = await Rekapan.presensiSetahun(token, employee.id);
-      const data = response.data.data;
+      const data = response.data?.data ?? null;
+      if (!data) return
 
       const cutiData: any = [];
       const izinData: any = [];
