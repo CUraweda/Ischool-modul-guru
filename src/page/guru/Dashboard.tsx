@@ -9,10 +9,13 @@ import axios from "axios";
 import Modal from "../../component/modal";
 import { employeeStore, Store } from "../../store/Store";
 import { FaDoorClosed, FaDoorOpen } from "react-icons/fa";
-// import { Rekapan } from "../../midleware/api-hrd";
 import moment from "moment";
 import { formatTime } from "../../utils/date";
-import { PelatihanKaryawan, Rekapan } from "../../midleware/api-hrd";
+import {
+  PelatihanKaryawan,
+  PengumumanKaryawan,
+  Rekapan,
+} from "../../midleware/api-hrd";
 
 const Dashboard: React.FC = () => {
   const currentDate = moment();
@@ -177,10 +180,20 @@ const Dashboard: React.FC = () => {
     } catch {}
   };
 
+  // get employee announcement
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+  const getAnnouncements = async () => {
+    try {
+      const res = await PengumumanKaryawan.showAll(token, "", "1", "");
+      setAnnouncements(res.data.data.result);
+    } catch {}
+  };
+
   // entry point concurrently get many data
   const getData = async () => {
     getRekapPresensi();
     getLatestTraining();
+    getAnnouncements();
   };
 
   useEffect(() => {
@@ -284,7 +297,7 @@ const Dashboard: React.FC = () => {
                 <div className="px-3 py-1 bg-primary text-white glass">
                   <h3 className="text-lg font-bold">Rekap Presensi</h3>
                   <p className="text-sm font-medium">
-                    Bulan {formatTime(moment().toString(), "MMMM YYYY")}
+                    Bulan {formatTime(currentDate.toString(), "MMMM YYYY")}
                   </p>
                 </div>
                 <div className="px-3 py-1 grow">
@@ -364,9 +377,33 @@ const Dashboard: React.FC = () => {
             <h3 className="text-lg font-bold">Pengumuman</h3>
           </div>
           <div className="px-3 py-1 grow">
-            <div className="flex p-12">
-              <p className="opacity-40 m-auto">Tidak ada pengumuman</p>
-            </div>
+            {announcements.length ? (
+              announcements.map((item, i) => (
+                <div key={i} className="p-3 border-b-2">
+                  {item.plan_date && (
+                    <b className="text-sm text-secondary">
+                      {formatTime(item.plan_date, "dddd, DD MMMM YYYY")}{" "}
+                    </b>
+                  )}
+                  <p className="mb-1">{item.notes ?? "-"}</p>
+                  {item.createdAt == item.updatedAt ? (
+                    <span className="text-xs opacity-60">
+                      Dibuat pada tanggal{" "}
+                      {formatTime(item.createdAt, "DD MMMM YYYY")}
+                    </span>
+                  ) : (
+                    <span className="text-xs opacity-60">
+                      Diedit pada tanggal{" "}
+                      {formatTime(item.updatedAt, "DD MMMM YYYY")}
+                    </span>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="flex p-12">
+                <p className="opacity-40 m-auto">Tidak ada pengumuman</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

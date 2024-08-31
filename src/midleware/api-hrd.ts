@@ -156,12 +156,6 @@ const PelatihanKaryawan = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  getTraining: (token: string | null, id: any) =>
-    instance.get(`/api/training?employee_id=${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
 };
 const waktukerja = {
   getWorkTime: (token: string | null) =>
@@ -206,10 +200,40 @@ const Rekapan = {
     }),
 };
 
+const PengumumanKaryawan = {
+  showAll: (
+    token: string | null,
+    search: string,
+    specific: string,
+    employeeId: string,
+    page: number = 0,
+    limit: number = 10
+  ) =>
+    instance.get("/api/employee-announcement", {
+      params: {
+        search,
+        only_specific: specific,
+        employee_id: employeeId,
+        page,
+        limit,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showOne: (token: string | null, id: string | null) =>
+    instance.get("/api/employee-announcement/" + id, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
 export {
   CutiIzin,
   PengajuanPelatihanKaryawan,
   PelatihanKaryawan,
   Rekapan,
   waktukerja,
+  PengumumanKaryawan
 };
