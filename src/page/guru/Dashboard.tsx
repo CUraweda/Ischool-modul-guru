@@ -189,11 +189,54 @@ const Dashboard: React.FC = () => {
     } catch {}
   };
 
+  // get attendance summary chart
+  const [recapPresensiChart, setRecapPresensiChart] = useState({
+    cuti: [],
+    izin: [],
+    hadir: [],
+    categories: [],
+    maxValue: 0,
+  });
+  const getRecapPresensiChart = async () => {
+    if (!employee) return;
+    try {
+      const response = await Rekapan.presensiSetahun(token, employee.id);
+      const data = response.data.data;
+
+      const cutiData: any = [];
+      const izinData: any = [];
+      const hadirData: any = [];
+      const categories: any = [];
+
+      Object.keys(data).forEach((key) => {
+        categories.push(data[key].name);
+        cutiData.push(Number(data[key].cuti));
+        izinData.push(Number(data[key].izin));
+        hadirData.push(Number(data[key].hadir));
+      });
+
+      // Hitung nilai maksimum untuk sumbu Y
+      const maxDataValue = Math.max(...cutiData, ...izinData, ...hadirData);
+
+      // Tambahkan sedikit padding pada nilai maksimum
+      const maxValue = maxDataValue > 0 ? Math.ceil(maxDataValue * 1.1) : 5;
+
+      setRecapPresensiChart({
+        cuti: cutiData,
+        izin: izinData,
+        hadir: hadirData,
+        categories,
+        maxValue,
+      });
+    } catch {}
+  };
+
   // entry point concurrently get many data
   const getData = async () => {
     getRekapPresensi();
     getLatestTraining();
     getAnnouncements();
+    getRecapPresensiChart();
   };
 
   useEffect(() => {
@@ -357,15 +400,7 @@ const Dashboard: React.FC = () => {
                 <h3 className="text-lg font-bold">Chart Presensi</h3>
               </div>
               <div className="px-3 py-1 grow">
-                <ApexChart
-                  data={{
-                    cuti: [],
-                    izin: [],
-                    hadir: [],
-                    categories: [],
-                    maxValue: 0,
-                  }}
-                />
+                <ApexChart data={recapPresensiChart} />
               </div>
             </div>
           </div>

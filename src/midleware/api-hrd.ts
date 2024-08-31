@@ -192,7 +192,7 @@ const Rekapan = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  getRecapYear: (token: string | null, id: any | null) =>
+  presensiSetahun: (token: string | null, id: any | null) =>
     instance.get(`/api/employee-attendance/recap-year-employee/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
