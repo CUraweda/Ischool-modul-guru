@@ -1,8 +1,6 @@
 import axios from "axios";
-const apilocal = "http://prod.curaweda.com:3005/stg-server1";
 const instance = axios.create({
-  // baseURL: import.meta.env.VITE_REACT_API_URL_LOCAL,
-  baseURL: apilocal,
+  baseURL: import.meta.env.VITE_REACT_API_HRD_URL,
 });
 
 const CutiIzin = {
@@ -158,15 +156,9 @@ const PelatihanKaryawan = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  getTraining: (token: string | null, id: any) =>
-    instance.get(`/api/training?employee_id=${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
 };
 const waktukerja = {
-  getWorkTime: (token: string | null) =>
+  today: (token: string | null) =>
     instance.get(`api/worktime/today`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -194,15 +186,48 @@ const Rekapan = {
         },
       }
     ),
-  getRecapMonthly: (token: string | null, id: any | null) =>
-    instance.get(`/api/employee-attendance/recap-month-employee/${id}`, {
+  presensiSetahun: (token: string | null, id: any | null) =>
+    instance.get(`/api/employee-attendance/recap-year-employee/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }),
-  getRecapYear: (token: string | null, id: any | null) =>
-    instance.get(`/api/employee-attendance/recap-year-employee/${id}`, {
+};
+
+const PengumumanKaryawan = {
+  showAll: (
+    token: string | null,
+    search: string,
+    specific: string,
+    employeeId: string,
+    page: number = 0,
+    limit: number = 10
+  ) =>
+    instance.get("/api/employee-announcement", {
+      params: {
+        search,
+        only_specific: specific,
+        employee_id: employeeId,
+        page,
+        limit,
+      },
       headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  showOne: (token: string | null, id: string | null) =>
+    instance.get("/api/employee-announcement/" + id, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
+const PresensiKaryawan = {
+  hadir: (token: string, data: any) =>
+    instance.post("/api/employee-attendance/attend", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
     }),
@@ -214,4 +239,6 @@ export {
   PelatihanKaryawan,
   Rekapan,
   waktukerja,
+  PengumumanKaryawan,
+  PresensiKaryawan,
 };

@@ -7,14 +7,20 @@ interface Props {
 	onClose?: () => void;
 }
 
-const openModal = (id: string) => {
+const openModal = (id: string, fun?: () => void) => {
 	const modal = document.getElementById(id) as HTMLDialogElement;
-	if (modal) modal.showModal();
+	if (modal) {
+		modal.showModal()
+		if (fun) fun()
+	};
 };
 
-const closeModal = (id: string) => {
+const closeModal = (id: string, fun?: () => void) => {
 	const modal = document.getElementById(id) as HTMLDialogElement;
-	if (modal) modal.close();
+	if (modal) {
+		modal.close()
+		if (fun) fun()
+	};
 };
 
 const modal: FC<Props> = ({ id, children, width, onClose = () => {} }) => {

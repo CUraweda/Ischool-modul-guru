@@ -21,8 +21,10 @@ const ApexChart: React.FC<ApexChartProps> = ({ data }) => {
 
   if (allZero) {
     return (
-      <div className="h-[350px]">
-        Tidak ada data presensi untuk ditampilkan.
+      <div className="flex p-12 h-[350px]">
+        <p className="opacity-40 m-auto">
+          Tidak ada data presensi untuk ditampilkan.
+        </p>
       </div>
     );
   }
