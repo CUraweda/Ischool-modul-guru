@@ -229,11 +229,22 @@ const PengumumanKaryawan = {
     }),
 };
 
+const PresensiKaryawan = {
+  hadir: (token: string, data: any) =>
+    instance.post("/api/employee-attendance/attend", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
 export {
   CutiIzin,
   PengajuanPelatihanKaryawan,
   PelatihanKaryawan,
   Rekapan,
   waktukerja,
-  PengumumanKaryawan
+  PengumumanKaryawan,
+  PresensiKaryawan,
 };

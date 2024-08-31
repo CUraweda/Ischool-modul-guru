@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import bg from "../../assets/bg2.png";
 import ApexChart from "../../component/ApexChart";
 import FaceDetection from "../../component/FaceRegocnition";
-import { FaCheckCircle } from "react-icons/fa";
 
 import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
-import axios from "axios";
-import Modal from "../../component/modal";
+import Modal, { closeModal, openModal } from "../../component/modal";
 import { employeeStore, Store } from "../../store/Store";
-import { FaDoorClosed, FaDoorOpen } from "react-icons/fa";
+import {
+  FaDoorClosed,
+  FaDoorOpen,
+  FaExclamationTriangle,
+} from "react-icons/fa";
 import moment from "moment";
 import { formatTime } from "../../utils/date";
 import {
@@ -33,51 +35,13 @@ const Dashboard: React.FC = () => {
     setInAreas(false);
   };
 
-  const [isAbsen, setIsAbsen] = useState<boolean>(false);
-  const [isReAbsen, setReIsAbsen] = useState<boolean>(false);
-
-  const [currentTime, setCurrentTime] = useState<string>("");
-  const [isLate, setIsLate] = useState<boolean>(false);
-
-  const [attendanceData, setAttendanceData] = useState<any>(null);
-
-  const handleFaceDetectionSuccess = (data: any) => {
-    setAttendanceData(data);
-    setIsAbsen(true);
-    const date = new Date();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const formattedTime = `${hours.toString().padStart(2, "0")}.${minutes.toString().padStart(2, "0")}`;
-    setCurrentTime(formattedTime);
-
-    const timeInMinutes = hours * 60 + minutes;
-    const targetTimeInMinutes = 8 * 60; // 08:00
-    if (timeInMinutes > targetTimeInMinutes) {
-      setIsLate(true);
-    } else {
-      setIsLate(false);
-    }
+  // submit attendance
+  const [attends, setAttends] = useState({
+    total: 0,
+    done: 0,
+  });
+  const handleFaceDetectionSuccess = (_: any) => {
     stopCamera();
-  };
-  const handleReAbsen = () => {
-    setIsAbsen(true);
-    setReIsAbsen(true);
-    stopCamera();
-  };
-
-  const showModalAdd = (props: string) => {
-    let modalElement = document.getElementById(props) as HTMLDialogElement;
-    if (modalElement) {
-      modalElement.showModal();
-      kamera();
-    }
-  };
-  const closeModalAdd = (props: string) => {
-    let modalElement = document.getElementById(props) as HTMLDialogElement;
-    if (modalElement) {
-      modalElement.close();
-      setCamera(false);
-    }
   };
 
   const [camera, setCamera] = useState(false);
@@ -109,57 +73,21 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const [workTime, setWorkTime] = useState<{
-    start_time: string;
-    end_time: string;
-  } | null>(null);
-  const getWorkTime = async () => {
-    try {
-      const url = `${import.meta.env.VITE_REACT_API_HRD_URL}/api/worktime/1`;
-      const response = await axios.get<{
-        data: { start_time: string; end_time: string };
-      }>(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setWorkTime(response.data.data);
-    } catch (error) {
-      console.error("Error fetching work time data:", error);
-    }
-  };
-
-  useEffect(() => {
-    getWorkTime();
-  }, [employee]);
-
-  const isBeforeWorkTime = () => {
-    if (!workTime || !currentTime) return false;
-
-    const now = new Date();
-    const [hours, minutes] = currentTime.split(":").map(Number);
-    now.setHours(hours, minutes, 0, 0);
-
-    const [startHours, startMinutes] = workTime.start_time
-      .split(":")
-      .map(Number);
-    const startTime = new Date(now);
-    startTime.setHours(startHours, startMinutes, 0, 0);
-
-    const yesterday = new Date(now);
-    yesterday.setDate(yesterday.getDate() - 1);
-    yesterday.setHours(23, 59, 59, 999);
-
-    return now < startTime && now > yesterday;
-  };
-
   // get today worktime
   const [todayWorktimes, setTodayWorktimes] = useState<any[]>([]);
   const getTodayWorktime = async () => {
     try {
       const res = await waktukerja.today(token);
       setTodayWorktimes(res.data.data);
+      const doneCount = res.data.data?.reduce((count: number, item: any) => {
+        return item.employeeattendances?.length ? count + 1 : count;
+      }, 0);
+
+      setAttends((d) => ({
+        ...d,
+        total: res.data.data.length,
+        done: doneCount,
+      }));
     } catch {}
   };
 
@@ -345,7 +273,13 @@ const Dashboard: React.FC = () => {
             <div className="px-6 pb-3 flex flex-col gap-2">
               <button
                 className="btn btn-primary grow"
-                onClick={() => showModalAdd("modal-absen")}
+                disabled={attends.done == attends.total}
+                onClick={() => {
+                  if (attends.done == attends.total) return;
+                  openModal("modal-absen", () => {
+                    kamera();
+                  });
+                }}
               >
                 Presensi
               </button>
@@ -470,113 +404,57 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <Modal id="modal-absen">
-        {isBeforeWorkTime() && workTime ? (
-          <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-xl font-bold text-center">
-              Absen bisa dimulai dari jam {workTime.start_time}
-            </p>
-            <button
-              className="btn bg-gray-500 w-1/2 text-white mt-4"
-              onClick={() => closeModalAdd("modal-absen")}
-            >
-              Close
-            </button>
-          </div>
-        ) : !isAbsen ? (
-          <>
-            <div className={`mt-4 flex justify-center`}>
-              {camera ? (
-                <>
-                  <div className="flex flex-col">
-                    {inAreas ? (
-                      <FaceDetection
-                        onSuccess={handleFaceDetectionSuccess}
-                        reAbsen={handleReAbsen}
-                      />
-                    ) : (
-                      <img
-                        src="https://png.pngtree.com/png-clipart/20230917/original/pngtree-flat-vector-illustration-of-photo-camera-icon-and-no-image-available-png-image_12324435.png"
-                        alt=""
-                      />
-                    )}
-                    <MapWithTwoRadiusPins
-                      onAreas={handleInAreas}
-                      notOnAreas={handleIsntAreas}
-                    />
-                  </div>
-                </>
-              ) : (
-                <div className="flex flex-col">
-                  <div className="camera-blocked-message text-center">
-                    <p>
-                      Izin kamera diblokir. Silakan izinkan akses kamera di
-                      pengaturan browser Anda.
-                    </p>
-                  </div>
+      <Modal
+        id="modal-absen"
+        onClose={() => {
+          setCamera(false);
+        }}
+      >
+        <div className={`mt-4 flex justify-center`}>
+          {camera ? (
+            <>
+              <div className="flex flex-col">
+                {inAreas ? (
+                  <FaceDetection
+                    onSuccess={handleFaceDetectionSuccess}
+                    reAbsen={() => {}}
+                  />
+                ) : (
                   <img
                     src="https://png.pngtree.com/png-clipart/20230917/original/pngtree-flat-vector-illustration-of-photo-camera-icon-and-no-image-available-png-image_12324435.png"
                     alt=""
                   />
-                </div>
-              )}
-            </div>
-            <div className="w-full flex gap-2">
-              <button
-                className={`btn bg-gray-500 w-full text-white `}
-                onClick={() => closeModalAdd("modal-absen")}
-              >
-                Close
-              </button>
-            </div>
-          </>
-        ) : isReAbsen ? (
-          <>
-            <div className="h-full w-full flex items-center justify-center">
-              <div className="flex w-full justify-center items-center flex-col gap-10">
-                <span className="text-green-500 text-[200px]">
-                  <FaCheckCircle />
-                </span>
-                <span className="text-xl font-bold text-center">
-                  Anda sudah Melakukan Absen Sebelumnya
-                </span>
-                <button
-                  onClick={() => closeModalAdd("modal-absen")}
-                  className="btn bg-green-500 text-white w-1/2 mt-5"
-                >
-                  Oke
-                </button>
+                )}
+                <MapWithTwoRadiusPins
+                  onAreas={handleInAreas}
+                  notOnAreas={handleIsntAreas}
+                />
               </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="h-full w-full flex items-center justify-center">
-              <div className="flex w-full justify-center items-center flex-col">
-                <span className="text-green-500 text-[300px]">
-                  <FaCheckCircle />
+            </>
+          ) : (
+            <div className="flex flex-col">
+              <div role="alert" className="alert alert-warning font-semibold">
+                <FaExclamationTriangle size={24} />
+                <span>
+                  Izin kamera diblokir. Silakan izinkan akses kamera di
+                  pengaturan browser Anda.
                 </span>
-                <span className="text-2xl font-bold text-white ">
-                  Berhasil Absensi
-                </span>
-                <div className="mt-5 w-full px-6 flex justify-center item-center flex-col gap-3">
-                  <div className="w-full h-14 bg-white p-3 justify-center flex text-black font-bold text-xl shadow-md rounded-md">
-                    {employee?.full_name ?? "-"}
-                  </div>
-                  <div className="w-full h-14 bg-white p-3 justify-center flex flex-col items-center text-black font-bold text-xl shadow-md rounded-md">
-                    <p>{currentTime} WIB</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => closeModalAdd("modal-absen")}
-                  className="btn bg-green-500 text-white w-1/2 mt-5"
-                >
-                  Oke
-                </button>
               </div>
+              <img
+                src="https://png.pngtree.com/png-clipart/20230917/original/pngtree-flat-vector-illustration-of-photo-camera-icon-and-no-image-available-png-image_12324435.png"
+                alt=""
+              />
             </div>
-          </>
-        )}
+          )}
+        </div>
+        <div className="w-full flex gap-2">
+          <button
+            className={`btn bg-gray-500 w-full text-white `}
+            onClick={() => closeModal("modal-absen")}
+          >
+            Tutup
+          </button>
+        </div>
       </Modal>
     </div>
   );
