@@ -33,55 +33,6 @@ const Auth = {
       },
     }),
 };
-// const DashboardGuru = {
-//   getAttendance: (token: string | null, id: any): AxiosPromise<any> =>
-//     local({
-//       method: "GET",
-//       // url: `/api/employee-attendance/${id}`,
-//       url: `/api/employee-attendance?employee_id=${id}`,
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     }),
-
-//   getRecapMonthly: (token: string | null, id: any | null): AxiosPromise<any> =>
-//     local({
-//       method: "GET",
-//       url: `/api/employee-attendance/recap-month-employee/${id}`,
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     }),
-//   getRecapYear: (token: string | null, id: any | null): AxiosPromise<any> =>
-//     local({
-//       method: "GET",
-//       url: `/api/employee-attendance/recap-year-employee/${id}`,
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     }),
-//   getAnnouncement: (
-//     token: string | null,
-//     specific: number | null
-//   ): AxiosPromise<any> =>
-//     local({
-//       method: "GET",
-//       url: `/api/employee-announcement?only_specific=${specific}`,
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     }),
-//   requestCuti: (token: string | null, data: any): AxiosPromise<any> =>
-//     local({
-//       method: "POST",
-//       url: `/api/employee-vacation/request`,
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//         "Content-Type": "multipart/form-data",
-//       },
-//       data,
-//     }),
-// };
 
 const User = {
   showAll: (token: string | null, search: string | null): AxiosPromise<any> =>

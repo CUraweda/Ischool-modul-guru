@@ -186,12 +186,6 @@ const Rekapan = {
         },
       }
     ),
-  getRecapMonthly: (token: string | null, id: any | null) =>
-    instance.get(`/api/employee-attendance/recap-month-employee/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
   presensiSetahun: (token: string | null, id: any | null) =>
     instance.get(`/api/employee-attendance/recap-year-employee/${id}`, {
       headers: {
