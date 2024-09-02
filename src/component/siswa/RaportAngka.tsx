@@ -236,7 +236,7 @@ const RaportAngka = () => {
 
       Swal.fire({
         title: "Deleted!",
-        text: "Your file and related personalities have been deleted.",
+        text: "Rapor angka berhasil dihapus.",
         icon: "success",
       });
 
