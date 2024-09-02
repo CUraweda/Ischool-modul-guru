@@ -230,16 +230,8 @@ const RaportAngka = () => {
     }
   };
 
-  const handleDelete = async (id: string, nis: string) => {
+  const handleDelete = async (id: string) => {
     try {
-      const relatedPersonalities = await KepribadianSiswa.showAll(token, nis);
-      const data = relatedPersonalities.data.data.result;
-
-      // Step 2: Delete each related kepribadian entry
-      for (const personality of data) {
-        await KepribadianSiswa.delete(token, personality.id);
-      }
-
       await Raport.deleteNumberReport(token, id);
 
       Swal.fire({
@@ -665,12 +657,7 @@ const RaportAngka = () => {
                     <button
                       className="btn btn-sm join-item bg-red-500 text-white tooltip"
                       data-tip="hapus"
-                      onClick={() =>
-                        handleDelete(
-                          item?.id,
-                          item?.studentreport?.studentclass?.student?.nis
-                        )
-                      }
+                      onClick={() => handleDelete(item?.id)}
                     >
                       <span className="text-xl">
                         <FaRegTrashAlt />

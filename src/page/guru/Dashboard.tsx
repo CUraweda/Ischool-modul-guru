@@ -89,7 +89,7 @@ const Dashboard = () => {
     if (id && token) {
       try {
         const response = await waktukerja.getWorkTime(token);
-        setWorkTime(response.data.data);
+        setWorkTime(response.data.data.result);
       } catch (err) {
         Swal.fire({
           icon: "error",
@@ -130,7 +130,7 @@ const Dashboard = () => {
     if (id && token) {
       try {
         const response = await DashboardGuru.getAttendance(token, id);
-        const data = response.data.data.result;
+        const data = response.data.data;
         setDataAttendance(data);
       } catch (error) {
         console.error("Failed to fetch attendance data", error);
@@ -144,7 +144,7 @@ const Dashboard = () => {
     if (id && token) {
       try {
         const response = await DashboardGuru.getAnnouncement(token, 1);
-        setDataAnnouncment(response.data.data.result);
+        setDataAnnouncment(response.data.data);
       } catch (error) {
         console.error("Failed to fetch attendance data", error);
       }
