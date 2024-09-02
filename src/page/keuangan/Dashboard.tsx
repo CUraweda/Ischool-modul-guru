@@ -1,6 +1,6 @@
 // import React from 'react'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   FaChartPie,
   FaExclamationTriangle,
@@ -16,9 +16,11 @@ import { Link } from "react-router-dom";
 import { Input, Select } from "../../component/Input";
 import { ApexOptions } from "apexcharts";
 import ReactApexChart from "react-apexcharts";
+import { useReactToPrint } from "react-to-print";
 
 const Dashboard = () => {
   const { token } = Store();
+  const componentRef = useRef(null);
 
   // filters
   const [postPayments, setPostPayments] = useState<any[]>([]);
@@ -138,7 +140,19 @@ const Dashboard = () => {
     getCharts();
   }, [startDate, endDate, postPaymentId]);
 
-  const handleDownload = () => {};
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: "exported-pdf",
+    pageStyle: `
+      @page {
+        size: A4;
+        margin: 20mm;
+      }
+      .pdf-content {
+        padding: 20mm;
+      }
+    `,
+  });
 
   return (
     <>
@@ -154,128 +168,129 @@ const Dashboard = () => {
               options={postPayments}
             />
           </div>
-          <div className="flex items-center">
+          <div className="flex gap-2 flex-col sm:flex-row">
             <Input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
-            <div className="w-4 h-1 bg-gray-400 relative -top-1"></div>
+            {/* <div className="w-4 h-1 bg-gray-400 relative -top-1"></div> */}
             <Input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
-          </div>
-          <button
-            onClick={handleDownload}
-            className="btn bg-[#1d6f42] text-white"
-          >
-            <FaFileExcel size={18} />
-            Export
-          </button>
-        </div>
-
-        <div className="w-full flex flex-wrap gap-3 mt-3">
-          <div className="stat w-fit grow bg-base-100 rounded-lg border">
-            <div className="stat-figure text-primary">
-              <FaMoneyBillWave size={28} />
-            </div>
-            <div className="stat-title">Pendapatan bulan ini</div>
-            <div className="stat-value overflow-hidden text-ellipsis text-primary">
-              {moneyFormat(monthIncome)}
-            </div>
-          </div>
-          <div className="stat w-fit grow bg-base-100 rounded-lg border">
-            <div className="stat-figure text-primary">
-              <FaMoneyBillWave size={28} />
-            </div>
-            <div className="stat-title">Pendapatan hari ini</div>
-            <div className="stat-value overflow-hidden text-ellipsis text-primary">
-              {moneyFormat(todayIncome)}
-            </div>
-          </div>
-          <div className="stat w-fit grow bg-base-100 rounded-lg border">
-            <div className="stat-figure text-primary">
-              <FaWallet size={28} />
-            </div>
-            <div className="stat-title">Total pendapatan</div>
-            <div className="stat-value overflow-hidden text-ellipsis text-primary">
-              {moneyFormat(totalIncome)}
-            </div>
-          </div>
-          <div className="stat w-fit grow bg-base-100 rounded-lg border">
-            <div className="stat-figure text-success">
-              <FaChartPie size={28} />
-            </div>
-            <div className="stat-title">Persentase kelunasan</div>
-            <div className="stat-value overflow-hidden text-ellipsis text-success">
-              {lunasPercentage.toFixed(2)}%
-            </div>
-          </div>
-          <div className="stat w-fit grow bg-base-100 rounded-lg border">
-            <div className="stat-figure text-error">
-              <FaExclamationTriangle size={28} />
-            </div>
-            <div className="stat-title">Jumlah menunggak</div>
-            <div className="stat-value overflow-hidden text-ellipsis text-error">
-              {inArrearCount}
-            </div>
+            <button
+              onClick={handlePrint}
+              className="btn bg-[#1d6f42] text-white"
+            >
+              <FaFileExcel size={18} />
+              Export
+            </button>
           </div>
         </div>
-
-        <div className="divider"></div>
-
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
-          <div className="col-span-2">
-            <div className="w-full bg-white p-3 rounded-md">
-              <div id="chart" className="">
-                <ReactApexChart
-                  options={chartOptions}
-                  series={chartSeries}
-                  type="area"
-                  height={450}
-                />
+        <div id="export" ref={componentRef}>
+          <div className="w-full flex flex-wrap gap-3 mt-3">
+            <div className="stat w-fit grow bg-base-100 rounded-lg border">
+              <div className="stat-figure text-primary">
+                <FaMoneyBillWave size={28} />
               </div>
-              <div id="html-dist"></div>
+              <div className="stat-title">Pendapatan bulan ini</div>
+              <div className="stat-value overflow-hidden text-ellipsis text-primary">
+                {moneyFormat(monthIncome)}
+              </div>
+            </div>
+            <div className="stat w-fit grow bg-base-100 rounded-lg border">
+              <div className="stat-figure text-primary">
+                <FaMoneyBillWave size={28} />
+              </div>
+              <div className="stat-title">Pendapatan hari ini</div>
+              <div className="stat-value overflow-hidden text-ellipsis text-primary">
+                {moneyFormat(todayIncome)}
+              </div>
+            </div>
+            <div className="stat w-fit grow bg-base-100 rounded-lg border">
+              <div className="stat-figure text-primary">
+                <FaWallet size={28} />
+              </div>
+              <div className="stat-title">Total pendapatan</div>
+              <div className="stat-value overflow-hidden text-ellipsis text-primary">
+                {moneyFormat(totalIncome)}
+              </div>
+            </div>
+            <div className="stat w-fit grow bg-base-100 rounded-lg border">
+              <div className="stat-figure text-success">
+                <FaChartPie size={28} />
+              </div>
+              <div className="stat-title">Persentase kelunasan</div>
+              <div className="stat-value overflow-hidden text-ellipsis text-success">
+                {lunasPercentage.toFixed(2)}%
+              </div>
+            </div>
+            <div className="stat w-fit grow bg-base-100 rounded-lg border">
+              <div className="stat-figure text-error">
+                <FaExclamationTriangle size={28} />
+              </div>
+              <div className="stat-title">Jumlah menunggak</div>
+              <div className="stat-value overflow-hidden text-ellipsis text-error">
+                {inArrearCount}
+              </div>
             </div>
           </div>
 
-          {/* recent */}
-          <div className="col-span-1">
-            <div className="bg-base-100 p-3 rounded-lg border">
-              <h4 className="text-lg font-bold mb-6">Pembayaran Terbaru</h4>
+          <div className="divider"></div>
 
-              {recentPaidOff.map((item, i) => (
-                <div className="px-3" key={i}>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-base sm:text-lg">
-                        {item.student?.full_name ?? "-"}
-                      </p>
-                      <div className="flex gap-2 items-start">
-                        <p className="text-sm text-gray-500">
-                          {item.studentpaymentbill?.name ?? "-"}
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+            <div className="col-span-2">
+              <div className="w-full bg-white p-3 rounded-md">
+                <div id="chart" className="">
+                  <ReactApexChart
+                    options={chartOptions}
+                    series={chartSeries}
+                    type="area"
+                    height={450}
+                  />
+                </div>
+                <div id="html-dist"></div>
+              </div>
+            </div>
+
+            {/* recent */}
+            <div className="col-span-1">
+              <div className="bg-base-100 p-3 rounded-lg border">
+                <h4 className="text-lg font-bold mb-6">Pembayaran Terbaru</h4>
+
+                {recentPaidOff.map((item, i) => (
+                  <div className="px-3" key={i}>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-base sm:text-lg">
+                          {item.student?.full_name ?? "-"}
                         </p>
-                        <Link
-                          to={`/keuangan/jenis-pembayaran/${item.studentpaymentbill?.id ?? ""}`}
-                          className="btn btn-link px-0 btn-xs relative -top-1"
-                        >
-                          Lihat
-                        </Link>
+                        <div className="flex gap-2 items-start">
+                          <p className="text-sm text-gray-500">
+                            {item.studentpaymentbill?.name ?? "-"}
+                          </p>
+                          <Link
+                            to={`/keuangan/jenis-pembayaran/${item.studentpaymentbill?.id ?? ""}`}
+                            className="btn btn-link px-0 btn-xs relative -top-1"
+                          >
+                            Lihat
+                          </Link>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm text-end text-gray-500">
+                          {item.paidoff_at
+                            ? moment(item.paidoff_at).fromNow()
+                            : "-"}
+                        </p>
                       </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-end text-gray-500">
-                        {item.paidoff_at
-                          ? moment(item.paidoff_at).fromNow()
-                          : "-"}
-                      </p>
-                    </div>
+                    <div className="divider"></div>
                   </div>
-                  <div className="divider"></div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>

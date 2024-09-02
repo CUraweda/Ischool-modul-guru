@@ -1,101 +1,104 @@
 import React, { useState, useEffect } from "react";
-// import {
-//   MapContainer,
-//   TileLayer,
-//   Marker,
-//   Circle,
-//   Polyline,
-// } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useProps } from "../store/Store";
-// import marker1 from "../assets/marker1.png";
-// import marker2 from "../assets/marker2.png";
-import Location from "../data/location.json";
+import axios from "axios";
 
 interface FaceDetectionProps {
   onAreas: () => void;
   notOnAreas: () => void;
 }
 
+type Position = { lat: number; lng: number; radius?: number };
 
-type Position = { lat: number; lng: number; radius?: number } | null;
+interface Location {
+  id: number;
+  nama: string;
+  lat: number;
+  lng: number;
+  radius: number;
+}
+
+function requestLocationAccess() {
+  return new Promise((resolve, reject) => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve(position);
+        },
+        (error) => {
+          reject(error);
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
+    } else {
+      reject(new Error("Geolocation is not supported by this browser."));
+    }
+  });
+}
 
 const MapWithTwoRadiusPins: React.FC<FaceDetectionProps> = ({ onAreas, notOnAreas }) => {
-
   const [inArea, setInArea] = useState<boolean>(false);
   const [distance, setDistance] = useState<number | null>(null);
-
   const { setInareaProps, setDistanceProps } = useProps();
-  const [position2, setPosition2] = useState<Position>(null);
-  const [nearestLocation, setNearestLocation] = useState<Position>(null);
+  const [position2, setPosition2] = useState<Position | null>(null);
+  const [nearestLocation, setNearestLocation] = useState<Location | null>(null);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [locationAccessGranted, setLocationAccessGranted] = useState<boolean>(false);
 
   const calculateDistance = (pos1: Position, pos2: Position) => {
-    if (pos1 && pos2) {
-      return L.latLng(pos1.lat, pos1.lng).distanceTo(
-        L.latLng(pos2.lat, pos2.lng)
-      );
-    }
-    return null;
+    return L.latLng(pos1.lat, pos1.lng).distanceTo(L.latLng(pos2.lat, pos2.lng));
   };
 
   console.log(position2, nearestLocation);
 
-  // useEffect(() => {
-  //   navigator.geolocation.getCurrentPosition(
-  //     (position) => {
-  //       const newPos2 = {
-  //         lat: position.coords.latitude,
-  //         lng: position.coords.longitude,
-  //       };
-
-  //       let minDistance = Infinity;
-  //       let nearestLoc: Position = null;
-
-  //       Location?.forEach((item: Position) => {
-  //         const distance = calculateDistance(item, newPos2);
-
-  //         if (distance !== null && distance < minDistance) {
-  //           minDistance = Math.round(distance);
-  //           nearestLoc = item;
-  //         }
-  //         if (distance !== null && distance > (item?.radius || 0)) {
-  //           setInareaProps(false);
-  //         } else {
-  //           setInareaProps(true);
-  //         }
-  //       });
-  //       setNearestLocation(nearestLoc);
-  //       setDistanceProps(minDistance);
-  //       setPosition2(newPos2);
-  //     },
-  //     (error) => {
-  //       console.error("Error Code = " + error.code + " - " + error.message);
-  //     }
-  //   );
-  // }, []);
+  const fetchLocations = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_REACT_API_HRD_URL}/api/location/`);
+      setLocations(response.data);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+    }
+  };
 
   useEffect(() => {
+    async function getInitialLocation() {
+      try {
+        await requestLocationAccess();
+        setLocationAccessGranted(true);
+        // If successful, proceed with fetching locations
+        await fetchLocations();
+      } catch (error) {
+        console.error("Error accessing location:", error);
+        setLocationAccessGranted(false);
+        // Handle the error (e.g., show a message to the user)
+      }
+    }
+  
+    getInitialLocation();
+  }, []);
+
+  useEffect(() => {
+    if (!locationAccessGranted || locations.length === 0) return;
+
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
-        const newPos2 = {
+        const newPos2: Position = {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         };
         let minDistance = Infinity;
-        let nearestLoc: Position = null;
+        let nearestLoc: Location | null = null;
         let isInsideAnyArea = false;
     
-        Location?.forEach((item: Position) => {
+        locations.forEach((item: Location) => {
           const distance = calculateDistance(item, newPos2);
-          if (distance !== null) {
-            if (distance < minDistance) {
-              minDistance = Math.round(distance);
-              nearestLoc = item;
-            }
-            if (distance <= (item?.radius || 0)) {
-              isInsideAnyArea = true;
-            }
+          if (distance < minDistance) {
+            minDistance = Math.round(distance);
+            nearestLoc = item;
+          }
+          if (distance <= item.radius) {
+            isInsideAnyArea = true;
           }
         });
     
@@ -122,112 +125,76 @@ const MapWithTwoRadiusPins: React.FC<FaceDetectionProps> = ({ onAreas, notOnArea
       }
     );
   
-    // Membersihkan watcher ketika komponen di-unmount
     return () => {
       navigator.geolocation.clearWatch(watchId);
     };
-  }, []);
+  }, [locations]); // Hanya dijalankan ulang jika locations berubahyy
+
+  // function requestLocationAccess() {
+  //   return new Promise((resolve, reject) => {
+  //     if ("geolocation" in navigator) {
+  //       navigator.geolocation.getCurrentPosition(
+  //         (position) => {
+  //           resolve(position);
+  //         },
+  //         (error) => {
+  //           reject(error);
+  //         },
+  //         { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+  //       );
+  //     } else {
+  //       reject(new Error("Geolocation is not supported by this browser."));
+  //     }
+  //   });
+  // }
+  // useEffect(() => {
+  //   async function getInitialLocation() {
+  //     try {
+  //       await requestLocationAccess();
+  //       // If successful, proceed with fetching locations and setting up watch
+  //       fetchLocations();
+  //     } catch (error) {
+  //       console.error("Error accessing location:", error);
+  //       // Handle the error (e.g., show a message to the user)
+  //     }
+  //   }
+  
+  //   getInitialLocation();
+  // }, []);
   return (
     <>
-      {/* <h2>Lokasi Pengguna Saat Ini:</h2>
-      <p>Lat: {position2?.lat}, Lng: {position2?.lng}</p> */}
-    {position2 ? (
-      <div className="my-3 w-full flex flex-col justify-center items-center">
-        {/* <img src="" alt="" /> */}
-        <span className="font-semibold">
-          {inArea ? "Anda sudah berada di area presensi" : `Jarak anda ke area presensi terdekat adalah ${distance} meter`}
-        </span>
-        <span className={`${inArea ? "" : "text-red-500"} font-semibold`}>
-          {inArea ? "Mengenali Wajah..." : "Anda Berada Diluar Area, Tidak Dapat Melakukan Presensi"}
-        </span>
-      </div>
-    ) : (
-      <div className="my-3 w-full flex flex-col justify-center items-center">
-        <span className="font-semibold">
-          Tidak Dapat Mengakses Lokasi
-        </span>
-      </div>
-    )}
-
-      {/* <div>
-        <h2>Informasi Lokasi</h2>
-        <ol>
-          <li>
-            Lokasi Pengguna Saat Ini:
-            {position2 ? (
-              <span>Lat: {position2.lat}, Lng: {position2.lng}</span>
-            ) : (
-              "Memuat..."
-            )}
-          </li>
-          <li>
-            Lokasi Terdekat:
-            {nearestLocation ? (
-              <span>Lat: {nearestLocation.lat}, Lng: {nearestLocation.lng}</span>
-            ) : (
-              "Memuat..."
-            )}
-          </li>
-          <li>Jarak ke Lokasi Terdekat: {distance ? `${distance} meter` : "Memuat..."}</li>
-          <li>Pengguna Berada dalam Area: {inArea ? "Ya" : "Tidak"}</li>
-          <li>
-            Data Lokasi yang Tersedia:
-            <ul>
-              {Location.map((loc, index) => (
-                <li key={index}>
-                  Lat: {loc.lat}, Lng: {loc.lng}, Radius: {loc.radius || "N/A"}
-                </li>
-              ))}
-            </ul>
-          </li>
-        </ol>
-      </div> */}
+      {/* <h2>Lokasi Pengguna Saat Ini:</h2> */}
+      {locationAccessGranted ? (
+        <>
+          {/* <p>Lat: {position2?.lat}, Lng: {position2?.lng}</p> */}
+          {position2 ? (
+            <div className="my-3 w-full flex flex-col justify-center items-center">
+              <span className="font-semibold text-center">
+                {inArea 
+                  ? `Anda sudah berada di area presensi (${nearestLocation?.nama})` 
+                  : `Jarak anda ke area presensi (${nearestLocation?.nama}) terdekat adalah ${distance} meter.`
+                }
+              </span>
+              <span className={`${inArea ? "" : "text-red-500 mt-4"} font-semibold`}>
+                {inArea ? "Mengenali Wajah..." : "Anda Berada Diluar Area, Tidak Dapat Melakukan Presensi"}
+              </span>
+            </div>
+          ) : (
+            <div className="my-3 w-full flex flex-col justify-center items-center">
+              <span className="font-semibold">
+                Mengambil lokasi...
+              </span>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="my-3 w-full flex flex-col justify-center items-center">
+          <span className="font-semibold text-red-500">
+            Tidak Dapat Mengakses Lokasi. Mohon izinkan akses lokasi untuk menggunakan fitur ini.
+          </span>
+        </div>
+      )}
     </>
-    // <MapContainer
-    //   center={Location[0] || { lat: 0, lng: 0 }}
-    //   zoom={13}
-    //   style={{ height: "30vh", width: "100%" }}
-    // >
-    //   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-    //   {Location &&
-    //     Location.map((item: Position, index: number) => (
-    //       <React.Fragment key={index}>
-    //         <Marker
-    //           position={item || { lat: 0, lng: 0 }}
-    //           icon={
-    //             new L.Icon({
-    //               iconUrl: marker1,
-    //               iconSize: [50, 50],
-    //               iconAnchor: [25, 48],
-    //             })
-    //           }
-    //         />
-    //         <Circle
-    //           center={item || { lat: 0, lng: 0 }}
-    //           radius={item?.radius || 1}
-    //           color="blue"
-    //         />
-    //       </React.Fragment>
-    //     ))}
-    //   {position2 && (
-    //     <>
-    //       <Marker
-    //         position={position2}
-    //         icon={
-    //           new L.Icon({
-    //             iconUrl: marker2,
-    //             iconSize: [50, 50],
-    //             iconAnchor: [25, 48],
-    //           })
-    //         }
-    //       />
-    //       <Circle center={position2} radius={5} color="red" />
-    //     </>
-    //   )}
-    //   {Location && position2 && nearestLocation && (
-    //     <Polyline positions={[nearestLocation, position2]} color="green" />
-    //   )}
-    // </MapContainer>
   );
 };
 
