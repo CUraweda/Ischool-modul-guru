@@ -148,7 +148,7 @@ const Dashboard: React.FC = () => {
     try {
       const response = await Rekapan.presensiSetahun(token, employee.id);
       const data = response.data?.data ?? null;
-      if (!data) return
+      if (!data) return;
 
       const cutiData: any = [];
       const izinData: any = [];
