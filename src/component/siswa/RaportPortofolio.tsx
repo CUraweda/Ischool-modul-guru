@@ -243,7 +243,9 @@ const RaportPortofolio = () => {
           <tbody>
             {DataSiswa?.map((item: any, index: number) => (
               <tr key={index}>
-                <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
+                <th>
+                  {index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}
+                </th>
                 <td>{item?.studentclass?.student.full_name}</td>
                 <td>{item?.studentclass?.class?.class_name}</td>
                 <td className="flex items-center">
@@ -280,12 +282,12 @@ const RaportPortofolio = () => {
                     </button>
                     <button
                       className={`btn join-item btn-ghost btn-sm text-xl text-white bg-yellow-500 tooltip ${
-                        item.nar_parent_comments ? "" : "btn-disabled"
+                        item.por_parent_comments ? "" : "btn-disabled"
                       }`}
                       data-tip="Komentar Ortu"
                       onClick={() =>
                         handleKomen(
-                          item.nar_parent_comments,
+                          item.por_parent_comments,
                           item.student_class_id,
                           item.id,
                           item.semester,
