@@ -282,7 +282,7 @@ const RaportPortofolio = () => {
                     </button>
                     <button
                       className={`btn join-item btn-ghost btn-sm text-xl text-white bg-yellow-500 tooltip ${
-                        item.nar_parent_comments ? "" : "btn-disabled"
+                        item.por_parent_comments ? "" : "btn-disabled"
                       }`}
                       data-tip="Komentar Ortu"
                       onClick={() =>
