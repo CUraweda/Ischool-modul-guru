@@ -6,7 +6,7 @@ import { Task, Student, Raport, KepribadianSiswa } from "../../midleware/api";
 import { globalStore, Store, useProps } from "../../store/Store";
 import Swal from "sweetalert2";
 import { IpageMeta, PaginationControl } from "../PaginationControl";
-import { Input, Select } from "../Input";
+import { Input, Select, Toggle } from "../Input";
 
 const RaportAll = () => {
   const { academicYear } = globalStore();
@@ -19,6 +19,7 @@ const RaportAll = () => {
   const [selectedReports, setSelectedReports] = useState<any[]>([]);
   const [dataRaport, setDataRaport] = useState<any>([]);
   const [selectedNIS, setSelectedNIS] = useState<string | null>(null);
+  const [studentAccess, setStudentAccess] = useState<boolean>(true);
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
@@ -112,6 +113,7 @@ const RaportAll = () => {
         const dataRest = {
           student_class_id: item.id,
           semester: filter.semester,
+          student_access: studentAccess,
         };
         return create(dataRest);
       });
@@ -497,7 +499,15 @@ const RaportAll = () => {
               </tbody>
             </table>
           </div>
-          <div className="w-full flex gap-3 mt-5 justify-end">
+          <div className="w-full flex gap-3 mt-5">
+            <div className="me-auto">
+              <Toggle
+                label="Kunci raport"
+                checked={studentAccess}
+                rowClassName="flex-row-reverse"
+                onChange={(e) => setStudentAccess(e.target.checked)}
+              />
+            </div>
             <button
               className="btn btn-ghost bg-green-500 text-white"
               onClick={createRaport}
