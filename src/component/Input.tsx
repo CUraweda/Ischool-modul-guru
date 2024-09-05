@@ -186,4 +186,52 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps<any>>(
   }
 );
 
-export { Input, Textarea, Select };
+interface ToggleProps
+  extends React.InputHTMLAttributes<HTMLInputElement>,
+    Props {
+      rowClassName?: string
+    }
+
+const Toggle = React.forwardRef<HTMLInputElement, ToggleProps>(
+  (
+    {
+      className,
+      rowClassName,
+      label,
+      hint,
+      errorMessage,
+      helpMessage,
+      placeholder = "Ketik disini",
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div className="form-control">
+        <label className={"label gap-3 cursor-pointer " + rowClassName}>
+          <div className="flex flex-col">
+            <span className="label-text">{label}</span>
+            {hint && <span className="label-text-alt">{hint}</span>}
+          </div>
+          <div className="flex flex-col items-end justify-end gap-3">
+            <input
+              type="checkbox"
+              className={"toggle toggle-accent toggle-lg " + className}
+              name="is_active"
+              ref={ref}
+              {...props}
+            />
+            {errorMessage && (
+              <span className="label-text-alt text-end text-error">
+                {errorMessage}
+              </span>
+            )}
+          </div>
+        </label>
+      </div>
+    );
+  }
+);
+Toggle.displayName = "toggle";
+
+export { Input, Textarea, Select, Toggle };
