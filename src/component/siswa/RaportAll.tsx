@@ -19,7 +19,7 @@ const RaportAll = () => {
   const [selectedReports, setSelectedReports] = useState<any[]>([]);
   const [dataRaport, setDataRaport] = useState<any>([]);
   const [selectedNIS, setSelectedNIS] = useState<string | null>(null);
-  const [studentAccess, setStudentAccess] = useState<boolean>(true);
+  const [studentAccess, setStudentAccess] = useState<boolean>(false);
 
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
