@@ -1808,6 +1808,40 @@ const FileRaporSiswa = {
       responseType: "blob",
     }),
 };
+const Lesson = {
+  getAllData: (token: string | null): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/lesson-plan`,
+
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  CreateNewLesson: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/lesson-plan/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  UpdateLesson: (
+    token: string | null,
+    data: any,
+    id: string | number
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/lesson-plan/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+};
 
 export {
   User,
@@ -1831,4 +1865,5 @@ export {
   AchievementSiswa,
   ForCountry,
   FileRaporSiswa,
+  Lesson,
 };
