@@ -17,6 +17,7 @@ const ProfilePage = () => {
   const [idEmployee, setIdEmployee] = useState();
   const [updatedName, setUpdatedName] = useState("");
   const [password, setPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [image, setImage] = useState<any>(null);
   const getMe = async () => {
@@ -71,20 +72,35 @@ const ProfilePage = () => {
   };
   const EditProfile = async () => {
     // Validasi kecocokan password
-    if (password !== confirmPassword) {
-      alert("Password dan Confirm Password tidak cocok");
-      return;
-    }
 
     const data = {
       full_name: updatedName,
-      password: password,
     };
 
     try {
       await Auth.EditProfile(token, idEmployee, data);
       getMe();
       closeModal("editProfile");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const EditPassword = async () => {
+    // Validasi kecocokan password
+    if (password !== confirmPassword) {
+      alert("Password dan Confirm Password tidak cocok");
+      return;
+    }
+
+    const data = {
+      password: password,
+      current_password: currentPassword,
+    };
+
+    try {
+      await Auth.EditPassword(token, idEmployee, data);
+      getMe();
+      closeModal("editPassword");
     } catch (error) {
       console.error(error);
     }
@@ -117,6 +133,9 @@ const ProfilePage = () => {
   const handleDialog = () => {
     openModal("editProfile");
   };
+  const handleDialogPassword = () => {
+    openModal("editPassword");
+  };
 
   return (
     <div className="w-full flex justify-center flex-col items-center p-3">
@@ -125,12 +144,21 @@ const ProfilePage = () => {
       <div className="w-full p-6 bg-white rounded-lg border">
         <div className="flex justify-between w-full">
           <h6 className="text-md font-bold mb-3">Akun</h6>
-          <button
-            className="btn btn-primary w-fit btn-sm"
-            onClick={handleDialog}
-          >
-            Edit Profile
-          </button>
+
+          <div className="gap-2 flex">
+            <button
+              className="btn btn-primary w-fit btn-sm"
+              onClick={handleDialog}
+            >
+              Edit Profile
+            </button>
+            <button
+              className="btn btn-primary w-fit btn-sm"
+              onClick={handleDialogPassword}
+            >
+              Edit Password
+            </button>
+          </div>
         </div>
         <div className="overflow-x-auto mb-6">
           <table className="table">
@@ -362,6 +390,70 @@ const ProfilePage = () => {
           <button
             className="btn btn-primary w-full"
             onClick={() => EditProfile()}
+          >
+            Update
+          </button>
+        </div>
+      </Modal>
+      <Modal id="editPassword">
+        <div className="p-4">
+          <h2 className="text-lg font-bold mb-4">Edit Password</h2>
+
+          {/* Input Nama */}
+          <div className="mb-4">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Password Saat ini
+            </label>
+            <input
+              id="name"
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+            />
+          </div>
+
+          {/* Input Password */}
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+            />
+          </div>
+
+          {/* Input Confirm Password */}
+          <div className="mb-4">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Confirm Password
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+            />
+          </div>
+
+          {/* Tombol Update */}
+          <button
+            className="btn btn-primary w-full"
+            onClick={() => EditPassword()}
           >
             Update
           </button>
