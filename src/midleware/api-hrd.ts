@@ -1,7 +1,10 @@
 import axios from "axios";
+// const instance = axios.create({
+//   baseURL: import.meta.env.VITE_REACT_API_HRD_URL,
+// });
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_REACT_API_HRD_URL,
-});
+  baseURL: "https://api-hrd.curaweda.com/stg-server1",
+}); //use this for production
 
 const CutiIzin = {
   showAll: (
