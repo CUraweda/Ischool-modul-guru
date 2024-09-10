@@ -102,7 +102,7 @@ const ProfilePage = () => {
                       Status
                     </th>
 
-                    <td>: {dataUser?.employee_status ?? "-"}</td>
+                    <td>: {dataUser?.employee.employee_status ?? "-"}</td>
                   </tr>
                 </tbody>
               </table>
