@@ -50,7 +50,6 @@ const ProfilePage = () => {
       const lowerCasePath = path.toLowerCase();
       const response = await Task.downloadTugas(token, path);
       let mimeType = "application/pdf";
-      let isPdf = false;
 
       if (lowerCasePath.endsWith(".png")) {
         mimeType = "image/png";
@@ -59,8 +58,6 @@ const ProfilePage = () => {
         lowerCasePath.endsWith(".jpeg")
       ) {
         mimeType = "image/jpeg";
-      } else if (lowerCasePath.endsWith(".pdf")) {
-        isPdf = true;
       } else {
         throw new Error("Unsupported file type");
       }
