@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { employeeStore, Store } from "../store/Store";
-import { Auth } from "../midleware/api";
+import { Auth, Task } from "../midleware/api";
 import Modal, { openModal, closeModal } from "../component/modal";
 
 const ProfilePage = () => {
@@ -14,9 +14,12 @@ const ProfilePage = () => {
   } = employeeStore();
 
   const [dataUser, setDataUser] = useState<any>(null);
-  const [updatedName, setUpdatedName] = useState<string>("");
   const [idEmployee, setIdEmployee] = useState();
-
+  const [updatedName, setUpdatedName] = useState("");
+  const [password, setPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [image, setImage] = useState<any>(null);
   const getMe = async () => {
     try {
       const res = await Auth.MeData(token);
@@ -33,6 +36,7 @@ const ProfilePage = () => {
         formteachers,
       } = res.data.data?.employee ?? {};
 
+      previewProfile(res.data.data.avatar);
       if (id && full_name) setEmployee({ id, full_name });
       if (headmaster) setHeadmaster(headmaster);
       if (formteachers) setFormTeachers(formteachers);
@@ -42,11 +46,37 @@ const ProfilePage = () => {
       console.error(error);
     }
   };
+  const previewProfile = async (path: any) => {
+    try {
+      const lowerCasePath = path.toLowerCase();
+      const response = await Task.downloadTugas(token, path);
+      let mimeType = "application/pdf";
 
+      if (lowerCasePath.endsWith(".png")) {
+        mimeType = "image/png";
+      } else if (
+        lowerCasePath.endsWith(".jpg") ||
+        lowerCasePath.endsWith(".jpeg")
+      ) {
+        mimeType = "image/jpeg";
+      } else {
+        throw new Error("Unsupported file type");
+      }
+
+      const blob = new Blob([response.data], { type: mimeType });
+      const blobUrl = window.URL.createObjectURL(blob);
+      setImage(blobUrl);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const EditProfile = async () => {
+    // Validasi kecocokan password
+
     const data = {
       full_name: updatedName,
     };
+
     try {
       await Auth.EditProfile(token, idEmployee, data);
       getMe();
@@ -55,7 +85,47 @@ const ProfilePage = () => {
       console.error(error);
     }
   };
+  const EditPassword = async () => {
+    // Validasi kecocokan password
+    if (password !== confirmPassword) {
+      alert("Password dan Confirm Password tidak cocok");
+      return;
+    }
 
+    const data = {
+      password: password,
+      current_password: currentPassword,
+    };
+
+    try {
+      await Auth.EditPassword(token, idEmployee, data);
+      getMe();
+      closeModal("editPassword");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const EditFotoProfile = async (file: File) => {
+    const formData = new FormData();
+
+    formData.append("profile_image", file);
+
+    try {
+      await Auth.EditPicture(token, idEmployee, formData);
+      getMe();
+      closeModal("editProfile");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
+    if (file) {
+      EditFotoProfile(file); // Memanggil fungsi untuk mengunggah gambar baru
+    }
+  };
   useEffect(() => {
     getMe();
   }, []);
@@ -63,15 +133,66 @@ const ProfilePage = () => {
   const handleDialog = () => {
     openModal("editProfile");
   };
+  const handleDialogPassword = () => {
+    openModal("editPassword");
+  };
 
   return (
     <div className="w-full flex justify-center flex-col items-center p-3">
       <span className="font-bold text-xl mb-6">Profil</span>
 
       <div className="w-full p-6 bg-white rounded-lg border">
-        <h6 className="text-md font-bold mb-3">Akun</h6>
+        <div className="flex justify-between w-full">
+          <h6 className="text-md font-bold mb-3">Akun</h6>
+
+          <div className="gap-2 flex">
+            <button
+              className="btn btn-primary w-fit btn-sm"
+              onClick={handleDialog}
+            >
+              Edit Profile
+            </button>
+            <button
+              className="btn btn-primary w-fit btn-sm"
+              onClick={handleDialogPassword}
+            >
+              Edit Password
+            </button>
+          </div>
+        </div>
         <div className="overflow-x-auto mb-6">
           <table className="table">
+            <div className="flex justify-between w-full">
+              <div
+                className="avatar"
+                onClick={() => {
+                  const fileInput = document.getElementById("fileInput");
+                  if (fileInput) {
+                    fileInput.click();
+                  }
+                }}
+              >
+                <div className="w-24 rounded-full cursor-pointer relative group">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold">
+                    ganti foto
+                  </div>
+                  <img
+                    className="opacity-100 group-hover:opacity-30  group-hover:bg-black transition-opacity duration-300"
+                    src={`${dataUser?.avatar ? image : "https://korpri.padang.go.id/assets/img/dewan_pengurus/no-pict.jpg"}`}
+                    alt="User Avatar"
+                  />
+                </div>
+              </div>
+
+              <input
+                id="fileInput"
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={(e) => handleImageChange(e)}
+              />
+            </div>
+
             <tbody>
               <tr>
                 <th className="w-16 sm:w-24 md:w-32 lg:w-40 xl:w-48">Nama</th>
@@ -197,10 +318,6 @@ const ProfilePage = () => {
             </div>
           </>
         )}
-
-        <button className="btn btn-primary w-full" onClick={handleDialog}>
-          Edit Profile
-        </button>
       </div>
 
       {dataUser?.full_name && (
@@ -217,6 +334,8 @@ const ProfilePage = () => {
       <Modal id="editProfile">
         <div className="p-4">
           <h2 className="text-lg font-bold mb-4">Edit Profile</h2>
+
+          {/* Input Nama */}
           <div className="mb-4">
             <label
               htmlFor="name"
@@ -232,9 +351,109 @@ const ProfilePage = () => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
+
+          {/* Input Password */}
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+            />
+          </div>
+
+          {/* Input Confirm Password */}
+          <div className="mb-4">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Confirm Password
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+            />
+          </div>
+
+          {/* Tombol Update */}
           <button
             className="btn btn-primary w-full"
             onClick={() => EditProfile()}
+          >
+            Update
+          </button>
+        </div>
+      </Modal>
+      <Modal id="editPassword">
+        <div className="p-4">
+          <h2 className="text-lg font-bold mb-4">Edit Password</h2>
+
+          {/* Input Nama */}
+          <div className="mb-4">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Password Saat ini
+            </label>
+            <input
+              id="name"
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+            />
+          </div>
+
+          {/* Input Password */}
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+            />
+          </div>
+
+          {/* Input Confirm Password */}
+          <div className="mb-4">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Confirm Password
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+            />
+          </div>
+
+          {/* Tombol Update */}
+          <button
+            className="btn btn-primary w-full"
+            onClick={() => EditPassword()}
           >
             Update
           </button>

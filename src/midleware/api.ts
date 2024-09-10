@@ -32,6 +32,24 @@ const Auth = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  EditPassword: (token: string | null, id: any, data: any): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/user/change-password/${id}`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  EditPicture: (token: string | null, id: any, data: any): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/auth/update-profile/${id}`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 const User = {
