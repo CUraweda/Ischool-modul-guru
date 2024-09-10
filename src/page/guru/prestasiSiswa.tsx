@@ -4,12 +4,7 @@ import {
   PaginationControl,
 } from "../../component/PaginationControl";
 import { Input, Select, Textarea } from "../../component/Input";
-import {
-  FaCertificate,
-  FaPlus,
-  FaSearch,
-  FaTrash,
-} from "react-icons/fa";
+import { FaCertificate, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import { Store } from "../../store/Store";
 import { AchievementSiswa, Class, Year, Student } from "../../midleware/api";
 import Swal from "sweetalert2";
@@ -56,7 +51,6 @@ const PrestasiSiswa = () => {
     modalCertId = "view-cert-achievement";
 
   // filter
-  const [search, setSearch] = useState("");
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
     classId: "",
@@ -84,20 +78,30 @@ const PrestasiSiswa = () => {
 
   const [YearList, setYearList] = useState<any[]>([]);
   const getYearList = async () => {
+    let years = [];
     try {
-      const response = await Year.getYear(token, "", 1000, 1);
+      const response = await Year.getYear(token, "", 10000, 0);
       const { result } = response.data.data;
-      setYearList(result);
-      console.log(YearList);
-    } catch (err) {
-      console.log(`error: ${err}`);
+      years = result;
+      console.log("test", response);
+    } catch (error) {
+      console.log("ERR: get academic years from server", error);
+      const fallBackYears = getAcademicYears().map((dat) => ({
+        name: dat,
+        status: dat == getCurrentAcademicYear() ? "Aktif" : "Tidak aktif",
+      }));
+      years = fallBackYears;
     }
+    setYearList(years);
+    years.forEach((y: any) => {
+      if (y.status == "Aktif") setAcademicYear(y.name);
+    });
   };
   useEffect(() => {
     getYearList();
     getClasses();
   }, []);
-
+  const [search, setSearch] = useState("");
   // retrieve data
   const [dataList, setDataList] = useState<any[]>([]);
   const getDataList = async () => {
@@ -123,10 +127,20 @@ const PrestasiSiswa = () => {
       });
     }
   };
-
   useEffect(() => {
     getDataList();
   }, [filter]);
+
+  const filterData = dataList.filter((data: any) =>
+    search
+      ? data.student.full_name.toLowerCase().includes(search.toLowerCase()) ||
+        data.achievement_desc.toLowerCase().includes(search.toLowerCase())
+      : true
+  );
+
+  useEffect(() => {
+    getDataList();
+  }, [search]);
 
   // create & edit
   const [academicYear, setAcademicYear] = useState(getCurrentAcademicYear()); // maybe temporary
@@ -159,7 +173,7 @@ const PrestasiSiswa = () => {
       achievement_desc: "",
       issued_at: "",
       file: "",
-      certificate_path: ""
+      certificate_path: "",
     },
     validationSchema: schema,
     validateOnChange: false,
@@ -219,7 +233,7 @@ const PrestasiSiswa = () => {
           ? formatTime(res.data.data.issued_at, "YYYY-MM-DD")
           : "",
         file: "",
-        certificate_path: res.data.data?.certificate_path ?? ""
+        certificate_path: res.data.data?.certificate_path ?? "",
       });
       openModal(modalFormId);
     } catch (error) {
@@ -284,8 +298,9 @@ const PrestasiSiswa = () => {
       setCertificateView(URL.createObjectURL(blob));
       openModal(modalCertId);
     } catch (error: any) {
-      let message = "Gagal mengunduh sertifikat prestasi siswa"
-      if (error.response?.status == 404) message = "File sertifikat prestasi siswa tidak ditemukan"
+      let message = "Gagal mengunduh sertifikat prestasi siswa";
+      if (error.response?.status == 404)
+        message = "File sertifikat prestasi siswa tidak ditemukan";
 
       Swal.fire({
         icon: "error",
@@ -324,28 +339,29 @@ const PrestasiSiswa = () => {
 
           {!form.values.id && (
             <>
-              <Select
+              {/* <Select
                 label="Tahun pelajaran"
                 options={getAcademicYears()}
                 value={academicYear}
                 onChange={(e) => setAcademicYear(e.target.value)}
-              />
-              {/* <select
-                id="Tahun pelajaran"
-                name="Tahun pelajaran"
-                className="input input-sm input-bordered items-center gap-2 grow mt-1 block w-full border  rounded-md shadow-sm sm:text-sm"
-                onChange={(e) => setAcademicYear(e.target.value)}
+              /> */}
+              <label className="font-bold my-2">Tahun Pelajaran</label>
+              <select
                 value={academicYear}
+                onChange={(e) => setAcademicYear(e.target.value)}
+                className="text-small select select-bordered w-full mb-6"
               >
-                <option disabled value="">
-                  Pilih tahun ajaran
-                </option>
-                {YearList?.map((year: any) => (
-                  <option key={year} value={year}>
-                    {year}
+                {YearList.map((year: any, i: number) => (
+                  <option
+                    key={i}
+                    className="text-small"
+                    value={year.name}
+                    selected={year.status == "Aktif"}
+                  >
+                    {year.name}
                   </option>
                 ))}
-              </select> */}
+              </select>
               <Select
                 label="Kelas"
                 value={filter.classId}
@@ -394,7 +410,11 @@ const PrestasiSiswa = () => {
             ref={inpCertificateFile}
             accept={certificateExts.map((ext) => "." + ext).join(", ")}
             // value={form.values.file}
-            hint={form.values.certificate_path ? "Sertifikat sebelumnya akan tertimpa dengan sertifikat baru" : ""}
+            hint={
+              form.values.certificate_path
+                ? "Sertifikat sebelumnya akan tertimpa dengan sertifikat baru"
+                : ""
+            }
             onChange={(e) => {
               if (e.target.files) {
                 form.setFieldValue("file", e.target.files[0]);
@@ -468,9 +488,11 @@ const PrestasiSiswa = () => {
                 </tr>
               </thead>
               <tbody>
-                {dataList.map((dat, i) => (
+                {filterData?.map((dat: any, i: number) => (
                   <tr key={i}>
-                    <th>{i + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
+                    <th>
+                      {i + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}
+                    </th>
                     <td>{dat.student?.full_name ?? "-"}</td>
                     <td>{dat.achievement_desc ?? "-"}</td>
                     <td>
