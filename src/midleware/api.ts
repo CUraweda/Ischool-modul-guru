@@ -32,10 +32,10 @@ const Auth = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  EditPassword: (token: string | null, id: any, data: any): AxiosPromise<any> =>
+  EditPassword: (token: string | null, data: any): AxiosPromise<any> =>
     instance({
       method: "PUT",
-      url: `/api/user/change-password/${id}`,
+      url: `/api/user/change-password`,
       data,
       headers: {
         Authorization: `Bearer ${token}`,

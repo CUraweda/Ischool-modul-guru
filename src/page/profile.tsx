@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { employeeStore, Store } from "../store/Store";
 import { Auth, Task } from "../midleware/api";
+import Swal from "sweetalert2";
 import Modal, { openModal, closeModal } from "../component/modal";
-
+import { FaEyeSlash, FaEye } from "react-icons/fa";
 const ProfilePage = () => {
   const { token } = Store();
   const {
@@ -12,7 +13,9 @@ const ProfilePage = () => {
     setFormSubjects,
     setFormXtras,
   } = employeeStore();
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
   const [dataUser, setDataUser] = useState<any>(null);
   const [idEmployee, setIdEmployee] = useState();
   const [updatedName, setUpdatedName] = useState("");
@@ -93,13 +96,21 @@ const ProfilePage = () => {
     }
 
     const data = {
+      old_password: currentPassword,
       password: password,
-      current_password: currentPassword,
+      confirm_password: confirmPassword,
     };
 
     try {
-      await Auth.EditPassword(token, idEmployee, data);
+      await Auth.EditPassword(token, data);
       getMe();
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Password Berhasil perbaharui",
+        showConfirmButton: false,
+        timer: 1000,
+      });
       closeModal("editPassword");
     } catch (error) {
       console.error(error);
@@ -109,7 +120,7 @@ const ProfilePage = () => {
   const EditFotoProfile = async (file: File) => {
     const formData = new FormData();
 
-    formData.append("profile_image", file);
+    formData.append("avatar", file);
 
     try {
       await Auth.EditPicture(token, idEmployee, formData);
@@ -400,7 +411,7 @@ const ProfilePage = () => {
           <h2 className="text-lg font-bold mb-4">Edit Password</h2>
 
           {/* Input Nama */}
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <label
               htmlFor="name"
               className="block text-sm font-medium text-gray-700"
@@ -409,15 +420,21 @@ const ProfilePage = () => {
             </label>
             <input
               id="name"
-              type="password"
+              type={`${showPassword === true ? "text" : "password"}`}
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
+            <button
+              className="absolute right-4 top-[2.8rem] transform -translate-y-1/2"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {!showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
 
           {/* Input Password */}
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <label
               htmlFor="password"
               className="block text-sm font-medium text-gray-700"
@@ -426,15 +443,21 @@ const ProfilePage = () => {
             </label>
             <input
               id="password"
-              type="password"
+              type={`${showOldPassword === true ? "text" : "password"}`}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
+            <button
+              className="absolute right-4 top-[2.8rem] transform -translate-y-1/2"
+              onClick={() => setShowOldPassword(!showOldPassword)}
+            >
+              {!showOldPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
 
           {/* Input Confirm Password */}
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <label
               htmlFor="confirmPassword"
               className="block text-sm font-medium text-gray-700"
@@ -443,11 +466,17 @@ const ProfilePage = () => {
             </label>
             <input
               id="confirmPassword"
-              type="password"
+              type={`${showCurrentPassword === true ? "text" : "password"}`}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
+            <button
+              className="absolute right-4 top-[2.8rem] transform -translate-y-1/2"
+              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+            >
+              {!showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
 
           {/* Tombol Update */}
