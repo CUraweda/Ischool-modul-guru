@@ -238,8 +238,11 @@ const Dashboard: React.FC = () => {
             <div className="glass bg-secondary flex flex-col items-center p-6 text-white">
               <div className="avatar mb-3">
                 <div className="w-28 rounded-full">
-                  src=
-                  {`${image ? image : "https://korpri.padang.go.id/assets/img/dewan_pengurus/no-pict.jpg"}`}
+                  <img
+                    className="text-center"
+                    src={`${image ? image : "https://korpri.padang.go.id/assets/img/dewan_pengurus/no-pict.jpg"}`}
+                    alt="No Picture"
+                  />
                 </div>
               </div>
               <h3 className="text-2xl text-center font-bold">
