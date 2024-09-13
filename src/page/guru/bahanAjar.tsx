@@ -1,5 +1,5 @@
 import { BsDownload } from "react-icons/bs";
-import { Lesson } from "../../midleware/api";
+import { Lesson, Mapel } from "../../midleware/api";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { Store } from "../../store/Store";
@@ -12,6 +12,7 @@ const BahanAjar: React.FC<{}> = () => {
   const [DataLesson, setDataLesson] = useState<any[]>([]);
   const [selectedUpdate, setSelectedUpdate] = useState<any>();
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [ListMapel, setListMapel] = useState<any[]>([]);
   const [modalType, setModalType] = useState<boolean>(true);
   const [filter, setFilter] = useState({
     page: 0,
@@ -23,10 +24,16 @@ const BahanAjar: React.FC<{}> = () => {
 
   const getLesson = async () => {
     try {
-      const res = await Lesson.getAllData(token);
+      const res = await Lesson.getAllData(
+        token,
+        filter.page,
+        filter.limit,
+        filter.search
+      );
       setDataLesson(res.data.data);
       setFilter((prev) => ({
         ...prev,
+        limit: res.data.limit,
         page: res.data.page,
         totalRows: res.data.totalRows,
         totalPage: res.data.totalPage,
@@ -40,7 +47,17 @@ const BahanAjar: React.FC<{}> = () => {
       });
     }
   };
-
+  const getMapel = async () => {
+    try {
+      const res = await Mapel.GetAllDataMapel(token, 0, 0);
+      if (res.status === 200) {
+        const { result } = res.data.data;
+        setListMapel(result);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const createLesson = async (payload: any) => {
     try {
       const res = await Lesson.CreateNewLesson(token, payload);
@@ -73,9 +90,15 @@ const BahanAjar: React.FC<{}> = () => {
       console.error(error);
     }
   };
+
   useEffect(() => {
     getLesson();
+    getMapel();
   }, []);
+
+  useEffect(() => {
+    getLesson();
+  }, [filter]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -165,11 +188,13 @@ const BahanAjar: React.FC<{}> = () => {
                       className="input input-bordered w-full"
                     >
                       <option value="">Pilih Mapel</option>
-                      <option value="IPA">IPA</option>
-                      <option value="IPS">IPS</option>
-                      <option value="MTK">MTK</option>
-                      <option value="PKN">PKN</option>
+                      {ListMapel.map((item, i) => (
+                        <option key={i} value={item.name}>
+                          {item.level + "-" + item.name}
+                        </option>
+                      ))}
                     </Field>
+
                     <ErrorMessage
                       name="subjects_name"
                       component="div"
@@ -243,14 +268,22 @@ const BahanAjar: React.FC<{}> = () => {
 
         <div className="w-full flex justify-center mt-10 flex-col items-center">
           <div className="w-full justify-between flex px-5">
-            <select className="select select-primary w-32 max-w-xs">
+            <select
+              className="select select-primary w-32 max-w-xs"
+              value={filter.search}
+              onChange={(e) =>
+                setFilter((prev) => ({ ...prev, search: e.target.value }))
+              }
+            >
               <option disabled selected>
                 Mapel
               </option>
-              <option>IPA</option>
-              <option>IPS</option>
-              <option>MTK</option>
-              <option>PKN</option>
+              <option value="">Pilih Mapel</option>
+              {ListMapel.map((item, i) => (
+                <option key={i} value={item.name}>
+                  {item.level + "-" + item.name}
+                </option>
+              ))}
             </select>
             <div className="join">
               <button
@@ -265,7 +298,7 @@ const BahanAjar: React.FC<{}> = () => {
           </div>
 
           <div className="overflow-x-auto w-full p-5">
-            <table className="table shadow-lg">
+            <table className="table shadow-lg bg-white ">
               <thead className="bg-blue-200">
                 <tr>
                   <th>No</th>
@@ -303,30 +336,48 @@ const BahanAjar: React.FC<{}> = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+            <div className="join flex my-5">
+              <button
+                className="join-item btn btn-sm"
+                onClick={() => {
+                  setFilter((prev) => ({ ...prev, page: filter.page - 1 }));
+                }}
+                disabled={filter.page === 0}
+              >
+                Previous page
+              </button>
+              <button
+                className="join-item btn  btn-sm"
+                onClick={() => {
+                  setFilter((prev) => ({ ...prev, page: 10 }));
+                }}
+                disabled={filter.page === 10}
+              >
+                10
+              </button>
+              <button
+                className="join-item btn btn-sm"
+                onClick={() => {
+                  setFilter((prev) => ({ ...prev, page: 20 }));
+                }}
+                disabled={filter.page === 20}
+              >
+                20
+              </button>
 
-          <div className="join grid grid-cols-2">
-            <button
-              className="join-item btn btn-outline btn-sm"
-              onClick={() => {
-                setFilter((prev) => ({ ...prev, page: filter.page - 1 }));
-              }}
-              disabled={filter.page === 0}
-            >
-              Previous page
-            </button>
-            <button
-              className="join-item btn btn-outline btn-sm"
-              onClick={() =>
-                setFilter((prev) => ({
-                  ...prev,
-                  page: filter.page + 1,
-                }))
-              }
-              disabled={filter.page === filter.totalPage - 1}
-            >
-              Next
-            </button>
+              <button
+                className="join-item btn  btn-sm"
+                onClick={() =>
+                  setFilter((prev) => ({
+                    ...prev,
+                    page: filter.page + 1,
+                  }))
+                }
+                disabled={filter.page === filter.totalPage - 1}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
