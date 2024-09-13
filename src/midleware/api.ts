@@ -181,7 +181,20 @@ const Student = {
       },
     }),
 };
-
+const Mapel = {
+  GetAllDataMapel: (
+    token: string | null,
+    page: number,
+    limit: number
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/subject?search_query=&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
 const Class = {
   showAll: (
     token: string | null,
@@ -1827,10 +1840,15 @@ const FileRaporSiswa = {
     }),
 };
 const Lesson = {
-  getAllData: (token: string | null): AxiosPromise<any> =>
+  getAllData: (
+    token: string | null,
+    page: any,
+    limit: any,
+    search: string
+  ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/lesson-plan`,
+      url: `/api/lesson-plan?page=${page}&limit=${limit}&search_query=${search}`,
 
       headers: {
         Authorization: `Bearer ${token}`,
@@ -1884,4 +1902,5 @@ export {
   ForCountry,
   FileRaporSiswa,
   Lesson,
+  Mapel,
 };

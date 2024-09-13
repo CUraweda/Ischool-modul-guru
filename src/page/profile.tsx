@@ -17,19 +17,20 @@ const ProfilePage = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [dataUser, setDataUser] = useState<any>(null);
-  const [idEmployee, setIdEmployee] = useState();
+  // const [idEmployee, setIdEmployee] = useState();
   const [updatedName, setUpdatedName] = useState("");
   const [password, setPassword] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [image, setImage] = useState<any>(null);
+  const [Id, setId] = useState<any>(null);
   const getMe = async () => {
     try {
       const res = await Auth.MeData(token);
 
       setDataUser(res.data.data);
       setUpdatedName(res.data.data.full_name);
-      setIdEmployee(res.data.data.employee.id);
+      setId(res.data.data.id);
       const {
         id,
         full_name,
@@ -81,7 +82,7 @@ const ProfilePage = () => {
     };
 
     try {
-      await Auth.EditProfile(token, idEmployee, data);
+      await Auth.EditProfile(token, Id, data);
       getMe();
       closeModal("editProfile");
     } catch (error) {
@@ -123,7 +124,7 @@ const ProfilePage = () => {
     formData.append("avatar", file);
 
     try {
-      await Auth.EditPicture(token, idEmployee, formData);
+      await Auth.EditPicture(token, Id, formData);
       getMe();
       closeModal("editProfile");
     } catch (error) {
@@ -359,40 +360,6 @@ const ProfilePage = () => {
               type="text"
               value={updatedName}
               onChange={(e) => setUpdatedName(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-
-          {/* Input Password */}
-          <div className="mb-4">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-
-          {/* Input Confirm Password */}
-          <div className="mb-4">
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Confirm Password
-            </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
