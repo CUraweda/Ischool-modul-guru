@@ -36,6 +36,8 @@ const schema = Yup.object().shape({
 });
 
 const RaportFile = () => {
+  const [filePath, setFilePath] = useState<any>(null);
+
   const { token } = Store(),
     { academicYear } = globalStore(),
     modalForm = "form-file-rapor-siswa",
@@ -249,7 +251,8 @@ const RaportFile = () => {
   const [isFileLoading, setIsFileLoading] = useState(false),
     [fileView, setFileView] = useState("");
 
-  const viewFile = async (path?: string) => {
+  const viewFile = async (path?: string, type?: boolean) => {
+    setFilePath(path);
     setFileView("");
     if (!path) return;
 
@@ -261,6 +264,17 @@ const RaportFile = () => {
       const blob = new Blob([response.data], { type: "application/pdf" });
       setFileView(URL.createObjectURL(blob));
       openModal(modalFile);
+
+      const fileUrl = URL.createObjectURL(blob);
+
+      if (type === true) {
+        const link: any = document.createElement("a");
+        link.href = fileUrl;
+        link.download = path.split("/").pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     } catch (error: any) {
       let message = "Gagal mengunduh file rapor siswa";
       if (error.response?.status == 404)
@@ -280,6 +294,12 @@ const RaportFile = () => {
     <>
       <Modal id={modalFile}>
         <h3 className="text-xl font-bold mb-6">File Rapor Siswa</h3>
+        <button
+          onClick={() => viewFile(filePath, true)}
+          className="btn flex xl:hidden"
+        >
+          Download File
+        </button>
         <iframe
           src={fileView}
           frameBorder="0"
@@ -459,7 +479,9 @@ const RaportFile = () => {
           <tbody>
             {dataList.map((dat, i) => (
               <tr key={i}>
-                <th>{i + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
+                <th>
+                  {i + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}
+                </th>
                 <td>{dat.student?.full_name ?? "-"}</td>
                 <td>{dat.academic_year ?? "-"}</td>
                 <td>
@@ -474,7 +496,7 @@ const RaportFile = () => {
                     className="btn flex btn-primary btn-sm btn-square tooltip"
                     data-tip="Lihat file"
                     disabled={!dat.file_path || isFileLoading}
-                    onClick={() => viewFile(dat.file_path)}
+                    onClick={() => viewFile(dat.file_path, false)}
                   >
                     <FaFile />
                   </button>
