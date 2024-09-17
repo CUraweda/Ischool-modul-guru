@@ -20,7 +20,8 @@ const RaportPortofolio = () => {
   const [file, showFile] = useState<any>();
   const [fileUpload, setFile] = useState<any>(null);
   const [komen, setKomen] = useState<string>("");
-
+  const [pathPorto, setPathPorto] = useState<any>(null);
+  const [fileExtension, setFileExtension] = useState<string>("");
   const [studentClass, setStudentClass] = useState<string>("");
   const [smt, setSmt] = useState<string>(semesterProps || "1");
   const [merge, setMerge] = useState<boolean>(false);
@@ -107,12 +108,29 @@ const RaportPortofolio = () => {
     setPorto(response.data.data);
     showFile(undefined);
   };
-
-  const showFilePortofolio = async (path: string) => {
+  const showFilePortofolio = async (path: string, type?: boolean) => {
+    setPathPorto(path);
     try {
       const response = await Task.downloadTugas(token, path);
-      const blob = new Blob([response.data], { type: "application/pdf" }); //
+
+      const contentType = response.headers["content-type"];
+      const typePath = path.split(".");
+      const fileExtension = typePath[typePath.length - 1];
+      const blob = new Blob([response.data], {
+        type: fileExtension === "pdf" ? "application/pdf" : contentType,
+      });
+      setFileExtension(fileExtension);
+      // const blob = new Blob([response.data], { type: "application/pdf" }); //
       const blobUrl = window.URL.createObjectURL(blob);
+      const fileUrl = URL.createObjectURL(blob);
+      if (type === true) {
+        const link: any = document.createElement("a");
+        link.href = fileUrl;
+        link.download = path.split("/").pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
 
       showFile(blobUrl);
     } catch (error) {
@@ -354,7 +372,7 @@ const RaportPortofolio = () => {
             <button
               className="btn join-item bg-blue-500 text-white flex items-center"
               key={index}
-              onClick={() => showFilePortofolio(item?.file_path)}
+              onClick={() => showFilePortofolio(item?.file_path, false)}
             >
               <span className="text-xl">
                 <FaFilePdf />
@@ -380,7 +398,19 @@ const RaportPortofolio = () => {
         </div>
         <div className="w-full flex flex-col items-center justify-center min-h-svh">
           {file ? (
-            <iframe className="w-full min-h-svh mt-5" src={file} />
+            <div className="w-full mt-5 h-fit">
+              <button
+                onClick={() => showFilePortofolio(pathPorto, true)}
+                className="btn flex xl:hidden"
+              >
+                Download File
+              </button>
+              {fileExtension === "pdf" ? (
+                <iframe className="w-full h-fit min-h-svh" src={file} />
+              ) : (
+                <img src={file} alt="Report image" className="w-full h-fit" />
+              )}
+            </div>
           ) : (
             <>
               <span className="text-6xl font-bold">
