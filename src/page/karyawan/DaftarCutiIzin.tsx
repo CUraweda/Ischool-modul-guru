@@ -46,7 +46,8 @@ const schema = Yup.object().shape({
     .when("id", {
       is: (id: any) => !!id,
       then: () => Yup.mixed<File>().optional(),
-      otherwise: () => Yup.mixed<File>().required("Bukti file harus disertakan"),
+      otherwise: () =>
+        Yup.mixed<File>().required("Bukti file harus disertakan"),
     })
     .test(
       "is-valid-type",
@@ -289,7 +290,7 @@ const DaftarCutiIzin = () => {
   // view evidence file
   const [isFileLoading, setIsFileLoading] = useState(false),
     [fileView, setFileView] = useState("");
-
+  const [fileExtension, setFileExtension] = useState("");
   const viewFile = async (path?: string) => {
     setFileView("");
     if (!path) return;
@@ -297,7 +298,14 @@ const DaftarCutiIzin = () => {
     setIsFileLoading(true);
     try {
       const response = await CutiIzin.downloadFile(token, path);
-      const blob = new Blob([response.data]);
+
+      const contentType = response.headers["content-type"];
+      const typePath = path.split(".");
+      const fileExtension = typePath[typePath.length - 1];
+      const blob = new Blob([response.data], {
+        type: fileExtension === "pdf" ? "application/pdf" : contentType,
+      });
+      setFileExtension(fileExtension);
       setFileView(URL.createObjectURL(blob));
       openModal(modEvidence);
     } catch (error: any) {
@@ -318,14 +326,11 @@ const DaftarCutiIzin = () => {
     <>
       <Modal id={modEvidence} onClose={handleReset}>
         <h3 className="text-xl font-bold mb-6">File Bukti</h3>
-
-        <iframe
-          src={fileView}
-          frameBorder="0"
-          width="100%"
-          height="450px"
-          className="mt-4"
-        />
+        {fileExtension === "pdf" ? (
+          <iframe className="w-full h-fit min-h-svh" src={fileView} />
+        ) : (
+          <img src={fileView} alt="Report image" className="w-full h-fit" />
+        )}
         <button
           onClick={() => closeModal(modEvidence)}
           className="btn w-full btn-primary mt-10"
