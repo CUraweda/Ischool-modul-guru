@@ -11,12 +11,31 @@ import {
   PaginationControl,
 } from "../../component/PaginationControl";
 import { formatTime } from "../../utils/date";
+import { Input, Select, Textarea } from "../../component/Input";
+
+const fileExts = ["pdf"];
 
 const validationSchema = Yup.object({
   startDate: Yup.string().required("Tanggal mulai tidak boleh kosong"),
   endDate: Yup.string().required("Tanggal selesai tidak boleh kosong"),
   anouncement: Yup.string().required("Pengumuman tidak boleh kosong"),
   class_id: Yup.string().optional(),
+  file: Yup.mixed<File>()
+    .nullable()
+    .optional()
+    .test(
+      "is-valid-type",
+      "File harus pdf atau gambar",
+      (value) =>
+        !value ||
+        (value &&
+          fileExts.includes(value.name.split(".").pop()?.toLowerCase() || ""))
+    )
+    .test(
+      "is-valid-size",
+      "Ukuran melebihi batas 5MB",
+      (value) => !value || (value && value.size <= 5000000)
+    ),
 });
 
 const PengumumanSiswa = () => {
@@ -30,12 +49,52 @@ const PengumumanSiswa = () => {
       endDate: "",
       anouncement: "",
       class_id: 0,
+      file: "",
     },
     validationSchema,
-    onSubmit: (values, { setFieldError }) => {
-      console.log(values);
-      if (role == "6" && !values.class_id)
+    onSubmit: async (values, { setSubmitting, resetForm, setFieldError }) => {
+      if (role == "6" && !values.class_id) {
         setFieldError("class_id", "Kelas tidak boleh kosong");
+        return;
+      }
+
+      const data = {
+        date_start: values.startDate,
+        date_end: values.endDate,
+        announcement_desc: values.anouncement,
+        class_id: values.class_id ?? null,
+      };
+
+      setSubmitting(true);
+
+      try {
+        idPengumuman
+          ? await Pengumuman.UpdatePengumuman(token, idPengumuman, data)
+          : await Pengumuman.createPengumuman(token, data);
+
+        getDataList();
+        resetForm();
+        setIdPengumuman("");
+
+        Swal.fire({
+          icon: "success",
+          title: "Berhasil",
+          text: `Berhasil ${idPengumuman ? "mengedit" : "menambahkan"} pengumuman`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Gagal",
+          text: `Gagal ${idPengumuman ? "mengedit" : "menambahkan"} pengumuman`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } finally {
+        setSubmitting(false);
+        closeModal("form-pengumuman");
+      }
     },
   });
 
@@ -95,88 +154,28 @@ const PengumumanSiswa = () => {
     }
   };
 
-  const formatDateFormik = (date: any) => {
-    const tanggal = new Date(date);
-    const year = tanggal.getFullYear();
-    const bulan = ("0" + (tanggal.getMonth() + 1)).slice(-2);
-    const day = ("0" + tanggal.getDate()).slice(-2);
-
-    const formattedDate = `${year}-${bulan}-${day}`;
-    return formattedDate;
-  };
-
   const GetByIdPengumuman = async (id: string) => {
     try {
       const response = await Pengumuman.getByIdPengumuman(token, id);
       const data = response.data.data;
-      formik.setFieldValue("startDate", formatDateFormik(data.date_start));
-      formik.setFieldValue("endDate", formatDateFormik(data.date_end));
-      formik.setFieldValue("anouncement", data.announcement_desc);
-      formik.setFieldValue("class_id", data.class_id);
+      formik.setValues({
+        startDate: data.date_start
+          ? formatTime(data.date_start, "YYYY-MM-DD")
+          : "",
+        endDate: data.date_end ? formatTime(data.date_end, "YYYY-MM-DD") : "",
+        anouncement: data.announcement_desc ?? "",
+        class_id: data.class_id ?? "",
+        file: "",
+      });
     } catch (error) {
       console.log(error);
     }
   };
 
   const trigerEdit = async (id: string) => {
-    openModal("edit-pengumuman");
+    openModal("form-pengumuman");
     setIdPengumuman(id);
     GetByIdPengumuman(id);
-  };
-
-  const CreatePengumuman = async () => {
-    try {
-      const { anouncement, startDate, endDate, class_id } = formik.values;
-      if (role == "6" && !class_id) return;
-
-      const data = {
-        date_start: startDate,
-        date_end: endDate,
-        announcement_desc: anouncement,
-        class_id: !class_id ? null : class_id,
-      };
-      await Pengumuman.createPengumuman(token, data);
-      getDataList();
-      closeModal("add-pengumuman");
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Your work has been saved",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      formik.resetForm();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const EditPengumuman = async () => {
-    try {
-      const { anouncement, startDate, endDate, class_id } = formik.values;
-      if (role == "6" && !class_id) return;
-
-      const data = {
-        date_start: startDate,
-        date_end: endDate,
-        announcement_desc: anouncement,
-        class_id: !class_id ? null : class_id,
-      };
-      await Pengumuman.UpdatePengumuman(token, idPengumuman, data);
-
-      getDataList();
-      closeModal("edit-pengumuman");
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Your work has been saved",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      formik.resetForm();
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const deletePengumuman = async (id: string) => {
@@ -241,9 +240,8 @@ const PengumumanSiswa = () => {
           ))}
         </select>
         <button
-          id="tambah-pengumuman"
           className="btn btn-ghost bg-green-500 text-white"
-          onClick={() => openModal("add-pengumuman")}
+          onClick={() => openModal("form-pengumuman")}
         >
           tambah
         </button>
@@ -264,7 +262,9 @@ const PengumumanSiswa = () => {
           <tbody>
             {dataList.map((item: any, index: number) => (
               <tr key={index}>
-                <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
+                <th>
+                  {index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}
+                </th>
 
                 <td>
                   <p className="min-w-80">{item?.announcement_desc}</p>
@@ -305,223 +305,76 @@ const PengumumanSiswa = () => {
         onLimitChange={(val) => handleFilter("limit", val)}
       />
 
-      <Modal id="add-pengumuman">
+      <Modal id="form-pengumuman">
         <div className="flex flex-col gap-2 items-center">
-          <span className="text-xl font-bold">Tambah Pengumuman</span>
+          <h3 className="text-xl font-bold">
+            {idPengumuman ? "Edit" : "Tambah"} Pengumuman
+          </h3>
           <form action="" onSubmit={formik.handleSubmit} className="w-full">
-            <div className="w-full flex flex-col gap-2 mt-5">
-              <label htmlFor="" className="font-bold">
-                Tanggal
-              </label>
-              <div className="flex gap-1 justify-center items-center w-full ">
-                <input
-                  type="date"
-                  className={`input input-bordered w-full ${
-                    formik.touched.startDate && formik.errors.startDate
-                      ? "input-error"
-                      : ""
-                  }`}
-                  name="startDate"
-                  value={formik.values.startDate}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
-                <p>-</p>
-                <input
-                  type="date"
-                  className={`input input-bordered w-full ${
-                    formik.touched.endDate && formik.errors.endDate
-                      ? "input-error"
-                      : ""
-                  }`}
-                  name="endDate"
-                  value={formik.values.endDate}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
-              </div>
-              {formik.touched.startDate && formik.errors.startDate ? (
-                <div className="text-red-500 text-xs">
-                  {formik.errors.startDate}
-                </div>
-              ) : null}
-              {formik.touched.endDate && formik.errors.endDate ? (
-                <div className="text-red-500 text-xs">
-                  {formik.errors.endDate}
-                </div>
-              ) : null}
+            <div className="w-full flex  gap-2 mt-5">
+              <Input
+                label="Tanggal"
+                type="date"
+                name="startDate"
+                value={formik.values.startDate}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                errorMessage={formik.errors.startDate}
+              />
+              <Input
+                label="Selesai"
+                type="date"
+                name="endDate"
+                value={formik.values.endDate}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                errorMessage={formik.errors.endDate}
+              />
             </div>
-            <div className="w-full flex flex-col gap-2 mt-5">
-              <label htmlFor="" className="font-bold">
-                Kelas
-              </label>
-              <div className="flex gap-1 justify-center items-center w-full ">
-                <select
-                  name="class_id"
-                  className={`select select-bordered w-full ${
-                    formik.touched.class_id && formik.errors.class_id
-                      ? "select-error"
-                      : ""
-                  }`}
-                  value={formik.values.class_id}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                >
-                  <option value="">Pilih Kelas</option>
-                  {classes.map((item, index) => (
-                    <option value={item.id} key={index}>
-                      {item.class_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {formik.touched.class_id && formik.errors.class_id ? (
-                <div className="text-red-500 text-xs">
-                  {formik.errors.class_id}
-                </div>
-              ) : null}
-            </div>
-            <div className="w-full flex flex-col gap-2 mt-5">
-              <label htmlFor="" className="font-bold">
-                Pengumuman
-              </label>
-              <div className="flex gap-1 justify-center items-center w-full ">
-                <textarea
-                  placeholder="Pengumuman"
-                  className={`textarea textarea-bordered w-full ${
-                    formik.touched.anouncement && formik.errors.anouncement
-                      ? "textarea-error"
-                      : ""
-                  }`}
-                  name="anouncement"
-                  value={formik.values.anouncement}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
-              </div>
-              {formik.touched.anouncement && formik.errors.anouncement ? (
-                <div className="text-red-500 text-xs">
-                  {formik.errors.anouncement}
-                </div>
-              ) : null}
-            </div>
-            <button
-              type="submit"
-              className="btn btn-ghost w-full bg-green-500 text-white mt-5"
-              onClick={CreatePengumuman}
-            >
-              Simpan
-            </button>
-          </form>
-        </div>
-      </Modal>
 
-      <Modal id="edit-pengumuman">
-        <div className="flex flex-col gap-2 items-center">
-          <span className="text-xl font-bold">Edit Pengumuman</span>
-          <form action="" onSubmit={formik.handleSubmit} className="w-full">
-            <div className="w-full flex flex-col gap-2 mt-5">
-              <label htmlFor="" className="font-bold">
-                Tanggal
-              </label>
-              <div className="flex gap-1 justify-center items-center w-full ">
-                <input
-                  type="date"
-                  className={`input input-bordered w-full ${
-                    formik.touched.startDate && formik.errors.startDate
-                      ? "input-error"
-                      : ""
-                  }`}
-                  name="startDate"
-                  value={formik.values.startDate}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
-                <p>-</p>
-                <input
-                  type="date"
-                  className={`input input-bordered w-full ${
-                    formik.touched.endDate && formik.errors.endDate
-                      ? "input-error"
-                      : ""
-                  }`}
-                  name="endDate"
-                  value={formik.values.endDate}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
-              </div>
-              {formik.touched.startDate && formik.errors.startDate ? (
-                <div className="text-red-500 text-xs">
-                  {formik.errors.startDate}
-                </div>
-              ) : null}
-              {formik.touched.endDate && formik.errors.endDate ? (
-                <div className="text-red-500 text-xs">
-                  {formik.errors.endDate}
-                </div>
-              ) : null}
-            </div>
-            <div className="w-full flex flex-col gap-2 mt-5">
-              <label htmlFor="" className="font-bold">
-                Kelas
-              </label>
-              <div className="flex gap-1 justify-center items-center w-full ">
-                <select
-                  name="class_id"
-                  className={`select select-bordered w-full ${
-                    formik.touched.class_id && formik.errors.class_id
-                      ? "select-error"
-                      : ""
-                  }`}
-                  value={formik.values.class_id}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                >
-                  <option value="">Pilih Kelas</option>
-                  {classes.map((item, index) => (
-                    <option key={index} value={item.id}>
-                      {item.class_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {formik.touched.class_id && formik.errors.class_id ? (
-                <div className="text-red-500 text-xs">
-                  {formik.errors.class_id}
-                </div>
-              ) : null}
-            </div>
-            <div className="w-full flex flex-col gap-2 mt-5">
-              <label htmlFor="" className="font-bold">
-                Pengumuman
-              </label>
-              <div className="flex gap-1 justify-center items-center w-full ">
-                <textarea
-                  placeholder="Pengumuman"
-                  className={`textarea textarea-bordered w-full ${
-                    formik.touched.anouncement && formik.errors.anouncement
-                      ? "textarea-error"
-                      : ""
-                  }`}
-                  name="anouncement"
-                  value={formik.values.anouncement}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
-              </div>
-              {formik.touched.anouncement && formik.errors.anouncement ? (
-                <div className="text-red-500 text-xs">
-                  {formik.errors.anouncement}
-                </div>
-              ) : null}
-            </div>
+            <Select
+              label="Kelas"
+              placeholder="Pilih kelas"
+              name="class_id"
+              keyValue="id"
+              displayBuilder={(op) => `${op.level} - ${op.class_name}`}
+              options={classes}
+              value={formik.values.class_id}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              errorMessage={formik.errors.class_id}
+            />
+
+            <Textarea
+              label="Pengumuman"
+              name="anouncement"
+              value={formik.values.anouncement}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              errorMessage={formik.errors.anouncement}
+            />
+
+            <Input
+              label="File lampiran"
+              name="file"
+              type="file"
+              // ref={inpCertificateFile}
+              accept={fileExts.map((ext) => "." + ext).join(", ")}
+              // value={form.values.file}
+              onChange={(e) => {
+                if (e.target.files) {
+                  formik.setFieldValue("file", e.target.files[0]);
+                }
+              }}
+              errorMessage={formik.errors.file}
+            />
+
             <button
               type="submit"
+              disabled={formik.isSubmitting}
               className="btn btn-ghost w-full bg-green-500 text-white mt-5"
-              onClick={EditPengumuman}
             >
-              Simpan
+              {formik.isSubmitting ? "Menyimpan..." : "Simpan"}
             </button>
           </form>
         </div>
