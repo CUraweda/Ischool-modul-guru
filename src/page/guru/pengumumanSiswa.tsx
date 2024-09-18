@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Pengumuman, Task } from "../../midleware/api";
 import { Store } from "../../store/Store";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
@@ -52,7 +52,7 @@ const PengumumanSiswa = () => {
       file: "",
     },
     validationSchema,
-    onSubmit: async (values, { setSubmitting, resetForm, setFieldError }) => {
+    onSubmit: async (values, { setSubmitting, setFieldError }) => {
       if (role == "6" && !values.class_id) {
         setFieldError("class_id", "Kelas tidak boleh kosong");
         return;
@@ -73,8 +73,6 @@ const PengumumanSiswa = () => {
           : await Pengumuman.createPengumuman(token, data);
 
         getDataList();
-        resetForm();
-        setIdPengumuman("");
 
         Swal.fire({
           icon: "success",
@@ -97,6 +95,13 @@ const PengumumanSiswa = () => {
       }
     },
   });
+
+  const resetForm = () => {
+    formik.resetForm();
+    setIdPengumuman("");
+    setFilePreview("");
+    if (inpFile.current) inpFile.current.value = "";
+  };
 
   const [dataList, setDataList] = useState<any[]>([]);
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
@@ -208,6 +213,9 @@ const PengumumanSiswa = () => {
     }
   };
 
+  const [filePreview, setFilePreview] = useState("");
+  const inpFile = useRef<HTMLInputElement>(null);
+
   return (
     <>
       <div className="w-full gap-3 flex flex-wrap justify-end">
@@ -305,7 +313,7 @@ const PengumumanSiswa = () => {
         onLimitChange={(val) => handleFilter("limit", val)}
       />
 
-      <Modal id="form-pengumuman">
+      <Modal id="form-pengumuman" onClose={() => resetForm()}>
         <div className="flex flex-col gap-2 items-center">
           <h3 className="text-xl font-bold">
             {idPengumuman ? "Edit" : "Tambah"} Pengumuman
@@ -354,16 +362,32 @@ const PengumumanSiswa = () => {
               errorMessage={formik.errors.anouncement}
             />
 
+            {filePreview ? (
+              <iframe
+                src={filePreview}
+                frameBorder="0"
+                width="100%"
+                height="240px"
+              />
+            ) : (
+              <div className="w-full h-[240px] border rounded-md border-dashed flex">
+                <p className="m-auto opacity-40">Pratinjau file</p>
+              </div>
+            )}
+
             <Input
               label="File lampiran"
               name="file"
               type="file"
-              // ref={inpCertificateFile}
+              ref={inpFile}
               accept={fileExts.map((ext) => "." + ext).join(", ")}
               // value={form.values.file}
               onChange={(e) => {
                 if (e.target.files) {
                   formik.setFieldValue("file", e.target.files[0]);
+                  setFilePreview(URL.createObjectURL(e.target.files[0]));
+                } else {
+                  setFilePreview("");
                 }
               }}
               errorMessage={formik.errors.file}
