@@ -36,6 +36,7 @@ const validationSchema = Yup.object({
       "Ukuran melebihi batas 5MB",
       (value) => !value || (value && value.size <= 5000000)
     ),
+  filePath: Yup.string().optional(),
 });
 
 const PengumumanSiswa = () => {
@@ -50,6 +51,7 @@ const PengumumanSiswa = () => {
       anouncement: "",
       class_id: 0,
       file: "",
+      filePath: "",
     },
     validationSchema,
     onSubmit: async (values, { setSubmitting, setFieldError }) => {
@@ -58,19 +60,19 @@ const PengumumanSiswa = () => {
         return;
       }
 
-      const data = {
-        date_start: values.startDate,
-        date_end: values.endDate,
-        announcement_desc: values.anouncement,
-        class_id: values.class_id ?? null,
-      };
+      const formData = new FormData();
+      formData.append("date_start", values.startDate);
+      formData.append("date_end", values.endDate);
+      formData.append("announcement_desc", values.anouncement);
+      formData.append("class_id", values.class_id?.toString() ?? null);
+      if (values.file) formData.append("file", values.file);
 
       setSubmitting(true);
 
       try {
         idPengumuman
-          ? await Pengumuman.UpdatePengumuman(token, idPengumuman, data)
-          : await Pengumuman.createPengumuman(token, data);
+          ? await Pengumuman.UpdatePengumuman(token, idPengumuman, formData)
+          : await Pengumuman.createPengumuman(token, formData);
 
         getDataList();
 
@@ -171,6 +173,7 @@ const PengumumanSiswa = () => {
         anouncement: data.announcement_desc ?? "",
         class_id: data.class_id ?? "",
         file: "",
+        filePath: "",
       });
     } catch (error) {
       console.log(error);
@@ -215,6 +218,22 @@ const PengumumanSiswa = () => {
 
   const [filePreview, setFilePreview] = useState("");
   const inpFile = useRef<HTMLInputElement>(null);
+
+  const downloadFile = async () => {
+    if (!idPengumuman) return;
+
+    try {
+      const res = await Pengumuman.downloadFile(token, idPengumuman);
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      setFilePreview(URL.createObjectURL(blob));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    downloadFile();
+  }, [idPengumuman]);
 
   return (
     <>
