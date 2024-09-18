@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Pengumuman, Task } from "../../midleware/api";
 import { Store } from "../../store/Store";
-import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
+import { FaEdit, FaFile, FaRegTrashAlt } from "react-icons/fa";
 import Modal, { closeModal, openModal } from "../../component/modal";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -295,6 +295,11 @@ const PengumumanSiswa = () => {
 
                 <td>
                   <p className="min-w-80">{item?.announcement_desc}</p>
+                  {item.file_path && (
+                    <p className="text-primary flex gap-1 text-xs items-center mt-1">
+                      <FaFile size={12} /> Dengan file lampiran
+                    </p>
+                  )}
                 </td>
                 <td className="whitespace-nowrap">
                   {formatTime(item?.date_start, "DD MMMM YYYY")}-{" "}
