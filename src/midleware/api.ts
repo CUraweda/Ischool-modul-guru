@@ -32,6 +32,24 @@ const Auth = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  EditPassword: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/user/change-password`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  EditPicture: (token: string | null, id: any, data: any): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/auth/update-profile/${id}`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 const User = {
@@ -163,7 +181,20 @@ const Student = {
       },
     }),
 };
-
+const Mapel = {
+  GetAllDataMapel: (
+    token: string | null,
+    page: number,
+    limit: number
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/subject?search_query=&page=${page}&limit=${limit}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
 const Class = {
   showAll: (
     token: string | null,
@@ -1015,6 +1046,15 @@ const Pengumuman = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  downloadFile: (token: string | null, id: string): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/announcement/download/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    }),
 };
 
 const DashboardSiswa = {
@@ -1808,6 +1848,45 @@ const FileRaporSiswa = {
       responseType: "blob",
     }),
 };
+const Lesson = {
+  getAllData: (
+    token: string | null,
+    page: any,
+    limit: any,
+    search: string
+  ): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/lesson-plan?page=${page}&limit=${limit}&search_query=${search}`,
+
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  CreateNewLesson: (token: string | null, data: any): AxiosPromise<any> =>
+    instance({
+      method: "POST",
+      url: `/api/lesson-plan/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+  UpdateLesson: (
+    token: string | null,
+    data: any,
+    id: string | number
+  ): AxiosPromise<any> =>
+    instance({
+      method: "PUT",
+      url: `/api/lesson-plan/update/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    }),
+};
 
 export {
   User,
@@ -1831,4 +1910,6 @@ export {
   AchievementSiswa,
   ForCountry,
   FileRaporSiswa,
+  Lesson,
+  Mapel,
 };

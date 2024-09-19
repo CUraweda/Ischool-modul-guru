@@ -73,7 +73,6 @@ const DetailTugasSswa = () => {
       link.href = blobUrl;
       link.setAttribute("download", fileName);
       link.style.display = "none";
-
       document.body.appendChild(link);
       link.click();
       link.remove();

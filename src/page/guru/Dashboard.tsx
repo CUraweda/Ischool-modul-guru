@@ -20,6 +20,7 @@ import {
   waktukerja,
 } from "../../midleware/api-hrd";
 import { useNavigate } from "react-router-dom";
+import { Auth, Task } from "../../midleware/api";
 
 const Dashboard: React.FC = () => {
   const currentDate = moment();
@@ -186,9 +187,42 @@ const Dashboard: React.FC = () => {
     getRecapPresensiChart();
     getTodayWorktime();
   };
+  const getMe = async () => {
+    try {
+      const res = await Auth.MeData(token);
+      previewProfile(res.data.data.avatar);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const [image, setImage] = useState<any>(null);
+  const previewProfile = async (path: any) => {
+    try {
+      const lowerCasePath = path.toLowerCase();
+      const response = await Task.downloadTugas(token, lowerCasePath);
+      let mimeType = "application/pdf";
 
+      if (lowerCasePath.endsWith(".png")) {
+        mimeType = "image/png";
+      } else if (
+        lowerCasePath.endsWith(".jpg") ||
+        lowerCasePath.endsWith(".jpeg")
+      ) {
+        mimeType = "image/jpeg";
+      } else {
+        throw new Error("Unsupported file type");
+      }
+
+      const blob = new Blob([response.data], { type: mimeType });
+      const blobUrl = window.URL.createObjectURL(blob);
+      setImage(blobUrl);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   useEffect(() => {
     getData();
+    getMe();
   }, [employee]);
 
   return (
@@ -204,15 +238,19 @@ const Dashboard: React.FC = () => {
             <div className="glass bg-secondary flex flex-col items-center p-6 text-white">
               <div className="avatar mb-3">
                 <div className="w-28 rounded-full">
-                  <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                  <img
+                    className="text-center"
+                    src={`${image ? image : "https://korpri.padang.go.id/assets/img/dewan_pengurus/no-pict.jpg"}`}
+                    alt="No Picture"
+                  />
                 </div>
               </div>
               <h3 className="text-2xl text-center font-bold">
                 {employee?.full_name ?? "-"}
               </h3>
-              <p className="text-center">
+              <p className=" text-justify">
                 {formTeachers
-                  ?.map((ft) => `Wali Kelas ${ft.class?.class_name ?? "-"}`)
+                  ?.map((ft) => `Wali Kelas ${ft.class?.class_name ?? "-"} `)
                   .join(" | ")}
               </p>
             </div>
@@ -337,18 +375,22 @@ const Dashboard: React.FC = () => {
                   <div className="overflow-x-auto">
                     <table className="table">
                       <tbody>
-                        {latestTraining?.map((item: any, index: any) => (
-                          <tr key={index}>
-                            <th>
-                              <p className="line-clamp-2 text-ellipsis overflow-hidden">
-                                {item.title}
-                              </p>
-                            </th>
-                            <td className="whitespace-nowrap">
-                              {item.start_date.split("T")[0]}
-                            </td>
-                          </tr>
-                        ))}
+                        {latestTraining.length < 1 ? (
+                          <tr>Tidak Ada data pelatihan</tr>
+                        ) : (
+                          latestTraining?.map((item: any, index: any) => (
+                            <tr key={index}>
+                              <th>
+                                <p className="line-clamp-2 text-ellipsis overflow-hidden">
+                                  {item.title}
+                                </p>
+                              </th>
+                              <td className="whitespace-nowrap">
+                                {item.start_date.split("T")[0]}
+                              </td>
+                            </tr>
+                          ))
+                        )}
                       </tbody>
                     </table>
                   </div>
