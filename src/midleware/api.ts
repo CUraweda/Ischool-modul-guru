@@ -1848,7 +1848,7 @@ const Lesson = {
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/lesson-plan?page=${page}&limit=${limit}&search_query=${search}`,
+      url: `/api/lesson-plan?page=${page}&limit=${limit}&search=${search}`,
 
       headers: {
         Authorization: `Bearer ${token}`,
