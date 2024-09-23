@@ -79,7 +79,8 @@ const DaftarTunggakan = () => {
 
   useEffect(() => {
     getDataList();
-  }, []);
+  }, [filter]);
+
   const handleExport = async () => {
     try {
       const res = await TagihanSiswa.exportArrears(
