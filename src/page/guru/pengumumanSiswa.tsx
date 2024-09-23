@@ -49,7 +49,7 @@ const PengumumanSiswa = () => {
       startDate: "",
       endDate: "",
       anouncement: "",
-      class_id: 0,
+      class_id: "",
       file: "",
       filePath: "",
     },
@@ -64,7 +64,7 @@ const PengumumanSiswa = () => {
       formData.append("date_start", values.startDate);
       formData.append("date_end", values.endDate);
       formData.append("announcement_desc", values.anouncement);
-      formData.append("class_id", values.class_id?.toString() ?? null);
+      if (values.class_id) formData.append("class_id", values.class_id);
       if (values.file) formData.append("file", values.file);
 
       setSubmitting(true);
