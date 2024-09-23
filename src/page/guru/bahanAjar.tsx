@@ -1,5 +1,5 @@
 import { BsDownload } from "react-icons/bs";
-import { Lesson, Mapel } from "../../midleware/api";
+import { Lesson, Mapel, Task } from "../../midleware/api";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { Store } from "../../store/Store";
@@ -14,6 +14,7 @@ const BahanAjar: React.FC<{}> = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [ListMapel, setListMapel] = useState<any[]>([]);
   const [modalType, setModalType] = useState<boolean>(true);
+  const [Class, setClass] = useState<any[]>([]);
   const [filter, setFilter] = useState({
     page: 0,
     limit: 10,
@@ -21,6 +22,10 @@ const BahanAjar: React.FC<{}> = () => {
     totalRows: 0,
     totalPage: 0,
   });
+  const getClass = async () => {
+    const response = await Task.GetAllClass(token, 0, 20, "Y", "N", "Y");
+    setClass(response.data.data.result);
+  };
 
   const getLesson = async () => {
     try {
@@ -30,7 +35,7 @@ const BahanAjar: React.FC<{}> = () => {
         filter.limit,
         filter.search
       );
-      setDataLesson(res.data.data);
+      setDataLesson(res.data.data.result);
       setFilter((prev) => ({
         ...prev,
         limit: res.data.limit,
@@ -69,6 +74,7 @@ const BahanAjar: React.FC<{}> = () => {
           showConfirmButton: true,
           timer: 1500,
         });
+        getLesson();
       }
     } catch (error) {
       console.error(error);
@@ -94,11 +100,12 @@ const BahanAjar: React.FC<{}> = () => {
   useEffect(() => {
     getLesson();
     getMapel();
+    getClass();
   }, []);
 
   useEffect(() => {
     getLesson();
-  }, [filter]);
+  }, [filter.search, filter.page, filter.limit]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -108,8 +115,9 @@ const BahanAjar: React.FC<{}> = () => {
   const validationSchema = Yup.object({
     assignments_name: Yup.string().required("Required"),
     subjects_name: Yup.string().required("Required"),
-    class: Yup.string().required("Required"),
+    class: Yup.number().required("Required"),
     description: Yup.string().required("Required"),
+    file: Yup.mixed().required("Required"),
   });
 
   const handleSubmit = async (values: any) => {
@@ -119,7 +127,7 @@ const BahanAjar: React.FC<{}> = () => {
     formData.append("class", values.class);
     formData.append("description", values.description);
     if (selectedFile) {
-      formData.append("file", selectedFile);
+      formData.append("lesson_plan_file", selectedFile);
     }
     try {
       if (modalType) {
@@ -134,17 +142,27 @@ const BahanAjar: React.FC<{}> = () => {
     }
   };
 
+  const resetForm = () => {
+    setSelectedFile(null);
+    setSelectedUpdate(null);
+    setShowModal(false);
+    setModalType(true);
+  };
   return (
     <>
       {showModal && (
         <dialog
           className="modal modal-open"
-          onClick={() => setShowModal(false)}
+          onClick={() => {
+            setShowModal(false), resetForm();
+          }}
         >
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <button
               className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2"
-              onClick={() => setShowModal(false)}
+              onClick={() => {
+                setShowModal(false), resetForm();
+              }}
             >
               ✕
             </button>
@@ -153,10 +171,11 @@ const BahanAjar: React.FC<{}> = () => {
             {/* Formik form inside modal */}
             <Formik
               initialValues={{
-                assignments_name: "",
-                subjects_name: "",
-                class: "",
-                description: "",
+                assignments_name: selectedUpdate?.assignments_name || "",
+                subjects_name: selectedUpdate?.subjects_name || "",
+                class: selectedUpdate?.class,
+                description: selectedUpdate?.description,
+                file: selectedUpdate?.file_path || null,
               }}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
@@ -208,9 +227,17 @@ const BahanAjar: React.FC<{}> = () => {
                     </label>
                     <Field
                       name="class"
-                      type="text"
+                      as="select"
                       className="input input-bordered w-full"
-                    />
+                    >
+                      <option selected>Kelas</option>
+                      {Class?.map((item: any, index: number) => (
+                        <option
+                          value={item.id}
+                          key={index}
+                        >{`${item.level}-${item.class_name}`}</option>
+                      ))}
+                    </Field>
                     <ErrorMessage
                       name="class"
                       component="div"
