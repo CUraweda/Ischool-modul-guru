@@ -125,35 +125,36 @@ const TrainFaceGuru: React.FC = () => {
   };
 
 
-  const cropFace = useCallback(async (imageDataUrl: string): Promise<string> => {
-    const img = new Image();
-    img.src = imageDataUrl;
-    await new Promise((resolve) => (img.onload = resolve));
-    const detections = await faceapi.detectSingleFace(img) as faceapi.FaceDetection | undefined;
-    if (!detections) {
-      console.log("Tidak dapat mendeteksi wajah");
-      return imageDataUrl;
-    }
-    const { x, y, width, height } = detections.box;
-    const padding = {
-      x: Math.round(width * 0.5),
-      y: Math.round(height * 0.5),
-    };
-    const newX = Math.max(0, x - padding.x);
-    const newY = Math.max(0, y - padding.y);
-    const newWidth = Math.min(img.width - newX, width + padding.x * 2);
-    const newHeight = Math.min(img.height - newY, height + padding.y * 2);
-    const canvas = document.createElement('canvas');
-    canvas.width = newWidth;
-    canvas.height = newHeight;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.drawImage(img, newX, newY, newWidth, newHeight, 0, 0, newWidth, newHeight);
-    } else {
-      console.error('Failed to get 2D rendering context for the canvas.');
-    }
-    return canvas.toDataURL("image/jpeg");
-  }, []);
+  // const cropFace = useCallback(async (imageDataUrl: string): Promise<string> => {
+  //   const img = new Image();
+  //   img.src = imageDataUrl;
+  //   await new Promise((resolve) => (img.onload = resolve));
+  //   const detections = await faceapi.detectSingleFace(img) as faceapi.FaceDetection | undefined;
+  //   if (!detections) {
+  //     console.log("Tidak dapat mendeteksi wajah");
+  //     return imageDataUrl;
+  //   }
+  //   const { x, y, width, height } = detections.box;
+  //   const padding = {
+  //     x: Math.round(width * 0.5),
+  //     y: Math.round(height * 0.5),
+  //   };
+  //   const newX = Math.max(0, x - padding.x);
+  //   const newY = Math.max(0, y - padding.y);
+  //   const newWidth = Math.min(img.width - newX, width + padding.x * 2);
+  //   const newHeight = Math.min(img.height - newY, height + padding.y * 2);
+  //   const canvas = document.createElement('canvas');
+  //   canvas.width = newWidth;
+  //   canvas.height = newHeight;
+  //   const ctx = canvas.getContext('2d');
+  //   if (ctx) {
+  //     ctx.drawImage(img, newX, newY, newWidth, newHeight, 0, 0, newWidth, newHeight);
+  //   } else {
+  //     console.error('Failed to get 2D rendering context for the canvas.');
+  //   }
+  //   console.log("Crop beres :" + canvas.toDataURL("image/jpeg"));
+  //   return canvas.toDataURL("image/jpeg");
+  // }, []);
 
   const [isNone, setIsNone] = useState(false);
   const IsNoneRef = useRef<boolean>(false);
@@ -162,7 +163,7 @@ const TrainFaceGuru: React.FC = () => {
     IsNoneRef.current = isNone;
   }, [isNone]);
 
-  const [, setCroppedImagesDisplay] = useState<string[]>([]);
+  // const [, setCroppedImagesDisplay] = useState<string[]>([]);
 
   const handleSubmit = useCallback(async () => {
     setIsNone(true);
@@ -170,17 +171,17 @@ const TrainFaceGuru: React.FC = () => {
     setIsCropImage(true);
     await loadModels();
     console.log(capturedImagesRef.current);
-    const croppedImages = await Promise.all(
-      capturedImagesRef.current.map(image => cropFace(image))
-    );
-    setCapturedImages(croppedImages);
-    setCroppedImagesDisplay(croppedImages);
+    // const croppedImages = await Promise.all(
+    //   capturedImagesRef.current.map(image => cropFace(image))
+    // );
+    // setCapturedImages(croppedImages);
+    // setCroppedImagesDisplay(croppedImages);
     setIsCropImage(false);
     setTrainingLoading(true);
     console.log("Semua gambar sudah di crop");
 
     const images: { [key: string]: string } = {};
-    croppedImages.forEach((image, index) => {
+    capturedImagesRef.current.forEach((image, index) => {
       images[`img${index + 1}`] = image;
     });
 
@@ -217,7 +218,7 @@ const TrainFaceGuru: React.FC = () => {
       setTrainingLoading(false);
       setTrainingNotSuccess2(true)
     }
-  }, [capturedImages, cropFace, loadModels]);
+  }, [capturedImages, /*cropFace ,*/ loadModels]);
 
   const cropImage = () => {
     setIsVideo(true);
