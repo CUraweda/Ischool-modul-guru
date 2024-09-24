@@ -67,6 +67,7 @@ const schema = Yup.object().shape({
 });
 
 const DaftarCutiIzin = () => {
+  const [fileExtensionEdit, setFileExtensionEdit] = useState<string>("");
   const { token } = Store(),
     { employee } = employeeStore(),
     modalFormId = "form-cuti-izin",
@@ -231,6 +232,9 @@ const DaftarCutiIzin = () => {
       });
       if (dat.file_path) {
         setIsFilePathExist(true);
+        const typePath = dat.file_path.split(".");
+        setFileExtensionEdit(typePath);
+        console.log(typePath);
 
         try {
           const resEvidence = await CutiIzin.downloadFile(token, dat.file_path);
@@ -384,12 +388,20 @@ const DaftarCutiIzin = () => {
           />
 
           {evidencePreview ? (
-            <iframe
-              src={evidencePreview}
-              frameBorder="0"
-              width="100%"
-              height="300px"
-            />
+            fileExtensionEdit === "pdf" ? (
+              <iframe
+                src={evidencePreview}
+                frameBorder="0"
+                width="100%"
+                height="300px"
+              />
+            ) : (
+              <img
+                src={evidencePreview}
+                alt="Report image"
+                className="w-full h-fit"
+              />
+            )
           ) : (
             <div
               onClick={() => {

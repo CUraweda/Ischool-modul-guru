@@ -1046,6 +1046,15 @@ const Pengumuman = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  downloadFile: (token: string | null, id: string): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/announcement/download/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    }),
 };
 
 const DashboardSiswa = {
@@ -1848,7 +1857,7 @@ const Lesson = {
   ): AxiosPromise<any> =>
     instance({
       method: "GET",
-      url: `/api/lesson-plan?page=${page}&limit=${limit}&search_query=${search}`,
+      url: `/api/lesson-plan?page=${page}&limit=${limit}&search=${search}`,
 
       headers: {
         Authorization: `Bearer ${token}`,
