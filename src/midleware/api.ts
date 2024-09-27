@@ -546,6 +546,24 @@ const Kalender = {
       },
       data,
     }),
+
+  getByGuru: (token: any, id: number): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/edu-calendar-detail/show-by-teacher/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  createAgenda: (token: any, data: any): AxiosPromise<any> =>
+    instance({
+      method: `POST`,
+      url: `/api/edu-calendar-detail/create`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 const Raport = {
