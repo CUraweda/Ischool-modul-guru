@@ -3,7 +3,6 @@ import Paper from "@mui/material/Paper";
 import {
   Scheduler,
   Appointments,
-  AppointmentTooltip,
   MonthView,
   Toolbar,
   DateNavigator,
@@ -12,14 +11,13 @@ import {
 import { Button } from "@mui/material";
 import { ViewState } from "@devexpress/dx-react-scheduler";
 import { Kalender } from "../../midleware/api";
+// import { Rekapan } from "../../midleware/api-hrd";
 import { employeeStore, Store } from "../../store/Store";
 import { useForm } from "react-hook-form";
-
+import Swal from "sweetalert2";
 const AgendaKegiatan = () => {
   const { token } = Store();
   const { employee } = employeeStore();
-  const [dataAppointment, setDataAppointment] = useState<any[]>([]);
-  const [tanggalPekanan, setTanggalPekanan] = useState(new Date());
   const [open, setOpen] = useState(false);
   const [eduList, setEduList] = useState([
     { id: 1, academic_year: "2024", level: "SM", semester: 1 },
@@ -34,37 +32,6 @@ const AgendaKegiatan = () => {
       edu_id: "",
     },
   });
-
-  // Fetch data on component mount
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await Kalender.getByGuru(token, employee.id);
-        console.log("Data fetched", response.data.data);
-
-        // Memetakan data dari API ke format yang dibutuhkan Scheduler
-        const appointmentsData = response.data.data.map((item: any) => ({
-          id: item.id,
-          startDate: new Date(item.start_date),
-          endDate: new Date(item.end_date),
-          title: item.agenda,
-          color: item.color.replace("_", "") || "#06b6d4",
-        }));
-
-        setDataAppointment(appointmentsData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setDataAppointment([]); // Set ke array kosong jika error
-      }
-    };
-    setEduList([]);
-
-    fetchData();
-  }, [token, employee]);
-
-  const handlePerubahanTanggal = (newDate: Date) => {
-    setTanggalPekanan(newDate);
-  };
 
   const handleModalOpen = () => setOpen(true);
   const handleModalClose = () => setOpen(false);
@@ -87,9 +54,44 @@ const AgendaKegiatan = () => {
       console.error("Error creating agenda:", error);
     }
   };
+  const [dataList, setDataList] = useState<any[]>([]);
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
+  const getDataList = async () => {
+    const id = employee.id;
+    try {
+      setDataList([]);
+      const res = await Kalender.getByGuru(token, id);
+      if (res.status === 200) {
+        setDataList(
+          res.data.data?.map((dat: any) => ({
+            ...dat,
+            startDate: dat.start_date, // pastikan mapping ke format Scheduler
+            endDate: dat.end_date,
+            title: dat.agenda, // tambahkan title untuk jadwal
+            color: dat.color.split("_")[0], // ambil warna valid dari response
+          }))
+        );
+      } else {
+        throw new Error("Invalid response format");
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `${error} Gagal Mengambil data rekap kehadiran, silakan coba lain kali`,
+      });
+    }
+  };
+
+  useEffect(() => {
+    getDataList();
+  }, [employee]);
   return (
-    <div>
+    <div className="w-full p-3">
+      <p className="font-bold w-full text-center text-xl mb-6">
+        Agenda Kegiatan
+      </p>
       <Button variant="contained" color="primary" onClick={handleModalOpen}>
         Tambah Agenda
       </Button>
@@ -177,7 +179,7 @@ const AgendaKegiatan = () => {
       )}
 
       {/* Scheduler View */}
-      <Paper>
+      {/* <Paper>
         <Scheduler data={dataAppointment}>
           <ViewState
             currentDate={tanggalPekanan}
@@ -201,6 +203,45 @@ const AgendaKegiatan = () => {
           <DateNavigator />
           <TodayButton />
           <AppointmentTooltip />
+        </Scheduler>
+      </Paper> */}
+      <Paper>
+        <Scheduler data={dataList} locale={"id"} height={650}>
+          <ViewState
+            defaultCurrentDate={currentDate}
+            onCurrentDateChange={(date) => setCurrentDate(date)}
+          />
+
+          {/* widgets */}
+          <Toolbar />
+          <DateNavigator />
+          <TodayButton />
+
+          {/* views */}
+          <MonthView displayName="Bulan" />
+
+          {/* appointment card */}
+          <Appointments
+            appointmentComponent={({ children, ...props }) => {
+              // const data = props.data;
+
+              // default for attendance 100%
+              let ic = "✅",
+                bg = "!bg-success";
+
+              return (
+                <Appointments.Appointment
+                  {...props}
+                  className={
+                    "rounded-md flex ps-2 items-center !font-bold " + bg
+                  }
+                >
+                  {ic}
+                  {children}
+                </Appointments.Appointment>
+              );
+            }}
+          />
         </Scheduler>
       </Paper>
     </div>

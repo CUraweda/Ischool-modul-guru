@@ -1,119 +1,113 @@
 [
-    {
-        "submenu": false,
-        "title": "Dashboard",
-        "icon": "<BsFillHouseFill />",
-        "url": "/guru/dashboard",
-        "subtitle": []
-    },
-    {
-        "submenu": true,
-        "hide": false,
-        "title": "Kehadiran",
-        "icon": "<FaPersonCircleCheck />",
-        "url": "/guru/invenstment",
-        "subtitle": [
-            {
-                "name": "Kehadiran",
-                "url": "/karyawan/rekap-kehadiran"
-            },
-            {
-                "name": "Pengajuan Cuti / Izin",
-                "url": "/karyawan/daftar-cuti-izin"
-            }
-        ]
-    },
-  
-    {
-        "submenu": true,
-        "title": "Siswa",
-        "roles": [1, 3, 4, 6],
-        "icon": "<GrGroup />",
-        "url": "",
-        "subtitle": [
-            {
-                "name": "Dashboard Siswa",
-                "url": "/guru/dashboard/siswa"
-            },
-            {
-                "name": "Rencana Pekanan",
-                "url": "/guru/jadwal-guru"
-            },
-            {
-                "name": "Kalender Kegiatan",
-                "url": "/guru/kalender-kegiatan"
-            },
-            {
-                "name": "Tugas",
-                "url": "/guru/adm-siswa"
-            },
-            {
-                "name": "Presensi",
-                "url": "/guru/presensi-siswa"
-            },
-           
-            {
-                "name": "Raport Siswa",
-                "url": "/guru/rapor-siswa"
-            },
-            {
-                "name": "ODFYC",
-                "url": "/guru/one-day"
-            },
-            {
-                "name": "Prestasi",
-                "url": "/guru/prestasi-siswa"
-            }
-        ]
-    },
-    {
-        "submenu": true,
-        "title": "Guru",
-        "icon": "<IoPersonOutline />",
-        "roles": [1, 3, 4, 6],
-        "url": "",
-        "subtitle": [
-           
-            {
-                "name": "Lesson Plan",
-                "url": "/guru/bahan-ajar"
-            },
-           
-            {
-                "name": "Agenda Kegiatan",
-                "url": "/guru/agenda-kegiatan"
-            }
-        ]
-    },
-    {
-        "submenu": false,
-        "hide": false,
-        "title": "Pelatihan",
-        "icon": "<FaRegStar />",
-        "url": "/karyawan/daftar-pelatihan",
-        "subtitle": []
-    },
-    {
-        "submenu": false,
-        "hide": true,
-        "title": "Penilaian",
-        "icon": "<GoTasklist />",
-        "url": "/guru/pelatihans",
-        "subtitle": []
-    },
-    {
-        "submenu": false,
-        "hide": true,
-        "title": "Gaji & Bonus",
-        "icon": "<CiMoneyCheck1 />",
-        "url": "/guru/gaji",
-        "subtitle": []
-    },
-    {
-        "submenu": false,
-        "title": "Customer Care",
-        "icon": "<MdOutlineMessage />",
-        "url": "/guru/cs",
-        "subtitle": []
-    }
+  {
+    "submenu": false,
+    "title": "Dashboard",
+    "icon": "<BsFillHouseFill />",
+    "url": "/guru/dashboard",
+    "subtitle": []
+  },
+  {
+    "submenu": true,
+    "hide": false,
+    "title": "Kehadiran",
+    "icon": "<FaPersonCircleCheck />",
+    "url": "/guru/invenstment",
+    "subtitle": [
+      {
+        "name": "Kehadiran",
+        "url": "/karyawan/rekap-kehadiran"
+      },
+      {
+        "name": "Pengajuan Cuti / Izin",
+        "url": "/karyawan/daftar-cuti-izin"
+      }
+    ]
+  },
+
+  {
+    "submenu": true,
+    "title": "Siswa",
+    "roles": [1, 3, 4, 6],
+    "icon": "<GrGroup />",
+    "url": "",
+    "subtitle": [
+      {
+        "name": "Dashboard Siswa",
+        "url": "/guru/dashboard/siswa"
+      },
+      {
+        "name": "Rencana Pekanan",
+        "url": "/guru/jadwal-guru"
+      },
+      {
+        "name": "Kalender Kegiatan",
+        "url": "/guru/kalender-kegiatan"
+      },
+      {
+        "name": "Tugas",
+        "url": "/guru/adm-siswa"
+      },
+      {
+        "name": "Presensi",
+        "url": "/guru/presensi-siswa"
+      },
+
+      {
+        "name": "Raport Siswa",
+        "url": "/guru/rapor-siswa"
+      },
+      {
+        "name": "ODFYC",
+        "url": "/guru/one-day"
+      },
+      {
+        "name": "Prestasi",
+        "url": "/guru/prestasi-siswa"
+      }
+    ]
+  },
+  {
+    "submenu": true,
+    "title": "Guru",
+    "icon": "<IoPersonOutline />",
+    "roles": [1, 3, 4, 6],
+    "url": "",
+    "subtitle": [
+      {
+        "name": "Lesson Plan",
+        "url": "/guru/bahan-ajar"
+      }
+    ]
+  },
+  {
+    "submenu": false,
+    "hide": false,
+    "title": "Pelatihan",
+    "icon": "<FaRegStar />",
+    "url": "/karyawan/daftar-pelatihan",
+    "subtitle": []
+  },
+  {
+    "submenu": false,
+    "hide": true,
+    "title": "Penilaian",
+    "icon": "<GoTasklist />",
+    "url": "/guru/pelatihans",
+    "subtitle": []
+  },
+  {
+    "submenu": false,
+    "hide": true,
+    "title": "Gaji & Bonus",
+    "icon": "<CiMoneyCheck1 />",
+    "url": "/guru/gaji",
+    "subtitle": []
+  },
+  {
+    "submenu": false,
+    "title": "Customer Care",
+    "icon": "<MdOutlineMessage />",
+    "url": "/guru/cs",
+    "subtitle": []
+  }
 ]
