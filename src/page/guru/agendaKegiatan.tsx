@@ -3,6 +3,7 @@ import Paper from "@mui/material/Paper";
 import {
   Scheduler,
   Appointments,
+  AppointmentForm,
   MonthView,
   Toolbar,
   DateNavigator,
@@ -11,18 +12,18 @@ import {
 import { Button } from "@mui/material";
 import { ViewState } from "@devexpress/dx-react-scheduler";
 import { Kalender } from "../../midleware/api";
-// import { Rekapan } from "../../midleware/api-hrd";
 import { employeeStore, Store } from "../../store/Store";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
+
 const AgendaKegiatan = () => {
   const { token } = Store();
   const { employee } = employeeStore();
   const [open, setOpen] = useState(false);
-  const [eduList, setEduList] = useState([
-    { id: 1, academic_year: "2024", level: "SM", semester: 1 },
-    { id: 2, academic_year: "2024", level: "SM", semester: 2 },
-  ]);
+  const [eduList, setEduList] = useState<any[]>([]);
+  const [dataList, setDataList] = useState<any[]>([]);
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [editingAppointment, setEditingAppointment] = useState<any>(null);
   const { register, handleSubmit, setValue, watch } = useForm({
     defaultValues: {
       start_date: new Date().toISOString().slice(0, 16),
@@ -34,44 +35,135 @@ const AgendaKegiatan = () => {
   });
 
   const handleModalOpen = () => setOpen(true);
-  const handleModalClose = () => setOpen(false);
+  const handleModalClose = () => {
+    setOpen(false);
+    setEditingAppointment(null);
+    setValue("start_date", new Date().toISOString().slice(0, 16));
+    setValue("end_date", new Date().toISOString().slice(0, 16));
+    setValue("agenda", "");
+    setValue("color", "#06b6d4");
+    setValue("edu_id", "");
+  };
+
+  useEffect(() => {
+    if (editingAppointment) {
+      setValue(
+        "start_date",
+        new Date(editingAppointment.startDate).toISOString().slice(0, 16)
+      );
+      setValue(
+        "end_date",
+        new Date(editingAppointment.endDate).toISOString().slice(0, 16)
+      );
+      setValue("agenda", editingAppointment.title || "");
+      setValue("edu_id", editingAppointment.edu_id || "");
+    }
+  }, [editingAppointment, setValue]);
+
+  const handleAppointmentClick = (appointmentData: any) => {
+    setEditingAppointment(appointmentData); // Set appointment yang di-edit
+    console.log(appointmentData);
+    setOpen(true);
+  };
 
   const onSubmit = async (data: any) => {
     try {
       const newData = {
         teacher_id: employee.id,
         edu_id: data.edu_id,
-        start_date: data.start_date,
-        end_date: data.end_date,
+        start_date: new Date(data.start_date).toISOString(),
+        end_date: new Date(data.end_date).toISOString(),
         agenda: data.agenda,
         color: data.color,
       };
 
       // Mengirim data ke API
-      await Kalender.createAgenda(token, newData);
-      handleModalClose(); // Menutup modal setelah sukses
+      if (editingAppointment) {
+        // Update existing appointment
+        Kalender.updateAgenda(token, newData, editingAppointment.id)
+          .then((response) => {
+            if (response.status === 200) {
+              handleModalClose();
+              getDataList();
+              Swal.fire({
+                icon: "success",
+                title: "Berhasil...",
+                text: "Agenda Berhasil dirubah",
+              });
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            Swal.fire({
+              icon: "error",
+              title: "Terjadi Kesalahan",
+              text: "Gagal mengupdate agenda.",
+            });
+          });
+      } else {
+        Kalender.createAgenda(token, newData)
+          .then((response) => {
+            if (response.status === 201) {
+              handleModalClose();
+              getDataList();
+              Swal.fire({
+                icon: "success",
+                title: "Berhasil...",
+
+                text: "Agenda Berhasil Ditambahkan",
+              });
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            Swal.fire({
+              icon: "error",
+              title: "Terjadi Kesalahan",
+              text: "Gagal menyimpan agenda.",
+            });
+          });
+      }
     } catch (error) {
       console.error("Error creating agenda:", error);
     }
   };
-  const [dataList, setDataList] = useState<any[]>([]);
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
+  const fetchDataEdu = async () => {
+    try {
+      const res = await Kalender.getListEdu(token);
+      setEduList(res.data.data.result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const getDataList = async () => {
-    const id = employee.id;
     try {
       setDataList([]);
+      const id = employee?.id; // Pastikan employee tidak null
+      if (!id) {
+        console.error("Employee data is null");
+        return;
+      }
       const res = await Kalender.getByGuru(token, id);
       if (res.status === 200) {
-        setDataList(
-          res.data.data?.map((dat: any) => ({
-            ...dat,
-            startDate: dat.start_date, // pastikan mapping ke format Scheduler
-            endDate: dat.end_date,
-            title: dat.agenda, // tambahkan title untuk jadwal
-            color: dat.color.split("_")[0], // ambil warna valid dari response
-          }))
-        );
+        const fixedData = res.data.data?.map((dat: any) => {
+          const startDate = new Date(dat.start_date);
+          const endDate = new Date(dat.end_date);
+
+          // Jika endDate lebih kecil dari startDate, atur endDate menjadi startDate
+          const fixedEndDate = endDate < startDate ? startDate : endDate;
+
+          return {
+            id: dat.id,
+            startDate: startDate,
+            endDate: fixedEndDate,
+            title: dat.agenda,
+            edu_id: dat.edu_id,
+            color: dat.color.split("_")[0],
+          };
+        });
+
+        setDataList(fixedData);
       } else {
         throw new Error("Invalid response format");
       }
@@ -84,9 +176,48 @@ const AgendaKegiatan = () => {
     }
   };
 
+  const deleteDataAgenda = async () => {
+    const confirm = await Swal.fire({
+      title: "Apakah Anda yakin ingin menghapus agenda ini?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya, Hapus",
+    });
+    try {
+      if (confirm.isConfirmed) {
+        Kalender.deleteAgenda(token, editingAppointment.id)
+          .then((response) => {
+            if (response.status === 200) {
+              getDataList();
+              handleModalClose();
+              Swal.fire({
+                icon: "success",
+                title: "Berhasil...",
+                text: "Agenda Berhasil Dihapus",
+              });
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            Swal.fire({
+              icon: "error",
+              title: "Terjadi Kesalahan",
+              text: "Gagal menghapus agenda.",
+            });
+          });
+      }
+    } catch (error) {
+      console.error("Error creating agenda:", error);
+    }
+  };
+
   useEffect(() => {
     getDataList();
+    fetchDataEdu();
   }, [employee]);
+
   return (
     <div className="w-full p-3">
       <p className="font-bold w-full text-center text-xl mb-6">
@@ -98,8 +229,13 @@ const AgendaKegiatan = () => {
 
       {/* Modal Form */}
       {open && (
-        <div className="modal modal-open">
-          <div className="modal-box">
+        <div className="modal modal-open" onClick={handleModalClose}>
+          <div
+            className="modal-box"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
             <h3 className="font-bold text-lg">Tambah Agenda Kegiatan</h3>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -169,8 +305,19 @@ const AgendaKegiatan = () => {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary">
-                  Create
+                {editingAppointment ? (
+                  <button
+                    type="button"
+                    className="btn btn-error"
+                    onClick={deleteDataAgenda}
+                  >
+                    Delete
+                  </button>
+                ) : (
+                  ""
+                )}
+                <button type="submit" className="btn btn-success">
+                  {editingAppointment ? "Update" : "Submit"}
                 </button>
               </div>
             </form>
@@ -178,72 +325,30 @@ const AgendaKegiatan = () => {
         </div>
       )}
 
-      {/* Scheduler View */}
-      {/* <Paper>
-        <Scheduler data={dataAppointment}>
-          <ViewState
-            currentDate={tanggalPekanan}
-            onCurrentDateChange={handlePerubahanTanggal}
-          />
-          <MonthView />
-          <Appointments
-            appointmentComponent={({ children, ...props }) => {
-              const data = props.data;
-              return (
+      {/* Scheduler */}
+      <div className="w-full p-3">
+        <Paper>
+          <Scheduler data={dataList} locale={"id"}>
+            <ViewState
+              currentDate={currentDate}
+              onCurrentDateChange={(date) => setCurrentDate(date)}
+            />
+            <MonthView />
+            <Appointments
+              appointmentComponent={(props) => (
                 <Appointments.Appointment
                   {...props}
-                  style={{ backgroundColor: data.color }}
-                >
-                  {children}
-                </Appointments.Appointment>
-              );
-            }}
-          />
-          <Toolbar />
-          <DateNavigator />
-          <TodayButton />
-          <AppointmentTooltip />
-        </Scheduler>
-      </Paper> */}
-      <Paper>
-        <Scheduler data={dataList} locale={"id"} height={650}>
-          <ViewState
-            defaultCurrentDate={currentDate}
-            onCurrentDateChange={(date) => setCurrentDate(date)}
-          />
-
-          {/* widgets */}
-          <Toolbar />
-          <DateNavigator />
-          <TodayButton />
-
-          {/* views */}
-          <MonthView displayName="Bulan" />
-
-          {/* appointment card */}
-          <Appointments
-            appointmentComponent={({ children, ...props }) => {
-              // const data = props.data;
-
-              // default for attendance 100%
-              let ic = "✅",
-                bg = "!bg-success";
-
-              return (
-                <Appointments.Appointment
-                  {...props}
-                  className={
-                    "rounded-md flex ps-2 items-center !font-bold " + bg
-                  }
-                >
-                  {ic}
-                  {children}
-                </Appointments.Appointment>
-              );
-            }}
-          />
-        </Scheduler>
-      </Paper>
+                  onDoubleClick={() => handleAppointmentClick(props.data)}
+                />
+              )}
+            />
+            <Toolbar />
+            <DateNavigator />
+            <TodayButton />
+            <AppointmentForm />
+          </Scheduler>
+        </Paper>
+      </div>
     </div>
   );
 };

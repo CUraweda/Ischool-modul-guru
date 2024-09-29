@@ -564,6 +564,31 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  getListEdu: (token: any): AxiosPromise<any> =>
+    instance({
+      method: "GET",
+      url: `/api/edu-calendar/`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  updateAgenda: (token: any, data: any, id: any): AxiosPromise<any> =>
+    instance({
+      method: `PUT`,
+      url: `/api/edu-calendar-detail/update/${id}`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+    deleteAgenda: (token: any, id: any): AxiosPromise<any> =>
+    instance({
+      method: `DELETE`,
+      url: `/api/edu-calendar-detail/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 const Raport = {

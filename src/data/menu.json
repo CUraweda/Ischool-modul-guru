@@ -76,6 +76,11 @@
       {
         "name": "Lesson Plan",
         "url": "/guru/bahan-ajar"
+      },
+
+      {
+        "name": "Agenda Kegiatan",
+        "url": "/guru/agenda-kegiatan"
       }
     ]
   },
