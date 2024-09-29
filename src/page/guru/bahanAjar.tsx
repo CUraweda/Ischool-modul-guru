@@ -1,5 +1,5 @@
 import { BsDownload } from "react-icons/bs";
-import { Lesson, Mapel, Task } from "../../midleware/api";
+import { Lesson, Mapel, Task, FileRaporSiswa } from "../../midleware/api";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { Store } from "../../store/Store";
@@ -80,6 +80,42 @@ const BahanAjar: React.FC<{}> = () => {
       console.error(error);
     }
   };
+  const DownloadFile = async (path?: string, type?: boolean) => {
+    if (!path) return;
+
+    console.log(path);
+    try {
+      const response = await FileRaporSiswa.downloadFile(token, path);
+      const blob = new Blob([response.data], { type: "application/pdf" });
+
+      const fileUrl = URL.createObjectURL(blob);
+
+      if (type === true) {
+        const link: any = document.createElement("a");
+        link.href = fileUrl;
+        link.download = path.split("/").pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (error: any) {
+      let message = "Gagal mengunduh file rapor siswa";
+      if (error.response?.status == 404)
+        message = "File rapor siswa tidak ditemukan";
+
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: message,
+      });
+    } finally {
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil...",
+        text: "Download berhasil",
+      });
+    }
+  };
   const updateDataLesson = async (payload: any, id: number) => {
     try {
       const res = await Lesson.UpdateLesson(token, payload, id);
@@ -124,7 +160,7 @@ const BahanAjar: React.FC<{}> = () => {
     const formData = new FormData();
     formData.append("assignments_name", values.assignments_name);
     formData.append("subjects_name", values.subjects_name);
-    formData.append("class", values.class);
+    formData.append("class_id", values.class);
     formData.append("description", values.description);
     if (selectedFile) {
       formData.append("lesson_plan_file", selectedFile);
@@ -295,7 +331,7 @@ const BahanAjar: React.FC<{}> = () => {
 
         <div className="w-full flex justify-center mt-10 flex-col items-center">
           <div className="w-full justify-between flex px-5">
-            <select
+            {/* <select
               className="select select-primary w-32 max-w-xs"
               value={filter.search}
               onChange={(e) =>
@@ -311,7 +347,7 @@ const BahanAjar: React.FC<{}> = () => {
                   {item.level + "-" + item.name}
                 </option>
               ))}
-            </select>
+            </select> */}
             <div className="join">
               <button
                 onClick={() => (
@@ -325,7 +361,7 @@ const BahanAjar: React.FC<{}> = () => {
           </div>
 
           <div className="overflow-x-auto w-full p-5">
-            <table className="table shadow-lg bg-white ">
+            <table className="table shadow-lg bg-white">
               <thead className="bg-blue-200">
                 <tr>
                   <th>No</th>
@@ -336,13 +372,13 @@ const BahanAjar: React.FC<{}> = () => {
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white">
                 {DataLesson?.map((item: any, index) => (
                   <tr key={index}>
                     <th>{index + 1}</th>
                     <td>{item.assignments_name}</td>
                     <td>{item.subjects_name}</td>
-                    <td>{item.class}</td>
+                    <td>{item.class.class_name + "-" + item.class.level}</td>
                     <td>{item.description}</td>
                     <td>
                       <button
@@ -355,7 +391,10 @@ const BahanAjar: React.FC<{}> = () => {
                       >
                         <BsPencilFill />
                       </button>
-                      <button className="btn bg-blue-400 text-xl font-bold text-white">
+                      <button
+                        className="btn bg-blue-400 text-xl font-bold text-white"
+                        onClick={() => DownloadFile(item.file_path, true)}
+                      >
                         <BsDownload />
                       </button>
                     </td>
