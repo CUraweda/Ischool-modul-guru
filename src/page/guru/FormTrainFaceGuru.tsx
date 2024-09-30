@@ -204,14 +204,24 @@ const TrainFaceGuru: React.FC = () => {
         }
       );
       if (!response.ok) {
-        console.error("Error mengirim form");
+        const responseText = await response.text();
+        console.error("Error response:", responseText);
         setTrainingLoading(false);
         setTrainingNotSuccess(true);
       } else {
-        const data = await response.json();
-        setTrainingLoading(false);
-        setTrainingSuccess(true);
-        console.log("Form berhasil dikirim:", data);
+        try {
+          const data = await response.json();
+          setTrainingLoading(false);
+          setTrainingSuccess(true);
+          console.log("Form berhasil dikirim:", data);
+        } catch (jsonError) {
+          console.error("Error parsing JSON:", jsonError);
+          const responseText = await response.text();
+          console.log("Raw response:", responseText);
+          setTrainingLoading(false);
+          setTrainingNotSuccess(true);
+          console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+        }
       }
     } catch (error) {
       console.error("Error mengirim form:", error);
