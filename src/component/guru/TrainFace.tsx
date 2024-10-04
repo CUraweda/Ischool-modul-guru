@@ -501,7 +501,7 @@ const TrainFace: React.FC<TrainFaceProps> = ({
                             X
                         </button>
                     </div>
-                    <div className="container-camera2 w-full max-w-[400px] max-h-[500px] mx-auto maxw768:max-w-[300px] p-4">
+                    <div className={`container-camera2 w-full max-w-[400px] max-h-[500px] mx-auto maxw768:max-w-[300px] p-4 ${captureStageRef.current === 10 ? 'hidden' : ''}`}>
                         <div
                             className="relative w-full pb-[100%] rounded-full overflow-hidden transition-shadow duration-300 ease-in-outt"
                             style={{
