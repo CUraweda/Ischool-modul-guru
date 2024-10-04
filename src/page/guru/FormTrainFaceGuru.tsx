@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import "react-day-picker/dist/style.css";
 import Instruction from "../../component/guru/InstructionTrainFace";
-import * as faceapi from 'face-api.js';
 import ChangeExpression from '../../component/guru/InstructionTrainFace2'
 import TrainFace from '../../component/guru/TrainFace'
 // import UserData from '../../component/guru/userData';
@@ -69,7 +68,6 @@ const TrainFaceGuru: React.FC = () => {
   const [trainingNotSuccess, setTrainingNotSuccess] = useState(false);
   const [trainingNotSuccess2, setTrainingNotSuccess2] = useState(false);
 
-  const [isCropImage, setIsCropImage] = useState(false);
   const capturedImagesRef = useRef<string[]>([]);
 
   const updateCapturedImages = (images: string[]) => {
@@ -111,14 +109,6 @@ const TrainFaceGuru: React.FC = () => {
   const InstructionChange2 = () => {
     setInstructionStep(1);
     setChangeExpression(true);
-  };
-
-  const loadModels = async () => {
-    await Promise.all([
-      faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
-      faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-      faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-    ]);
   };
   const handleReload = () => {
     window.location.reload();
@@ -168,16 +158,14 @@ const TrainFaceGuru: React.FC = () => {
   const handleSubmit = useCallback(async () => {
     setIsNone(true);
     console.log("isNone: " + IsNoneRef.current); // This should now log "true"
-    setIsCropImage(true);
-    await loadModels();
+    // await loadModels();
+    setTrainingLoading(true);
     console.log(capturedImagesRef.current);
     // const croppedImages = await Promise.all(
     //   capturedImagesRef.current.map(image => cropFace(image))
     // );
     // setCapturedImages(croppedImages);
     // setCroppedImagesDisplay(croppedImages);
-    setIsCropImage(false);
-    setTrainingLoading(true);
     console.log("Semua gambar sudah di crop");
 
     const images: { [key: string]: string } = {};
@@ -228,7 +216,7 @@ const TrainFaceGuru: React.FC = () => {
       setTrainingLoading(false);
       setTrainingNotSuccess2(true)
     }
-  }, [capturedImages, /*cropFace ,*/ loadModels]);
+  }, [capturedImages, /*cropFace ,*/]);
 
   const cropImage = () => {
     setIsVideo(true);
@@ -247,7 +235,7 @@ const TrainFaceGuru: React.FC = () => {
       )}
       {isInput3 && (
         // Add your form or other components here when isInput1 is true
-        <div className={IsNoneRef.current ? 'hidden' : '' || isCropImage ? 'hidden' : ''}>
+        <div>
           <TrainFace
             isVideo={isVideo}
             isNone={isNone}
@@ -257,24 +245,6 @@ const TrainFaceGuru: React.FC = () => {
             InstructionChange={InstructionChange2}
             handleSubmit={handleSubmit}
             CropImage={cropImage} />
-        </div>
-      )}
-
-      {isCropImage && (
-        <div className="content-container-input1 flex flex-row justify-center h-screen items-center">
-          <div className="loading-container text-3xl">
-            <div className="loading-text">
-              <Player
-                src="https://lottie.host/b170dd4c-4cbb-4d6c-a08f-722cedb7bfbb/hkrNsHGUzM.json"
-                background="transparent"
-                speed={1}
-                style={{ width: '250px', height: '250px', margin: '0 auto' }}
-                loop
-                autoplay
-              ></Player>
-              Foto sedang di crop...
-            </div>
-          </div>
         </div>
       )}
 
