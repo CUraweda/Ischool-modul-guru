@@ -15,7 +15,7 @@ const Auth = {
         password,
       },
     }),
-  MeData: (token: string | null): AxiosPromise<any> =>
+  MeData: (token: string | null) =>
     instance({
       method: "GET",
       url: "/api/user/me",
@@ -23,7 +23,7 @@ const Auth = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  EditProfile: (token: string | null, id: any, data: any): AxiosPromise<any> =>
+  EditProfile: (token: string | null, id: any, data: any) =>
     instance({
       method: "PUT",
       url: `/api/employee/update/${id}`,
@@ -32,7 +32,7 @@ const Auth = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  EditPassword: (token: string | null, data: any): AxiosPromise<any> =>
+  EditPassword: (token: string | null, data: any) =>
     instance({
       method: "PUT",
       url: `/api/user/change-password`,
@@ -41,7 +41,7 @@ const Auth = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  EditPicture: (token: string | null, id: any, data: any): AxiosPromise<any> =>
+  EditPicture: (token: string | null, id: any, data: any) =>
     instance({
       method: "PUT",
       url: `/api/auth/update-profile/${id}`,
@@ -53,10 +53,101 @@ const Auth = {
 };
 
 const User = {
-  showAll: (token: string | null, search: string | null): AxiosPromise<any> =>
+  showAll: (token: string | null, search: string | null) =>
     instance({
       method: "GET",
       url: `/api/user?search_query=${search}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
+const Karyawan = {
+  DataKaryawan: async (
+    page: number,
+    limit: number,
+    search: string,
+    status: string,
+    token: string | null
+  ) =>
+    await instance({
+      method: "GET",
+      url: `employee?page=${page}&limit=${limit}&search=${search}&status=${status}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  TambahKaryawan: (data: any, token: string) =>
+    instance({
+      method: `POST`,
+      url: `employee/create`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  EditKaryawan: (data: any, id: string, token: string) =>
+    instance({
+      method: `PUT`,
+      url: `employee/update/${id}`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  HapusKaryawan: (id: string, token: string) =>
+    instance({
+      method: `DELETE`,
+      url: `employee/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  ProfilKaryawan: (id: string | undefined, token: string | null) =>
+    instance({
+      method: `GET`,
+      url: `employee/detail/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  DaftarPenilaian: (
+    page: number,
+    limit: number,
+    search: string,
+    token: string | null
+  ) =>
+    instance({
+      method: `GET`,
+      url: `employee?page=${page}&limit=${limit}&search=${search}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  AddPenilaian: (data: any, token: string) =>
+    instance({
+      method: `POST`,
+      url: `employee/create`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  EditPenilaian: (data: any, id: string, token: string) =>
+    instance({
+      method: `PUT`,
+      url: `employee/update/${id}`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  EditNilai: (data: any, id: string, token: string) =>
+    instance({
+      method: `PUT`,
+      url: `employee/grade/${id}`,
+      data,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -68,7 +159,7 @@ const Student = {
     token: string | null,
     id: string | null,
     tahun: string | null
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-class/show-by-class/${id}?academic=${tahun}`,
@@ -81,7 +172,7 @@ const Student = {
     token: string | null,
     level: string | null,
     tahun: string | null
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-class/show-by-level/${level}?academic=${tahun}`,
@@ -97,7 +188,7 @@ const Student = {
     tahun: string | null,
     page: number | null,
     limit: number | null
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-class?search_query=${search}&academic=${tahun}&class_id=${class_id}&page=${page}&limit=${limit}`,
@@ -106,7 +197,7 @@ const Student = {
       },
     }),
 
-  CreatePresensi: (token: string | null, data: any): AxiosPromise<any> =>
+  CreatePresensi: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: "/api/student-attendance/create",
@@ -115,11 +206,7 @@ const Student = {
       },
       data,
     }),
-  UpdatePresensi: (
-    token: string | null,
-    id: string,
-    data: any
-  ): AxiosPromise<any> =>
+  UpdatePresensi: (token: string | null, id: string, data: any) =>
     instance({
       method: "PUT",
       url: `/api/student-attendance/update/${id}`,
@@ -137,7 +224,7 @@ const Student = {
     attDate: string | null,
     academic: string | null,
     withAssign: string | null = "N"
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-attendance?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&att_date=${attDate}&with_assign=${withAssign}`,
@@ -149,7 +236,7 @@ const Student = {
     token: string | null,
     id: number | null,
     date: string | null
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-attendance/show-by-class/${id}?att_date=${date}`,
@@ -157,10 +244,7 @@ const Student = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  GetPresensiById: (
-    token: string | null,
-    id: number | null
-  ): AxiosPromise<any> =>
+  GetPresensiById: (token: string | null, id: number | null) =>
     instance({
       method: "GET",
       url: `/api/student-attendance/show/${id}`,
@@ -169,10 +253,7 @@ const Student = {
       },
     }),
 
-  deletePresensi: (
-    token: string | null,
-    id: number | null
-  ): AxiosPromise<any> =>
+  deletePresensi: (token: string | null, id: number | null) =>
     instance({
       method: "DELETE",
       url: `/api/student-attendance/delete/${id}`,
@@ -181,12 +262,9 @@ const Student = {
       },
     }),
 };
+
 const Mapel = {
-  GetAllDataMapel: (
-    token: string | null,
-    page: number,
-    limit: number
-  ): AxiosPromise<any> =>
+  GetAllDataMapel: (token: string | null, page: number, limit: number) =>
     instance({
       method: "GET",
       url: `/api/subject?search_query=&page=${page}&limit=${limit}`,
@@ -195,6 +273,7 @@ const Mapel = {
       },
     }),
 };
+
 const Class = {
   showAll: (
     token: string | null,
@@ -203,7 +282,7 @@ const Class = {
     withAssign: string | null = "N",
     withSubject: string = "Y",
     withFormClass: string = "Y"
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/classes?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}&with_subject=${withSubject}&with_form_class=${withFormClass}`,
@@ -222,7 +301,7 @@ const Task = {
     page: number | null,
     limit: number | null,
     withAssign: string = "N"
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-task?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
@@ -237,7 +316,7 @@ const Task = {
     page: number | null,
     limit: number | null,
     withAssign: string = "N"
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/task?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
@@ -253,7 +332,7 @@ const Task = {
     // is_active: string | null = "Y",
     withSubject: string = "Y",
     withFormClass: string = "Y"
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/classes?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}&with_subject=${withSubject}&with_form_class=${withFormClass}&is_active=Y`,
@@ -266,7 +345,7 @@ const Task = {
     page: number | null,
     withAssign: string | null = "Y",
     limit: number | null
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/subject?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}`,
@@ -274,7 +353,7 @@ const Task = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  createTask: (token: string | null, data: any): AxiosPromise<any> =>
+  createTask: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/student-task/create`,
@@ -284,11 +363,7 @@ const Task = {
       },
       data,
     }),
-  editTask: (
-    token: string | null,
-    id: string | null,
-    data: any
-  ): AxiosPromise<any> =>
+  editTask: (token: string | null, id: string | null, data: any) =>
     instance({
       method: "PUT",
       url: `/api/student-task/update/${id}`,
@@ -297,11 +372,7 @@ const Task = {
       },
       data,
     }),
-  editTaskClass: (
-    token: string | null,
-    id: string | null,
-    data: any
-  ): AxiosPromise<any> =>
+  editTaskClass: (token: string | null, id: string | null, data: any) =>
     instance({
       method: "PUT",
       url: `/api/task/update/${id}`,
@@ -310,11 +381,7 @@ const Task = {
       },
       data,
     }),
-  editTaskDetail: (
-    token: string | null,
-    id: string | null,
-    data: any
-  ): AxiosPromise<any> =>
+  editTaskDetail: (token: string | null, id: string | null, data: any) =>
     instance({
       method: "PUT",
       url: `/api/task-detail/update/${id}`,
@@ -323,7 +390,7 @@ const Task = {
       },
       data,
     }),
-  createTaskClass: (token: string | null, data: any): AxiosPromise<any> =>
+  createTaskClass: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/task/create`,
@@ -334,7 +401,7 @@ const Task = {
       data,
     }),
 
-  deleteTask: (token: string | null, id: number | null): AxiosPromise<any> =>
+  deleteTask: (token: string | null, id: number | null) =>
     instance({
       method: "DELETE",
       url: `/api/student-task/delete/${id}`,
@@ -342,10 +409,7 @@ const Task = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  deleteTaskClass: (
-    token: string | null,
-    id: number | null
-  ): AxiosPromise<any> =>
+  deleteTaskClass: (token: string | null, id: number | null) =>
     instance({
       method: "DELETE",
       url: `/api/task/delete/${id}`,
@@ -354,7 +418,7 @@ const Task = {
       },
     }),
 
-  getDetailTask: (token: string | null, id: number | null): AxiosPromise<any> =>
+  getDetailTask: (token: string | null, id: number | null) =>
     instance({
       method: "GET",
       url: `/api/task-detail/show-by-task/${id}`,
@@ -362,7 +426,7 @@ const Task = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  getTaskById: (token: string | null, id: string | null): AxiosPromise<any> =>
+  getTaskById: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/task/show/${id}`,
@@ -370,10 +434,7 @@ const Task = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  downloadTugas: (
-    token: string | null,
-    path: string | null
-  ): AxiosPromise<any> =>
+  downloadTugas: (token: string | null, path: string | null) =>
     instance({
       method: "GET",
       url: `/api/student-task/download?filepath=${path}`,
@@ -390,7 +451,7 @@ const Kalender = {
     academic: string | null,
     page: number | null,
     limit: number | null
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/edu-calendar-detail?academic=${academic}&search_query=&page=${page}&limit=${limit}`,
@@ -398,10 +459,7 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  GetAllDetailById: (
-    token: string | null,
-    id: number | null
-  ): AxiosPromise<any> =>
+  GetAllDetailById: (token: string | null, id: number | null) =>
     instance({
       method: "GET",
       url: `/api/edu-calendar-detail/show/${id}`,
@@ -414,7 +472,7 @@ const Kalender = {
     academic: string | null,
     page: number | null,
     limit: number | null
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/edu-calendar?academic=${academic}&search_query=&page=${page}&limit=${limit}`,
@@ -423,11 +481,7 @@ const Kalender = {
       },
     }),
 
-  EditDetail: (
-    token: string | null,
-    id: number | null,
-    data: any
-  ): AxiosPromise<any> =>
+  EditDetail: (token: string | null, id: number | null, data: any) =>
     instance({
       method: "PUT",
       url: `/api/edu-calendar-detail/update/${id}`,
@@ -436,7 +490,7 @@ const Kalender = {
       },
       data,
     }),
-  createDetail: (token: string | null, data: any): AxiosPromise<any> =>
+  createDetail: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/edu-calendar-detail/create`,
@@ -445,7 +499,7 @@ const Kalender = {
       },
       data,
     }),
-  createTopik: (token: string | null, data: any): AxiosPromise<any> =>
+  createTopik: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/edu-calendar/create`,
@@ -455,7 +509,7 @@ const Kalender = {
       data,
     }),
 
-  deleteDetail: (token: string | null, id: number | null): AxiosPromise<any> =>
+  deleteDetail: (token: string | null, id: number | null) =>
     instance({
       method: "DELETE",
       url: `/api/edu-calendar-detail/delete/${id}`,
@@ -463,10 +517,7 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  deleteTimeTable: (
-    token: string | null,
-    id: number | null
-  ): AxiosPromise<any> =>
+  deleteTimeTable: (token: string | null, id: number | null) =>
     instance({
       method: "DELETE",
       url: `/api/timetable/delete/${id}`,
@@ -478,7 +529,7 @@ const Kalender = {
     token: string | null,
     kelas: string | null,
     semester: string | null
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/timetable/show-by-class/${kelas}?semester=${semester}&academic=2023/2024`,
@@ -492,7 +543,7 @@ const Kalender = {
     semester: string | null,
     academic: string,
     withAssign: string = "N"
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/timetable/show-by-class?semester=${semester}&academic=${academic}&class_id=${classId}&with_assign=${withAssign}`,
@@ -501,10 +552,7 @@ const Kalender = {
       },
     }),
 
-  GetTimetableById: (
-    token: string | null,
-    id: number | null
-  ): AxiosPromise<any> =>
+  GetTimetableById: (token: string | null, id: number | null) =>
     instance({
       method: "GET",
       url: `/api/timetable/show/${id}`,
@@ -513,7 +561,7 @@ const Kalender = {
       },
     }),
 
-  createTimeTable: (token: string | null, data: any): AxiosPromise<any> =>
+  createTimeTable: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/timetable/create`,
@@ -523,7 +571,7 @@ const Kalender = {
       data,
     }),
 
-  duplicateTimetable: (token: string | null, data: any): AxiosPromise<any> =>
+  duplicateTimetable: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/timetable/duplicate-create`,
@@ -533,11 +581,7 @@ const Kalender = {
       data,
     }),
 
-  EditTimeTable: (
-    token: string | null,
-    id: string | null,
-    data: any
-  ): AxiosPromise<any> =>
+  EditTimeTable: (token: string | null, id: string | null, data: any) =>
     instance({
       method: "PUT",
       url: `/api/timetable/update/${id}`,
@@ -547,7 +591,7 @@ const Kalender = {
       data,
     }),
 
-  getByGuru: (token: any, id: number): AxiosPromise<any> =>
+  getByGuru: (token: any, id: number) =>
     instance({
       method: "GET",
       url: `/api/edu-calendar-detail/show-by-teacher/${id}`,
@@ -555,7 +599,7 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  createAgenda: (token: any, data: any): AxiosPromise<any> =>
+  createAgenda: (token: any, data: any) =>
     instance({
       method: `POST`,
       url: `/api/edu-calendar-detail/create`,
@@ -564,7 +608,7 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  getListEdu: (token: any): AxiosPromise<any> =>
+  getListEdu: (token: any) =>
     instance({
       method: "GET",
       url: `/api/edu-calendar/`,
@@ -572,7 +616,7 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  updateAgenda: (token: any, data: any, id: any): AxiosPromise<any> =>
+  updateAgenda: (token: any, data: any, id: any) =>
     instance({
       method: `PUT`,
       url: `/api/edu-calendar-detail/update/${id}`,
@@ -581,7 +625,7 @@ const Kalender = {
         Authorization: `Bearer ${token}`,
       },
     }),
-    deleteAgenda: (token: any, id: any): AxiosPromise<any> =>
+  deleteAgenda: (token: any, id: any) =>
     instance({
       method: `DELETE`,
       url: `/api/edu-calendar-detail/delete/${id}`,
@@ -592,7 +636,7 @@ const Kalender = {
 };
 
 const Raport = {
-  downloadMergeRaport: (token: string | null, id: any): AxiosPromise<any> =>
+  downloadMergeRaport: (token: string | null, id: any) =>
     instance({
       method: "PUT",
       url: `/api/student-report/merge/${id}`,
@@ -601,7 +645,7 @@ const Raport = {
       },
     }),
 
-  createStudentRaport: (token: string | null, data: any): AxiosPromise<any> =>
+  createStudentRaport: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/student-report/create`,
@@ -611,7 +655,7 @@ const Raport = {
       data,
     }),
 
-  deleteStudentRaport: (token: string | null, id: any): AxiosPromise<any> =>
+  deleteStudentRaport: (token: string | null, id: any) =>
     instance({
       method: "DELETE",
       url: `/api/student-report/delete/${id}`,
@@ -620,10 +664,7 @@ const Raport = {
       },
     }),
 
-  updateStudentReportAccess: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  updateStudentReportAccess: (token: string | null, id: string | null) =>
     instance({
       method: "PUT",
       url: `/api/student-report/update-access/${id}`,
@@ -636,7 +677,7 @@ const Raport = {
     id: string | null,
     semester: string | null,
     academic: string | null
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-report/show-by-class/${id}?semester=${semester}&academic=${academic}`,
@@ -652,7 +693,7 @@ const Raport = {
     limit: number | null,
     withAssign: string | null = "N",
     academic: string
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-report?search_query=&page=${page}&class_id=${classId}&semester=${semester}&limit=${limit}&with_assign=${withAssign}&academic=${academic}`,
@@ -661,7 +702,7 @@ const Raport = {
       },
     }),
   // raport angka
-  getAllNumberReport: (token: string | null, data: any): AxiosPromise<any> =>
+  getAllNumberReport: (token: string | null, data: any) =>
     instance({
       method: "GET",
       url: `/api/number-report/filter-by-params?academic=${data.tahun}&semester=${data.semester}&class_id=${data.class}`,
@@ -679,7 +720,7 @@ const Raport = {
     page: number | null,
     limit: number | null,
     withAssign: string | null = "N"
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/number-report?search_query=${search}&academic=${academic}&subject_id=${subjectId}&page=${page}&class_id=${classId}&semester=${semester}&limit=${limit}&with_assign=${withAssign}`,
@@ -691,7 +732,7 @@ const Raport = {
     token: string | null,
     id: string | null,
     smt: string | null
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/number-report/show-by-student/${id}?semester=${smt}`,
@@ -703,7 +744,7 @@ const Raport = {
     token: string | null,
     id: string | null,
     smt: string | null
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/number-report/generate/${id}?semester=${smt}`,
@@ -711,7 +752,7 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  getByIdNumberReport: (token: string | null, id: string): AxiosPromise<any> =>
+  getByIdNumberReport: (token: string | null, id: string) =>
     instance({
       method: "GET",
       url: `/api/number-report/show/${id}`,
@@ -719,7 +760,7 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  createNumberRaport: (token: string | null, data: any): AxiosPromise<any> =>
+  createNumberRaport: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/number-report/create`,
@@ -729,7 +770,7 @@ const Raport = {
       data,
     }),
 
-  deleteNumberReport: (token: string | null, id: string): AxiosPromise<any> =>
+  deleteNumberReport: (token: string | null, id: string) =>
     instance({
       method: "DELETE",
       url: `/api/number-report/delete/${id}`,
@@ -738,11 +779,7 @@ const Raport = {
       },
     }),
 
-  editNumberRaport: (
-    token: string | null,
-    id: string,
-    data: any
-  ): AxiosPromise<any> =>
+  editNumberRaport: (token: string | null, id: string, data: any) =>
     instance({
       method: "PUT",
       url: `/api/number-report/update/${id}`,
@@ -753,10 +790,7 @@ const Raport = {
     }),
 
   // Raport Narasi
-  getKategoriNarasi: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  getKategoriNarasi: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/narrative-category/show-by-class/${id} `,
@@ -764,10 +798,7 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  getDeskripsiNarasi: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  getDeskripsiNarasi: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/narrative-desc/show-by-subcategory/${id}`,
@@ -775,7 +806,7 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  createDeskripsi: (token: string | null, data: any): AxiosPromise<any> =>
+  createDeskripsi: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/narrative-desc/create`,
@@ -784,7 +815,7 @@ const Raport = {
       },
       data,
     }),
-  createKategori: (token: string | null, data: any): AxiosPromise<any> =>
+  createKategori: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/narrative-category/create`,
@@ -793,10 +824,7 @@ const Raport = {
       },
       data,
     }),
-  createKomentarKategori: (
-    token: string | null,
-    data: any
-  ): AxiosPromise<any> =>
+  createKomentarKategori: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/narrative-comment/create`,
@@ -809,7 +837,7 @@ const Raport = {
     token: string | null,
     id: string | null,
     data: any
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "PUT",
       url: `/api/narrative-comment/update/${id}`,
@@ -818,10 +846,7 @@ const Raport = {
       },
       data,
     }),
-  deleteKomentarNarasi: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  deleteKomentarNarasi: (token: string | null, id: string | null) =>
     instance({
       method: "DELETE",
       url: `/api/narrative-comment/delete/${id}`,
@@ -829,10 +854,7 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  deleteKategoriNarasi: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  deleteKategoriNarasi: (token: string | null, id: string | null) =>
     instance({
       method: "DELETE",
       url: `/api/narrative-category/delete/${id}`,
@@ -840,10 +862,7 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  deleteSubKategoriNarasi: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  deleteSubKategoriNarasi: (token: string | null, id: string | null) =>
     instance({
       method: "DELETE",
       url: `/api/narrative-sub-category/delete/${id}`,
@@ -851,11 +870,7 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  editKategori: (
-    token: string | null,
-    id: string | null,
-    data: any
-  ): AxiosPromise<any> =>
+  editKategori: (token: string | null, id: string | null, data: any) =>
     instance({
       method: "PUT",
       url: `/api/narrative-category/update/${id}`,
@@ -864,11 +879,7 @@ const Raport = {
       },
       data,
     }),
-  editSubKategori: (
-    token: string | null,
-    id: string | null,
-    data: any
-  ): AxiosPromise<any> =>
+  editSubKategori: (token: string | null, id: string | null, data: any) =>
     instance({
       method: "PUT",
       url: `/api/narrative-sub-category/update/${id}`,
@@ -877,11 +888,7 @@ const Raport = {
       },
       data,
     }),
-  editReportNarasi: (
-    token: string | null,
-    id: string | null,
-    data: any
-  ): AxiosPromise<any> =>
+  editReportNarasi: (token: string | null, id: string | null, data: any) =>
     instance({
       method: "PUT",
       url: `/api/narrative-report/update/${id}`,
@@ -890,7 +897,7 @@ const Raport = {
       },
       data,
     }),
-  deleteNarasi: (token: string | null, id: string | null): AxiosPromise<any> =>
+  deleteNarasi: (token: string | null, id: string | null) =>
     instance({
       method: "DELETE",
       url: `/api/narrative-report/delete/${id}`,
@@ -898,7 +905,7 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  createSubKategori: (token: string | null, data: any): AxiosPromise<any> =>
+  createSubKategori: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/narrative-sub-category/create`,
@@ -907,10 +914,7 @@ const Raport = {
       },
       data,
     }),
-  getSubCategoriNarasi: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  getSubCategoriNarasi: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/narrative-sub-category/show-by-category/${id}`,
@@ -918,10 +922,7 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  deleteDeskripsiNarasi: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  deleteDeskripsiNarasi: (token: string | null, id: string | null) =>
     instance({
       method: "DELETE",
       url: `/api/narrative-desc/delete/${id}`,
@@ -934,7 +935,7 @@ const Raport = {
     token: string | null,
     id: string | null,
     smt: string | null
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/narrative-report/show-by-student/${id}?semester=${smt}`,
@@ -947,7 +948,7 @@ const Raport = {
     id: string | null,
     smt: string | null,
     report_id: string | null
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/narrative-report/generate/${id}?semester=${smt}&report_id=${report_id}`,
@@ -955,10 +956,7 @@ const Raport = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  getKomentarNarasiSiswa: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  getKomentarNarasiSiswa: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/narrative-comment/show-by-student-report/${id}`,
@@ -968,10 +966,7 @@ const Raport = {
     }),
 
   // Raport Portofolio
-  getPortofolioByRaport: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  getPortofolioByRaport: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/portofolio-report/show-all-by-student-report/${id}`,
@@ -980,7 +975,7 @@ const Raport = {
       },
     }),
 
-  uploadPortofolio: (token: string | null, data: any): AxiosPromise<any> =>
+  uploadPortofolio: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/portofolio-report/create`,
@@ -990,11 +985,7 @@ const Raport = {
       data,
     }),
 
-  createKomentar: (
-    token: string | null,
-    id: string | null,
-    data: any
-  ): AxiosPromise<any> =>
+  createKomentar: (token: string | null, id: string | null, data: any) =>
     instance({
       method: "PUT",
       url: `/api/student-report/update/${id}`,
@@ -1003,7 +994,7 @@ const Raport = {
       },
       data,
     }),
-  createRapotNarasi: (token: string | null, data: any): AxiosPromise<any> =>
+  createRapotNarasi: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/narrative-report/create`,
@@ -1013,10 +1004,7 @@ const Raport = {
       data,
     }),
 
-  mergePortofolio: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  mergePortofolio: (token: string | null, id: string | null) =>
     instance({
       method: "PUT",
       url: `/api/portofolio-report/merge/${id}`,
@@ -1027,7 +1015,7 @@ const Raport = {
 };
 
 const Pengumuman = {
-  createPengumuman: (token: string | null, data: any): AxiosPromise<any> =>
+  createPengumuman: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/announcement/create`,
@@ -1040,7 +1028,7 @@ const Pengumuman = {
     token: string | null,
     id: string | number | null,
     data: any
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "PUT",
       url: `/api/announcement/update/${id}`,
@@ -1059,7 +1047,7 @@ const Pengumuman = {
     page: number | null,
     limit: number | null,
     withAssign: string = "N"
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/announcement?search_query=${search}&class_id=${classId}&start_date=${start}&end_date=${end}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
@@ -1067,10 +1055,7 @@ const Pengumuman = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  getByIdPengumuman: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  getByIdPengumuman: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/announcement/show/${id}`,
@@ -1078,10 +1063,7 @@ const Pengumuman = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  DeletePengumuman: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  DeletePengumuman: (token: string | null, id: string | null) =>
     instance({
       method: "DELETE",
       url: `/api/announcement/delete/${id}`,
@@ -1089,7 +1071,7 @@ const Pengumuman = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  downloadFile: (token: string | null, id: string): AxiosPromise<any> =>
+  downloadFile: (token: string | null, id: string) =>
     instance({
       method: "GET",
       url: `/api/announcement/download/${id}`,
@@ -1108,7 +1090,7 @@ const DashboardSiswa = {
     page: number | null,
     limit: number | null,
     withAssign: string = "N"
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/overview?academic=${academic}&search_query=&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
@@ -1116,10 +1098,7 @@ const DashboardSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  getByIdOverView: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  getByIdOverView: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/overview/show/${id}`,
@@ -1128,7 +1107,7 @@ const DashboardSiswa = {
       },
     }),
 
-  createOverview: (token: string | null, data: any): AxiosPromise<any> =>
+  createOverview: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/overview/create`,
@@ -1142,7 +1121,7 @@ const DashboardSiswa = {
     token: string | null,
     id: string | number | null,
     data: any
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "PUT",
       url: `/api/overview/update/${id}`,
@@ -1151,10 +1130,7 @@ const DashboardSiswa = {
       },
       data,
     }),
-  DeleteOverview: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  DeleteOverview: (token: string | null, id: string | null) =>
     instance({
       method: "DELETE",
       url: `/api/overview/delete/${id}`,
@@ -1179,7 +1155,7 @@ const KepribadianSiswa = {
     search?: string,
     page: number = 0,
     limit: number = 10
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-personality?search_query=${search}&page=${page}&limit=${limit}`,
@@ -1187,11 +1163,7 @@ const KepribadianSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  update: (
-    token: string | null,
-    id: string | number | null,
-    data: any
-  ): AxiosPromise<any> =>
+  update: (token: string | null, id: string | number | null, data: any) =>
     instance({
       method: "PUT",
       url: "/api/student-personality/update/" + id,
@@ -1200,10 +1172,7 @@ const KepribadianSiswa = {
       },
       data,
     }),
-  delete: (
-    token: string | null,
-    id: string | number | null
-  ): AxiosPromise<any> =>
+  delete: (token: string | null, id: string | number | null) =>
     instance({
       method: "DELETE",
       url: "/api/student-personality/delete/" + id,
@@ -1228,7 +1197,7 @@ const PosPembayaran = {
     search?: string,
     page: number = 0,
     limit: number = 10
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/payment-post?search_query=${search}&page=${page}&limit=${limit}`,
@@ -1236,7 +1205,7 @@ const PosPembayaran = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+  showOne: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/payment-post/show/${id}`,
@@ -1244,11 +1213,7 @@ const PosPembayaran = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  update: (
-    token: string | null,
-    id: string | number | null,
-    data: any
-  ): AxiosPromise<any> =>
+  update: (token: string | null, id: string | number | null, data: any) =>
     instance({
       method: "PUT",
       url: "/api/payment-post/update/" + id,
@@ -1257,10 +1222,7 @@ const PosPembayaran = {
       },
       data,
     }),
-  delete: (
-    token: string | null,
-    id: string | number | null
-  ): AxiosPromise<any> =>
+  delete: (token: string | null, id: string | number | null) =>
     instance({
       method: "DELETE",
       url: "/api/payment-post/delete/" + id,
@@ -1276,7 +1238,7 @@ const Kepribadian = {
     search: string = "",
     page: number = 0,
     limit: number = 10
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/personality?search_query=${search}&page=${page}&limit=${limit}`,
@@ -1312,7 +1274,7 @@ const PosJenisPembayaran = {
     academicYear?: string | null,
     page: number = 0,
     limit: number = 10
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-payment-bills?search_query=${search}&payment_post_id=${paymentPostId}&academic_year=${academicYear}&page=${page}&limit=${limit}`,
@@ -1320,7 +1282,7 @@ const PosJenisPembayaran = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+  showOne: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/student-payment-bills/get-by-id/${id}`,
@@ -1328,11 +1290,7 @@ const PosJenisPembayaran = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  update: (
-    token: string | null,
-    id: string | number | null,
-    data: any
-  ): AxiosPromise<any> =>
+  update: (token: string | null, id: string | number | null, data: any) =>
     instance({
       method: "PUT",
       url: "/api/student-payment-bills/update/" + id,
@@ -1341,10 +1299,7 @@ const PosJenisPembayaran = {
       },
       data,
     }),
-  delete: (
-    token: string | null,
-    id: string | number | null
-  ): AxiosPromise<any> =>
+  delete: (token: string | null, id: string | number | null) =>
     instance({
       method: "DELETE",
       url: "/api/student-payment-bills/delete/" + id,
@@ -1380,7 +1335,7 @@ const TagihanSiswa = {
     classId?: string,
     page: number = 0,
     limit: number = 10
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-bills?search_query=${search}&bill_id=${billId}&class_id=${classId}&page=${page}&limit=${limit}`,
@@ -1399,7 +1354,7 @@ const TagihanSiswa = {
     nisPrefix?: string,
     page: number = 0,
     limit: number = 10
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-payment-report?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}&nis_prefix=${nisPrefix}&page=${page}&limit=${limit}`,
@@ -1416,7 +1371,7 @@ const TagihanSiswa = {
     endPaid?: string,
     status?: string,
     nisPrefix?: string
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-payment-report/export-all?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}&nis_prefix=${nisPrefix}`,
@@ -1431,7 +1386,7 @@ const TagihanSiswa = {
     classId?: string,
     page: number = 0,
     limit: number = 10
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-arrears?search_query=${search}&class_id=${classId}&page=${page}&limit=${limit}`,
@@ -1439,11 +1394,7 @@ const TagihanSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  exportArrears: (
-    token: string | null,
-    search?: string,
-    classId?: string
-  ): AxiosPromise<any> =>
+  exportArrears: (token: string | null, search?: string, classId?: string) =>
     instance({
       method: "GET",
       url: `/api/student-arrears/export-all?search_query=${search}&class_id=${classId}`,
@@ -1452,10 +1403,7 @@ const TagihanSiswa = {
       },
       responseType: "blob",
     }),
-  showByStudentId: (
-    token: string | null,
-    studentId?: string | null
-  ): AxiosPromise<any> =>
+  showByStudentId: (token: string | null, studentId?: string | null) =>
     instance({
       method: "GET",
       url: `/api/student-bills/get-by-student-id/${studentId}`,
@@ -1463,7 +1411,7 @@ const TagihanSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+  showOne: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/student-bills/get-by-id/${id}`,
@@ -1471,11 +1419,7 @@ const TagihanSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  update: (
-    token: string | null,
-    id: string | number | null,
-    data: any
-  ): AxiosPromise<any> =>
+  update: (token: string | null, id: string | number | null, data: any) =>
     instance({
       method: "PUT",
       url: "/api/student-bills/update/" + id,
@@ -1484,10 +1428,7 @@ const TagihanSiswa = {
       },
       data,
     }),
-  confirmEvidence: (
-    token: string | null,
-    id: string | number | null
-  ): AxiosPromise<any> =>
+  confirmEvidence: (token: string | null, id: string | number | null) =>
     instance({
       method: "PUT",
       url: "/api/student-bills/confirm-evidence/" + id,
@@ -1495,10 +1436,7 @@ const TagihanSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  delete: (
-    token: string | null,
-    id: string | number | null
-  ): AxiosPromise<any> =>
+  delete: (token: string | null, id: string | number | null) =>
     instance({
       method: "DELETE",
       url: "/api/student-bills/delete/" + id,
@@ -1516,7 +1454,7 @@ const ForCountryDetail = {
     page: number = 0,
     limit: number = 10,
     withAssign: string = "N"
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/for-country-detail?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
@@ -1524,7 +1462,7 @@ const ForCountryDetail = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+  showOne: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/for-country-detail/show/${id}`,
@@ -1532,11 +1470,7 @@ const ForCountryDetail = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  update: (
-    token: string | null,
-    id: string | number | null,
-    data: any
-  ): AxiosPromise<any> =>
+  update: (token: string | null, id: string | number | null, data: any) =>
     instance({
       method: "PUT",
       url: "/api/for-country-detail/update/" + id,
@@ -1545,10 +1479,7 @@ const ForCountryDetail = {
       },
       data,
     }),
-  delete: (
-    token: string | null,
-    id: string | number | null
-  ): AxiosPromise<any> =>
+  delete: (token: string | null, id: string | number | null) =>
     instance({
       method: "DELETE",
       url: "/api/for-country-detail/delete/" + id,
@@ -1560,7 +1491,7 @@ const ForCountryDetail = {
     token: string | null,
     id: string | number | null,
     data: any
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "PUT",
       url: "/api/for-country-detail/update/" + id,
@@ -1570,10 +1501,7 @@ const ForCountryDetail = {
       },
       data,
     }),
-  downloadCertificate: (
-    token: string | null,
-    path: string | null
-  ): AxiosPromise<any> =>
+  downloadCertificate: (token: string | null, path: string | null) =>
     instance({
       method: "GET",
       url: `/api/for-country-detail/download?filepath=${path}`,
@@ -1590,7 +1518,7 @@ const DashboardKeuangan = {
     startDate: string,
     endDate: string,
     postPaymentId: string
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `api/dashboard/admin-keuangan?start_date=${startDate}&end_date=${endDate}&post_payment_id=${postPaymentId}`,
@@ -1603,7 +1531,7 @@ const DashboardKeuangan = {
     startDate: string,
     endDate: string,
     postPaymentId: string
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `api/dashboard/admin-keuangan-chart?start_date=${startDate}&end_date=${endDate}&post_payment_id=${postPaymentId}`,
@@ -1614,10 +1542,7 @@ const DashboardKeuangan = {
 };
 
 const CustomerCare = {
-  GetAllUserChat: (
-    token: string | null,
-    id: string | null
-  ): AxiosPromise<any> =>
+  GetAllUserChat: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/user-chat/show-by-user/${id}`,
@@ -1626,11 +1551,7 @@ const CustomerCare = {
       },
     }),
 
-  GetMessage: (
-    token: string | null,
-    id: string | null,
-    withId: number
-  ): AxiosPromise<any> =>
+  GetMessage: (token: string | null, id: string | null, withId: number) =>
     instance({
       method: "GET",
       url: `/api/user-chat/show-conversation?userid=${id}&withid=${withId}`,
@@ -1639,7 +1560,7 @@ const CustomerCare = {
       },
     }),
 
-  GetUserToChat: (token: string | null): AxiosPromise<any> =>
+  GetUserToChat: (token: string | null) =>
     instance({
       method: "GET",
       url: `/api/user?limit=10000`,
@@ -1648,7 +1569,7 @@ const CustomerCare = {
       },
     }),
 
-  GetUserToChatGuru: (token: string | null): AxiosPromise<any> =>
+  GetUserToChatGuru: (token: string | null) =>
     instance({
       method: "GET",
       url: `/api/user-chat/show-by-guru`,
@@ -1657,7 +1578,7 @@ const CustomerCare = {
       },
     }),
 
-  PostMessage: (token: string | null, data: any): AxiosPromise<any> =>
+  PostMessage: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/message/create`,
@@ -1685,7 +1606,7 @@ const AchievementSiswa = {
     page: number = 0,
     limit: number = 10,
     withAssign: string = "N"
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/achievement?search_query=${search}&class_id=${classId}&with_assign=${withAssign}&page=${page}&limit=${limit}`,
@@ -1693,7 +1614,7 @@ const AchievementSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+  showOne: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/achievement/show/${id}`,
@@ -1701,11 +1622,7 @@ const AchievementSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  update: (
-    token: string | null,
-    id: string | number | null,
-    data: any
-  ): AxiosPromise<any> =>
+  update: (token: string | null, id: string | number | null, data: any) =>
     instance({
       method: "PUT",
       url: "/api/achievement/update/" + id,
@@ -1714,10 +1631,7 @@ const AchievementSiswa = {
       },
       data,
     }),
-  delete: (
-    token: string | null,
-    id: string | number | null
-  ): AxiosPromise<any> =>
+  delete: (token: string | null, id: string | number | null) =>
     instance({
       method: "DELETE",
       url: "/api/achievement/delete/" + id,
@@ -1725,10 +1639,7 @@ const AchievementSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  downloadCertificate: (
-    token: string | null,
-    path: string | null
-  ): AxiosPromise<any> =>
+  downloadCertificate: (token: string | null, path: string | null) =>
     instance({
       method: "GET",
       url: `/api/achievement/download?filepath=${path}`,
@@ -1755,7 +1666,7 @@ const ForCountry = {
     academic?: string | null,
     page: number = 0,
     limit: number = 10
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/for-country?search_query=${search}&academic=${academic}&page=${page}&limit=${limit}`,
@@ -1763,7 +1674,7 @@ const ForCountry = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+  showOne: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/for-country/show/${id}`,
@@ -1771,11 +1682,7 @@ const ForCountry = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  update: (
-    token: string | null,
-    id: string | number | null,
-    data: any
-  ): AxiosPromise<any> =>
+  update: (token: string | null, id: string | number | null, data: any) =>
     instance({
       method: "PUT",
       url: "/api/for-country/update/" + id,
@@ -1784,10 +1691,7 @@ const ForCountry = {
       },
       data,
     }),
-  delete: (
-    token: string | null,
-    id: string | number | null
-  ): AxiosPromise<any> =>
+  delete: (token: string | null, id: string | number | null) =>
     instance({
       method: "DELETE",
       url: "/api/for-country/delete/" + id,
@@ -1803,7 +1707,7 @@ const Year = {
     querysearch: string,
     limit: number,
     page: number
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/academic-year`,
@@ -1838,7 +1742,7 @@ const FileRaporSiswa = {
     semester: string = "",
     classId: string = "",
     withAssign: string = "Y"
-  ): AxiosPromise<any> =>
+  ) =>
     instance({
       method: "GET",
       url: `/api/student-report-file?search_query=${search}&student_id=${studentId}&academic=${academic}&semester=${semester}&class_id=${classId}&with_assign=${withAssign}&page=${page}&limit=${limit}`,
@@ -1846,7 +1750,7 @@ const FileRaporSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  showOne: (token: string | null, id: string | null): AxiosPromise<any> =>
+  showOne: (token: string | null, id: string | null) =>
     instance({
       method: "GET",
       url: `/api/student-report-file/show/${id}`,
@@ -1854,11 +1758,7 @@ const FileRaporSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  update: (
-    token: string | null,
-    id: string | number | null,
-    data: any
-  ): AxiosPromise<any> =>
+  update: (token: string | null, id: string | number | null, data: any) =>
     instance({
       method: "PUT",
       url: "/api/student-report-file/update/" + id,
@@ -1867,10 +1767,7 @@ const FileRaporSiswa = {
       },
       data,
     }),
-  delete: (
-    token: string | null,
-    id: string | number | null
-  ): AxiosPromise<any> =>
+  delete: (token: string | null, id: string | number | null) =>
     instance({
       method: "DELETE",
       url: "/api/student-report-file/delete/" + id,
@@ -1878,10 +1775,7 @@ const FileRaporSiswa = {
         Authorization: `Bearer ${token}`,
       },
     }),
-  downloadFile: (
-    token: string | null,
-    path: string | null
-  ): AxiosPromise<any> =>
+  downloadFile: (token: string | null, path: string | null) =>
     instance({
       method: "GET",
       url: `/api/student-report-file/download?file_path=${path}`,
@@ -1891,13 +1785,9 @@ const FileRaporSiswa = {
       responseType: "blob",
     }),
 };
+
 const Lesson = {
-  getAllData: (
-    token: string | null,
-    page: any,
-    limit: any,
-    search: string
-  ): AxiosPromise<any> =>
+  getAllData: (token: string | null, page: any, limit: any, search: string) =>
     instance({
       method: "GET",
       url: `/api/lesson-plan?page=${page}&limit=${limit}&search=${search}`,
@@ -1907,7 +1797,7 @@ const Lesson = {
       },
     }),
 
-  CreateNewLesson: (token: string | null, data: any): AxiosPromise<any> =>
+  CreateNewLesson: (token: string | null, data: any) =>
     instance({
       method: "POST",
       url: `/api/lesson-plan/create`,
@@ -1916,11 +1806,7 @@ const Lesson = {
       },
       data,
     }),
-  UpdateLesson: (
-    token: string | null,
-    data: any,
-    id: string | number
-  ): AxiosPromise<any> =>
+  UpdateLesson: (token: string | null, data: any, id: string | number) =>
     instance({
       method: "PUT",
       url: `/api/lesson-plan/update/${id}`,
@@ -1938,6 +1824,7 @@ export {
   Year,
   Kalender,
   Student,
+  Karyawan,
   Raport,
   Pengumuman,
   DashboardSiswa,

@@ -94,10 +94,10 @@
   },
   {
     "submenu": false,
-    "hide": true,
-    "title": "Penilaian",
+    "hide": false,
+    "title": "Daftar Penilaian",
     "icon": "<GoTasklist />",
-    "url": "/guru/pelatihans",
+    "url": "/guru/daftar-penilaian",
     "subtitle": []
   },
   {
