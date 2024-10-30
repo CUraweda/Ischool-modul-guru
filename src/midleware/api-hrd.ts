@@ -6,6 +6,182 @@ const instance = axios.create({
   baseURL: "https://api-hrd.curaweda.com/stg-server1",
 }); //use this for production
 
+const Attendance = {
+  getEmployeeAttendance: (
+    page: number,
+    limit: number,
+    type: string[],
+    status: string[],
+    search: string,
+    division: any,
+    date: string,
+    token: string | null
+  ) => {
+    const typeParam = type.length ? type.join(",") : "";
+    const statusParam = status.length ? status.join(",") : "";
+
+    return instance.get(`employee-attendance`, {
+      params: {
+        search,
+        type: typeParam,
+        status: statusParam,
+        division_id: division,
+        date,
+        page,
+        limit,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  },
+  deleteAttendance: (id: number, token?: string) =>
+    instance.delete(`employee-attendance/delete/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getAllEmployeeMonth: (search: string, token?: string) => {
+    return instance.get(`employee-attendance/recap-month-employee`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        search_query: search,
+      },
+    });
+  },
+  getAllDivision: (token?: string) => {
+    return instance.get(`division`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  },
+  getVacation: (
+    page: number,
+    limit: number,
+    search: string,
+    type: string[],
+    status: string[],
+    date: string,
+    divisi: any,
+    token: string | null
+  ) => {
+    const typeParam = type.length ? type.join(",") : "";
+    const statusParam = status.length ? status.join(",") : "";
+
+    return instance.get("employee-vacation", {
+      params: {
+        search,
+        page,
+        limit,
+        type: typeParam,
+        status: statusParam,
+        date,
+        division_id: divisi,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  },
+
+  createVacation: (data: any, token?: string) =>
+    instance.post("employee-vacation/create", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  updateVacation: (id: number, data: any, token?: string) =>
+    instance.put(`employee-vacation/update/${id}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  acceptVacation: (id: number, data: null, token?: string) =>
+    instance({
+      method: `PUT`,
+      url: `employee-vacation/change-status/accept/${id}`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  rejectVacation: (id: number, data: null, token?: string) =>
+    instance({
+      method: `PUT`,
+      url: `employee-vacation/change-status/reject/${id}`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  deleteVacation: (id: number, token?: string) =>
+    instance.delete(`employee-vacation/delete/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  requestVacation: (data: any, token?: string) =>
+    instance.post(`employee-vacation/create`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
+const Employee = {
+  getOneEmployee: (id: any, token: string | null) =>
+    instance.get(`employee/show/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getAllEmployee: (limit: number, search_query: any, token: string | null) =>
+    instance.get("employee", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        limit: limit,
+        search: search_query,
+      },
+    }),
+  getAllEmployeePage: (
+    limit: number,
+    search_query: string,
+    page: number,
+    token: string | null
+  ) =>
+    instance.get("employee", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        limit: limit,
+        search: search_query,
+        page: page,
+      },
+    }),
+  updateDivisi: (id: number, data: any, token?: string) =>
+    instance.put(
+      `employee/update/${id}`,
+      {
+        division_id: data,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    ),
+};
+
 const CutiIzin = {
   showAll: (
     token: string | null,
@@ -160,6 +336,7 @@ const PelatihanKaryawan = {
       },
     }),
 };
+
 const waktukerja = {
   today: (token: string | null) =>
     instance.get(`api/worktime/today`, {
@@ -168,6 +345,7 @@ const waktukerja = {
       },
     }),
 };
+
 const Rekapan = {
   kalendarKehadiran: (
     token: string | null,
@@ -242,6 +420,8 @@ export {
   PelatihanKaryawan,
   Rekapan,
   waktukerja,
+  Attendance,
+  Employee,
   PengumumanKaryawan,
   PresensiKaryawan,
 };

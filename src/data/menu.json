@@ -102,6 +102,14 @@
   },
   {
     "submenu": false,
+    "hide": false,
+    "title": "Dinas Luar",
+    "icon": "<AiOutlineSolution />",
+    "url": "/guru/dinas-luar",
+    "subtitle": []
+  },
+  {
+    "submenu": false,
     "hide": true,
     "title": "Gaji & Bonus",
     "icon": "<CiMoneyCheck1 />",

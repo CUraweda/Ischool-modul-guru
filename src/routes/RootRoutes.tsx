@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Loading from "../component/Loading";
 import Test from "../page/guru/Test";
 import DaftarPenilaianPage from "../page/guru/DaftarPenilaian";
+import DinasLuarPage from "../page/karyawan/DinasLuar";
 
 const Home = lazy(() => import("../page/login"));
 const Layout = lazy(() => import("../component/Layout"));
@@ -195,6 +196,12 @@ const RootRoutes = () => {
     {
       path: "/guru/daftar-penilaian",
       element: <DaftarPenilaianPage />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/dinas-luar",
+      element: <DinasLuarPage />,
       layout: <Layout />,
       isSuspended: true,
     },

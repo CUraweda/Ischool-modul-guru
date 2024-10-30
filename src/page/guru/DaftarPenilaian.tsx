@@ -71,10 +71,10 @@ const DaftarPenilaian = () => {
   }, []);
 
   return (
-    <div className="min-h-screen p-3">
-      <div className="mb-8 flex items-center justify-between">
+    <div className="min-h-screen p-5">
+      <div className="mb-5 flex items-center justify-between">
         <h3 className="text-lg font-bold">Daftar Penilaian</h3>
-        <label className="input input-sm input-bordered flex items-center gap-2">
+        <label className="input input-sm input-bordered flex items-center gap-2 md:w-3/12">
           <input
             type="text"
             className="grow"
@@ -85,7 +85,7 @@ const DaftarPenilaian = () => {
           <Icon name="search" />
         </label>
       </div>
-
+      <div className="my-5 flex-grow border-t border-gray-400 drop-shadow-sm"></div>
       <div className="card bg-white p-4 shadow-md">
         <table className="table table-zebra w-full min-h-20">
           <thead>
