@@ -5,6 +5,8 @@ import Loading from "../component/Loading";
 import Test from "../page/guru/Test";
 import DaftarPenilaianPage from "../page/guru/DaftarPenilaian";
 import DinasLuarPage from "../page/karyawan/DinasLuar";
+import RekapPenilaianPage from "../page/guru/RekapPenilaian";
+import DetailRekapPenilaianPage from "../page/guru/DetailRekapPenilaian";
 
 const Home = lazy(() => import("../page/login"));
 const Layout = lazy(() => import("../component/Layout"));
@@ -196,6 +198,18 @@ const RootRoutes = () => {
     {
       path: "/guru/daftar-penilaian",
       element: <DaftarPenilaianPage />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/rekap-penilaian",
+      element: <RekapPenilaianPage />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/detail-rekap-penilaian",
+      element: <DetailRekapPenilaianPage />,
       layout: <Layout />,
       isSuspended: true,
     },

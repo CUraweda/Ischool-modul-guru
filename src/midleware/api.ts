@@ -63,97 +63,6 @@ const User = {
     }),
 };
 
-const Karyawan = {
-  DataKaryawan: async (
-    page: number,
-    limit: number,
-    search: string,
-    status: string,
-    token: string | null
-  ) =>
-    await instance({
-      method: "GET",
-      url: `employee?page=${page}&limit=${limit}&search=${search}&status=${status}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  TambahKaryawan: (data: any, token: string) =>
-    instance({
-      method: `POST`,
-      url: `employee/create`,
-      data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  EditKaryawan: (data: any, id: string, token: string) =>
-    instance({
-      method: `PUT`,
-      url: `employee/update/${id}`,
-      data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  HapusKaryawan: (id: string, token: string) =>
-    instance({
-      method: `DELETE`,
-      url: `employee/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  ProfilKaryawan: (id: string | undefined, token: string | null) =>
-    instance({
-      method: `GET`,
-      url: `employee/detail/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  DaftarPenilaian: (
-    page: number,
-    limit: number,
-    search: string,
-    token: string | null
-  ) =>
-    instance({
-      method: `GET`,
-      url: `employee?page=${page}&limit=${limit}&search=${search}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  AddPenilaian: (data: any, token: string) =>
-    instance({
-      method: `POST`,
-      url: `employee/create`,
-      data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  EditPenilaian: (data: any, id: string, token: string) =>
-    instance({
-      method: `PUT`,
-      url: `employee/update/${id}`,
-      data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  EditNilai: (data: any, id: string, token: string) =>
-    instance({
-      method: `PUT`,
-      url: `employee/grade/${id}`,
-      data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-};
-
 const Student = {
   GetStudentByClass: (
     token: string | null,
@@ -1824,7 +1733,6 @@ export {
   Year,
   Kalender,
   Student,
-  Karyawan,
   Raport,
   Pengumuman,
   DashboardSiswa,

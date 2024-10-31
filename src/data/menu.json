@@ -85,19 +85,22 @@
     ]
   },
   {
+    "submenu": true,
+    "hide": false,
+    "title": "Penilaian",
+    "icon": "<GoTasklist />",
+    "url": "",
+    "subtitle": [
+      { "name": "Daftar Penilaian", "url": "/guru/daftar-penilaian" },
+      { "name": "Rekap Penilaian", "url": "/guru/rekap-penilaian" }
+    ]
+  },
+  {
     "submenu": false,
     "hide": false,
     "title": "Pelatihan",
     "icon": "<FaRegStar />",
     "url": "/karyawan/daftar-pelatihan",
-    "subtitle": []
-  },
-  {
-    "submenu": false,
-    "hide": false,
-    "title": "Daftar Penilaian",
-    "icon": "<GoTasklist />",
-    "url": "/guru/daftar-penilaian",
     "subtitle": []
   },
   {

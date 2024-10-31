@@ -1,10 +1,8 @@
 import axios from "axios";
-// const instance = axios.create({
-//   baseURL: import.meta.env.VITE_REACT_API_HRD_URL,
-// });
+
 const instance = axios.create({
-  baseURL: "https://api-hrd.curaweda.com/stg-server1",
-}); //use this for production
+  baseURL: import.meta.env.VITE_REACT_API_HRD_URL,
+});
 
 const Attendance = {
   getEmployeeAttendance: (
@@ -129,6 +127,131 @@ const Attendance = {
     }),
   requestVacation: (data: any, token?: string) =>
     instance.post(`employee-vacation/create`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
+const Karyawan = {
+  DataKaryawan: async (
+    page: number,
+    limit: number,
+    search: string,
+    status: string,
+    token: string | null
+  ) =>
+    await instance({
+      method: "GET",
+      url: `employee?page=${page}&limit=${limit}&search=${search}&status=${status}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  TambahKaryawan: (data: any, token: string) =>
+    instance({
+      method: `POST`,
+      url: `employee/create`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  EditKaryawan: (data: any, id: string, token: string) =>
+    instance({
+      method: `PUT`,
+      url: `employee/update/${id}`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  HapusKaryawan: (id: string, token: string) =>
+    instance({
+      method: `DELETE`,
+      url: `employee/delete/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  ProfilKaryawan: (id: string | undefined, token: string | null) =>
+    instance({
+      method: `GET`,
+      url: `employee/detail/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  DaftarPenilaian: (
+    page: number,
+    limit: number,
+    search: string,
+    token: string | null
+  ) =>
+    instance({
+      method: `GET`,
+      url: `employee?page=${page}&limit=${limit}&search=${search}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  AddPenilaian: (data: any, token: string) =>
+    instance({
+      method: `POST`,
+      url: `employee/create`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  EditPenilaian: (data: any, id: string, token: string) =>
+    instance({
+      method: `PUT`,
+      url: `employee/update/${id}`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  EditNilai: async (data: any, id: string, token: string) =>
+    await instance({
+      method: `PUT`,
+      url: `employee/update/${id}`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  JobdeskList: (token: string | null, id?: string, graded?: number) =>
+    instance({
+      method: `GET`,
+      url: `employee-jobdesk?page=0&limit=200&employee_id=${id}&raw_grade=${graded}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
+const Jobdesk = {
+  getAllJobdesk: (
+    limit: number,
+    search: string,
+    page: number,
+    id: string,
+    token: string | null
+  ) =>
+    instance.get(`employee?employee_id=${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        limit: limit,
+        search,
+        page: page,
+      },
+    }),
+  createJobdesk: (data: any, token?: string) =>
+    instance.post("employee?page=0&limit=20&employee_id=1", data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -285,6 +408,51 @@ const PengajuanPelatihanKaryawan = {
     }),
 };
 
+const EmployeeJobdesk = {
+  getAllJobdesk: (limit: number, search: any, page: number, token?: string) =>
+    instance.get("employee-jobdesk", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        limit: limit,
+        search,
+        page: page,
+      },
+    }),
+  getDifference: (id: number, token?: string) =>
+    instance.get(`employee/difference-day/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  createJobdesk: (data: any, token?: string) =>
+    instance.post("employee-jobdesk/create", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
+const DownloadFile = {
+  Download: (access_token: string | null, file_path: string) =>
+    instance({
+      method: `GET`,
+      url: `download?filepath=${file_path}`,
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    }),
+  DownloadSade: (token: string | null, file_path: string) =>
+    instance({
+      method: `GET`,
+      url: `student-task/download?filepath=${file_path}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+};
+
 const PelatihanKaryawan = {
   showAll: (
     token: string | null,
@@ -418,7 +586,11 @@ export {
   CutiIzin,
   PengajuanPelatihanKaryawan,
   PelatihanKaryawan,
+  Karyawan,
   Rekapan,
+  DownloadFile,
+  EmployeeJobdesk,
+  Jobdesk,
   waktukerja,
   Attendance,
   Employee,

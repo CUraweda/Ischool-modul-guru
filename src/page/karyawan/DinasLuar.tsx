@@ -216,7 +216,7 @@ const DinasLuarPage = () => {
   return (
     <div className="h-screen w-full p-5">
       <div className="w-full flex-wrap justify-between items-center md:flex">
-        <h3 className="font-bold">Dinas Luar</h3>
+        <h3 className="text-lg font-bold">Dinas Luar</h3>
         <label className="h-8 text-md input input-md input-bordered flex items-center gap-2 md:w-3/12">
           <Icon name="search" />
           <input

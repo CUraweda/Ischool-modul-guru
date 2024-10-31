@@ -28,7 +28,7 @@ const modal: FC<Props> = ({ id, children, width, onClose = () => {} }) => {
     <div>
       <dialog id={id} onClose={onClose} className="modal modal-middle">
         <div className={`modal-box bg-white ${width} `}>
-          <form method="dialog" onSubmit={() => onClose()}>
+          <form method="dialog" onSubmit={onClose}>
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>

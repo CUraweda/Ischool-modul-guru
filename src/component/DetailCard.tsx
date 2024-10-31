@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { formattedDate } from "../utils/common";
 
 interface Employee {
   full_name?: string;
@@ -22,14 +23,16 @@ interface DetailDialogProps {
 const DetailCard: React.FC<DetailDialogProps> = ({ dataProps, onClose }) => {
   const [date, setDate] = useState("");
   const [hour, setHour] = useState("");
-  const [imageSrc, setImageSrc] = useState("");
+  const [imageSrc, setImageSrc] = useState(
+    "https://ideas.or.id/wp-content/themes/consultix/images/no-image-found-360x250.png"
+  );
 
   useEffect(() => {
     if (dataProps.start_date) {
-      setDate(dataProps.start_date.split("T")[0]);
+      setDate(formattedDate(dataProps.start_date));
       setHour(dataProps.start_date.split("T")[1].split(".")[0].slice(0, -3)); // Remove seconds
     } else if (dataProps.createdAt) {
-      setDate(dataProps.createdAt.split("T")[0]);
+      setDate(formattedDate(dataProps.createdAt));
       setHour(dataProps.createdAt.split("T")[1].split(".")[0].slice(0, -3)); // Remove seconds
     }
 
@@ -40,23 +43,17 @@ const DetailCard: React.FC<DetailDialogProps> = ({ dataProps, onClose }) => {
           const response = await fetch(
             `https://api-hrd.curaweda.com/stg-server1/${dataProps.file_path}`
           );
-          const blob = await response.blob();
-          const blobUrl = URL.createObjectURL(blob);
-          setImageSrc(blobUrl); // Set the Blob URL as the image source
+          
+          if (response) {
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            setImageSrc(blobUrl); // Set the Blob URL as the image source
+          }
         } catch (error) {
           console.error("Error fetching image:", error);
-          // Set a fallback image in case of error
-          setImageSrc(
-            "https://ideas.or.id/wp-content/themes/consultix/images/no-image-found-360x250.png"
-          );
         }
       };
-
       fetchImage();
-    } else {
-      setImageSrc(
-        "https://ideas.or.id/wp-content/themes/consultix/images/no-image-found-360x250.png"
-      );
     }
   }, [dataProps]);
 
@@ -90,12 +87,12 @@ const DetailCard: React.FC<DetailDialogProps> = ({ dataProps, onClose }) => {
                 {dataProps?.employee?.full_name} {"*" + dataProps?.status}
               </h2>
               <div className="my-2 grid grid-cols-2">
-                <div className="w-1/2">
+                <div>
                   <p className="font-semibold">Tanggal</p>
                   <p>{date}</p>
                 </div>
-                <div className="w-1/2">
-                  <p className="font-semibold">Hari/ Jam</p>
+                <div>
+                  <p className="font-semibold">Hari/Jam</p>
                   <p>{hour}</p>
                 </div>
               </div>
