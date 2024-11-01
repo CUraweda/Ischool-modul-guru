@@ -7,29 +7,23 @@ interface Props {
   onClose?: () => void;
 }
 
-const openModal = (id: string, fun?: () => void) => {
+const openModal = (id: string) => {
   const modal = document.getElementById(id) as HTMLDialogElement;
-  if (modal) {
-    modal.showModal();
-    fun?.();
-  }
+  modal?.showModal();
 };
 
-const closeModal = (id: string, fun?: () => void) => {
+const closeModal = (id: string) => {
   const modal = document.getElementById(id) as HTMLDialogElement;
-  if (modal) {
-    modal.close();
-    fun?.();
-  }
+  modal?.close();
 };
 
-const modal: FC<Props> = ({ id, children, width, onClose = () => {} }) => {
+const Modal: FC<Props> = ({ id, children, onClose = () => {} }) => {
   return (
     <div>
       <dialog id={id} onClose={onClose} className="modal modal-middle">
-        <div className={`modal-box bg-white ${width} `}>
+        <div className={`modal-box w-11/12 max-w-2xl bg-white`}>
           <form method="dialog" onSubmit={onClose}>
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+            <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
               ✕
             </button>
           </form>
@@ -41,4 +35,4 @@ const modal: FC<Props> = ({ id, children, width, onClose = () => {} }) => {
 };
 
 export { closeModal, openModal };
-export default modal;
+export default Modal;

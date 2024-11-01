@@ -16,6 +16,7 @@ import {
   AiOutlineBook,
   AiOutlineTeam,
   AiOutlineHdd,
+  AiOutlineSolution,
   AiOutlineUsergroupAdd,
   AiOutlineCalendar,
   AiOutlineIdcard,
@@ -46,5 +47,6 @@ export const iconMapping: { [key: string]: JSX.Element } = {
   "<AiOutlineUsergroupAdd />": <AiOutlineUsergroupAdd />,
   "<AiOutlineCalendar />": <AiOutlineCalendar />,
   "<AiOutlineIdcard />": <AiOutlineIdcard />,
+  "<AiOutlineSolution />": <AiOutlineSolution />,
   // tambahkan pemetaan untuk ikon lainnya di sini
 };

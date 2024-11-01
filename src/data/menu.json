@@ -85,6 +85,17 @@
     ]
   },
   {
+    "submenu": true,
+    "hide": false,
+    "title": "Penilaian",
+    "icon": "<GoTasklist />",
+    "url": "",
+    "subtitle": [
+      { "name": "Daftar Penilaian", "url": "/guru/daftar-penilaian" },
+      { "name": "Rekap Penilaian", "url": "/guru/rekap-penilaian" }
+    ]
+  },
+  {
     "submenu": false,
     "hide": false,
     "title": "Pelatihan",
@@ -94,10 +105,10 @@
   },
   {
     "submenu": false,
-    "hide": true,
-    "title": "Penilaian",
-    "icon": "<GoTasklist />",
-    "url": "/guru/pelatihans",
+    "hide": false,
+    "title": "Dinas Luar",
+    "icon": "<AiOutlineSolution />",
+    "url": "/guru/dinas-luar",
     "subtitle": []
   },
   {

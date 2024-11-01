@@ -11,7 +11,9 @@ const pastMonth = new Date();
 
 const AdmGuru = () => {
   const showModalAdd = () => {
-    let modalElement = document.getElementById("add-cuti") as HTMLDialogElement;
+    const modalElement = document.getElementById(
+      "add-cuti"
+    ) as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
     }
@@ -35,7 +37,6 @@ const AdmGuru = () => {
   return (
     <>
       <div className="w-full flex flex-col items-center">
-        
         <div className="flex justify-between w-full flex-wrap">
           <div className="p-3 sm:w-1/4 w-full">
             <div className="bg-green-100 shadow-md w-full rounded-md p-3 flex flex-col items-center">

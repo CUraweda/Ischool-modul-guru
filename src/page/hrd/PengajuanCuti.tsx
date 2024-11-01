@@ -2,7 +2,7 @@ import React, { useState } from "react";
 // import ListCuti from "../../component/hrd/ListCuti";
 // import TestCuti from "../../../TestCuti.json";
 
-const pengajuanCutiPage = () => {
+const PengajuanCutiPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,4 +48,4 @@ const pengajuanCutiPage = () => {
     </div>
   );
 };
-export default pengajuanCutiPage;
+export default PengajuanCutiPage;

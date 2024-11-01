@@ -1,18 +1,16 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import * as faceapi from "face-api.js";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "react-day-picker/dist/style.css";
 import Instruction from "../../component/guru/InstructionTrainFace";
-import * as faceapi from 'face-api.js';
-import ChangeExpression from '../../component/guru/InstructionTrainFace2'
-import TrainFace from '../../component/guru/TrainFace'
+import ChangeExpression from "../../component/guru/InstructionTrainFace2";
+import TrainFace from "../../component/guru/TrainFace";
 // import UserData from '../../component/guru/userData';
-import { employeeStore, Store } from "../../store/Store";
+import { Player } from "@lottiefiles/react-lottie-player";
 import { Auth } from "../../midleware/api";
-import { Player } from '@lottiefiles/react-lottie-player';
+import { employeeStore } from "../../store/Store";
 // import { BASE_URL_TRAINING_FACE } from '../../config/config';
 
 const TrainFaceGuru: React.FC = () => {
-
-  const { token } = Store();
   const {
     setEmployee,
     setHeadmaster,
@@ -27,7 +25,7 @@ const TrainFaceGuru: React.FC = () => {
 
   const getMe = async () => {
     try {
-      const res = await Auth.MeData(token);
+      const res = await Auth.MeData();
 
       setDataUser(res.data.data);
       setUpdatedName(res.data.data.full_name);
@@ -46,8 +44,6 @@ const TrainFaceGuru: React.FC = () => {
       if (formteachers) setFormTeachers(formteachers);
       if (formsubjects) setFormSubjects(formsubjects);
       if (formextras) setFormXtras(formextras);
-
-
     } catch (error) {
       console.error(error);
     }
@@ -80,7 +76,6 @@ const TrainFaceGuru: React.FC = () => {
   useEffect(() => {
     capturedImagesRef.current = capturedImages;
   }, [capturedImages]);
-
 
   const showForm = () => {
     setShowInstructions(false);
@@ -115,15 +110,14 @@ const TrainFaceGuru: React.FC = () => {
 
   const loadModels = async () => {
     await Promise.all([
-      faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
-      faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-      faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+      faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
+      faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
+      faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
     ]);
   };
   const handleReload = () => {
     window.location.reload();
   };
-
 
   // const cropFace = useCallback(async (imageDataUrl: string): Promise<string> => {
   //   const img = new Image();
@@ -187,7 +181,7 @@ const TrainFaceGuru: React.FC = () => {
 
     const payload = {
       teacher: dataUser?.full_name,
-      images: images
+      images: images,
     };
 
     console.log("Payload yang akan dikirim:", payload);
@@ -198,25 +192,38 @@ const TrainFaceGuru: React.FC = () => {
         {
           method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(payload),
         }
       );
       if (!response.ok) {
-        console.error("Error mengirim form");
+        const responseText = await response.text();
+        console.error("Error response:", responseText);
         setTrainingLoading(false);
         setTrainingNotSuccess(true);
       } else {
-        const data = await response.json();
-        setTrainingLoading(false);
-        setTrainingSuccess(true);
-        console.log("Form berhasil dikirim:", data);
+        try {
+          const data = await response.json();
+          setTrainingLoading(false);
+          setTrainingSuccess(true);
+          console.log("Form berhasil dikirim:", data);
+        } catch (jsonError) {
+          console.error("Error parsing JSON:", jsonError);
+          const responseText = await response.text();
+          console.log("Raw response:", responseText);
+          setTrainingLoading(false);
+          setTrainingNotSuccess(true);
+          console.log(
+            "Response headers:",
+            Object.fromEntries(response.headers.entries())
+          );
+        }
       }
     } catch (error) {
       console.error("Error mengirim form:", error);
       setTrainingLoading(false);
-      setTrainingNotSuccess2(true)
+      setTrainingNotSuccess2(true);
     }
   }, [capturedImages, /*cropFace ,*/ loadModels]);
 
@@ -237,7 +244,11 @@ const TrainFaceGuru: React.FC = () => {
       )}
       {isInput3 && (
         // Add your form or other components here when isInput1 is true
-        <div className={IsNoneRef.current ? 'hidden' : '' || isCropImage ? 'hidden' : ''}>
+        <div
+          className={
+            IsNoneRef.current ? "hidden" : "" || isCropImage ? "hidden" : ""
+          }
+        >
           <TrainFace
             isVideo={isVideo}
             isNone={isNone}
@@ -246,7 +257,8 @@ const TrainFaceGuru: React.FC = () => {
             updateIsNone={updateIsNone}
             InstructionChange={InstructionChange2}
             handleSubmit={handleSubmit}
-            CropImage={cropImage} />
+            CropImage={cropImage}
+          />
         </div>
       )}
 
@@ -258,7 +270,7 @@ const TrainFaceGuru: React.FC = () => {
                 src="https://lottie.host/b170dd4c-4cbb-4d6c-a08f-722cedb7bfbb/hkrNsHGUzM.json"
                 background="transparent"
                 speed={1}
-                style={{ width: '250px', height: '250px', margin: '0 auto' }}
+                style={{ width: "250px", height: "250px", margin: "0 auto" }}
                 loop
                 autoplay
               ></Player>
@@ -279,7 +291,7 @@ const TrainFaceGuru: React.FC = () => {
                 src="https://lottie.host/7645ac86-505b-450e-b816-5610f051392f/0SzvWzUY4P.json"
                 background="transparent"
                 speed={1}
-                style={{ width: '250px', height: '250px', margin: '0 auto' }}
+                style={{ width: "250px", height: "250px", margin: "0 auto" }}
                 loop
                 autoplay
               ></Player>
@@ -292,7 +304,10 @@ const TrainFaceGuru: React.FC = () => {
       {trainingSuccess && (
         <div className="content-container-input1 flex justify-center h-screen items-center">
           <div className="absolute top-14 left-0 m-4">
-            <button className="btn bg-red-500 hover:bg-red-500 btn-ghost w-32 text-white rounded-full maxw768:w-10" onClick={handleReload}>
+            <button
+              className="btn bg-red-500 hover:bg-red-500 btn-ghost w-32 text-white rounded-full maxw768:w-10"
+              onClick={handleReload}
+            >
               X
             </button>
           </div>
@@ -305,7 +320,7 @@ const TrainFaceGuru: React.FC = () => {
                 src="https://lottie.host/6d34585a-de5b-4e67-b441-db3371294ee9/vNX5Pd8CKv.json"
                 background="transparent"
                 speed={1}
-                style={{ width: '250px', height: '250px', margin: '0 auto' }}
+                style={{ width: "250px", height: "250px", margin: "0 auto" }}
                 loop
                 autoplay
               ></Player>
@@ -318,7 +333,10 @@ const TrainFaceGuru: React.FC = () => {
       {trainingNotSuccess && (
         <div className="content-container-input1 flex justify-center h-screen items-center">
           <div className="absolute top-14 left-0 m-4">
-            <button className="btn bg-red-500 hover:bg-red-500 btn-ghost w-32 text-white rounded-full maxw768:w-10" onClick={handleReload}>
+            <button
+              className="btn bg-red-500 hover:bg-red-500 btn-ghost w-32 text-white rounded-full maxw768:w-10"
+              onClick={handleReload}
+            >
               X
             </button>
           </div>
@@ -331,7 +349,7 @@ const TrainFaceGuru: React.FC = () => {
                 src="https://lottie.host/bedf0c72-b376-47f4-9f23-5f217cd9e230/Gtwe8dWt6f.json"
                 background="transparent"
                 speed={1}
-                style={{ width: '250px', height: '250px', margin: '0 auto' }}
+                style={{ width: "250px", height: "250px", margin: "0 auto" }}
                 loop
                 autoplay
               ></Player>
@@ -344,7 +362,10 @@ const TrainFaceGuru: React.FC = () => {
       {trainingNotSuccess2 && (
         <div className="content-container-input1 flex justify-center h-screen items-center">
           <div className="absolute top-14 left-0 m-4">
-            <button className="btn bg-red-500 hover:bg-red-500 btn-ghost w-32 text-white rounded-full maxw768:w-10" onClick={handleReload}>
+            <button
+              className="btn bg-red-500 hover:bg-red-500 btn-ghost w-32 text-white rounded-full maxw768:w-10"
+              onClick={handleReload}
+            >
               X
             </button>
           </div>
@@ -357,7 +378,7 @@ const TrainFaceGuru: React.FC = () => {
                 src="https://lottie.host/a8fa0e11-a741-440a-8c39-a2daa8384d34/q2mCs6Oaa7.json"
                 background="transparent"
                 speed={1}
-                style={{ width: '250px', height: '250px', margin: '0 auto' }}
+                style={{ width: "250px", height: "250px", margin: "0 auto" }}
                 loop
                 autoplay
               ></Player>
@@ -366,7 +387,6 @@ const TrainFaceGuru: React.FC = () => {
           </div>
         </div>
       )}
-
     </>
   );
 };

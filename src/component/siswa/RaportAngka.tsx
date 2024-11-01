@@ -1,24 +1,24 @@
-import { useState, useEffect } from "react";
-import { FaPencilAlt, FaPlus, FaRegTrashAlt, FaSearch } from "react-icons/fa";
-import Modal from "../modal";
-import { MdCloudUpload } from "react-icons/md";
-import { globalStore, Store, useProps } from "../../store/Store";
-import {
-  Task,
-  Raport,
-  KepribadianSiswa,
-  Kepribadian,
-} from "../../midleware/api";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import Swal from "sweetalert2";
-import { saveAs } from "file-saver";
-import * as XLSX from "xlsx";
-import template from "./template.xlsx";
 import * as ExcelJS from "exceljs";
-import { FiFileText } from "react-icons/fi";
+import { saveAs } from "file-saver";
+import { useFormik } from "formik";
+import { useEffect, useState } from "react";
 import { BsPersonLinesFill } from "react-icons/bs";
+import { FaPencilAlt, FaPlus, FaRegTrashAlt, FaSearch } from "react-icons/fa";
+import { FiFileText } from "react-icons/fi";
+import { MdCloudUpload } from "react-icons/md";
+import Swal from "sweetalert2";
+import * as XLSX from "xlsx";
+import * as Yup from "yup";
+import {
+  Kepribadian,
+  KepribadianSiswa,
+  Raport,
+  Task,
+} from "../../midleware/api";
+import { globalStore, useProps } from "../../store/Store";
+import Modal from "../modal";
 import { IpageMeta, PaginationControl } from "../PaginationControl";
+import template from "./template.xlsx";
 
 const validationSchema = Yup.object({
   classId: Yup.string().required("required"),
@@ -37,7 +37,6 @@ const validationPersonalitySchema = Yup.object({
 });
 
 const RaportAngka = () => {
-  const { token } = Store();
   const { academicYear } = globalStore();
   const { setSemesterProps, setKelasProps, setMapelProps } = useProps();
 
@@ -132,7 +131,7 @@ const RaportAngka = () => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20, "Y", "N", "Y");
+    const response = await Task.GetAllClass(0, 20, "Y", "N", "Y");
     const kelasData = response.data.data.result;
     const kelasFilter = kelasData.filter(
       (value: any) => value.id == formik.values.classId
@@ -147,7 +146,6 @@ const RaportAngka = () => {
     const idClass = formik.values.classId || "11";
     try {
       const response = await Raport.getAllStudentReport(
-        token,
         idClass,
         null,
         academicYear
@@ -159,7 +157,7 @@ const RaportAngka = () => {
   };
 
   const getMapel = async () => {
-    const response = await Task.GetAllMapel(token, 0, "Y", 100);
+    const response = await Task.GetAllMapel(0, "Y", 100);
     const mapelData = response.data.data.result;
     const mapelFilter = mapelData.filter((value: any) => value.level == level);
     setMapel(mapelFilter);
@@ -167,7 +165,6 @@ const RaportAngka = () => {
 
   const getNumberRaport = async () => {
     const response = await Raport.showAllNumberReport(
-      token,
       filter.search,
       filter.classId,
       academicYear,
@@ -221,7 +218,7 @@ const RaportAngka = () => {
         grade_text: terbilang,
       };
 
-      await Raport.createNumberRaport(token, rest);
+      await Raport.createNumberRaport(rest);
       closeModal("add-angka");
       getNumberRaport();
       formik.resetForm({ values: formik.initialValues });
@@ -232,7 +229,7 @@ const RaportAngka = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await Raport.deleteNumberReport(token, id);
+      await Raport.deleteNumberReport(id);
 
       Swal.fire({
         title: "Deleted!",
@@ -252,7 +249,7 @@ const RaportAngka = () => {
   };
 
   const getNumberId = async (id: string) => {
-    const response = await Raport.getByIdNumberReport(token, id);
+    const response = await Raport.getByIdNumberReport(id);
     const data = response.data.data[0];
     setIdNumber(id);
     formik.setFieldValue("classId", data.studentreport.student_class_id);
@@ -278,7 +275,6 @@ const RaportAngka = () => {
 
   const getStudentPersonalities = async () => {
     const res = await KepribadianSiswa.showAll(
-      token,
       studentInEditPersonality.nis,
       0,
       100
@@ -316,13 +312,13 @@ const RaportAngka = () => {
 
     let res;
     if (id) {
-      res = await KepribadianSiswa.update(token, id, {
+      res = await KepribadianSiswa.update(id, {
         student_class_id: classId,
         personality_id: personalityId,
         grade,
       });
     } else {
-      res = await KepribadianSiswa.add(token, {
+      res = await KepribadianSiswa.add({
         student_class_id: classId,
         personality_id: personalityId,
         grade,
@@ -335,13 +331,13 @@ const RaportAngka = () => {
   };
 
   const handleDeleteStudentPersonality = async (id: string) => {
-    const res = await KepribadianSiswa.delete(token, id);
+    const res = await KepribadianSiswa.delete(id);
 
     if (res.status == 200) getStudentPersonalities();
   };
 
   const getPersonalities = async () => {
-    const res = await Kepribadian.showAll(token);
+    const res = await Kepribadian.showAll();
     const data = res.data.data.result;
     setPersonalities(data);
   };
@@ -357,7 +353,7 @@ const RaportAngka = () => {
       grade_text: terbilang,
     };
 
-    await Raport.editNumberRaport(token, idNumber, rest);
+    await Raport.editNumberRaport(idNumber, rest);
     getNumberRaport();
     closeModal("edit-angka");
   };
@@ -478,7 +474,7 @@ const RaportAngka = () => {
           grade_text: item?.terbilang ? item.terbilang : "nol",
         };
 
-        return Raport.createNumberRaport(token, rest);
+        return Raport.createNumberRaport(rest);
       })
     );
     closeModal("upload-angka");
@@ -495,18 +491,14 @@ const RaportAngka = () => {
   const getDataNumberByStudent = async (id: string) => {
     showModal("view-angka");
     setIdSiswa(id);
-    const response = await Raport.getNumberReportByStudent(
-      token,
-      id,
-      filter.semester
-    );
+    const response = await Raport.getNumberReportByStudent(id, filter.semester);
     const dataRest = response.data.data;
     setarrayNumber(dataRest);
   };
 
   const generatePdf = async () => {
     try {
-      await Raport.generateNumberReport(token, idSiswa, filter.semester);
+      await Raport.generateNumberReport(idSiswa, filter.semester);
       closeModal("view-angka");
       Swal.fire({
         position: "center",
