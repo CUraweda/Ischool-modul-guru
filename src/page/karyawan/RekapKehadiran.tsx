@@ -11,12 +11,9 @@ import {
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { Rekapan } from "../../midleware/api-hrd";
-import { Store } from "../../store/Store";
 import moment from "moment";
 
 const RekapKehadiran = () => {
-  const { token } = Store();
-
   const [dataList, setDataList] = useState<any[]>([]);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
@@ -28,7 +25,7 @@ const RekapKehadiran = () => {
     try {
       setDataList([]);
 
-      const res = await Rekapan.kalendarKehadiran(token, firstDay, lastDay);
+      const res = await Rekapan.kalendarKehadiran(firstDay, lastDay);
       setDataList(
         res.data.data?.map((dat: any) => ({
           ...dat,

@@ -1,17 +1,17 @@
-
 import Modal from "../../component/modal";
 import { MdCloudUpload, MdLibraryBooks } from "react-icons/md";
 import { TiPlus } from "react-icons/ti";
 
 const NilaiSiswa = () => {
   const showModal = () => {
-    let modalElement = document.getElementById(
+    const modalElement = document.getElementById(
       "upload-nilai"
     ) as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
     }
   };
+  
   return (
     <div>
       <div className="flex justify-center w-full mt-5 flex-col items-center">
@@ -28,11 +28,17 @@ const NilaiSiswa = () => {
             <option>PKN</option>
           </select>
           <div className="flex gap-2 ">
-            <button className="btn bg-green-500 text-white text-2xl" onClick={showModal}>
+            <button
+              className="btn bg-green-500 text-white text-2xl"
+              onClick={showModal}
+            >
               <MdCloudUpload />
             </button>
-            <button className="btn bg-blue-500 text-white text-2xl" onClick={showModal}>
-            <TiPlus />
+            <button
+              className="btn bg-blue-500 text-white text-2xl"
+              onClick={showModal}
+            >
+              <TiPlus />
             </button>
           </div>
         </div>
@@ -58,7 +64,9 @@ const NilaiSiswa = () => {
                 <td>98</td>
                 <td>-</td>
                 <td>
-                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                  <button className="btn text-2xl text-blue-700 btn-ghost">
+                    <MdLibraryBooks />
+                  </button>
                 </td>
               </tr>
               <tr>
@@ -68,7 +76,9 @@ const NilaiSiswa = () => {
                 <td>98</td>
                 <td>-</td>
                 <td>
-                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                  <button className="btn text-2xl text-blue-700 btn-ghost">
+                    <MdLibraryBooks />
+                  </button>
                 </td>
               </tr>
               <tr>
@@ -78,7 +88,9 @@ const NilaiSiswa = () => {
                 <td>98</td>
                 <td>-</td>
                 <td>
-                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                  <button className="btn text-2xl text-blue-700 btn-ghost">
+                    <MdLibraryBooks />
+                  </button>
                 </td>
               </tr>
               <tr>
@@ -88,7 +100,9 @@ const NilaiSiswa = () => {
                 <td>98</td>
                 <td>-</td>
                 <td>
-                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                  <button className="btn text-2xl text-blue-700 btn-ghost">
+                    <MdLibraryBooks />
+                  </button>
                 </td>
               </tr>
               <tr>
@@ -98,7 +112,9 @@ const NilaiSiswa = () => {
                 <td>98</td>
                 <td>-</td>
                 <td>
-                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                  <button className="btn text-2xl text-blue-700 btn-ghost">
+                    <MdLibraryBooks />
+                  </button>
                 </td>
               </tr>
               <tr>
@@ -108,7 +124,9 @@ const NilaiSiswa = () => {
                 <td>98</td>
                 <td>-</td>
                 <td>
-                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                  <button className="btn text-2xl text-blue-700 btn-ghost">
+                    <MdLibraryBooks />
+                  </button>
                 </td>
               </tr>
               <tr>
@@ -118,7 +136,9 @@ const NilaiSiswa = () => {
                 <td>98</td>
                 <td>-</td>
                 <td>
-                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                  <button className="btn text-2xl text-blue-700 btn-ghost">
+                    <MdLibraryBooks />
+                  </button>
                 </td>
               </tr>
               <tr>
@@ -128,7 +148,9 @@ const NilaiSiswa = () => {
                 <td>98</td>
                 <td>-</td>
                 <td>
-                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                  <button className="btn text-2xl text-blue-700 btn-ghost">
+                    <MdLibraryBooks />
+                  </button>
                 </td>
               </tr>
               <tr>
@@ -138,7 +160,9 @@ const NilaiSiswa = () => {
                 <td>98</td>
                 <td>-</td>
                 <td>
-                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                  <button className="btn text-2xl text-blue-700 btn-ghost">
+                    <MdLibraryBooks />
+                  </button>
                 </td>
               </tr>
               <tr>
@@ -148,7 +172,9 @@ const NilaiSiswa = () => {
                 <td>98</td>
                 <td>-</td>
                 <td>
-                  <button className="btn text-2xl text-blue-700 btn-ghost"><MdLibraryBooks /></button>
+                  <button className="btn text-2xl text-blue-700 btn-ghost">
+                    <MdLibraryBooks />
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -160,7 +186,9 @@ const NilaiSiswa = () => {
         <div className="w-full flex flex-col items-center">
           <span className="text-xl font-bold">Upload Nilai</span>
           <div className="w-full mt-5 gap-2 flex flex-col">
-            <button className="btn btn-sm w-1/3 bg-green-300">dowload template</button>
+            <button className="btn btn-sm w-1/3 bg-green-300">
+              dowload template
+            </button>
             <label className="mt-4 font-bold">Upload File</label>
             <input
               type="file"

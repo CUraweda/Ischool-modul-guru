@@ -1,18 +1,18 @@
 // import React from "react";
 import { useEffect, useState } from "react";
 import { FaFileAlt, FaLock, FaLockOpen, FaSearch } from "react-icons/fa";
-import { Class, Raport, Student, TagihanSiswa } from "../../midleware/api";
-import { globalStore, Store } from "../../store/Store";
+import { FaMoneyBill1Wave } from "react-icons/fa6";
 import Swal from "sweetalert2";
 import ilusNoData from "../../assets/ilus/no-data.svg";
-import { FaMoneyBill1Wave } from "react-icons/fa6";
+import { Input, Select } from "../../component/Input";
 import Modal, { openModal } from "../../component/modal";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
+import { Class, Raport, Student, TagihanSiswa } from "../../midleware/api";
+import { globalStore } from "../../store/Store";
 import { formatTime } from "../../utils/date";
-import { Input, Select } from "../../component/Input";
 
 const getReport = (arr: any[], semester: any) => {
   const filt = arr.filter((ar) => ar.semester == semester);
@@ -20,8 +20,7 @@ const getReport = (arr: any[], semester: any) => {
 };
 
 const DataSiswa = () => {
-  const { token } = Store(),
-    { academicYear } = globalStore(),
+  const { academicYear } = globalStore(),
     modalDetailPembayaranId = "modal-detail-pembayaran";
 
   // page states
@@ -50,7 +49,6 @@ const DataSiswa = () => {
   const getStudents = async () => {
     try {
       const res = await Student.GetStudents(
-        token,
         filter.search,
         filter.classId,
         academicYear,
@@ -73,14 +71,14 @@ const DataSiswa = () => {
 
   const getClasses = async () => {
     try {
-      const res = await Class.showAll(token, 0, 1000);
+      const res = await Class.showAll(0, 1000);
       setClasses(res.data.data.result);
     } catch {}
   };
 
   const updateReportLockStatus = async (id: string, state: boolean) => {
     try {
-      await Raport.updateStudentReportAccess(token, id);
+      await Raport.updateStudentReportAccess(id);
       getStudents();
 
       Swal.fire({
@@ -101,7 +99,7 @@ const DataSiswa = () => {
 
   // entry point
   useEffect(() => {
-    console.log(academicYear)
+    console.log(academicYear);
     getStudents();
     getClasses();
   }, [filter, academicYear]);
@@ -116,7 +114,7 @@ const DataSiswa = () => {
     setStudentPayments([]);
 
     try {
-      const res = await TagihanSiswa.showByStudentId(token, studentInModal.student_id);
+      const res = await TagihanSiswa.showByStudentId(studentInModal.student_id);
       setStudentPayments(res.data.data);
       openModal(modalDetailPembayaranId);
     } catch (error) {

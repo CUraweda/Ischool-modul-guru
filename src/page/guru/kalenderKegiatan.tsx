@@ -24,7 +24,7 @@ interface propsColor {
 }
 const KalenderKegiatan = () => {
   const { academicYear } = globalStore();
-  const { token, tanggalPekanan } = Store();
+  const { tanggalPekanan } = Store();
   const [topik, setTopik] = useState<any[]>([]);
   const [Color, setColor] = useState<propsColor>({
     color: "bg-red-500",
@@ -33,13 +33,13 @@ const KalenderKegiatan = () => {
   });
 
   const getTopik = async () => {
-    const response = await Kalender.GetAllTopik(token, academicYear, 0, 10);
+    const response = await Kalender.GetAllTopik(academicYear, 0, 10);
     setTopik(response.data.data.result);
   };
   useEffect(() => {
     getTopik();
   }, [academicYear]);
-  
+
   const formik = useFormik({
     initialValues: {
       edu_id: "",
@@ -164,7 +164,7 @@ const KalenderKegiatan = () => {
         color,
       };
 
-      await Kalender.createDetail(token, dataRest);
+      await Kalender.createDetail(dataRest);
       closeModal("add-kalender");
       window.location.reload();
     }
@@ -177,7 +177,7 @@ const KalenderKegiatan = () => {
       level,
       semester: smt,
     };
-    await Kalender.createTopik(token, data);
+    await Kalender.createTopik(data);
     closeModal("add-topik-edu");
     formik.resetForm();
     getTopik();

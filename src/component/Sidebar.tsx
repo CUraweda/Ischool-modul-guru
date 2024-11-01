@@ -34,7 +34,7 @@ const Sidebar = () => {
   const Side = sessionStorage.getItem("side") || "/";
   const [data, setData] = useState<Menu[]>([]);
   const [activeMenuItem, setActiveMenuItem] = useState<string>(Side);
-  const { role, token } = Store();
+  const { role } = Store();
   const [years, setYears] = useState<any[]>([]);
 
   const handleMenuItemClick = (name: string) => {
@@ -47,7 +47,7 @@ const Sidebar = () => {
   const getYears = async () => {
     let years = [];
     try {
-      const res = await Year.getYear(token, "", 10000, 0);
+      const res = await Year.getYear("", 10000, 0);
       const { result } = res.data.data;
       years = result;
     } catch (error) {

@@ -1,7 +1,12 @@
+import React from "react";
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Loading from "../component/Loading";
 import Test from "../page/guru/Test";
+import DaftarPenilaianPage from "../page/guru/DaftarPenilaian";
+import DinasLuarPage from "../page/karyawan/DinasLuar";
+import RekapPenilaianPage from "../page/guru/RekapPenilaian";
+import DetailRekapPenilaianPage from "../page/guru/DetailRekapPenilaian";
 
 const Home = lazy(() => import("../page/login"));
 const Layout = lazy(() => import("../component/Layout"));
@@ -61,378 +66,280 @@ const RekapKehadiranKaryawan = lazy(
 );
 
 const RootRoutes = () => {
+  const routeData = [
+    { path: "/", element: <Home />, isSuspended: true },
+    { path: "/test", element: <Test />, isSuspended: false },
+    {
+      path: "/profile",
+      element: <Profile />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/dashboard",
+      element: <Dashboard />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/jadwal-guru",
+      element: <JadwalMengajar />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/train-face",
+      element: <TrainFaceGuru />,
+      layout: <LayoutTrainFace />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/jadwal-dinas",
+      element: <JadwalDinas />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/pengajuan-cuti",
+      element: <PengajuanCuti />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/adm-siswa",
+      element: <AdmSiswa />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/prestasi-siswa",
+      element: <PrestasiSiswa />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/presensi-siswa",
+      element: <PresensiSiswa />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/daftar-nilai-siswa",
+      element: <NilaiSiswa />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/bahan-ajar",
+      element: <BahanAjar />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/agenda-kegiatan",
+      element: <AgendaKegiatan />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/adm-guru",
+      element: <AdmGuru />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/kalender-kegiatan",
+      element: <KalenderKegiatan />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/task/siswa",
+      element: <DetailTugasSswa />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/rapor-siswa",
+      element: <RaportSiswa />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/rapor-siswa/narasi",
+      element: <RaportNarasi />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/cs",
+      element: <PesanCs />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/dashboard/siswa",
+      element: <OverviewSiswa />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/one-day",
+      element: <ODFYC />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/one-day-partisipan",
+      element: <OdfycPartisipants />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/daftar-penilaian",
+      element: <DaftarPenilaianPage />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/rekap-penilaian",
+      element: <RekapPenilaianPage />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/detail-rekap-penilaian",
+      element: <DetailRekapPenilaianPage />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/dinas-luar",
+      element: <DinasLuarPage />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/keuangan/",
+      element: <Ke_Dashbaord />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/keuangan/data-siswa",
+      element: <Ke_DataSiswa />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/keuangan/pos-pembayaran",
+      element: <Ke_PosKeuangan />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/keuangan/jenis-pembayaran",
+      element: <Ke_JenisPembayaran />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/keuangan/jenis-pembayaran/:id",
+      element: <Ke_DetailJenisPembayaran />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/keuangan/daftar-tunggakan",
+      element: <Ke_DaftarTunggakan />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/keuangan/Laporan",
+      element: <Ke_Laporan />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/hrd/rekap-presensi",
+      element: <RekapPresensi />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/hrd/pengajuan-cuti",
+      element: <PengajuanCutiHRD />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/karyawan/daftar-cuti-izin",
+      element: <DaftarCutiIzin />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/karyawan/rekap-kehadiran",
+      element: <RekapKehadiranKaryawan />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/karyawan/daftar-pelatihan",
+      element: <PelatihanKaryawan />,
+      layout: <Layout />,
+      isSuspended: true,
+      children: [
+        { path: "", element: <DaftarPelatihanKaryawan />, isSuspended: true },
+        {
+          path: "pengajuan",
+          element: <PengajuanPelatihanKaryawan />,
+          isSuspended: true,
+        },
+      ],
+    },
+  ];
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Home />
-            </Suspense>
-          }
-        />
-        <Route path="/test" element={<Test />} />
-        <Route
-          path="/profile"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <Profile />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/dashboard"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <Dashboard />
-              </Layout>
-            </Suspense>
-          }
-        />
-
-        <Route
-          path="/guru/jadwal-guru"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <JadwalMengajar />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/train-face"
-          element={
-            <Suspense fallback={<Loading />}>
-              <LayoutTrainFace>
-                <TrainFaceGuru />
-              </LayoutTrainFace>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/jadwal-dinas"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <JadwalDinas />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/pengajuan-cuti"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <PengajuanCuti />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/adm-siswa"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <AdmSiswa />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/prestasi-siswa"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <PrestasiSiswa />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/presensi-siswa"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <PresensiSiswa />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/daftar-nilai-siswa"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <NilaiSiswa />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/bahan-ajar"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <BahanAjar />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/agenda-kegiatan"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <AgendaKegiatan />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/adm-guru"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <AdmGuru />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/kalender-kegiatan"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <KalenderKegiatan />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/task/siswa"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <DetailTugasSswa />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/rapor-siswa"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <RaportSiswa />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/rapor-siswa/narasi"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <RaportNarasi />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/cs"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <PesanCs />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/dashboard/siswa"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <OverviewSiswa />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/one-day"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <ODFYC />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/guru/one-day-partisipan"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <OdfycPartisipants />
-              </Layout>
-            </Suspense>
-          }
-        />
-        {/* <Route
-          path="/admin/absen-karyawan"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <AbsenKaryawan />
-              </Layout>
-            </Suspense>
-          }
-        /> */}
-        <Route
-          path="/keuangan/"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <Ke_Dashbaord />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/keuangan/data-siswa"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <Ke_DataSiswa />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/keuangan/pos-pembayaran"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <Ke_PosKeuangan />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/keuangan/jenis-pembayaran"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <Ke_JenisPembayaran />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/keuangan/jenis-pembayaran/:id"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <Ke_DetailJenisPembayaran />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/keuangan/daftar-tunggakan"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <Ke_DaftarTunggakan />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/keuangan/Laporan"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <Ke_Laporan />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/hrd/rekap-presensi"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <RekapPresensi />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/hrd/pengajuan-cuti"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <PengajuanCutiHRD />
-              </Layout>
-            </Suspense>
-          }
-        />
-
-        {/* karyawan */}
-        <Route
-          path="/karyawan/daftar-cuti-izin"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <DaftarCutiIzin />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/karyawan/rekap-kehadiran"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <RekapKehadiranKaryawan />
-              </Layout>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/karyawan/daftar-pelatihan"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Layout>
-                <PelatihanKaryawan />
-              </Layout>
-            </Suspense>
-          }
-        >
+        {routeData.map((route, index) => (
           <Route
-            path=""
+            key={index}
+            path={route.path}
             element={
-              <Suspense fallback={<Loading />}>
-                <DaftarPelatihanKaryawan />
-              </Suspense>
+              route.isSuspended ? (
+                <Suspense fallback={<Loading />}>
+                  {route.layout
+                    ? React.cloneElement(route.layout, {}, route.element)
+                    : route.element}
+                </Suspense>
+              ) : route.layout ? (
+                React.cloneElement(route.layout, {}, route.element)
+              ) : (
+                route.element
+              )
             }
-          />
-          <Route
-            path="pengajuan"
-            element={
-              <Suspense fallback={<Loading />}>
-                <PengajuanPelatihanKaryawan />
-              </Suspense>
-            }
-          />
-        </Route>
+          >
+            {route.children &&
+              route.children.map((child, cIndex) => (
+                <Route
+                  key={cIndex}
+                  path={child.path}
+                  element={
+                    child.isSuspended ? (
+                      <Suspense fallback={<Loading />}>
+                        {child.element}
+                      </Suspense>
+                    ) : (
+                      child.element
+                    )
+                  }
+                />
+              ))}
+          </Route>
+        ))}
       </Routes>
     </BrowserRouter>
   );

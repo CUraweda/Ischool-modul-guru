@@ -1,5 +1,33 @@
 import moment from "moment";
 
+export const token = {
+  get: localStorage.getItem("token"),
+  set: (value: string) => localStorage.setItem("token", value),
+  delete: () => localStorage.removeItem("token"),
+};
+
+export const calculateRemainingProbation = (start: string, end: string) => {
+  const startDate = moment(start);
+  const endDate = moment(end);
+
+  const diffDays = endDate.diff(startDate, "days");
+
+  const remainingDuration = moment.duration(diffDays, "days");
+  const months = remainingDuration.months();
+  const days = remainingDuration.days();
+
+  return `${months} Bulan ${days} Hari`;
+};
+
+export const formattedDate = (isoDate: string) => {
+  const date = new Date(isoDate);
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+};
+
 export const getAcademicYears = () => {
   const currYear = moment().year();
   const currMonth = moment().month();

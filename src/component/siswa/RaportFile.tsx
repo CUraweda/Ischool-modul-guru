@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState } from "react";
-import { globalStore, Store } from "../../store/Store";
-import { IpageMeta, PaginationControl } from "../PaginationControl";
-import { Class, FileRaporSiswa, Student } from "../../midleware/api";
-import Swal from "sweetalert2";
-import { Input, Select } from "../Input";
-import { FaFile, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
-import Modal, { closeModal, openModal } from "../modal";
-import { FaPencil } from "react-icons/fa6";
-import * as Yup from "yup";
 import { useFormik } from "formik";
+import { useEffect, useRef, useState } from "react";
+import { FaFile, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
+import { FaPencil } from "react-icons/fa6";
+import Swal from "sweetalert2";
+import * as Yup from "yup";
+import { Class, FileRaporSiswa, Student } from "../../midleware/api";
+import { globalStore } from "../../store/Store";
+import { Input, Select } from "../Input";
+import Modal, { closeModal, openModal } from "../modal";
+import { IpageMeta, PaginationControl } from "../PaginationControl";
 
 const raportExts = ["pdf"];
 
@@ -38,8 +38,7 @@ const schema = Yup.object().shape({
 const RaportFile = () => {
   const [filePath, setFilePath] = useState<any>(null);
 
-  const { token } = Store(),
-    { academicYear } = globalStore(),
+  const { academicYear } = globalStore(),
     modalForm = "form-file-rapor-siswa",
     modalFile = "form-file-rapor-siswa-viewer";
 
@@ -67,7 +66,7 @@ const RaportFile = () => {
   const [classes, setClasses] = useState<any[]>([]);
   const getClasses = async () => {
     try {
-      const res = await Class.showAll(token, 0, 0, "Y");
+      const res = await Class.showAll(0, 0, "Y");
       setClasses(res.data.data.result);
     } catch {}
   };
@@ -81,7 +80,6 @@ const RaportFile = () => {
   const getDataList = async () => {
     try {
       const res = await FileRaporSiswa.showAll(
-        token,
         filter.page,
         filter.limit,
         filter.search,
@@ -113,11 +111,7 @@ const RaportFile = () => {
     if (!academicYear || !filter.classId) return;
 
     try {
-      const res = await Student.GetStudentByClass(
-        token,
-        filter.classId,
-        academicYear
-      );
+      const res = await Student.GetStudentByClass(filter.classId, academicYear);
       setStudents(res.data.data?.map((dat: any) => dat.student) ?? []);
     } catch {}
   };
@@ -148,8 +142,8 @@ const RaportFile = () => {
         if (values.file) formData.append("file", values.file);
 
         values.id
-          ? await FileRaporSiswa.update(token, values.id, formData)
-          : await FileRaporSiswa.create(token, formData);
+          ? await FileRaporSiswa.update(values.id, formData)
+          : await FileRaporSiswa.create(formData);
 
         handleReset();
         closeModal(modalForm);
@@ -189,7 +183,7 @@ const RaportFile = () => {
     setIsGetLoading(true);
 
     try {
-      const res = await FileRaporSiswa.showOne(token, id);
+      const res = await FileRaporSiswa.showOne(id);
 
       form.setValues({
         id: res.data.data?.id ?? "",
@@ -225,7 +219,7 @@ const RaportFile = () => {
       try {
         setIsDelLoading(true);
         if (result.isConfirmed) {
-          await FileRaporSiswa.delete(token, id);
+          await FileRaporSiswa.delete(id);
 
           Swal.fire({
             icon: "success",
@@ -260,7 +254,7 @@ const RaportFile = () => {
 
     setIsFileLoading(true);
     try {
-      const response = await FileRaporSiswa.downloadFile(token, path);
+      const response = await FileRaporSiswa.downloadFile(path);
       const blob = new Blob([response.data], { type: "application/pdf" });
       setFileView(URL.createObjectURL(blob));
       openModal(modalFile);

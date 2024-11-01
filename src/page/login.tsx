@@ -9,6 +9,7 @@ import { employeeStore, Store } from "../store/Store";
 import Swal from "sweetalert2";
 import { Input } from "../component/Input";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { token } from "../utils/common";
 
 const schema = Yup.object({
   email: Yup.string().email("Email tidak valid").required("Email harus diisi"),
@@ -17,7 +18,7 @@ const schema = Yup.object({
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setToken, setRole, setId } = Store();
+  const { setRole, setId } = Store();
   const {
     setEmployee,
     setFormTeachers,
@@ -62,14 +63,15 @@ const Login = () => {
         if (formextras) setFormXtras(formextras);
 
         // Adjust role comparison to use numbers instead of strings
+        if (response.data.tokens.access.token) {
+          token.set(response.data.tokens.access.token);
+        }
+
         if (role === 6 || role === 4) {
-          setToken(response.data.tokens.access.token);
           navigate("/guru/dashboard");
         } else if (role === 2) {
-          setToken(response.data.tokens.access.token);
           navigate("/keuangan/");
         } else if (role === 5) {
-          setToken(response.data.tokens.access.token);
           navigate("/hrd/rekap-presensi");
         } else {
           Swal.fire({

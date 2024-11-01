@@ -40,7 +40,7 @@ const validationSchema = Yup.object({
 });
 
 const PengumumanSiswa = () => {
-  const { token, role } = Store();
+  const { role } = Store();
   const [idPengumuman, setIdPengumuman] = useState<string>("");
   const [classes, setClasses] = useState<any[]>([]);
 
@@ -71,8 +71,8 @@ const PengumumanSiswa = () => {
 
       try {
         idPengumuman
-          ? await Pengumuman.UpdatePengumuman(token, idPengumuman, formData)
-          : await Pengumuman.createPengumuman(token, formData);
+          ? await Pengumuman.UpdatePengumuman(idPengumuman, formData)
+          : await Pengumuman.createPengumuman(formData);
 
         getDataList();
 
@@ -131,14 +131,13 @@ const PengumumanSiswa = () => {
   }, [filter]);
 
   const getClassByEmployee = async () => {
-    const response = await Task.GetAllClass(token, 0, 2000, "Y");
+    const response = await Task.GetAllClass(0, 2000, "Y");
     setClasses(response.data.data.result);
   };
 
   const getDataList = async () => {
     try {
       const response = await Pengumuman.getAllPengumuman(
-        token,
         filter.search,
         filter.classId,
         filter.startDate,
@@ -163,7 +162,7 @@ const PengumumanSiswa = () => {
 
   const GetByIdPengumuman = async (id: string) => {
     try {
-      const response = await Pengumuman.getByIdPengumuman(token, id);
+      const response = await Pengumuman.getByIdPengumuman(id);
       const data = response.data.data;
       formik.setValues({
         startDate: data.date_start
@@ -187,7 +186,7 @@ const PengumumanSiswa = () => {
   };
 
   const deletePengumuman = async (id: string) => {
-    await Pengumuman.DeletePengumuman(token, id);
+    await Pengumuman.DeletePengumuman(id);
     Swal.fire({
       title: "Deleted!",
       text: "Your file has been deleted.",
@@ -223,7 +222,7 @@ const PengumumanSiswa = () => {
     if (!idPengumuman) return;
 
     try {
-      const res = await Pengumuman.downloadFile(token, idPengumuman);
+      const res = await Pengumuman.downloadFile(idPengumuman);
       const blob = new Blob([res.data], { type: "application/pdf" });
       setFilePreview(URL.createObjectURL(blob));
     } catch (error) {

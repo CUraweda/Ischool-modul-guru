@@ -1,16 +1,15 @@
-import { useState, useEffect } from "react";
-import Modal from "../modal";
-import { FaCodeMerge } from "react-icons/fa6";
+import { useEffect, useState } from "react";
 import { FaFilePdf } from "react-icons/fa";
-import { Task, Student, Raport, KepribadianSiswa } from "../../midleware/api";
-import { globalStore, Store, useProps } from "../../store/Store";
+import { FaCodeMerge } from "react-icons/fa6";
 import Swal from "sweetalert2";
-import { IpageMeta, PaginationControl } from "../PaginationControl";
+import { KepribadianSiswa, Raport, Student, Task } from "../../midleware/api";
+import { globalStore, useProps } from "../../store/Store";
 import { Input, Select, Toggle } from "../Input";
+import Modal from "../modal";
+import { IpageMeta, PaginationControl } from "../PaginationControl";
 
 const RaportAll = () => {
   const { academicYear } = globalStore();
-  const { token } = Store();
   const { setKelasProps } = useProps();
   const [Class, setClass] = useState<any[]>([]);
   const [siswa, setSiswa] = useState<any[]>([]);
@@ -64,7 +63,7 @@ const RaportAll = () => {
   }, []);
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20, "Y", "N", "Y");
+    const response = await Task.GetAllClass(0, 20, "Y", "N", "Y");
     setClass(response.data.data.result);
   };
 
@@ -73,7 +72,6 @@ const RaportAll = () => {
 
     try {
       const response = await Student.GetStudentByClass(
-        token,
         filter.classId,
         academicYear
       );
@@ -91,7 +89,6 @@ const RaportAll = () => {
   const getDataRaport = async () => {
     try {
       const response = await Raport.showAllStudentReport(
-        token,
         filter.classId,
         filter.semester,
         filter.page,
@@ -122,7 +119,7 @@ const RaportAll = () => {
     }
   };
   const create = async (data: any) => {
-    await Raport.createStudentRaport(token, data);
+    await Raport.createStudentRaport(data);
     getDataRaport();
   };
 
@@ -141,11 +138,11 @@ const RaportAll = () => {
       if (result.isConfirmed) {
         await deleteRaport();
         setSelectedReports([]);
-        const relatedPersonalities = await KepribadianSiswa.showAll(token, nis);
+        const relatedPersonalities = await KepribadianSiswa.showAll(nis);
         const data = relatedPersonalities.data.data.result;
 
         for (const personality of data) {
-          await KepribadianSiswa.delete(token, personality.id);
+          await KepribadianSiswa.delete(personality.id);
         }
         Swal.fire({
           title: "Data raport sukses terhapus!",
@@ -170,13 +167,13 @@ const RaportAll = () => {
   };
 
   const hapus = async (id: any) => {
-    await Raport.deleteStudentRaport(token, id);
+    await Raport.deleteStudentRaport(id);
     getDataRaport();
   };
 
   const downloadTugas = async (path: string) => {
     try {
-      const response = await Task.downloadTugas(token, path);
+      const response = await Task.downloadTugas(path);
       const urlParts = path.split("/");
       const fileName = urlParts.pop() || "";
       const blobUrl = window.URL.createObjectURL(response.data);
@@ -196,7 +193,7 @@ const RaportAll = () => {
 
   const downloadRaportMerge = async (id: any) => {
     try {
-      await Raport.downloadMergeRaport(token, id);
+      await Raport.downloadMergeRaport(id);
     } catch (error) {
       Swal.fire({
         icon: "error",

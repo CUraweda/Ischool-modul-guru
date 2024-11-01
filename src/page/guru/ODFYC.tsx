@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
+import { useFormik } from "formik";
+import "react-day-picker/dist/style.css";
 import {
   FaCalendar,
   FaFileUpload,
@@ -7,21 +9,19 @@ import {
   FaSearch,
   FaTrash,
 } from "react-icons/fa";
-import Modal, { closeModal, openModal } from "../../component/modal";
 import { IoDocumentTextOutline } from "react-icons/io5";
-import { globalStore, Store } from "../../store/Store";
+import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+import * as Yup from "yup";
+import { Input, Select, Textarea } from "../../component/Input";
+import Modal, { closeModal, openModal } from "../../component/modal";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import Swal from "sweetalert2";
 import { ForCountryDetail } from "../../midleware/api";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import { Input, Select, Textarea } from "../../component/Input";
-import "react-day-picker/dist/style.css";
+import { globalStore } from "../../store/Store";
 import { formatTime } from "../../utils/date";
-import { Link } from "react-router-dom";
 
 type TformNav = "data" | "schedule" | "certificate" | "profile";
 
@@ -71,8 +71,7 @@ const scheduleDateSchema = Yup.object().shape({
 });
 
 const ODFYC = () => {
-  const { token } = Store(),
-    { academicYear } = globalStore(),
+  const { academicYear } = globalStore(),
     modalDetailEdit = "form-detail-edit";
 
   // main
@@ -97,7 +96,6 @@ const ODFYC = () => {
   const getDataList = async () => {
     try {
       const res = await ForCountryDetail.showAll(
-        token,
         "",
         academicYear,
         filter.page,
@@ -162,7 +160,7 @@ const ODFYC = () => {
       delete copyValues.activity_extra;
 
       try {
-        await ForCountryDetail.update(token, dataDetail.id, copyValues);
+        await ForCountryDetail.update(dataDetail.id, copyValues);
 
         setDataDetail({});
         getDataList();
@@ -192,7 +190,7 @@ const ODFYC = () => {
     setIsLoadingDetailEdit(true);
 
     try {
-      const res = await ForCountryDetail.showOne(token, id),
+      const res = await ForCountryDetail.showOne(id),
         data = res.data.data;
 
       detailForm.setValues({
@@ -259,7 +257,7 @@ const ODFYC = () => {
     }
 
     try {
-      await ForCountryDetail.update(token, dataDetail.id, {
+      await ForCountryDetail.update(dataDetail.id, {
         plan_date: JSON.stringify(scheduleDates),
       });
 
@@ -346,7 +344,7 @@ const ODFYC = () => {
     }).then(async (result) => {
       try {
         if (result.isConfirmed) {
-          await ForCountryDetail.delete(token, id);
+          await ForCountryDetail.delete(id);
 
           Swal.fire({
             icon: "success",
@@ -390,7 +388,7 @@ const ODFYC = () => {
       const formData = new FormData();
       formData.append("file", certFile);
 
-      await ForCountryDetail.uploadCertificate(token, dataDetail.id, formData);
+      await ForCountryDetail.uploadCertificate(dataDetail.id, formData);
 
       setDataDetail({});
       setCertFile(null);
@@ -420,7 +418,6 @@ const ODFYC = () => {
 
     try {
       const response = await ForCountryDetail.downloadCertificate(
-        token,
         dataDetail.certificate_path
       );
       const blob = new Blob([response.data], { type: "application/pdf" }); //
