@@ -3,28 +3,27 @@ import bg from "../../assets/bg2.png";
 import ApexChart from "../../component/ApexChart";
 import FaceDetection from "../../component/FaceRegocnition";
 
-import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
-import Modal, { closeModal, openModal } from "../../component/modal";
-import { employeeStore, Store } from "../../store/Store";
+import moment from "moment";
 import {
   FaDoorClosed,
   FaDoorOpen,
   FaExclamationTriangle,
 } from "react-icons/fa";
-import moment from "moment";
-import { formatTime } from "../../utils/date";
+import { useNavigate } from "react-router-dom";
+import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
+import Modal, { closeModal, openModal } from "../../component/modal";
+import { Auth, Task } from "../../midleware/api";
 import {
   PelatihanKaryawan,
   PengumumanKaryawan,
   Rekapan,
   waktukerja,
 } from "../../midleware/api-hrd";
-import { useNavigate } from "react-router-dom";
-import { Auth, Task } from "../../midleware/api";
+import { employeeStore } from "../../store/Store";
+import { formatTime } from "../../utils/date";
 
 const Dashboard: React.FC = () => {
   const currentDate = moment();
-  const { token } = Store();
   const { employee, formTeachers } = employeeStore();
   const navigate = useNavigate();
 
@@ -78,7 +77,7 @@ const Dashboard: React.FC = () => {
   const [todayWorktimes, setTodayWorktimes] = useState<any[]>([]);
   const getTodayWorktime = async () => {
     try {
-      const res = await waktukerja.today(token);
+      const res = await waktukerja.today();
       setTodayWorktimes(res.data?.data ?? []);
       const doneCount = res.data?.data?.reduce((count: number, item: any) => {
         return item.employeeattendances?.length ? count + 1 : count;
@@ -105,7 +104,7 @@ const Dashboard: React.FC = () => {
     if (!employee) return;
 
     try {
-      const res = await Rekapan.jumlahPresensi(token, employee.id);
+      const res = await Rekapan.jumlahPresensi(employee.id);
       setRekapPresensi(res.data?.data ?? null);
     } catch {}
   };
@@ -116,7 +115,6 @@ const Dashboard: React.FC = () => {
     if (!employee) return;
     try {
       const response = await PelatihanKaryawan.showAll(
-        token,
         "",
         employee.id,
         "",
@@ -131,7 +129,7 @@ const Dashboard: React.FC = () => {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const getAnnouncements = async () => {
     try {
-      const res = await PengumumanKaryawan.showAll(token, "", "1", "");
+      const res = await PengumumanKaryawan.showAll("", "1", "");
       setAnnouncements(res.data?.data?.result ?? []);
     } catch {}
   };
@@ -147,7 +145,7 @@ const Dashboard: React.FC = () => {
   const getRecapPresensiChart = async () => {
     if (!employee) return;
     try {
-      const response = await Rekapan.presensiSetahun(token, employee.id);
+      const response = await Rekapan.presensiSetahun(employee.id);
       const data = response.data?.data ?? null;
       if (!data) return;
 
@@ -189,7 +187,7 @@ const Dashboard: React.FC = () => {
   };
   const getMe = async () => {
     try {
-      const res = await Auth.MeData(token);
+      const res = await Auth.MeData();
       previewProfile(res.data.data.avatar);
     } catch (error) {
       console.error(error);
@@ -199,7 +197,7 @@ const Dashboard: React.FC = () => {
   const previewProfile = async (path: any) => {
     try {
       const lowerCasePath = path.toLowerCase();
-      const response = await Task.downloadTugas(token, lowerCasePath);
+      const response = await Task.downloadTugas(lowerCasePath);
       let mimeType = "application/pdf";
 
       if (lowerCasePath.endsWith(".png")) {

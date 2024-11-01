@@ -1,14 +1,13 @@
 import { useFormik } from "formik";
-import Modal, { closeModal } from "../modal";
-import * as Yup from "yup";
+import moment from "moment";
 import { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaPlus, FaTrash } from "react-icons/fa";
-import { PosJenisPembayaran, PosPembayaran } from "../../midleware/api";
-import { Store } from "../../store/Store";
-import { Input, Select } from "../Input";
-import { getAcademicYears } from "../../utils/common";
-import moment from "moment";
 import Swal from "sweetalert2";
+import * as Yup from "yup";
+import { PosJenisPembayaran, PosPembayaran } from "../../midleware/api";
+import { getAcademicYears } from "../../utils/common";
+import { Input, Select } from "../Input";
+import Modal, { closeModal } from "../modal";
 
 const schema = Yup.object().shape({
   payment_post_id: Yup.number().required("Pos pembayaran harus dipilih satu"),
@@ -29,8 +28,6 @@ const ModalBulkCreateJenisPembayaran = ({
   modalId: string;
   postCreate: () => void;
 }) => {
-  const { token } = Store();
-
   const form = useFormik<{
     payment_post_id: number;
     academic_year: string;
@@ -49,7 +46,7 @@ const ModalBulkCreateJenisPembayaran = ({
       setSubmitting(true);
 
       try {
-        const res = await PosJenisPembayaran.bulkCreate(token, values);
+        const res = await PosJenisPembayaran.bulkCreate(values);
 
         Swal.fire({
           icon: "success",
@@ -84,7 +81,7 @@ const ModalBulkCreateJenisPembayaran = ({
 
   const getPostPayments = async () => {
     try {
-      const res = await PosPembayaran.showAll(token, "", 0, 1000);
+      const res = await PosPembayaran.showAll("", 0, 1000);
       if (res.data?.data?.result) setPostPayments(res.data.data.result);
     } catch {}
   };

@@ -11,7 +11,7 @@ const pastMonth = new Date();
 
 const AdmGuru = () => {
   const showModalAdd = () => {
-    let modalElement = document.getElementById("add-cuti") as HTMLDialogElement;
+    const modalElement = document.getElementById("add-cuti") as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
     }

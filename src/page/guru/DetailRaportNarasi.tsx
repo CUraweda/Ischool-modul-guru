@@ -8,13 +8,11 @@ import {
 import { Link } from "react-router-dom";
 import Modal from "../../component/modal";
 import { Raport } from "../../midleware/api";
-import { Store } from "../../store/Store";
 import Swal from "sweetalert2";
 import { BiTrash } from "react-icons/bi";
 import { AiFillCloseCircle } from "react-icons/ai";
 
 const RaportNarasi = () => {
-  const { token } = Store();
   const [kategori, setKategori] = useState<any[]>([]);
   const [selectKategori, setSelectKategori] = useState<any>();
   const [data, setData] = useState<any>();
@@ -52,7 +50,7 @@ const RaportNarasi = () => {
   const getKategori = async () => {
     try {
       const idClass = sessionStorage.getItem("idClass");
-      const response = await Raport.getKategoriNarasi(token, idClass);
+      const response = await Raport.getKategoriNarasi(idClass);
       setKategori(response.data.data);
     } catch (error) {
       console.log(error);
@@ -62,7 +60,7 @@ const RaportNarasi = () => {
   const getKomentarKategori = async () => {
     try {
       const idRaport = sessionStorage.getItem("idNar");
-      const response = await Raport.getKomentarNarasiSiswa(token, idRaport);
+      const response = await Raport.getKomentarNarasiSiswa(idRaport);
       const dataKomen = response.data?.data;
       const idKategori = selectKategori?.id;
       const filterKomenByKategori = dataKomen?.filter(
@@ -92,7 +90,7 @@ const RaportNarasi = () => {
         return;
       } else {
         // const id = selectKategori?.id;
-        const response = await Raport.getDeskripsiNarasi(token, idSubKategori);
+        const response = await Raport.getDeskripsiNarasi(idSubKategori);
         // console.log(response);
         setDeskripsi(response.data.data);
       }
@@ -104,7 +102,7 @@ const RaportNarasi = () => {
   const getDataNarasi = async () => {
     const id = sessionStorage.getItem("idSiswa");
     const smt = sessionStorage.getItem("smt");
-    const response = await Raport.getDataNarasiSiswa(token, id, smt);
+    const response = await Raport.getDataNarasiSiswa(id, smt);
 
     if (selectKategori) {
       const idKategori = selectKategori.id;
@@ -132,7 +130,7 @@ const RaportNarasi = () => {
         return;
       } else {
         const id = selectKategori?.id;
-        const response = await Raport.getSubCategoriNarasi(token, id);
+        const response = await Raport.getSubCategoriNarasi(id);
         // console.log(response.data.data);
         setSubKategori(response.data.data);
       }
@@ -142,7 +140,7 @@ const RaportNarasi = () => {
   };
   const deleteNarasi = async (id: string) => {
     try {
-      await Raport.deleteNarasi(token, id);
+      await Raport.deleteNarasi(id);
       getKategori();
       getDataNarasi();
       Swal.fire({
@@ -162,7 +160,7 @@ const RaportNarasi = () => {
         narrative_sub_cat_id: idSubKategori,
         desc: newDescripsi,
       };
-      await Raport.createDeskripsi(token, data);
+      await Raport.createDeskripsi(data);
       settrigerKet(false);
       setNewDeskripsi("");
       getDeskripsi();
@@ -181,11 +179,11 @@ const RaportNarasi = () => {
         comments: komentar,
       };
       if (!komentar) {
-        await Raport.deleteKomentarNarasi(token, idKomentar);
+        await Raport.deleteKomentarNarasi(idKomentar);
       } else if (idKomentar) {
-        await Raport.updateKomentarKategori(token, idKomentar, data);
+        await Raport.updateKomentarKategori(idKomentar, data);
       } else {
-        await Raport.createKomentarKategori(token, data);
+        await Raport.createKomentarKategori(data);
       }
 
       Swal.fire({
@@ -203,7 +201,7 @@ const RaportNarasi = () => {
 
   const handleDeleteDeskripsi = async (id: string) => {
     try {
-      await Raport.deleteDeskripsiNarasi(token, id);
+      await Raport.deleteDeskripsiNarasi(id);
 
       getDeskripsi();
     } catch (error) {
@@ -232,7 +230,7 @@ const RaportNarasi = () => {
               grade: item.nilai ? item.nilai : 1,
               student_report_id: idRaport,
             };
-            const response = await Raport.createRapotNarasi(token, dataRest);
+            const response = await Raport.createRapotNarasi(dataRest);
             return response;
           })
         );
@@ -283,7 +281,7 @@ const RaportNarasi = () => {
           grade: EditdataRaport.grade ? EditdataRaport.grade : 1,
           student_report_id: parseInt(idRaport),
         };
-        await Raport.editReportNarasi(token, idRaportNarasi, dataRest);
+        await Raport.editReportNarasi(idRaportNarasi, dataRest);
       }
       Swal.fire({
         position: "center",

@@ -10,7 +10,6 @@ import {
   EmployeeJobdesk,
   Karyawan,
 } from "../../midleware/api-hrd";
-import { Store } from "../../store/Store";
 import { calculateRemainingProbation, formattedDate } from "../../utils/common";
 
 const DetailRekapPenilaianPage: React.FC = () => {
@@ -28,11 +27,10 @@ const DetailRekapPenilaianPage: React.FC = () => {
   console.log(jobdeskList);
 
   const navigate = useNavigate();
-  const token = Store((state) => state.token) ?? "";
 
   const DownloadAvatar = async () => {
     try {
-      const res = await DownloadFile.DownloadSade(token, avatar);
+      const res = await DownloadFile.DownloadSade(avatar);
       const blob = new Blob([res.data], { type: "image/jpeg" });
 
       const blobUrl = window.URL.createObjectURL(blob);
@@ -64,7 +62,6 @@ const DetailRekapPenilaianPage: React.FC = () => {
   const getEmployee = async () => {
     try {
       const jobdesk = await Karyawan.JobdeskList(
-        token,
         employee.user_id,
         employee.raw_grade
       );
@@ -72,7 +69,7 @@ const DetailRekapPenilaianPage: React.FC = () => {
       setJobdeskList(jobdesk.data.data.result);
       setAvatar(jobdesk.data.data.result[0].employee.user.avatar);
 
-      const done = await Karyawan.JobdeskList(token, employee.employee_id, 1);
+      const done = await Karyawan.JobdeskList(employee.employee_id, 1);
       setDoneJobdesk(done.data.data.result);
     } catch (err) {
       console.error(err);

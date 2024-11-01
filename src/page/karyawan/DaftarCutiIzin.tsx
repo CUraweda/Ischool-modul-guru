@@ -1,9 +1,5 @@
+import { useFormik } from "formik";
 import { useEffect, useRef, useState } from "react";
-import {
-  IpageMeta,
-  PaginationControl,
-} from "../../component/PaginationControl";
-import { Input, Select, Textarea } from "../../component/Input";
 import {
   FaArrowRight,
   FaExclamationTriangle,
@@ -12,15 +8,19 @@ import {
   FaSearch,
   FaTrash,
 } from "react-icons/fa";
-import { employeeStore, Store } from "../../store/Store";
-import Swal from "sweetalert2";
 import { FaPencil } from "react-icons/fa6";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import Modal, { closeModal, openModal } from "../../component/modal";
-import { CutiIzin } from "../../midleware/api-hrd";
-import { formatTime } from "../../utils/date";
 import { useLocation } from "react-router-dom";
+import Swal from "sweetalert2";
+import * as Yup from "yup";
+import { Input, Select, Textarea } from "../../component/Input";
+import Modal, { closeModal, openModal } from "../../component/modal";
+import {
+  IpageMeta,
+  PaginationControl,
+} from "../../component/PaginationControl";
+import { CutiIzin } from "../../midleware/api-hrd";
+import { employeeStore } from "../../store/Store";
+import { formatTime } from "../../utils/date";
 const types = ["CUTI", "IZIN"];
 const statuses = ["Menunggu", "Disetujui", "Ditolak"];
 const evidenceExts = ["pdf", "jpeg", "jpg", "png"];
@@ -68,8 +68,7 @@ const schema = Yup.object().shape({
 
 const DaftarCutiIzin = () => {
   const [fileExtensionEdit, setFileExtensionEdit] = useState<string>("");
-  const { token } = Store(),
-    { employee } = employeeStore(),
+  const { employee } = employeeStore(),
     modalFormId = "form-cuti-izin",
     modEvidence = "form-bukti-cuti-izin";
   const location = useLocation();
@@ -108,7 +107,6 @@ const DaftarCutiIzin = () => {
     try {
       // fetch find all
       const res = await CutiIzin.showAll(
-        token,
         filter.search,
         employee.id,
         filter.type,
@@ -164,10 +162,10 @@ const DaftarCutiIzin = () => {
         formData.append("file", values.evidence);
 
         if (values.id) {
-          await CutiIzin.change(token, values.id, formData);
+          await CutiIzin.change(values.id, formData);
         } else {
           formData.append("status", "Menunggu");
-          await CutiIzin.request(token, formData);
+          await CutiIzin.request(formData);
         }
 
         handleReset();
@@ -216,7 +214,7 @@ const DaftarCutiIzin = () => {
 
     try {
       // fetch get one
-      const res = await CutiIzin.showOne(token, id);
+      const res = await CutiIzin.showOne(id);
       const dat = res.data.data;
       form.setValues({
         id: dat.id ?? "",
@@ -237,7 +235,7 @@ const DaftarCutiIzin = () => {
         console.log(typePath);
 
         try {
-          const resEvidence = await CutiIzin.downloadFile(token, dat.file_path);
+          const resEvidence = await CutiIzin.downloadFile(dat.file_path);
           const blob = new Blob([resEvidence.data]);
           setEvidencePreview(URL.createObjectURL(blob));
         } catch {}
@@ -269,7 +267,7 @@ const DaftarCutiIzin = () => {
       try {
         setIsDelLoading(true);
         if (result.isConfirmed) {
-          await CutiIzin.remove(token, id);
+          await CutiIzin.remove(id);
 
           Swal.fire({
             icon: "success",
@@ -301,7 +299,7 @@ const DaftarCutiIzin = () => {
 
     setIsFileLoading(true);
     try {
-      const response = await CutiIzin.downloadFile(token, path);
+      const response = await CutiIzin.downloadFile(path);
 
       const contentType = response.headers["content-type"];
       const typePath = path.split(".");

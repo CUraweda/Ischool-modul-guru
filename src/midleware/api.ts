@@ -1,6 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosPromise } from "axios";
 import { LoginResponse } from "./Utils";
-const instance = axios.create({ baseURL: import.meta.env.VITE_REACT_API_URL });
+import { token } from "../utils/common";
+
+const instance = axios.create({
+  baseURL: import.meta.env.VITE_REACT_API_URL,
+  headers: {
+    Authorization: `Bearer ${token.get}`,
+  },
+});
 
 const Auth = {
   Login: (
@@ -9,89 +17,59 @@ const Auth = {
   ): AxiosPromise<LoginResponse> =>
     instance({
       method: "POST",
-      url: "/api/auth/login",
+      url: "/auth/login",
       data: {
         email,
         password,
       },
     }),
-  MeData: (token: string | null) =>
+  MeData: () =>
     instance({
       method: "GET",
-      url: "/api/user/me",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/user/me",
     }),
-  EditProfile: (token: string | null, id: any, data: any) =>
+  EditProfile: (id: any, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/employee/update/${id}`,
+      url: `/employee/update/${id}`,
       data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  EditPassword: (token: string | null, data: any) =>
+  EditPassword: (data: any) =>
     instance({
       method: "PUT",
-      url: `/api/user/change-password`,
+      url: `/user/change-password`,
       data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  EditPicture: (token: string | null, id: any, data: any) =>
+  EditPicture: (id: any, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/auth/update-profile/${id}`,
+      url: `/auth/update-profile/${id}`,
       data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
 };
 
 const User = {
-  showAll: (token: string | null, search: string | null) =>
+  showAll: (search: string | null) =>
     instance({
       method: "GET",
-      url: `/api/user?search_query=${search}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/user?search_query=${search}`,
     }),
 };
 
 const Student = {
-  GetStudentByClass: (
-    token: string | null,
-    id: string | null,
-    tahun: string | null
-  ) =>
+  GetStudentByClass: (id: string | null, tahun: string | null) =>
     instance({
       method: "GET",
-      url: `/api/student-class/show-by-class/${id}?academic=${tahun}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-class/show-by-class/${id}?academic=${tahun}`,
     }),
 
-  GetStudentByLevel: (
-    token: string | null,
-    level: string | null,
-    tahun: string | null
-  ) =>
+  GetStudentByLevel: (level: string | null, tahun: string | null) =>
     instance({
       method: "GET",
-      url: `/api/student-class/show-by-level/${level}?academic=${tahun}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-class/show-by-level/${level}?academic=${tahun}`,
     }),
 
   GetStudents: (
-    token: string | null,
     search: string | null,
     class_id: string | null,
     tahun: string | null,
@@ -100,32 +78,22 @@ const Student = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/student-class?search_query=${search}&academic=${tahun}&class_id=${class_id}&page=${page}&limit=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-class?search_query=${search}&academic=${tahun}&class_id=${class_id}&page=${page}&limit=${limit}`,
     }),
 
-  CreatePresensi: (token: string | null, data: any) =>
+  CreatePresensi: (data: any) =>
     instance({
       method: "POST",
-      url: "/api/student-attendance/create",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-attendance/create",
       data,
     }),
-  UpdatePresensi: (token: string | null, id: string, data: any) =>
+  UpdatePresensi: (id: string, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/student-attendance/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-attendance/update/${id}`,
       data,
     }),
   showAllPresensi: (
-    token: string | null,
     search: string | null,
     page: number | null,
     limit: number | null,
@@ -136,56 +104,36 @@ const Student = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/student-attendance?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&att_date=${attDate}&with_assign=${withAssign}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-attendance?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&att_date=${attDate}&with_assign=${withAssign}`,
     }),
-  GetPresensiByClassDate: (
-    token: string | null,
-    id: number | null,
-    date: string | null
-  ) =>
+  GetPresensiByClassDate: (id: number | null, date: string | null) =>
     instance({
       method: "GET",
-      url: `/api/student-attendance/show-by-class/${id}?att_date=${date}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-attendance/show-by-class/${id}?att_date=${date}`,
     }),
-  GetPresensiById: (token: string | null, id: number | null) =>
+  GetPresensiById: (id: number | null) =>
     instance({
       method: "GET",
-      url: `/api/student-attendance/show/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-attendance/show/${id}`,
     }),
 
-  deletePresensi: (token: string | null, id: number | null) =>
+  deletePresensi: (id: number | null) =>
     instance({
       method: "DELETE",
-      url: `/api/student-attendance/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-attendance/delete/${id}`,
     }),
 };
 
 const Mapel = {
-  GetAllDataMapel: (token: string | null, page: number, limit: number) =>
+  GetAllDataMapel: (page: number, limit: number) =>
     instance({
       method: "GET",
-      url: `/api/subject?search_query=&page=${page}&limit=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/subject?search_query=&page=${page}&limit=${limit}`,
     }),
 };
 
 const Class = {
   showAll: (
-    token: string | null,
     page: number | null,
     limit: number | null,
     withAssign: string | null = "N",
@@ -194,16 +142,12 @@ const Class = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/classes?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}&with_subject=${withSubject}&with_form_class=${withFormClass}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/classes?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}&with_subject=${withSubject}&with_form_class=${withFormClass}`,
     }),
 };
 
 const Task = {
   GetAll: (
-    token: string | null,
     search: string | null,
     classId: string | null,
     academic: string | null,
@@ -213,13 +157,9 @@ const Task = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/student-task?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-task?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
     }),
   GetAllTask: (
-    token: string | null,
     search: string | null,
     classId: string | null,
     page: number | null,
@@ -228,13 +168,9 @@ const Task = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/task?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/task?search_query=${search}&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
     }),
   GetAllClass: (
-    token: string | null,
     page: number | null,
     limit: number | null,
     withAssign: string | null = "N",
@@ -244,210 +180,143 @@ const Task = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/classes?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}&with_subject=${withSubject}&with_form_class=${withFormClass}&is_active=Y`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/classes?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}&with_subject=${withSubject}&with_form_class=${withFormClass}&is_active=Y`,
     }),
   GetAllMapel: (
-    token: string | null,
     page: number | null,
     withAssign: string | null = "Y",
     limit: number | null
   ) =>
     instance({
       method: "GET",
-      url: `/api/subject?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/subject?search_query=&page=${page}&limit=${limit}&with_assign=${withAssign}`,
     }),
-  createTask: (token: string | null, data: any) =>
+  createTask: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/student-task/create`,
+      url: `/student-task/create`,
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
       data,
     }),
-  editTask: (token: string | null, id: string | null, data: any) =>
+  editTask: (id: string | null, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/student-task/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-task/update/${id}`,
       data,
     }),
-  editTaskClass: (token: string | null, id: string | null, data: any) =>
+  editTaskClass: (id: string | null, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/task/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/task/update/${id}`,
       data,
     }),
-  editTaskDetail: (token: string | null, id: string | null, data: any) =>
+  editTaskDetail: (id: string | null, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/task-detail/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/task-detail/update/${id}`,
       data,
     }),
-  createTaskClass: (token: string | null, data: any) =>
+  createTaskClass: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/task/create`,
+      url: `/task/create`,
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
       data,
     }),
 
-  deleteTask: (token: string | null, id: number | null) =>
+  deleteTask: (id: number | null) =>
     instance({
       method: "DELETE",
-      url: `/api/student-task/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-task/delete/${id}`,
     }),
-  deleteTaskClass: (token: string | null, id: number | null) =>
+  deleteTaskClass: (id: number | null) =>
     instance({
       method: "DELETE",
-      url: `/api/task/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/task/delete/${id}`,
     }),
 
-  getDetailTask: (token: string | null, id: number | null) =>
+  getDetailTask: (id: number | null) =>
     instance({
       method: "GET",
-      url: `/api/task-detail/show-by-task/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/task-detail/show-by-task/${id}`,
     }),
-  getTaskById: (token: string | null, id: string | null) =>
+  getTaskById: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/task/show/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/task/show/${id}`,
     }),
-  downloadTugas: (token: string | null, path: string | null) =>
+  downloadTugas: (path: string | null) =>
     instance({
       method: "GET",
-      url: `/api/student-task/download?filepath=${path}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-task/download?filepath=${path}`,
       responseType: "blob",
     }),
 };
 
 const Kalender = {
   GetAllDetail: (
-    token: string | null,
     academic: string | null,
     page: number | null,
     limit: number | null
   ) =>
     instance({
       method: "GET",
-      url: `/api/edu-calendar-detail?academic=${academic}&search_query=&page=${page}&limit=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/edu-calendar-detail?academic=${academic}&search_query=&page=${page}&limit=${limit}`,
     }),
-  GetAllDetailById: (token: string | null, id: number | null) =>
+  GetAllDetailById: (id: number | null) =>
     instance({
       method: "GET",
-      url: `/api/edu-calendar-detail/show/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/edu-calendar-detail/show/${id}`,
     }),
   GetAllTopik: (
-    token: string | null,
     academic: string | null,
     page: number | null,
     limit: number | null
   ) =>
     instance({
       method: "GET",
-      url: `/api/edu-calendar?academic=${academic}&search_query=&page=${page}&limit=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/edu-calendar?academic=${academic}&search_query=&page=${page}&limit=${limit}`,
     }),
 
-  EditDetail: (token: string | null, id: number | null, data: any) =>
+  EditDetail: (id: number | null, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/edu-calendar-detail/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/edu-calendar-detail/update/${id}`,
       data,
     }),
-  createDetail: (token: string | null, data: any) =>
+  createDetail: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/edu-calendar-detail/create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/edu-calendar-detail/create`,
       data,
     }),
-  createTopik: (token: string | null, data: any) =>
+  createTopik: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/edu-calendar/create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/edu-calendar/create`,
       data,
     }),
 
-  deleteDetail: (token: string | null, id: number | null) =>
+  deleteDetail: (id: number | null) =>
     instance({
       method: "DELETE",
-      url: `/api/edu-calendar-detail/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/edu-calendar-detail/delete/${id}`,
     }),
-  deleteTimeTable: (token: string | null, id: number | null) =>
+  deleteTimeTable: (id: number | null) =>
     instance({
       method: "DELETE",
-      url: `/api/timetable/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/timetable/delete/${id}`,
     }),
-  GetAllTimetable: (
-    token: string | null,
-    kelas: string | null,
-    semester: string | null
-  ) =>
+  GetAllTimetable: (kelas: string | null, semester: string | null) =>
     instance({
       method: "GET",
-      url: `/api/timetable/show-by-class/${kelas}?semester=${semester}&academic=2023/2024`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/timetable/show-by-class/${kelas}?semester=${semester}&academic=2023/2024`,
     }),
   GetAllTimetableByClass: (
-    token: string | null,
     classId: string | null,
     semester: string | null,
     academic: string,
@@ -455,147 +324,100 @@ const Kalender = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/timetable/show-by-class?semester=${semester}&academic=${academic}&class_id=${classId}&with_assign=${withAssign}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/timetable/show-by-class?semester=${semester}&academic=${academic}&class_id=${classId}&with_assign=${withAssign}`,
     }),
 
-  GetTimetableById: (token: string | null, id: number | null) =>
+  GetTimetableById: (id: number | null) =>
     instance({
       method: "GET",
-      url: `/api/timetable/show/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/timetable/show/${id}`,
     }),
 
-  createTimeTable: (token: string | null, data: any) =>
+  createTimeTable: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/timetable/create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/timetable/create`,
       data,
     }),
 
-  duplicateTimetable: (token: string | null, data: any) =>
+  duplicateTimetable: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/timetable/duplicate-create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/timetable/duplicate-create`,
       data,
     }),
 
-  EditTimeTable: (token: string | null, id: string | null, data: any) =>
+  EditTimeTable: (id: string | null, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/timetable/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/timetable/update/${id}`,
       data,
     }),
 
-  getByGuru: (token: any, id: number) =>
+  getByGuru: (id: number) =>
     instance({
       method: "GET",
-      url: `/api/edu-calendar-detail/show-by-teacher/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/edu-calendar-detail/show-by-teacher/${id}`,
     }),
-  createAgenda: (token: any, data: any) =>
+  createAgenda: (data: any) =>
     instance({
       method: `POST`,
-      url: `/api/edu-calendar-detail/create`,
+      url: `/edu-calendar-detail/create`,
       data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  getListEdu: (token: any) =>
+  getListEdu: () =>
     instance({
       method: "GET",
-      url: `/api/edu-calendar/`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/edu-calendar/`,
     }),
-  updateAgenda: (token: any, data: any, id: any) =>
+  updateAgenda: (data: any, id: any) =>
     instance({
       method: `PUT`,
-      url: `/api/edu-calendar-detail/update/${id}`,
+      url: `/edu-calendar-detail/update/${id}`,
       data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  deleteAgenda: (token: any, id: any) =>
+  deleteAgenda: (id: any) =>
     instance({
       method: `DELETE`,
-      url: `/api/edu-calendar-detail/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/edu-calendar-detail/delete/${id}`,
     }),
 };
 
 const Raport = {
-  downloadMergeRaport: (token: string | null, id: any) =>
+  downloadMergeRaport: (id: any) =>
     instance({
       method: "PUT",
-      url: `/api/student-report/merge/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-report/merge/${id}`,
     }),
 
-  createStudentRaport: (token: string | null, data: any) =>
+  createStudentRaport: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/student-report/create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-report/create`,
       data,
     }),
 
-  deleteStudentRaport: (token: string | null, id: any) =>
+  deleteStudentRaport: (id: any) =>
     instance({
       method: "DELETE",
-      url: `/api/student-report/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-report/delete/${id}`,
     }),
 
-  updateStudentReportAccess: (token: string | null, id: string | null) =>
+  updateStudentReportAccess: (id: string | null) =>
     instance({
       method: "PUT",
-      url: `/api/student-report/update-access/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-report/update-access/${id}`,
     }),
   getAllStudentReport: (
-    token: string | null,
     id: string | null,
     semester: string | null,
     academic: string | null
   ) =>
     instance({
       method: "GET",
-      url: `/api/student-report/show-by-class/${id}?semester=${semester}&academic=${academic}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-report/show-by-class/${id}?semester=${semester}&academic=${academic}`,
     }),
   showAllStudentReport: (
-    token: string | null,
     classId: string,
     semester: string,
     page: number | null,
@@ -605,22 +427,15 @@ const Raport = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/student-report?search_query=&page=${page}&class_id=${classId}&semester=${semester}&limit=${limit}&with_assign=${withAssign}&academic=${academic}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-report?search_query=&page=${page}&class_id=${classId}&semester=${semester}&limit=${limit}&with_assign=${withAssign}&academic=${academic}`,
     }),
   // raport angka
-  getAllNumberReport: (token: string | null, data: any) =>
+  getAllNumberReport: (data: any) =>
     instance({
       method: "GET",
-      url: `/api/number-report/filter-by-params?academic=${data.tahun}&semester=${data.semester}&class_id=${data.class}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/number-report/filter-by-params?academic=${data.tahun}&semester=${data.semester}&class_id=${data.class}`,
     }),
   showAllNumberReport: (
-    token: string | null,
     search: string | null,
     classId: string | null,
     academic: string | null,
@@ -632,323 +447,202 @@ const Raport = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/number-report?search_query=${search}&academic=${academic}&subject_id=${subjectId}&page=${page}&class_id=${classId}&semester=${semester}&limit=${limit}&with_assign=${withAssign}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/number-report?search_query=${search}&academic=${academic}&subject_id=${subjectId}&page=${page}&class_id=${classId}&semester=${semester}&limit=${limit}&with_assign=${withAssign}`,
     }),
-  getNumberReportByStudent: (
-    token: string | null,
-    id: string | null,
-    smt: string | null
-  ) =>
+  getNumberReportByStudent: (id: string | null, smt: string | null) =>
     instance({
       method: "GET",
-      url: `/api/number-report/show-by-student/${id}?semester=${smt}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/number-report/show-by-student/${id}?semester=${smt}`,
     }),
-  generateNumberReport: (
-    token: string | null,
-    id: string | null,
-    smt: string | null
-  ) =>
+  generateNumberReport: (id: string | null, smt: string | null) =>
     instance({
       method: "GET",
-      url: `/api/number-report/generate/${id}?semester=${smt}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/number-report/generate/${id}?semester=${smt}`,
     }),
-  getByIdNumberReport: (token: string | null, id: string) =>
+  getByIdNumberReport: (id: string) =>
     instance({
       method: "GET",
-      url: `/api/number-report/show/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/number-report/show/${id}`,
     }),
-  createNumberRaport: (token: string | null, data: any) =>
+  createNumberRaport: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/number-report/create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/number-report/create`,
       data,
     }),
 
-  deleteNumberReport: (token: string | null, id: string) =>
+  deleteNumberReport: (id: string) =>
     instance({
       method: "DELETE",
-      url: `/api/number-report/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/number-report/delete/${id}`,
     }),
 
-  editNumberRaport: (token: string | null, id: string, data: any) =>
+  editNumberRaport: (id: string, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/number-report/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/number-report/update/${id}`,
       data,
     }),
 
   // Raport Narasi
-  getKategoriNarasi: (token: string | null, id: string | null) =>
+  getKategoriNarasi: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/narrative-category/show-by-class/${id} `,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-category/show-by-class/${id} `,
     }),
-  getDeskripsiNarasi: (token: string | null, id: string | null) =>
+  getDeskripsiNarasi: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/narrative-desc/show-by-subcategory/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-desc/show-by-subcategory/${id}`,
     }),
-  createDeskripsi: (token: string | null, data: any) =>
+  createDeskripsi: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/narrative-desc/create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-desc/create`,
       data,
     }),
-  createKategori: (token: string | null, data: any) =>
+  createKategori: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/narrative-category/create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-category/create`,
       data,
     }),
-  createKomentarKategori: (token: string | null, data: any) =>
+  createKomentarKategori: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/narrative-comment/create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-comment/create`,
       data,
     }),
-  updateKomentarKategori: (
-    token: string | null,
-    id: string | null,
-    data: any
-  ) =>
+  updateKomentarKategori: (id: string | null, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/narrative-comment/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-comment/update/${id}`,
       data,
     }),
-  deleteKomentarNarasi: (token: string | null, id: string | null) =>
+  deleteKomentarNarasi: (id: string | null) =>
     instance({
       method: "DELETE",
-      url: `/api/narrative-comment/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-comment/delete/${id}`,
     }),
-  deleteKategoriNarasi: (token: string | null, id: string | null) =>
+  deleteKategoriNarasi: (id: string | null) =>
     instance({
       method: "DELETE",
-      url: `/api/narrative-category/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-category/delete/${id}`,
     }),
-  deleteSubKategoriNarasi: (token: string | null, id: string | null) =>
+  deleteSubKategoriNarasi: (id: string | null) =>
     instance({
       method: "DELETE",
-      url: `/api/narrative-sub-category/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-sub-category/delete/${id}`,
     }),
-  editKategori: (token: string | null, id: string | null, data: any) =>
+  editKategori: (id: string | null, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/narrative-category/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-category/update/${id}`,
       data,
     }),
-  editSubKategori: (token: string | null, id: string | null, data: any) =>
+  editSubKategori: (id: string | null, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/narrative-sub-category/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-sub-category/update/${id}`,
       data,
     }),
-  editReportNarasi: (token: string | null, id: string | null, data: any) =>
+  editReportNarasi: (id: string | null, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/narrative-report/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-report/update/${id}`,
       data,
     }),
-  deleteNarasi: (token: string | null, id: string | null) =>
+  deleteNarasi: (id: string | null) =>
     instance({
       method: "DELETE",
-      url: `/api/narrative-report/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-report/delete/${id}`,
     }),
-  createSubKategori: (token: string | null, data: any) =>
+  createSubKategori: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/narrative-sub-category/create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-sub-category/create`,
       data,
     }),
-  getSubCategoriNarasi: (token: string | null, id: string | null) =>
+  getSubCategoriNarasi: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/narrative-sub-category/show-by-category/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-sub-category/show-by-category/${id}`,
     }),
-  deleteDeskripsiNarasi: (token: string | null, id: string | null) =>
+  deleteDeskripsiNarasi: (id: string | null) =>
     instance({
       method: "DELETE",
-      url: `/api/narrative-desc/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-desc/delete/${id}`,
     }),
 
-  getDataNarasiSiswa: (
-    token: string | null,
-    id: string | null,
-    smt: string | null
-  ) =>
+  getDataNarasiSiswa: (id: string | null, smt: string | null) =>
     instance({
       method: "GET",
-      url: `/api/narrative-report/show-by-student/${id}?semester=${smt}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-report/show-by-student/${id}?semester=${smt}`,
     }),
   generatePdfNarasi: (
-    token: string | null,
     id: string | null,
     smt: string | null,
     report_id: string | null
   ) =>
     instance({
       method: "GET",
-      url: `/api/narrative-report/generate/${id}?semester=${smt}&report_id=${report_id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-report/generate/${id}?semester=${smt}&report_id=${report_id}`,
     }),
-  getKomentarNarasiSiswa: (token: string | null, id: string | null) =>
+  getKomentarNarasiSiswa: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/narrative-comment/show-by-student-report/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-comment/show-by-student-report/${id}`,
     }),
 
   // Raport Portofolio
-  getPortofolioByRaport: (token: string | null, id: string | null) =>
+  getPortofolioByRaport: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/portofolio-report/show-all-by-student-report/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/portofolio-report/show-all-by-student-report/${id}`,
     }),
 
-  uploadPortofolio: (token: string | null, data: any) =>
+  uploadPortofolio: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/portofolio-report/create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/portofolio-report/create`,
       data,
     }),
 
-  createKomentar: (token: string | null, id: string | null, data: any) =>
+  createKomentar: (id: string | null, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/student-report/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-report/update/${id}`,
       data,
     }),
-  createRapotNarasi: (token: string | null, data: any) =>
+  createRapotNarasi: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/narrative-report/create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/narrative-report/create`,
       data,
     }),
 
-  mergePortofolio: (token: string | null, id: string | null) =>
+  mergePortofolio: (id: string | null) =>
     instance({
       method: "PUT",
-      url: `/api/portofolio-report/merge/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/portofolio-report/merge/${id}`,
     }),
 };
 
 const Pengumuman = {
-  createPengumuman: (token: string | null, data: any) =>
+  createPengumuman: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/announcement/create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/announcement/create`,
       data,
     }),
-  UpdatePengumuman: (
-    token: string | null,
-    id: string | number | null,
-    data: any
-  ) =>
+  UpdatePengumuman: (id: string | number | null, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/announcement/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/announcement/update/${id}`,
       data,
     }),
 
   getAllPengumuman: (
-    token: string | null,
     search: string | null,
     classId: string | null,
     start: string | null,
@@ -959,41 +653,28 @@ const Pengumuman = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/announcement?search_query=${search}&class_id=${classId}&start_date=${start}&end_date=${end}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/announcement?search_query=${search}&class_id=${classId}&start_date=${start}&end_date=${end}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
     }),
-  getByIdPengumuman: (token: string | null, id: string | null) =>
+  getByIdPengumuman: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/announcement/show/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/announcement/show/${id}`,
     }),
-  DeletePengumuman: (token: string | null, id: string | null) =>
+  DeletePengumuman: (id: string | null) =>
     instance({
       method: "DELETE",
-      url: `/api/announcement/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/announcement/delete/${id}`,
     }),
-  downloadFile: (token: string | null, id: string) =>
+  downloadFile: (id: string) =>
     instance({
       method: "GET",
-      url: `/api/announcement/download/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/announcement/download/${id}`,
       responseType: "blob",
     }),
 };
 
 const DashboardSiswa = {
   getAllOverView: (
-    token: string | null,
     classId: string | null,
     academic: string | null,
     page: number | null,
@@ -1002,182 +683,111 @@ const DashboardSiswa = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/overview?academic=${academic}&search_query=&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/overview?academic=${academic}&search_query=&page=${page}&limit=${limit}&class_id=${classId}&with_assign=${withAssign}`,
     }),
-  getByIdOverView: (token: string | null, id: string | null) =>
+  getByIdOverView: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/overview/show/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/overview/show/${id}`,
     }),
 
-  createOverview: (token: string | null, data: any) =>
+  createOverview: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/overview/create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/overview/create`,
       data,
     }),
 
-  UpdateOverview: (
-    token: string | null,
-    id: string | number | null,
-    data: any
-  ) =>
+  UpdateOverview: (id: string | number | null, data: any) =>
     instance({
       method: "PUT",
-      url: `/api/overview/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/overview/update/${id}`,
       data,
     }),
-  DeleteOverview: (token: string | null, id: string | null) =>
+  DeleteOverview: (id: string | null) =>
     instance({
       method: "DELETE",
-      url: `/api/overview/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/overview/delete/${id}`,
     }),
 };
 
 const KepribadianSiswa = {
-  add: (token: string | null, data: any) =>
+  add: (data: any) =>
     instance({
       method: "POST",
-      url: "/api/student-personality/create",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-personality/create",
       data,
     }),
-  showAll: (
-    token: string | null,
-    search?: string,
-    page: number = 0,
-    limit: number = 10
-  ) =>
+  showAll: (search?: string, page: number = 0, limit: number = 10) =>
     instance({
       method: "GET",
-      url: `/api/student-personality?search_query=${search}&page=${page}&limit=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-personality?search_query=${search}&page=${page}&limit=${limit}`,
     }),
-  update: (token: string | null, id: string | number | null, data: any) =>
+  update: (id: string | number | null, data: any) =>
     instance({
       method: "PUT",
-      url: "/api/student-personality/update/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-personality/update/" + id,
       data,
     }),
-  delete: (token: string | null, id: string | number | null) =>
+  delete: (id: string | number | null) =>
     instance({
       method: "DELETE",
-      url: "/api/student-personality/delete/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-personality/delete/" + id,
     }),
 };
 
 const PosPembayaran = {
-  create: (token: string | null, data: any) =>
+  create: (data: any) =>
     instance({
       method: "POST",
-      url: "/api/payment-post/create",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/payment-post/create",
       data,
     }),
-  showAll: (
-    token: string | null,
-    search?: string,
-    page: number = 0,
-    limit: number = 10
-  ) =>
+  showAll: (search?: string, page: number = 0, limit: number = 10) =>
     instance({
       method: "GET",
-      url: `/api/payment-post?search_query=${search}&page=${page}&limit=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/payment-post?search_query=${search}&page=${page}&limit=${limit}`,
     }),
-  showOne: (token: string | null, id: string | null) =>
+  showOne: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/payment-post/show/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/payment-post/show/${id}`,
     }),
-  update: (token: string | null, id: string | number | null, data: any) =>
+  update: (id: string | number | null, data: any) =>
     instance({
       method: "PUT",
-      url: "/api/payment-post/update/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/payment-post/update/" + id,
       data,
     }),
-  delete: (token: string | null, id: string | number | null) =>
+  delete: (id: string | number | null) =>
     instance({
       method: "DELETE",
-      url: "/api/payment-post/delete/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/payment-post/delete/" + id,
     }),
 };
 
 const Kepribadian = {
-  showAll: (
-    token: string | null,
-    search: string = "",
-    page: number = 0,
-    limit: number = 10
-  ) =>
+  showAll: (search: string = "", page: number = 0, limit: number = 10) =>
     instance({
       method: "GET",
-      url: `/api/personality?search_query=${search}&page=${page}&limit=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/personality?search_query=${search}&page=${page}&limit=${limit}`,
     }),
 };
 
 const PosJenisPembayaran = {
-  create: (token: string | null, data: any) =>
+  create: (data: any) =>
     instance({
       method: "POST",
-      url: "/api/student-payment-bills/create",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-payment-bills/create",
       data,
     }),
-  bulkCreate: (token: string | null, data: any) =>
+  bulkCreate: (data: any) =>
     instance({
       method: "POST",
-      url: "/api/student-payment-bills/bulk-create",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-payment-bills/bulk-create",
       data,
     }),
   showAll: (
-    token: string | null,
     search?: string,
     paymentPostId?: string | null,
     academicYear?: string | null,
@@ -1186,59 +796,40 @@ const PosJenisPembayaran = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/student-payment-bills?search_query=${search}&payment_post_id=${paymentPostId}&academic_year=${academicYear}&page=${page}&limit=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-payment-bills?search_query=${search}&payment_post_id=${paymentPostId}&academic_year=${academicYear}&page=${page}&limit=${limit}`,
     }),
-  showOne: (token: string | null, id: string | null) =>
+  showOne: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/student-payment-bills/get-by-id/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-payment-bills/get-by-id/${id}`,
     }),
-  update: (token: string | null, id: string | number | null, data: any) =>
+  update: (id: string | number | null, data: any) =>
     instance({
       method: "PUT",
-      url: "/api/student-payment-bills/update/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-payment-bills/update/" + id,
       data,
     }),
-  delete: (token: string | null, id: string | number | null) =>
+  delete: (id: string | number | null) =>
     instance({
       method: "DELETE",
-      url: "/api/student-payment-bills/delete/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-payment-bills/delete/" + id,
     }),
 };
 
 const TagihanSiswa = {
-  create: (token: string | null, data: any) =>
+  create: (data: any) =>
     instance({
       method: "POST",
-      url: "/api/student-bills/create",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-bills/create",
       data,
     }),
-  bulkCreate: (token: string | null, data: any) =>
+  bulkCreate: (data: any) =>
     instance({
       method: "POST",
-      url: "/api/student-bills/bulk-create",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-bills/bulk-create",
       data,
     }),
   showAll: (
-    token: string | null,
     search?: string,
     billId?: string,
     classId?: string,
@@ -1247,13 +838,9 @@ const TagihanSiswa = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/student-bills?search_query=${search}&bill_id=${billId}&class_id=${classId}&page=${page}&limit=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-bills?search_query=${search}&bill_id=${billId}&class_id=${classId}&page=${page}&limit=${limit}`,
     }),
   showAllReports: (
-    token: string | null,
     paymentCatId?: string,
     classId?: string,
     studentId?: string,
@@ -1266,13 +853,9 @@ const TagihanSiswa = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/student-payment-report?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}&nis_prefix=${nisPrefix}&page=${page}&limit=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-payment-report?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}&nis_prefix=${nisPrefix}&page=${page}&limit=${limit}`,
     }),
   exportReports: (
-    token: string | null,
     paymentCatId?: string,
     classId?: string,
     studentId?: string,
@@ -1283,14 +866,10 @@ const TagihanSiswa = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/student-payment-report/export-all?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}&nis_prefix=${nisPrefix}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-payment-report/export-all?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}&nis_prefix=${nisPrefix}`,
       responseType: "blob",
     }),
   showAllArrears: (
-    token: string | null,
     search?: string,
     classId?: string,
     page: number = 0,
@@ -1298,66 +877,44 @@ const TagihanSiswa = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/student-arrears?search_query=${search}&class_id=${classId}&page=${page}&limit=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-arrears?search_query=${search}&class_id=${classId}&page=${page}&limit=${limit}`,
     }),
-  exportArrears: (token: string | null, search?: string, classId?: string) =>
+  exportArrears: (search?: string, classId?: string) =>
     instance({
       method: "GET",
-      url: `/api/student-arrears/export-all?search_query=${search}&class_id=${classId}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-arrears/export-all?search_query=${search}&class_id=${classId}`,
       responseType: "blob",
     }),
-  showByStudentId: (token: string | null, studentId?: string | null) =>
+  showByStudentId: (studentId?: string | null) =>
     instance({
       method: "GET",
-      url: `/api/student-bills/get-by-student-id/${studentId}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-bills/get-by-student-id/${studentId}`,
     }),
-  showOne: (token: string | null, id: string | null) =>
+  showOne: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/student-bills/get-by-id/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-bills/get-by-id/${id}`,
     }),
-  update: (token: string | null, id: string | number | null, data: any) =>
+  update: (id: string | number | null, data: any) =>
     instance({
       method: "PUT",
-      url: "/api/student-bills/update/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-bills/update/" + id,
       data,
     }),
-  confirmEvidence: (token: string | null, id: string | number | null) =>
+  confirmEvidence: (id: string | number | null) =>
     instance({
       method: "PUT",
-      url: "/api/student-bills/confirm-evidence/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-bills/confirm-evidence/" + id,
     }),
-  delete: (token: string | null, id: string | number | null) =>
+  delete: (id: string | number | null) =>
     instance({
       method: "DELETE",
-      url: "/api/student-bills/delete/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-bills/delete/" + id,
     }),
 };
 
 const ForCountryDetail = {
   showAll: (
-    token: string | null,
     search?: string,
     academic?: string | null,
     page: number = 0,
@@ -1366,150 +923,95 @@ const ForCountryDetail = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/for-country-detail?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/for-country-detail?academic=${academic}&search_query=${search}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
     }),
-  showOne: (token: string | null, id: string | null) =>
+  showOne: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/for-country-detail/show/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/for-country-detail/show/${id}`,
     }),
-  update: (token: string | null, id: string | number | null, data: any) =>
+  update: (id: string | number | null, data: any) =>
     instance({
       method: "PUT",
-      url: "/api/for-country-detail/update/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/for-country-detail/update/" + id,
       data,
     }),
-  delete: (token: string | null, id: string | number | null) =>
+  delete: (id: string | number | null) =>
     instance({
       method: "DELETE",
-      url: "/api/for-country-detail/delete/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/for-country-detail/delete/" + id,
     }),
-  uploadCertificate: (
-    token: string | null,
-    id: string | number | null,
-    data: any
-  ) =>
+  uploadCertificate: (id: string | number | null, data: any) =>
     instance({
       method: "PUT",
-      url: "/api/for-country-detail/update/" + id,
+      url: "/for-country-detail/update/" + id,
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
       data,
     }),
-  downloadCertificate: (token: string | null, path: string | null) =>
+  downloadCertificate: (path: string | null) =>
     instance({
       method: "GET",
-      url: `/api/for-country-detail/download?filepath=${path}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/for-country-detail/download?filepath=${path}`,
       responseType: "blob",
     }),
 };
 
 const DashboardKeuangan = {
-  getCards: (
-    token: string | null,
-    startDate: string,
-    endDate: string,
-    postPaymentId: string
-  ) =>
+  getCards: (startDate: string, endDate: string, postPaymentId: string) =>
     instance({
       method: "GET",
       url: `api/dashboard/admin-keuangan?start_date=${startDate}&end_date=${endDate}&post_payment_id=${postPaymentId}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  getChart: (
-    token: string | null,
-    startDate: string,
-    endDate: string,
-    postPaymentId: string
-  ) =>
+  getChart: (startDate: string, endDate: string, postPaymentId: string) =>
     instance({
       method: "GET",
       url: `api/dashboard/admin-keuangan-chart?start_date=${startDate}&end_date=${endDate}&post_payment_id=${postPaymentId}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
 };
 
 const CustomerCare = {
-  GetAllUserChat: (token: string | null, id: string | null) =>
+  GetAllUserChat: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/user-chat/show-by-user/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/user-chat/show-by-user/${id}`,
     }),
 
-  GetMessage: (token: string | null, id: string | null, withId: number) =>
+  GetMessage: (id: string | null, withId: number) =>
     instance({
       method: "GET",
-      url: `/api/user-chat/show-conversation?userid=${id}&withid=${withId}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/user-chat/show-conversation?userid=${id}&withid=${withId}`,
     }),
 
-  GetUserToChat: (token: string | null) =>
+  GetUserToChat: () =>
     instance({
       method: "GET",
-      url: `/api/user?limit=10000`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/user?limit=10000`,
     }),
 
-  GetUserToChatGuru: (token: string | null) =>
+  GetUserToChatGuru: () =>
     instance({
       method: "GET",
-      url: `/api/user-chat/show-by-guru`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/user-chat/show-by-guru`,
     }),
 
-  PostMessage: (token: string | null, data: any) =>
+  PostMessage: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/message/create`,
+      url: `/message/create`,
       data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
 };
 
 const AchievementSiswa = {
-  create: (token: string | null, data: any) =>
+  create: (data: any) =>
     instance({
       method: "POST",
-      url: "/api/achievement/create",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/achievement/create",
       data,
     }),
   showAll: (
-    token: string | null,
     search?: string,
     classId?: string,
     page: number = 0,
@@ -1518,59 +1020,40 @@ const AchievementSiswa = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/achievement?search_query=${search}&class_id=${classId}&with_assign=${withAssign}&page=${page}&limit=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/achievement?search_query=${search}&class_id=${classId}&with_assign=${withAssign}&page=${page}&limit=${limit}`,
     }),
-  showOne: (token: string | null, id: string | null) =>
+  showOne: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/achievement/show/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/achievement/show/${id}`,
     }),
-  update: (token: string | null, id: string | number | null, data: any) =>
+  update: (id: string | number | null, data: any) =>
     instance({
       method: "PUT",
-      url: "/api/achievement/update/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/achievement/update/" + id,
       data,
     }),
-  delete: (token: string | null, id: string | number | null) =>
+  delete: (id: string | number | null) =>
     instance({
       method: "DELETE",
-      url: "/api/achievement/delete/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/achievement/delete/" + id,
     }),
-  downloadCertificate: (token: string | null, path: string | null) =>
+  downloadCertificate: (path: string | null) =>
     instance({
       method: "GET",
-      url: `/api/achievement/download?filepath=${path}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/achievement/download?filepath=${path}`,
       responseType: "blob",
     }),
 };
 
 const ForCountry = {
-  create: (token: string | null, data: any) =>
+  create: (data: any) =>
     instance({
       method: "POST",
-      url: "/api/for-country/create-bulk",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/for-country/create-bulk",
       data,
     }),
   showAll: (
-    token: string | null,
     search?: string | null,
     academic?: string | null,
     page: number = 0,
@@ -1578,51 +1061,31 @@ const ForCountry = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/for-country?search_query=${search}&academic=${academic}&page=${page}&limit=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/for-country?search_query=${search}&academic=${academic}&page=${page}&limit=${limit}`,
     }),
-  showOne: (token: string | null, id: string | null) =>
+  showOne: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/for-country/show/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/for-country/show/${id}`,
     }),
-  update: (token: string | null, id: string | number | null, data: any) =>
+  update: (id: string | number | null, data: any) =>
     instance({
       method: "PUT",
-      url: "/api/for-country/update/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/for-country/update/" + id,
       data,
     }),
-  delete: (token: string | null, id: string | number | null) =>
+  delete: (id: string | number | null) =>
     instance({
       method: "DELETE",
-      url: "/api/for-country/delete/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/for-country/delete/" + id,
     }),
 };
 
 const Year = {
-  getYear: (
-    token: string | null,
-    querysearch: string,
-    limit: number,
-    page: number
-  ) =>
+  getYear: (querysearch: string, limit: number, page: number) =>
     instance({
       method: "GET",
-      url: `/api/academic-year`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/academic-year`,
       params: {
         search_query: querysearch,
         limit: limit,
@@ -1632,17 +1095,13 @@ const Year = {
 };
 
 const FileRaporSiswa = {
-  create: (token: string | null, data: any) =>
+  create: (data: any) =>
     instance({
       method: "POST",
-      url: "/api/student-report-file/create",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-report-file/create",
       data,
     }),
   showAll: (
-    token: string | null,
     page: number = 0,
     limit: number = 10,
     search: string = "",
@@ -1654,100 +1113,75 @@ const FileRaporSiswa = {
   ) =>
     instance({
       method: "GET",
-      url: `/api/student-report-file?search_query=${search}&student_id=${studentId}&academic=${academic}&semester=${semester}&class_id=${classId}&with_assign=${withAssign}&page=${page}&limit=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-report-file?search_query=${search}&student_id=${studentId}&academic=${academic}&semester=${semester}&class_id=${classId}&with_assign=${withAssign}&page=${page}&limit=${limit}`,
     }),
-  showOne: (token: string | null, id: string | null) =>
+  showOne: (id: string | null) =>
     instance({
       method: "GET",
-      url: `/api/student-report-file/show/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-report-file/show/${id}`,
     }),
-  update: (token: string | null, id: string | number | null, data: any) =>
+  update: (id: string | number | null, data: any) =>
     instance({
       method: "PUT",
-      url: "/api/student-report-file/update/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-report-file/update/" + id,
       data,
     }),
-  delete: (token: string | null, id: string | number | null) =>
+  delete: (id: string | number | null) =>
     instance({
       method: "DELETE",
-      url: "/api/student-report-file/delete/" + id,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: "/student-report-file/delete/" + id,
     }),
-  downloadFile: (token: string | null, path: string | null) =>
+  downloadFile: (path: string | null) =>
     instance({
       method: "GET",
-      url: `/api/student-report-file/download?file_path=${path}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-report-file/download?file_path=${path}`,
       responseType: "blob",
     }),
 };
 
 const Lesson = {
-  getAllData: (token: string | null, page: any, limit: any, search: string) =>
+  getAllData: (page: any, limit: any, search: string) =>
     instance({
       method: "GET",
-      url: `/api/lesson-plan?page=${page}&limit=${limit}&search=${search}`,
-
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/lesson-plan?page=${page}&limit=${limit}&search=${search}`,
     }),
 
-  CreateNewLesson: (token: string | null, data: any) =>
+  CreateNewLesson: (data: any) =>
     instance({
       method: "POST",
-      url: `/api/lesson-plan/create`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/lesson-plan/create`,
       data,
     }),
-  UpdateLesson: (token: string | null, data: any, id: string | number) =>
+  UpdateLesson: (data: any, id: string | number) =>
     instance({
       method: "PUT",
-      url: `/api/lesson-plan/update/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/lesson-plan/update/${id}`,
       data,
     }),
 };
 
 export {
-  User,
-  Auth,
-  Task,
-  Year,
-  Kalender,
-  Student,
-  Raport,
-  Pengumuman,
-  DashboardSiswa,
-  KepribadianSiswa,
-  Kepribadian,
-  Class,
-  PosPembayaran,
-  PosJenisPembayaran,
-  TagihanSiswa,
-  ForCountryDetail,
-  DashboardKeuangan,
-  CustomerCare,
   AchievementSiswa,
-  ForCountry,
+  Auth,
+  Class,
+  CustomerCare,
+  DashboardKeuangan,
+  DashboardSiswa,
   FileRaporSiswa,
+  ForCountry,
+  ForCountryDetail,
+  Kalender,
+  Kepribadian,
+  KepribadianSiswa,
   Lesson,
   Mapel,
+  Pengumuman,
+  PosJenisPembayaran,
+  PosPembayaran,
+  Raport,
+  Student,
+  TagihanSiswa,
+  Task,
+  User,
+  Year,
 };

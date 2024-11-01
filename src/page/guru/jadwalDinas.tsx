@@ -1,6 +1,6 @@
-import MyScheduler  from "../../component/calendar";
+import MyScheduler from "../../component/calendar";
 
-const jadwalMengajar = () => {
+const JadwalDinas = () => {
   const appointments = [
     {
       title: "Rapat rutin",
@@ -30,20 +30,18 @@ const jadwalMengajar = () => {
       priority: 2,
       location: "Room 3",
     },
-   
   ];
   return (
     <div className="my-10 w-full flex flex-col items-center">
-        <div className="flex flex-col items-center w-full text-3xl font-bold justify-center text-center">
-            <span>JADWAL KEDINASAN TAHUN 2024</span>
-            <span className="text-xl">Bulan Februari</span>
-        </div>
-        <div className="w-full p-6">
-            <MyScheduler data={appointments}/>
-        </div>
-
+      <div className="flex flex-col items-center w-full text-3xl font-bold justify-center text-center">
+        <span>JADWAL KEDINASAN TAHUN 2024</span>
+        <span className="text-xl">Bulan Februari</span>
       </div>
+      <div className="w-full p-6">
+        <MyScheduler data={appointments} />
+      </div>
+    </div>
   );
 };
 
-export default jadwalMengajar;
+export default JadwalDinas;

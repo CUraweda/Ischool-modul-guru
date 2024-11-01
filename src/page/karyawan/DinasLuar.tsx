@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Attendance, Employee } from "../../midleware/api-hrd";
-import DetailCard from "../../component/DetailCard";
-import Swal from "sweetalert2";
-import { TbFaceId } from "react-icons/tb";
-import { MdPeopleAlt } from "react-icons/md";
-import * as XLSX from "xlsx";
-import { GrStatusUnknown } from "react-icons/gr";
 import { FaFileExport } from "react-icons/fa6";
-import { Store } from "../../store/Store";
+import { GrStatusUnknown } from "react-icons/gr";
+import { MdPeopleAlt } from "react-icons/md";
+import { TbFaceId } from "react-icons/tb";
+import Swal from "sweetalert2";
+import * as XLSX from "xlsx";
 import Icon from "../../assets/icon";
+import DetailCard from "../../component/DetailCard";
+import { Attendance, Employee } from "../../midleware/api-hrd";
 
 type EmployeeType = {
   id: string;
@@ -50,8 +49,6 @@ const DinasLuarPage = () => {
     []
   );
 
-  const token = Store((state) => state.token) ?? "";
-
   const handleCheckType = (value: string, category: "Type" | "Status") => {
     if (category === "Type") {
       setFilterType((prev) => {
@@ -73,11 +70,7 @@ const DinasLuarPage = () => {
   };
   const getAllEmployee = async () => {
     try {
-      const response = await Employee.getAllEmployee(
-        100000,
-        search_query,
-        token
-      );
+      const response = await Employee.getAllEmployee(100000, search_query);
       const { result } = response.data.data || {};
       // setDataEmployee(result);
 
@@ -103,8 +96,7 @@ const DinasLuarPage = () => {
         filterStatus,
         searchQuery,
         filterDivision,
-        filterDate,
-        token
+        filterDate
       );
       setDataAttendance(result.data.data.result);
       setTotalRows(result.data.data.totalRows);
@@ -115,7 +107,7 @@ const DinasLuarPage = () => {
   };
   const fetchAllDivision = async () => {
     try {
-      const response = await Attendance.getAllDivision(token);
+      const response = await Attendance.getAllDivision();
       const { result } = response.data.data || {};
       setListDivision(Array.isArray(result) ? result : []);
       if (response.data.code !== 200) {

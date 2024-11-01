@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
-import { MdOutlineDocumentScanner } from "react-icons/md";
-import { Link } from "react-router-dom";
-import Modal from "../modal";
-import { IoChatboxEllipsesOutline } from "react-icons/io5";
-import { Task, Raport } from "../../midleware/api";
-import { globalStore, Store, useProps } from "../../store/Store";
-import { FaGear } from "react-icons/fa6";
-import { PiNotePencilBold } from "react-icons/pi";
-import { BiTrash } from "react-icons/bi";
-import * as Yup from "yup";
 import { useFormik } from "formik";
-import Swal from "sweetalert2";
+import { useEffect, useState } from "react";
+import { BiTrash } from "react-icons/bi";
 import { FaFilePdf } from "react-icons/fa";
+import { FaGear } from "react-icons/fa6";
+import { IoChatboxEllipsesOutline } from "react-icons/io5";
+import { MdOutlineDocumentScanner } from "react-icons/md";
+import { PiNotePencilBold } from "react-icons/pi";
+import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+import * as Yup from "yup";
+import { Raport, Task } from "../../midleware/api";
+import { globalStore, useProps } from "../../store/Store";
+import Modal from "../modal";
 import { IpageMeta, PaginationControl } from "../PaginationControl";
 
 const schema = Yup.object({
@@ -26,7 +26,6 @@ const schema = Yup.object({
 
 const RaportNarasi = () => {
   const { academicYear } = globalStore();
-  const { token } = Store();
   const { setKelasProps, kelasProps } = useProps();
   const [kelas, setKelas] = useState<any[]>([]);
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
@@ -100,14 +99,13 @@ const RaportNarasi = () => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20, "Y");
+    const response = await Task.GetAllClass(0, 20, "Y");
     setKelas(response.data.data.result);
   };
 
   const getStudent = async () => {
     try {
       const response = await Raport.showAllStudentReport(
-        token,
         filter.classId,
         filter.semester,
         filter.page,
@@ -132,7 +130,7 @@ const RaportNarasi = () => {
       nar_teacher_comments: komen,
     };
 
-    await Raport.createKomentar(token, reportId, data);
+    await Raport.createKomentar(reportId, data);
     getStudent();
     closeModal("komen-guru-narasi");
     setKomen("");
@@ -147,7 +145,7 @@ const RaportNarasi = () => {
       class_id: classId,
       category: kategori,
     };
-    await Raport.createKategori(token, data);
+    await Raport.createKategori(data);
     closeModal("add-kategori");
     formik.resetForm();
     getKategori();
@@ -161,7 +159,7 @@ const RaportNarasi = () => {
       narrative_cat_id: idKategori,
       sub_category: subKategori,
     };
-    await Raport.createSubKategori(token, data);
+    await Raport.createSubKategori(data);
     closeModal("add-sub-kategori");
     formik.resetForm();
     getSubKategori();
@@ -186,7 +184,7 @@ const RaportNarasi = () => {
 
   const getKategori = async () => {
     try {
-      const response = await Raport.getKategoriNarasi(token, idClass);
+      const response = await Raport.getKategoriNarasi(idClass);
       setKategori(response.data.data);
     } catch (error) {
       console.log(error);
@@ -195,7 +193,7 @@ const RaportNarasi = () => {
   const getSubKategori = async () => {
     try {
       const id = formik.values.idKategori;
-      const response = await Raport.getSubCategoriNarasi(token, id);
+      const response = await Raport.getSubCategoriNarasi(id);
       setSubKategori(response.data.data);
     } catch (error) {
       console.log(error);
@@ -210,7 +208,7 @@ const RaportNarasi = () => {
         class_id: classId,
         category: kategori,
       };
-      await Raport.editKategori(token, idKategori, data);
+      await Raport.editKategori(idKategori, data);
       closeModal("add-kategori");
       formik.resetForm();
       getKategori();
@@ -228,7 +226,7 @@ const RaportNarasi = () => {
         narrative_cat_id: idKategori,
         sub_category: subKategori,
       };
-      await Raport.editSubKategori(token, idSubKategori, data);
+      await Raport.editSubKategori(idSubKategori, data);
       closeModal("add-sub-kategori");
       formik.resetForm();
       getSubKategori();
@@ -257,7 +255,7 @@ const RaportNarasi = () => {
 
   const deleteKategori = async (id: string) => {
     try {
-      await Raport.deleteKategoriNarasi(token, id);
+      await Raport.deleteKategoriNarasi(id);
       getKategori();
       Swal.fire({
         position: "center",
@@ -273,7 +271,7 @@ const RaportNarasi = () => {
 
   const deleteSubKategori = async (id: string) => {
     try {
-      await Raport.deleteSubKategoriNarasi(token, id);
+      await Raport.deleteSubKategoriNarasi(id);
       getSubKategori();
       Swal.fire({
         position: "center",
@@ -289,7 +287,7 @@ const RaportNarasi = () => {
 
   const hanldegeneratePdf = async (id: string, report_id: string) => {
     try {
-      await Raport.generatePdfNarasi(token, id, formik.values.smt, report_id);
+      await Raport.generatePdfNarasi(id, formik.values.smt, report_id);
       Swal.fire({
         position: "center",
         icon: "success",

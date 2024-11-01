@@ -4,7 +4,6 @@ import Modal, { openModal, closeModal } from "../../component/modal";
 import Swal from "sweetalert2";
 import Icon from "../../assets/icon";
 import { FiMoreHorizontal } from "react-icons/fi";
-import { Store } from "../../store/Store";
 import { AxiosError } from "axios";
 
 type DaftarPenilaianType = {
@@ -23,11 +22,9 @@ const DaftarPenilaian = () => {
   const [search, setSearch] = useState("");
 
   const resetNilai = () => setNilai("");
-  const token = Store((state) => state.token) ?? "";
-
   const fetchData = async () => {
     try {
-      const response = await Karyawan.DaftarPenilaian(0, 20, search, token);
+      const response = await Karyawan.DaftarPenilaian(0, 20, search);
       if (response.data.data.result) setFetch(response.data.data.result);
     } catch (error) {
       const message = (error as AxiosError<Error>).response?.data.message;
@@ -40,7 +37,7 @@ const DaftarPenilaian = () => {
       grade: nilai,
     };
     try {
-      await Karyawan.EditNilai(data, id, token);
+      await Karyawan.EditNilai(data, id);
       Swal.fire({
         icon: "success",
         title: "Sukses",

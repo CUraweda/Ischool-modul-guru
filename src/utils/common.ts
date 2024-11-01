@@ -1,5 +1,11 @@
 import moment from "moment";
 
+export const token = {
+  get: localStorage.getItem("token"),
+  set: (value: string) => localStorage.setItem("token", value),
+  delete: () => localStorage.removeItem("token"),
+};
+
 export const calculateRemainingProbation = (start: string, end: string) => {
   const startDate = moment(start);
   const endDate = moment(end);

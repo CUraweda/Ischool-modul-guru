@@ -1,7 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
+import { token } from "../utils/common";
 
-const instance = axios.create({
+export const instance = axios.create({
   baseURL: import.meta.env.VITE_REACT_API_HRD_URL,
+  headers: {
+    Authorization: `Bearer ${token.get}`,
+  },
 });
 
 const Attendance = {
@@ -12,13 +17,12 @@ const Attendance = {
     status: string[],
     search: string,
     division: any,
-    date: string,
-    token: string | null
+    date: string
   ) => {
     const typeParam = type.length ? type.join(",") : "";
     const statusParam = status.length ? status.join(",") : "";
 
-    return instance.get(`employee-attendance`, {
+    return instance.get(`/employee-attendance`, {
       params: {
         search,
         type: typeParam,
@@ -28,33 +32,19 @@ const Attendance = {
         page,
         limit,
       },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     });
   },
-  deleteAttendance: (id: number, token?: string) =>
-    instance.delete(`employee-attendance/delete/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  getAllEmployeeMonth: (search: string, token?: string) => {
-    return instance.get(`employee-attendance/recap-month-employee`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  deleteAttendance: (id: number) =>
+    instance.delete(`/employee-attendance/delete/${id}`),
+  getAllEmployeeMonth: (search: string) => {
+    return instance.get(`/employee-attendance/recap-month-employee`, {
       params: {
         search_query: search,
       },
     });
   },
-  getAllDivision: (token?: string) => {
-    return instance.get(`division`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  getAllDivision: () => {
+    return instance.get(`/division`);
   },
   getVacation: (
     page: number,
@@ -63,13 +53,12 @@ const Attendance = {
     type: string[],
     status: string[],
     date: string,
-    divisi: any,
-    token: string | null
+    divisi: any
   ) => {
     const typeParam = type.length ? type.join(",") : "";
     const statusParam = status.length ? status.join(",") : "";
 
-    return instance.get("employee-vacation", {
+    return instance.get("/employee-vacation", {
       params: {
         search,
         page,
@@ -79,58 +68,33 @@ const Attendance = {
         date,
         division_id: divisi,
       },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     });
   },
 
-  createVacation: (data: any, token?: string) =>
-    instance.post("employee-vacation/create", data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  createVacation: (data: any) =>
+    instance.post("/employee-vacation/create", data),
 
-  updateVacation: (id: number, data: any, token?: string) =>
-    instance.put(`employee-vacation/update/${id}`, data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  updateVacation: (id: number, data: any) =>
+    instance.put(`/employee-vacation/update/${id}`, data),
 
-  acceptVacation: (id: number, data: null, token?: string) =>
+  acceptVacation: (id: number, data: null) =>
     instance({
       method: `PUT`,
-      url: `employee-vacation/change-status/accept/${id}`,
+      url: `/employee-vacation/change-status/accept/${id}`,
       data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
 
-  rejectVacation: (id: number, data: null, token?: string) =>
+  rejectVacation: (id: number, data: null) =>
     instance({
       method: `PUT`,
-      url: `employee-vacation/change-status/reject/${id}`,
+      url: `/employee-vacation/change-status/reject/${id}`,
       data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
 
-  deleteVacation: (id: number, token?: string) =>
-    instance.delete(`employee-vacation/delete/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  requestVacation: (data: any, token?: string) =>
-    instance.post(`employee-vacation/create`, data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  deleteVacation: (id: number) =>
+    instance.delete(`/employee-vacation/delete/${id}`),
+  requestVacation: (data: any) =>
+    instance.post(`/employee-vacation/create`, data),
 };
 
 const Karyawan = {
@@ -138,176 +102,102 @@ const Karyawan = {
     page: number,
     limit: number,
     search: string,
-    status: string,
-    token: string | null
+    status: string
   ) =>
     await instance({
       method: "GET",
-      url: `employee?page=${page}&limit=${limit}&search=${search}&status=${status}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/employee?page=${page}&limit=${limit}&search=${search}&status=${status}`,
     }),
-  TambahKaryawan: (data: any, token: string) =>
+  TambahKaryawan: (data: any) =>
     instance({
       method: `POST`,
-      url: `employee/create`,
+      url: `/employee/create`,
       data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  EditKaryawan: (data: any, id: string, token: string) =>
+  EditKaryawan: (data: any, id: string) =>
     instance({
       method: `PUT`,
-      url: `employee/update/${id}`,
+      url: `/employee/update/${id}`,
       data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  HapusKaryawan: (id: string, token: string) =>
+  HapusKaryawan: (id: string) =>
     instance({
       method: `DELETE`,
-      url: `employee/delete/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/employee/delete/${id}`,
     }),
-  ProfilKaryawan: (id: string | undefined, token: string | null) =>
+  ProfilKaryawan: (id: string | undefined) =>
     instance({
       method: `GET`,
-      url: `employee/detail/${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/employee/detail/${id}`,
     }),
-  DaftarPenilaian: (
-    page: number,
-    limit: number,
-    search: string,
-    token: string | null
-  ) =>
+  DaftarPenilaian: (page: number, limit: number, search: string) =>
     instance({
       method: `GET`,
-      url: `employee?page=${page}&limit=${limit}&search=${search}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/employee?page=${page}&limit=${limit}&search=${search}`,
     }),
-  AddPenilaian: (data: any, token: string) =>
+  AddPenilaian: (data: any) =>
     instance({
       method: `POST`,
-      url: `employee/create`,
+      url: `/employee/create`,
       data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  EditPenilaian: (data: any, id: string, token: string) =>
+  EditPenilaian: (data: any, id: string) =>
     instance({
       method: `PUT`,
-      url: `employee/update/${id}`,
+      url: `/employee/update/${id}`,
       data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  EditNilai: async (data: any, id: string, token: string) =>
+  EditNilai: async (data: any, id: string) =>
     await instance({
       method: `PUT`,
-      url: `employee/update/${id}`,
+      url: `/employee/update/${id}`,
       data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  JobdeskList: (token: string | null, id?: string, graded?: number) =>
+  JobdeskList: (id?: string, graded?: number) =>
     instance({
       method: `GET`,
-      url: `employee-jobdesk?page=0&limit=200&employee_id=${id}&raw_grade=${graded}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/employee-jobdesk?page=0&limit=200&employee_id=${id}&raw_grade=${graded}`,
     }),
 };
 
 const Jobdesk = {
-  getAllJobdesk: (
-    limit: number,
-    search: string,
-    page: number,
-    id: string,
-    token: string | null
-  ) =>
-    instance.get(`employee?employee_id=${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  getAllJobdesk: (limit: number, search: string, page: number, id: string) =>
+    instance.get(`/employee?employee_id=${id}`, {
       params: {
         limit: limit,
         search,
         page: page,
       },
     }),
-  createJobdesk: (data: any, token?: string) =>
-    instance.post("employee?page=0&limit=20&employee_id=1", data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  createJobdesk: (data: any) =>
+    instance.post("/employee?page=0&limit=20&employee_id=1", data),
 };
 
 const Employee = {
-  getOneEmployee: (id: any, token: string | null) =>
-    instance.get(`employee/show/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  getAllEmployee: (limit: number, search_query: any, token: string | null) =>
-    instance.get("employee", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  getOneEmployee: (id: any) => instance.get(`/employee/show/${id}`),
+  getAllEmployee: (limit: number, search_query: any) =>
+    instance.get("/employee", {
       params: {
         limit: limit,
         search: search_query,
       },
     }),
-  getAllEmployeePage: (
-    limit: number,
-    search_query: string,
-    page: number,
-    token: string | null
-  ) =>
-    instance.get("employee", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  getAllEmployeePage: (limit: number, search_query: string, page: number) =>
+    instance.get("/employee", {
       params: {
         limit: limit,
         search: search_query,
         page: page,
       },
     }),
-  updateDivisi: (id: number, data: any, token?: string) =>
-    instance.put(
-      `employee/update/${id}`,
-      {
-        division_id: data,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    ),
+  updateDivisi: (id: number, data: any) =>
+    instance.put(`/employee/update/${id}`, {
+      division_id: data,
+    }),
 };
 
 const CutiIzin = {
   showAll: (
-    token: string | null,
     search: string,
     employeeId: string,
     type: string,
@@ -318,7 +208,7 @@ const CutiIzin = {
   ) =>
     instance({
       method: "GET",
-      url: "/api/employee-vacation",
+      url: "/employee-vacation",
       params: {
         search,
         employee_id: employeeId,
@@ -328,231 +218,120 @@ const CutiIzin = {
         page,
         limit,
       },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  showOne: (token: string | null, id: string) =>
-    instance.get("/api/employee-vacation/" + id, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  request: (token: string | null, data: any) =>
-    instance.post("/api/employee-vacation/request", data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  change: (token: string | null, id: string, data: any) =>
-    instance.put("/api/employee-vacation/change/" + id, data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  remove: (token: string | null, id: string) =>
-    instance.delete("/api/employee-vacation/remove/" + id, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  downloadFile: (token: string | null, path: string | null) =>
-    instance.get("/api/employee-vacation/download", {
+  showOne: (id: string) => instance.get("/employee-vacation/" + id),
+  request: (data: any) => instance.post("/employee-vacation/request", data),
+  change: (id: string, data: any) =>
+    instance.put("/employee-vacation/change/" + id, data),
+  remove: (id: string) => instance.delete("/employee-vacation/remove/" + id),
+  downloadFile: (path: string | null) =>
+    instance.get("/employee-vacation/download", {
       params: {
         file_path: path,
-      },
-      headers: {
-        Authorization: `Bearer ${token}`,
       },
       responseType: "blob",
     }),
 };
 
 const PengajuanPelatihanKaryawan = {
-  request: (token: string | null, data: any) =>
-    instance.post("/api/training-suggestion/request", data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  request: (data: any) => instance.post("/training-suggestion/request", data),
   showAll: (
-    token: string | null,
     search: string,
     employeeId: string,
     page: number = 0,
     limit: number = 10
   ) =>
-    instance.get("/api/training-suggestion", {
+    instance.get("/training-suggestion", {
       params: { search, employee_id: employeeId, page, limit },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  showOne: (token: string | null, id: string | null) =>
-    instance.get("/api/training-suggestion/" + id, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  update: (token: string | null, id: string | number | null, data: any) =>
-    instance.put("/api/training-suggestion/update/" + id, data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  delete: (token: string | null, id: string | number | null) =>
-    instance.delete("/api/training-suggestion/delete/" + id, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  showOne: (id: string | null) => instance.get("/training-suggestion/" + id),
+  update: (id: string | number | null, data: any) =>
+    instance.put("/training-suggestion/update/" + id, data),
+  delete: (id: string | number | null) =>
+    instance.delete("/training-suggestion/delete/" + id),
 };
 
 const EmployeeJobdesk = {
-  getAllJobdesk: (limit: number, search: any, page: number, token?: string) =>
-    instance.get("employee-jobdesk", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  getAllJobdesk: (limit: number, search: any, page: number) =>
+    instance.get("/employee-jobdesk", {
       params: {
         limit: limit,
         search,
         page: page,
       },
     }),
-  getDifference: (id: number, token?: string) =>
-    instance.get(`employee/difference-day/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-  createJobdesk: (data: any, token?: string) =>
-    instance.post("employee-jobdesk/create", data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  getDifference: (id: number) => instance.get(`/employee/difference-day/${id}`),
+  createJobdesk: (data: any) => instance.post("/employee-jobdesk/create", data),
 };
 
 const DownloadFile = {
-  Download: (access_token: string | null, file_path: string) =>
+  Download: (file_path: string) =>
     instance({
       method: `GET`,
-      url: `download?filepath=${file_path}`,
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
+      url: `/download?filepath=${file_path}`,
     }),
-  DownloadSade: (token: string | null, file_path: string) =>
+  DownloadSade: (file_path: string) =>
     instance({
       method: `GET`,
-      url: `student-task/download?filepath=${file_path}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      url: `/student-task/download?filepath=${file_path}`,
     }),
 };
 
 const PelatihanKaryawan = {
   showAll: (
-    token: string | null,
     search: string,
     employeeId: string,
     status: string,
     page: number = 0,
     limit: number = 10
   ) =>
-    instance.get("/api/training", {
+    instance.get("/training", {
       params: { search, employee_id: employeeId, status, page, limit },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  showOne: (token: string | null, id: string | null) =>
-    instance.get("/api/training/" + id, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  showOne: (id: string | null) => instance.get("/training/" + id),
   showAllDokumentasi: (
-    token: string | null,
     trainingId: string,
     page: number = 0,
     limit: number = 10000
   ) =>
-    instance.get("/api/training-attendance", {
+    instance.get("/training-attendance", {
       params: { training_id: trainingId, page, limit },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
 
-  uploadDokumentasi: (token: string | null, training_id: string, data: any) =>
+  uploadDokumentasi: (training_id: string, data: any) =>
     instance.post(
-      "/api/training-attendance/attend-specific/" + training_id,
+      "/training-attendance/attend-specific/" + training_id,
       data,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      {}
     ),
-  hapusDokumentasi: (token: string | null, id: string) =>
-    instance.delete("/api/training-attendance/delete/" + id, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  hapusDokumentasi: (id: string) =>
+    instance.delete("/training-attendance/delete/" + id),
 };
 
 const waktukerja = {
-  today: (token: string | null) =>
-    instance.get(`api/worktime/today`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  today: () => instance.get(`/worktime/today`),
 };
 
 const Rekapan = {
-  kalendarKehadiran: (
-    token: string | null,
-    startDate: string,
-    endDate: string
-  ) =>
-    instance.get("/api/employee-attendance/recap-calendar-by-token", {
+  kalendarKehadiran: (startDate: string, endDate: string) =>
+    instance.get("/employee-attendance/recap-calendar-by-token", {
       params: { start_date: startDate, end_date: endDate },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  jumlahPresensi: (token: string | null, employeeId: string) =>
-    instance.get(
-      "/api/employee-attendance/recap-month-employee/" + employeeId,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    ),
-  presensiSetahun: (token: string | null, id: any | null) =>
-    instance.get(`/api/employee-attendance/recap-year-employee/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  jumlahPresensi: (employeeId: string) =>
+    instance.get("/employee-attendance/recap-month-employee/" + employeeId),
+  presensiSetahun: (id: any | null) =>
+    instance.get(`/employee-attendance/recap-year-employee/${id}`),
 };
 
 const PengumumanKaryawan = {
   showAll: (
-    token: string | null,
     search: string,
     specific: string,
     employeeId: string,
     page: number = 0,
     limit: number = 10
   ) =>
-    instance.get("/api/employee-announcement", {
+    instance.get("/employee-announcement", {
       params: {
         search,
         only_specific: specific,
@@ -560,40 +339,26 @@ const PengumumanKaryawan = {
         page,
         limit,
       },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }),
-  showOne: (token: string | null, id: string | null) =>
-    instance.get("/api/employee-announcement/" + id, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  showOne: (id: string | null) => instance.get("/employee-announcement/" + id),
 };
 
 const PresensiKaryawan = {
-  hadir: (token: string, data: any) =>
-    instance.post("/api/employee-attendance/attend", data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  hadir: (data: any) => instance.post("/employee-attendance/attend", data),
 };
 
 export {
+  Attendance,
   CutiIzin,
-  PengajuanPelatihanKaryawan,
-  PelatihanKaryawan,
-  Karyawan,
-  Rekapan,
   DownloadFile,
+  Employee,
   EmployeeJobdesk,
   Jobdesk,
-  waktukerja,
-  Attendance,
-  Employee,
+  Karyawan,
+  PelatihanKaryawan,
+  PengajuanPelatihanKaryawan,
   PengumumanKaryawan,
   PresensiKaryawan,
+  Rekapan,
+  waktukerja,
 };

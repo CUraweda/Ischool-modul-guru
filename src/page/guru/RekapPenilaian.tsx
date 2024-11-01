@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Jobdesk } from "../../midleware/api-hrd";
 import Icon from "../../assets/icon";
-import { Store } from "../../store/Store";
+import { Jobdesk } from "../../midleware/api-hrd";
 
 const RekapPenilaianPage = () => {
   const navigate = useNavigate();
@@ -16,16 +15,13 @@ const RekapPenilaianPage = () => {
     id: "",
   });
 
-  const token = Store((state) => state.token) ?? "";
-
   const getAllDataJob = async () => {
     try {
       const response = await Jobdesk.getAllJobdesk(
         filter.limit,
         filter.search,
         filter.page,
-        filter.id,
-        token
+        filter.id
       );
       setEmployees(response.data.data.result);
       setFilter((prev) => ({
@@ -112,7 +108,6 @@ const RekapPenilaianPage = () => {
             </tbody>
           </table>
 
-          
           <div className="join m-5">
             <button
               className="btn join-item btn-sm"
