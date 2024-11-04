@@ -11,17 +11,13 @@ const instance = axios.create({
 });
 
 const Auth = {
-  Login: (
+  Login: async (
     email: string | null,
     password: string | null
   ): AxiosPromise<LoginResponse> =>
-    instance({
-      method: "POST",
-      url: "/auth/login",
-      data: {
-        email,
-        password,
-      },
+    await axios.post(`${import.meta.env.VITE_REACT_API_URL}/auth/login`, {
+      email,
+      password,
     }),
   MeData: () =>
     instance({
