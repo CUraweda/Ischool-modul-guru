@@ -958,12 +958,12 @@ const DashboardKeuangan = {
   getCards: (startDate: string, endDate: string, postPaymentId: string) =>
     instance({
       method: "GET",
-      url: `api/dashboard/admin-keuangan?start_date=${startDate}&end_date=${endDate}&post_payment_id=${postPaymentId}`,
+      url: `/dashboard/admin-keuangan?start_date=${startDate}&end_date=${endDate}&post_payment_id=${postPaymentId}`,
     }),
   getChart: (startDate: string, endDate: string, postPaymentId: string) =>
     instance({
       method: "GET",
-      url: `api/dashboard/admin-keuangan-chart?start_date=${startDate}&end_date=${endDate}&post_payment_id=${postPaymentId}`,
+      url: `/dashboard/admin-keuangan-chart?start_date=${startDate}&end_date=${endDate}&post_payment_id=${postPaymentId}`,
     }),
 };
 
