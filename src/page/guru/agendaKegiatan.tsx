@@ -13,7 +13,7 @@ import Paper from "@mui/material/Paper";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
-import { Kalender } from "../../midleware/api";
+import { Kalender } from "../../middleware/api";
 import { employeeStore } from "../../store/Store";
 
 const AgendaKegiatan = () => {

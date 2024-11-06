@@ -19,7 +19,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { ForCountryDetail } from "../../midleware/api";
+import { ForCountryDetail } from "../../middleware/api";
 import { globalStore } from "../../store/Store";
 import { formatTime } from "../../utils/date";
 

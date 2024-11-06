@@ -16,7 +16,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../../component/PaginationControl";
-import { PelatihanKaryawan } from "../../../midleware/api-hrd";
+import { PelatihanKaryawan } from "../../../middleware/api-hrd";
 import { employeeStore } from "../../../store/Store";
 import { formatTime } from "../../../utils/date";
 

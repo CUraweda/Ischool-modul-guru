@@ -1,5 +1,5 @@
 import { BsSend } from "react-icons/bs";
-import { CustomerCare } from "../../midleware/api";
+import { CustomerCare } from "../../middleware/api";
 import { Store } from "../../store/Store";
 import { useEffect, useState } from "react";
 import socketService from "../../utils/socket";

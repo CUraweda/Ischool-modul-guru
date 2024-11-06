@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "../../assets/icon";
-import { Jobdesk } from "../../midleware/api-hrd";
+import { Jobdesk } from "../../middleware/api-hrd";
 
 const RekapPenilaianPage = () => {
   const navigate = useNavigate();

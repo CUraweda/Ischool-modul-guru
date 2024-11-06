@@ -6,7 +6,7 @@ import ChangeExpression from "../../component/guru/InstructionTrainFace2";
 import TrainFace from "../../component/guru/TrainFace";
 // import UserData from '../../component/guru/userData';
 import { Player } from "@lottiefiles/react-lottie-player";
-import { Auth } from "../../midleware/api";
+import { Auth } from "../../middleware/api";
 import { employeeStore } from "../../store/Store";
 // import { BASE_URL_TRAINING_FACE } from '../../config/config';
 

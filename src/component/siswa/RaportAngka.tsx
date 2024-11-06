@@ -14,7 +14,7 @@ import {
   KepribadianSiswa,
   Raport,
   Task,
-} from "../../midleware/api";
+} from "../../middleware/api";
 import { globalStore, useProps } from "../../store/Store";
 import Modal from "../modal";
 import { IpageMeta, PaginationControl } from "../PaginationControl";

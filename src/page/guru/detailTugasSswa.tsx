@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { BiDownload } from "react-icons/bi";
 import { VscTasklist } from "react-icons/vsc";
 import { Link } from "react-router-dom";
-import { Task } from "../../midleware/api";
+import { Task } from "../../middleware/api";
 import { BsEye } from "react-icons/bs";
 import Modal from "../../component/modal";
 import Swal from "sweetalert2";

@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Modal from "../../component/modal";
-import { Raport } from "../../midleware/api";
+import { Raport } from "../../middleware/api";
 import Swal from "sweetalert2";
 import { BiTrash } from "react-icons/bi";
 import { AiFillCloseCircle } from "react-icons/ai";

@@ -12,7 +12,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { ForCountry, User } from "../../midleware/api";
+import { ForCountry, User } from "../../middleware/api";
 import { globalStore } from "../../store/Store";
 const schema = Yup.object().shape({
   id: Yup.string().optional(),

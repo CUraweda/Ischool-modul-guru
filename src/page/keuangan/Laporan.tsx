@@ -12,7 +12,7 @@ import {
   PosJenisPembayaran,
   Student,
   TagihanSiswa,
-} from "../../midleware/api";
+} from "../../middleware/api";
 import { getAcademicYears } from "../../utils/common";
 import { formatTime } from "../../utils/date";
 

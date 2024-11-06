@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import Modal, { closeModal, openModal } from "../component/modal";
-import { Auth, Task } from "../midleware/api";
+import { Auth, Task } from "../middleware/api";
 import { employeeStore } from "../store/Store";
 const ProfilePage = () => {
   const {

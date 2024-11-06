@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import logo from "../assets/sade.png";
 import bg from "../assets/bg2.png";
-import { Auth } from "../midleware/api";
+import { Auth } from "../middleware/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { employeeStore, Store } from "../store/Store";

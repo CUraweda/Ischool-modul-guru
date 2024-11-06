@@ -8,7 +8,7 @@ import menuKeuangan from "../data/keuangan.json";
 import menuHRD from "../data/hrd.json";
 import { globalStore, Store } from "../store/Store";
 import { getAcademicYears, getCurrentAcademicYear } from "../utils/common";
-import { Year } from "../midleware/api";
+import { Year } from "../middleware/api";
 // import karywan from "../data/karyawan.json"
 
 interface Menu {

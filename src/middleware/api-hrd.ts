@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { token } from "../utils/common";
+import { getAllJobdesk } from "../services/jobdesk";
+import { SearchParams } from "../types/common";
 
 export const instance = axios.create({
   baseURL: import.meta.env.VITE_REACT_API_HRD_URL,
@@ -252,14 +254,7 @@ const PengajuanPelatihanKaryawan = {
 };
 
 const EmployeeJobdesk = {
-  getAllJobdesk: (limit: number, search: any, page: number) =>
-    instance.get("/employee-jobdesk", {
-      params: {
-        limit: limit,
-        search,
-        page: page,
-      },
-    }),
+  getAllJobdesk: (searchParams: SearchParams) => getAllJobdesk(searchParams),
   getDifference: (id: number) => instance.get(`/employee/difference-day/${id}`),
   createJobdesk: (data: any) => instance.post("/employee-jobdesk/create", data),
 };

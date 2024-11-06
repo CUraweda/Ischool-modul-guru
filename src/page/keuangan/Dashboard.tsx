@@ -14,7 +14,7 @@ import {
 import { Link } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import { Input, Select } from "../../component/Input";
-import { DashboardKeuangan, PosPembayaran } from "../../midleware/api";
+import { DashboardKeuangan, PosPembayaran } from "../../middleware/api";
 import { moneyFormat } from "../../utils/common";
 
 const Dashboard = () => {

@@ -4,7 +4,7 @@ import { FaFilePdf } from "react-icons/fa";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { MdCloudUpload } from "react-icons/md";
 import Swal from "sweetalert2";
-import { Raport, Task } from "../../midleware/api";
+import { Raport, Task } from "../../middleware/api";
 import { globalStore, useProps } from "../../store/Store";
 import Modal from "../modal";
 import { IpageMeta, PaginationControl } from "../PaginationControl";

@@ -77,7 +77,7 @@ export const getReversedNumbersByLen = (length: number) => {
     return [];
   }
 
-  let result = [];
+  const result = [];
   for (let i = length; i >= 1; i--) {
     result.push(i);
   }

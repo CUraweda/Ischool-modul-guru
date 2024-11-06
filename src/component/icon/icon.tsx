@@ -21,6 +21,7 @@ import {
   AiOutlineCalendar,
   AiOutlineIdcard,
 } from "react-icons/ai";
+import { RiBookReadLine } from "react-icons/ri";
 // tambahkan import untuk ikon lainnya di sini
 
 export const iconMapping: { [key: string]: JSX.Element } = {
@@ -48,5 +49,6 @@ export const iconMapping: { [key: string]: JSX.Element } = {
   "<AiOutlineCalendar />": <AiOutlineCalendar />,
   "<AiOutlineIdcard />": <AiOutlineIdcard />,
   "<AiOutlineSolution />": <AiOutlineSolution />,
+  "<RiBookReadLine />": <RiBookReadLine />,
   // tambahkan pemetaan untuk ikon lainnya di sini
 };

@@ -1,8 +1,8 @@
 import * as faceapi from "face-api.js";
 import React, { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
-import { Auth } from "../midleware/api";
-import { instance } from "../midleware/api-hrd";
+import { Auth } from "../middleware/api";
+import { instance } from "../middleware/api-hrd";
 import { employeeStore } from "../store/Store";
 
 interface FaceDetectionProps {

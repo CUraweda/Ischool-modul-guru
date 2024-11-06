@@ -10,7 +10,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { AchievementSiswa, Class, Student, Year } from "../../midleware/api";
+import { AchievementSiswa, Class, Student, Year } from "../../middleware/api";
 import { getAcademicYears, getCurrentAcademicYear } from "../../utils/common";
 import { formatTime } from "../../utils/date";
 // import { setYear } from "date-fns/esm";
