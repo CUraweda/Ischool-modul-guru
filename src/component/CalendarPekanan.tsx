@@ -13,7 +13,7 @@ import {
   ViewSwitcher,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { globalStore, Store } from "../store/Store";
-import { Kalender, Task } from "../midleware/api";
+import { Kalender, Task } from "../middleware/api";
 import { FaPencil } from "react-icons/fa6";
 import { BiTrash } from "react-icons/bi";
 import { CiClock2 } from "react-icons/ci";

@@ -18,7 +18,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { CutiIzin } from "../../midleware/api-hrd";
+import { CutiIzin } from "../../middleware/api-hrd";
 import { employeeStore } from "../../store/Store";
 import { formatTime } from "../../utils/date";
 const types = ["CUTI", "IZIN"];

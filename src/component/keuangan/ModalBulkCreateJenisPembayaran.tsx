@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaPlus, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
-import { PosJenisPembayaran, PosPembayaran } from "../../midleware/api";
+import { PosJenisPembayaran, PosPembayaran } from "../../middleware/api";
 import { getAcademicYears } from "../../utils/common";
 import { Input, Select } from "../Input";
 import Modal, { closeModal } from "../modal";

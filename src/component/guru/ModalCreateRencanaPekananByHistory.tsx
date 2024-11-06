@@ -2,7 +2,7 @@ import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
-import { Class, Kalender } from "../../midleware/api";
+import { Class, Kalender } from "../../middleware/api";
 import { globalStore } from "../../store/Store";
 import { formatTime } from "../../utils/date";
 import { Input, Select } from "../Input";

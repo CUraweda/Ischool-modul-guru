@@ -7,7 +7,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { Class, TagihanSiswa } from "../../midleware/api";
+import { Class, TagihanSiswa } from "../../middleware/api";
 import { formatTime } from "../../utils/date";
 
 const DaftarTunggakan = () => {

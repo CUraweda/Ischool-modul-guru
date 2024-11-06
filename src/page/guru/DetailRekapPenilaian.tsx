@@ -9,7 +9,7 @@ import {
   DownloadFile,
   EmployeeJobdesk,
   Karyawan,
-} from "../../midleware/api-hrd";
+} from "../../middleware/api-hrd";
 import { calculateRemainingProbation, formattedDate } from "../../utils/common";
 
 const DetailRekapPenilaianPage: React.FC = () => {
@@ -23,8 +23,6 @@ const DetailRekapPenilaianPage: React.FC = () => {
   const [profile, setProfile] = useState("");
   // const [ListEmployee, setListEmployee] = useState<any>(null);
 
-  console.log(employee);
-  console.log(jobdeskList);
 
   const navigate = useNavigate();
 

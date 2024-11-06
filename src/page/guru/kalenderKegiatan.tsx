@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Demo from "../../component/CalendarEdit";
 import Modal from "../../component/modal";
 import { globalStore, Store } from "../../store/Store";
-import { Kalender } from "../../midleware/api";
+import { Kalender } from "../../middleware/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";

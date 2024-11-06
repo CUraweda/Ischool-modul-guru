@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FaFilePdf } from "react-icons/fa";
 import { FaCodeMerge } from "react-icons/fa6";
 import Swal from "sweetalert2";
-import { KepribadianSiswa, Raport, Student, Task } from "../../midleware/api";
+import { KepribadianSiswa, Raport, Student, Task } from "../../middleware/api";
 import { globalStore, useProps } from "../../store/Store";
 import { Input, Select, Toggle } from "../Input";
 import Modal from "../modal";

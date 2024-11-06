@@ -1,7 +1,7 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import React, { useEffect, useState } from "react";
-import { instance } from "../midleware/api-hrd";
+import { instance } from "../middleware/api-hrd";
 import { useProps } from "../store/Store";
 
 interface FaceDetectionProps {

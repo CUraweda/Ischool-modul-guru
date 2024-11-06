@@ -1,12 +1,12 @@
-import React from "react";
-import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React, { lazy, Suspense } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Loading from "../component/Loading";
-import Test from "../page/guru/Test";
 import DaftarPenilaianPage from "../page/guru/DaftarPenilaian";
-import DinasLuarPage from "../page/karyawan/DinasLuar";
-import RekapPenilaianPage from "../page/guru/RekapPenilaian";
 import DetailRekapPenilaianPage from "../page/guru/DetailRekapPenilaian";
+import JobdeskGuruPage from "../page/guru/JobdeskGuru";
+import RekapPenilaianPage from "../page/guru/RekapPenilaian";
+import Test from "../page/guru/Test";
+import DinasLuarPage from "../page/karyawan/DinasLuar";
 
 const Home = lazy(() => import("../page/login"));
 const Layout = lazy(() => import("../component/Layout"));
@@ -210,6 +210,12 @@ const RootRoutes = () => {
     {
       path: "/guru/detail-rekap-penilaian",
       element: <DetailRekapPenilaianPage />,
+      layout: <Layout />,
+      isSuspended: true,
+    },
+    {
+      path: "/guru/jobdesk",
+      element: <JobdeskGuruPage />,
       layout: <Layout />,
       isSuspended: true,
     },

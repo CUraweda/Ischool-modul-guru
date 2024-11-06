@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import KalenderPekanan from "../../component/CalendarPekanan";
 import Modal, { closeModal, openModal } from "../../component/modal";
-import { Kalender, Task } from "../../midleware/api";
+import { Kalender, Task } from "../../middleware/api";
 import { globalStore, Store } from "../../store/Store";
 import { useFormik } from "formik";
 import * as Yup from "yup";

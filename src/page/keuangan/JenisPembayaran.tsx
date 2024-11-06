@@ -13,7 +13,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { PosJenisPembayaran, PosPembayaran } from "../../midleware/api";
+import { PosJenisPembayaran, PosPembayaran } from "../../middleware/api";
 import { globalStore } from "../../store/Store";
 import { moneyFormat } from "../../utils/common";
 import { formatTime } from "../../utils/date";

@@ -18,7 +18,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { Student, Task } from "../../midleware/api";
+import { Student, Task } from "../../middleware/api";
 import { globalStore } from "../../store/Store";
 
 const schema = Yup.object({

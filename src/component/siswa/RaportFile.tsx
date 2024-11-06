@@ -4,7 +4,7 @@ import { FaFile, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
-import { Class, FileRaporSiswa, Student } from "../../midleware/api";
+import { Class, FileRaporSiswa, Student } from "../../middleware/api";
 import { globalStore } from "../../store/Store";
 import { Input, Select } from "../Input";
 import Modal, { closeModal, openModal } from "../modal";

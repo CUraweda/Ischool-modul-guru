@@ -12,13 +12,13 @@ import {
 import { useNavigate } from "react-router-dom";
 import MapWithTwoRadiusPins from "../../component/MapWithTwoRadiusPins";
 import Modal, { closeModal, openModal } from "../../component/modal";
-import { Auth, Task } from "../../midleware/api";
+import { Auth, Task } from "../../middleware/api";
 import {
   PelatihanKaryawan,
   PengumumanKaryawan,
   Rekapan,
   waktukerja,
-} from "../../midleware/api-hrd";
+} from "../../middleware/api-hrd";
 import { employeeStore } from "../../store/Store";
 import { formatTime } from "../../utils/date";
 

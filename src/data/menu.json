@@ -98,6 +98,14 @@
   {
     "submenu": false,
     "hide": false,
+    "title": "Jobdesk",
+    "icon": "<RiBookReadLine />",
+    "url": "/guru/jobdesk",
+    "subtitle": []
+  },
+  {
+    "submenu": false,
+    "hide": false,
     "title": "Pelatihan",
     "icon": "<FaRegStar />",
     "url": "/karyawan/daftar-pelatihan",

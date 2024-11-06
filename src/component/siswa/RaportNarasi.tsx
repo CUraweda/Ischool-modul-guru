@@ -9,7 +9,7 @@ import { PiNotePencilBold } from "react-icons/pi";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
-import { Raport, Task } from "../../midleware/api";
+import { Raport, Task } from "../../middleware/api";
 import { globalStore, useProps } from "../../store/Store";
 import Modal from "../modal";
 import { IpageMeta, PaginationControl } from "../PaginationControl";

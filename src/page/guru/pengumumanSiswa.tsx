@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Pengumuman, Task } from "../../midleware/api";
+import { Pengumuman, Task } from "../../middleware/api";
 import { Store } from "../../store/Store";
 import { FaEdit, FaFile, FaRegTrashAlt } from "react-icons/fa";
 import Modal, { closeModal, openModal } from "../../component/modal";

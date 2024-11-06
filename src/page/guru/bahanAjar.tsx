@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { BsDownload, BsPencilFill } from "react-icons/bs";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
-import { FileRaporSiswa, Lesson, Mapel, Task } from "../../midleware/api";
+import { FileRaporSiswa, Lesson, Mapel, Task } from "../../middleware/api";
 const BahanAjar: React.FC<{}> = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [DataLesson, setDataLesson] = useState<any[]>([]);

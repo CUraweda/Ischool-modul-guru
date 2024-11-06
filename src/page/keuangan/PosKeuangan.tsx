@@ -11,7 +11,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { PosPembayaran } from "../../midleware/api";
+import { PosPembayaran } from "../../middleware/api";
 
 const posPembayaranSchema = Yup.object().shape({
   name: Yup.string().required("Nama pos pembayaran harus diisi"),

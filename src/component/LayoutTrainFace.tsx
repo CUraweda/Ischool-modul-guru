@@ -2,7 +2,7 @@ import React, { FC, useEffect } from "react";
 import Navbar from "./NavbarTrainFace";
 import bg from "../assets/bg2.png";
 import { employeeStore, Store } from "../store/Store";
-import { Auth } from "../midleware/api";
+import { Auth } from "../middleware/api";
 
 interface Props {
   children?: React.ReactNode;

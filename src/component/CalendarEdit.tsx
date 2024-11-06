@@ -13,7 +13,7 @@ import {
   TodayButton,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { employeeStore, globalStore, Store } from "../store/Store";
-import { Kalender } from "../midleware/api";
+import { Kalender } from "../middleware/api";
 import { FaPencil } from "react-icons/fa6";
 import { BiTrash } from "react-icons/bi";
 import { CiClock2 } from "react-icons/ci";

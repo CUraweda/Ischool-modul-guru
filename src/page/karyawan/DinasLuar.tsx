@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import Icon from "../../assets/icon";
 import DetailCard from "../../component/DetailCard";
-import { Attendance, Employee } from "../../midleware/api-hrd";
+import { Attendance, Employee } from "../../middleware/api-hrd";
 
 type EmployeeType = {
   id: string;
