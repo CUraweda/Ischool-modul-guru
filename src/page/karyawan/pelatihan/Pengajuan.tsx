@@ -16,7 +16,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../../component/PaginationControl";
-import { PengajuanPelatihanKaryawan } from "../../../midleware/api-hrd";
+import { PengajuanPelatihanKaryawan } from "../../../middleware/api-hrd";
 import { employeeStore } from "../../../store/Store";
 import { filterEmptyPayload } from "../../../utils/common";
 import { formatTime } from "../../../utils/date";

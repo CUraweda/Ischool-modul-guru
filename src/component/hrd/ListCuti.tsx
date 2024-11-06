@@ -236,44 +236,44 @@
 //                       <path
 //                         d="M22.882 20.9411L20.0586 18.1177"
 //                         stroke="#6A6B6B"
-//                         stroke-width="1.2"
-//                         stroke-linecap="round"
-//                         stroke-linejoin="round"
+//                         strokeWidth="1.2"
+//                         strokeLinecap="round"
+//                         strokeLinejoin="round"
 //                       />
 //                       <path
 //                         d="M13 25.1764V28H15.8236L25 18.8236L22.1764 16L13 25.1764Z"
 //                         stroke="#6A6B6B"
-//                         stroke-width="1.2"
-//                         stroke-linecap="round"
-//                         stroke-linejoin="round"
+//                         strokeWidth="1.2"
+//                         strokeLinecap="round"
+//                         strokeLinejoin="round"
 //                       />
 //                       <path
 //                         d="M1 13H8.5"
 //                         stroke="#6A6B6B"
-//                         stroke-width="1.2"
-//                         stroke-linecap="round"
-//                         stroke-linejoin="round"
+//                         strokeWidth="1.2"
+//                         strokeLinecap="round"
+//                         strokeLinejoin="round"
 //                       />
 //                       <path
 //                         d="M25 10V7C25 5.34314 23.6569 4 22 4H4C2.34314 4 1 5.34314 1 7V25C1 26.6569 2.34314 28 4 28H8.5"
 //                         stroke="#6A6B6B"
-//                         stroke-width="1.2"
-//                         stroke-linecap="round"
-//                         stroke-linejoin="round"
+//                         strokeWidth="1.2"
+//                         strokeLinecap="round"
+//                         strokeLinejoin="round"
 //                       />
 //                       <path
 //                         d="M17.5 1V7"
 //                         stroke="#6A6B6B"
-//                         stroke-width="1.2"
-//                         stroke-linecap="round"
-//                         stroke-linejoin="round"
+//                         strokeWidth="1.2"
+//                         strokeLinecap="round"
+//                         strokeLinejoin="round"
 //                       />
 //                       <path
 //                         d="M8.5 1V7"
 //                         stroke="#6A6B6B"
-//                         stroke-width="1.2"
-//                         stroke-linecap="round"
-//                         stroke-linejoin="round"
+//                         strokeWidth="1.2"
+//                         strokeLinecap="round"
+//                         strokeLinejoin="round"
 //                       />
 //                     </svg>
 //                   </button>

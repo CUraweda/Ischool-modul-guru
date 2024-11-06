@@ -10,7 +10,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { Class, Raport, Student, TagihanSiswa } from "../../midleware/api";
+import { Class, Raport, Student, TagihanSiswa } from "../../middleware/api";
 import { globalStore } from "../../store/Store";
 import { formatTime } from "../../utils/date";
 

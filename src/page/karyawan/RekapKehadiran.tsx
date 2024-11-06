@@ -10,7 +10,7 @@ import {
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { Rekapan } from "../../midleware/api-hrd";
+import { Rekapan } from "../../middleware/api-hrd";
 import moment from "moment";
 
 const RekapKehadiran = () => {

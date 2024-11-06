@@ -1,9 +1,13 @@
 import { search } from "./search";
+import { edit } from "./edit";
+import { board } from "./board";
 
-type IconName = "search";
+export type IconName = "search" | "edit" | "board";
 
 const list = {
   search,
+  edit,
+  board,
 };
 
 const Icon = ({ name }: { name: IconName }) => {

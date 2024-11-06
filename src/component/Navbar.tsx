@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { BsList } from "react-icons/bs";
 import { FaBell } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { Auth, Task } from "../midleware/api";
+import { Auth, Task } from "../middleware/api";
 import { employeeStore } from "../store/Store";
+import { token } from "../utils/common";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const Navbar = () => {
   // const date = moment().format('llll');
 
   const logout = () => {
+    token.delete();
     sessionStorage.clear();
     empStore.clearStore();
     navigate("/");
@@ -21,7 +23,6 @@ const Navbar = () => {
   const getMe = async () => {
     try {
       const res = await Auth.MeData();
-      console.log(res)
       previewProfile(res.data.data.avatar);
     } catch (error) {
       console.error(error);
@@ -51,7 +52,7 @@ const Navbar = () => {
       console.error(err);
     }
   };
-  
+
   useEffect(() => {
     getMe();
   }, []);
@@ -82,7 +83,10 @@ const Navbar = () => {
               <div className="w-10 rounded-full">
                 <img
                   alt="Tailwind CSS Navbar component"
-                  src={image ?? "https://korpri.padang.go.id/assets/img/dewan_pengurus/no-pict.jpg"}
+                  src={
+                    image ??
+                    "https://korpri.padang.go.id/assets/img/dewan_pengurus/no-pict.jpg"
+                  }
                 />
               </div>
             </div>

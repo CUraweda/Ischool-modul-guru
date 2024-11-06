@@ -12,7 +12,7 @@ import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { Class, Student, TagihanSiswa } from "../../midleware/api";
+import { Class, Student, TagihanSiswa } from "../../middleware/api";
 import { globalStore } from "../../store/Store";
 import { formatTime } from "../../utils/date";
 

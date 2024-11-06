@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Karyawan } from "../../midleware/api-hrd";
+import { Karyawan } from "../../middleware/api-hrd";
 import Modal, { openModal, closeModal } from "../../component/modal";
 import Swal from "sweetalert2";
 import Icon from "../../assets/icon";

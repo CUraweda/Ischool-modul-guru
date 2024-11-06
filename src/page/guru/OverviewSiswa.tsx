@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Class, DashboardSiswa } from "../../midleware/api";
+import { Class, DashboardSiswa } from "../../middleware/api";
 import { globalStore, Store } from "../../store/Store";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import Modal from "../../component/modal";
