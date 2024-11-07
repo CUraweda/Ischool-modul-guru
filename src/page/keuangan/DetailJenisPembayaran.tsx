@@ -16,7 +16,7 @@ import { Class, Student, TagihanSiswa } from "../../middleware/api";
 import { globalStore } from "../../store/Store";
 import { formatTime } from "../../utils/date";
 
-const apiAssets = import.meta.env.VITE_REACT_API_URL + "/";
+const apiAssets = import.meta.env.VITE_REACT_API_URL;
 
 const tambahSiswaSchema = Yup.object().shape({
   academic_year: Yup.string().optional(),
