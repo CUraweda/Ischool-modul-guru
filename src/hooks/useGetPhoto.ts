@@ -3,13 +3,15 @@ import { instance } from "../middleware/api-hrd";
 import { ApiResponse, DataPagination } from "../types/common";
 import { Division } from "../types/division";
 
-export const getDivision = async () => {
-  const data = await instance.get("/division").then(({ data }) => data);
+export const getPhoto = async (path: string | null) => {
+  const data = await instance
+    .get(`/student-task/download?filepath=${path}`)
+    .then(({ data }) => data);
   return data;
 };
 
-export const useGetDivision = () =>
+export const useGetPhoto = (path: string | null) =>
   useQuery<ApiResponse<DataPagination<Division>>, Error>({
-    queryKey: ["getDivision"],
-    queryFn: getDivision,
+    queryKey: ["useGetPhoto"],
+    queryFn: () => getPhoto(path),
   });
