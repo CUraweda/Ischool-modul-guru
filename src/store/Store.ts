@@ -1,9 +1,9 @@
-import create, { SetState } from "zustand";
+import { create, StoreApi } from "zustand";
 import { StoreState, StoreProps, IemployeeState, IglobalState } from "./Utils";
 import { getCurrentAcademicYear } from "../utils/common";
 import { getMonday } from "../utils/common";
 
-const Store = create<StoreState>((set: SetState<StoreState>) => ({
+const Store = create<StoreState>((set: StoreApi<any>["setState"]) => ({
   token: localStorage.getItem("token"),
   setToken: (token) => {
     if (token) {
@@ -89,19 +89,22 @@ const useProps = create<StoreProps>((set) => ({
 
 const employeeStore = create<IemployeeState>((set, get) => ({
   employee: null,
-  setEmployee: (employee: any) => set({ employee }),
+  setEmployee: (employee) => set({ employee }),
 
   headmaster: null,
-  setHeadmaster: (headmaster: any) => set({ headmaster }),
+  setHeadmaster: (headmaster) => set({ headmaster }),
 
   formTeachers: [],
-  setFormTeachers: (formTeachers: any[]) => set({ formTeachers }),
+  setFormTeachers: (formTeachers) => set({ formTeachers }),
 
   formSubjects: [],
-  setFormSubjects: (formSubjects: any[]) => set({ formSubjects }),
+  setFormSubjects: (formSubjects) => set({ formSubjects }),
 
   formXtras: [],
-  setFormXtras: (formXtras: any[]) => set({ formXtras }),
+  setFormXtras: (formXtras) => set({ formXtras }),
+
+  isAsessor: false,
+  setIsAsessor: (isAsessor) => set({ isAsessor }),
 
   isHeadmaster: () => get().employee != null && Store().role?.toString() == "4",
 
@@ -109,6 +112,7 @@ const employeeStore = create<IemployeeState>((set, get) => ({
     set({
       employee: null,
       headmaster: null,
+      isAsessor: false,
       formTeachers: [],
       formSubjects: [],
       formXtras: [],

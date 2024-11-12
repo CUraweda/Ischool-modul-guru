@@ -1,3 +1,4 @@
+/* eslint-disable no-prototype-builtins */
 import moment from "moment";
 
 export const token = {
@@ -5,6 +6,12 @@ export const token = {
   set: (value: string) => localStorage.setItem("token", value),
   delete: () => localStorage.removeItem("token"),
 };
+
+export const capitalize = (value?: string) =>
+  !value
+    ? ""
+    : value.charAt(0).toUpperCase() +
+      value.substring(1, value.length).toLowerCase();
 
 export const calculateRemainingProbation = (start: string, end: string) => {
   const startDate = moment(start);
@@ -19,14 +26,10 @@ export const calculateRemainingProbation = (start: string, end: string) => {
   return `${months} Bulan ${days} Hari`;
 };
 
-export const formattedDate = (isoDate: string) => {
-  const date = new Date(isoDate);
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  }).format(date);
-};
+export const formattedDate = (isoDate: string) =>
+  moment(isoDate).format("DD MMM YYYY");
+export const formattedTime = (isoDate: string) =>
+  moment(isoDate).format("HH:mm");
 
 export const getAcademicYears = () => {
   const currYear = moment().year();
@@ -103,6 +106,17 @@ export const getSemesters = () => {
       label: "Genap",
     },
   ];
+};
+
+export const filterParams = (params?: Record<string, unknown>) => {
+  if (!params) return {};
+  return Object.entries(params)
+    .filter(([, value]) =>
+      Array.isArray(value)
+        ? value.length > 0
+        : !(value === undefined || value === "" || value === null)
+    )
+    .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
 };
 
 export const filterEmptyPayload = (payload: any): any => {

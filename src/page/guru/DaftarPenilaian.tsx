@@ -55,8 +55,6 @@ const DaftarPenilaian = () => {
     }
   };
 
-  const tableColumn = ["Nama", "Email", "Posisi", "Nilai", "Status", "Action"];
-
   const handleDialog = (item: DaftarPenilaianType) => {
     setId(item.user_id);
     setNilai(item.grade);
@@ -69,7 +67,7 @@ const DaftarPenilaian = () => {
   }, []);
 
   return (
-    <div className="min-h-screen p-5">
+    <div className="min-h-screen p-5 overflow-y-hidden">
       <div className="mb-5 flex items-center justify-between">
         <h3 className="text-lg font-bold">Daftar Penilaian</h3>
         <label className="input input-sm input-bordered flex items-center gap-2 md:w-3/12">
@@ -88,7 +86,7 @@ const DaftarPenilaian = () => {
         <table className="table table-zebra w-full min-h-20">
           <thead>
             <tr>
-              {tableColumn.map((column) => (
+              {["Nama", "Email", "Posisi", "Nilai", "Status", "Action"].map((column) => (
                 <th key={column}>{column}</th>
               ))}
             </tr>
