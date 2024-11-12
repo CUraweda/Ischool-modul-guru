@@ -23,5 +23,6 @@ export const minimumPaginationPage = (
 export const numberOfTable = (
   index: number,
   currentPage: number,
-  pageCount: number
-) => (currentPage * pageCount) + (index + 1);
+  limit: number,
+  startCount: number = 0
+) => Math.abs(startCount - currentPage) * limit + (index + 1);

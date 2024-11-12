@@ -9,3 +9,18 @@ export const statusColor = {
   belumDikerjakan: "#D9D9D9",
   selesai: "#B8FFD5",
 };
+
+export const statusConfig = {
+  belumDikerjakan: {
+    label: "Belum Dikerjakan",
+    colorKey: "belumDikerjakan",
+  },
+  dikerjakan: {
+    label: "Dikerjakan",
+    colorKey: "dikerjakan",
+  },
+  selesai: {
+    label: "Selesai",
+    colorKey: "selesai",
+  },
+};

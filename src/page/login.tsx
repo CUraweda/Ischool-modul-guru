@@ -25,6 +25,7 @@ const Login = () => {
     setFormSubjects,
     setFormXtras,
     setHeadmaster,
+    setIsAsessor,
   } = employeeStore();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -54,6 +55,7 @@ const Login = () => {
           formextras,
           formsubjects,
           formteachers,
+          is_asessor,
         } = response.data.data?.employee ?? {};
 
         if (employeeId && full_name) setEmployee({ id: employeeId, full_name });
@@ -61,6 +63,7 @@ const Login = () => {
         if (formteachers) setFormTeachers(formteachers);
         if (formsubjects) setFormSubjects(formsubjects);
         if (formextras) setFormXtras(formextras);
+        if (is_asessor) setIsAsessor(is_asessor);
 
         // Adjust role comparison to use numbers instead of strings
         if (response.data.tokens.access.token) {

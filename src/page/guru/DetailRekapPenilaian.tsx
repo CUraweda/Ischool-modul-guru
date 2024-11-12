@@ -23,7 +23,6 @@ const DetailRekapPenilaianPage: React.FC = () => {
   const [profile, setProfile] = useState("");
   // const [ListEmployee, setListEmployee] = useState<any>(null);
 
-
   const navigate = useNavigate();
 
   const DownloadAvatar = async () => {

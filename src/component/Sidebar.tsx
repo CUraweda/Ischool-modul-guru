@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { BsListNested } from "react-icons/bs";
-import { iconMapping } from "../component/icon/icon";
-import logo from "../assets/sade.png";
 import { Link } from "react-router-dom";
-import menu from "../data/menu.json";
-import menuKeuangan from "../data/keuangan.json";
+import logo from "../assets/sade.png";
+import { iconMapping } from "../component/icon/icon";
 import menuHRD from "../data/hrd.json";
-import { globalStore, Store } from "../store/Store";
-import { getAcademicYears, getCurrentAcademicYear } from "../utils/common";
+import menuKeuangan from "../data/keuangan.json";
+import menu from "../data/menu.json";
 import { Year } from "../middleware/api";
+import { employeeStore, globalStore, Store } from "../store/Store";
+import { getAcademicYears, getCurrentAcademicYear } from "../utils/common";
 // import karywan from "../data/karyawan.json"
 
 interface Menu {
@@ -36,6 +36,7 @@ const Sidebar = () => {
   const [activeMenuItem, setActiveMenuItem] = useState<string>(Side);
   const { role } = Store();
   const [years, setYears] = useState<any[]>([]);
+  const { isAsessor } = employeeStore();
 
   const handleMenuItemClick = (name: string) => {
     setActiveMenuItem(name);
@@ -125,6 +126,7 @@ const Sidebar = () => {
             <ul className="menu font-bold rounded-lg max-w-xs w-full text-gray-500">
               {data
                 .filter((item) => !item.hide)
+                .filter((item) => !(item.title === "Penilaian" && !isAsessor))
                 .filter((item) =>
                   item.roles && role
                     ? item.roles.map((r) => r.toString()).includes(role)

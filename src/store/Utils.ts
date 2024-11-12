@@ -48,10 +48,10 @@ export interface StoreProps {
 
 // global state
 export interface IglobalState {
-  academicYear: string
-  setAcademicYear: (academicYear: string) => void
+  academicYear: string;
+  setAcademicYear: (academicYear: string) => void;
 
-  clearStore: () => void
+  clearStore: () => void;
 }
 
 // for employee related
@@ -70,6 +70,9 @@ export interface IemployeeState {
 
   formXtras: any[];
   setFormXtras: (formXtras: any[]) => void;
+
+  isAsessor: Boolean;
+  setIsAsessor: (isAsessor: Boolean) => void;
 
   isHeadmaster: () => boolean;
   clearStore: () => void;
