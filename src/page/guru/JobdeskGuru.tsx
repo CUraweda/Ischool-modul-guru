@@ -1,44 +1,53 @@
 import { format } from "date-fns";
+import { useEffect, useState } from "react";
+import { FaCircle, FaRegCircle } from "react-icons/fa";
 import { FiMoreHorizontal } from "react-icons/fi";
-import {
-  MdOutlineKeyboardArrowLeft,
-  MdOutlineKeyboardArrowRight,
-} from "react-icons/md";
-
 import Icon, { IconName } from "../../assets/icon";
 import NoData from "../../component/NoData";
-import { priorityColor } from "../../constant/priorityColor";
-import { useGetAllJobdesk } from "../../hooks/useGetAllJobdesk";
+import Pagination from "../../component/ui/pagination";
+import Search from "../../component/ui/search";
 import {
-  calcPagination,
-  minimumPaginationPage,
-  numberOfTable,
-} from "../../utils/pagination";
-import { usePagination } from "../../hooks/usePagination";
-// import { FaCircle } from "react-icons/fa";
-import { FaRegCircle } from "react-icons/fa";
-import { useState } from "react";
+  priorityColor,
+  statusColor,
+  statusConfig,
+} from "../../constant/priorityColor";
+import { useGetAllJobdesk } from "../../hooks/useGetAllJobdesk";
+import useSearchParams from "../../hooks/useSearchParams";
 import { Jobdesk } from "../../types/jobdesk";
+import { filterParams } from "../../utils/common";
+import { minimumPaginationPage, numberOfTable } from "../../utils/pagination";
+
+type FilterParams = Partial<{
+  limit: number;
+  page: number;
+  employee_id: string;
+  search: string;
+}>;
 
 const JobdeskGuruPage = () => {
+  const { getSearchParam, handleSearchParams } = useSearchParams();
+
+  const params = {
+    page: getSearchParam("search") ? undefined : +getSearchParam?.("page") || 1,
+    limit: +getSearchParam("limit") || 10,
+    search: getSearchParam("search"),
+  };
+  const isPageParamsExist = Boolean(params.page);
+
+  const [baseFilter, setBaseFilter] = useState<FilterParams>(params);
   const [selectedJobdesk, setSelectedJobdesk] = useState<Jobdesk | undefined>();
-  const { filter, handlePageChange, handleSearchParams } = usePagination();
-  const [search, setSearch] = useState(filter.search || "");
+
   const { data: jobdeskList } = useGetAllJobdesk(
-    filter,
-    JSON.stringify(filter)
+    filterParams(
+      isPageParamsExist ? { ...params, page: params.page! - 1 } : params
+    )
   );
+  const totalPages = minimumPaginationPage(jobdeskList?.data.totalPage ?? 0, 6);
 
-  const pageCount = 6;
-  const totalPages = minimumPaginationPage(
-    jobdeskList?.data.totalPage ?? 0,
-    pageCount
-  );
-
-  const disabledPrev = filter.page <= 0;
-  const disabledNext = filter.page >= totalPages - 1;
-  const activePaginationStyle = (selectedPage: number) =>
-    filter.page === selectedPage ? "text-blue-400" : "";
+  useEffect(() => {
+    handleSearchParams(params);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="w-full p-5">
@@ -48,19 +57,7 @@ const JobdeskGuruPage = () => {
             <li>Jobdesk</li>
           </ul>
         </div>
-        <label className="text-md input input-sm input-bordered flex items-center gap-2 md:w-3/12">
-          <Icon name="search" />
-          <input
-            type="text"
-            value={search}
-            className="grow"
-            placeholder="Search"
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) =>
-              e.key === "Enter" && handleSearchParams(e.currentTarget.value)
-            }
-          />
-        </label>
+        <Search />
       </div>
 
       <div className="mt-3 flex-grow border-t border-gray-400 drop-shadow-sm"></div>
@@ -104,20 +101,55 @@ const JobdeskGuruPage = () => {
           </thead>
           <tbody>
             {jobdeskList?.data.result.map((employee, index) => {
-              const { name, description, due_date, priority_label } = employee;
+              const {
+                name,
+                description,
+                due_date,
+                priority_label,
+                is_finish,
+                is_graded,
+              } = employee;
+
+              const currentStatus =
+                is_finish && is_graded
+                  ? "selesai"
+                  : is_finish
+                    ? "dikerjakan"
+                    : "belumDikerjakan";
 
               return (
                 <tr key={index} className="hover:bg-slate-50 cursor-pointer">
                   <td className="text-center">
-                    {numberOfTable(index, filter.page, pageCount)}
+                    {numberOfTable(index, params.page ?? 0, params.limit, 1)}
                   </td>
                   <td>{name}</td>
                   <td>{description}</td>
                   <td>{format(new Date(due_date), "dd/MM/yyyy")}</td>
                   <td className="text-center">
-                    <PriorityBadge priority={priority_label} />
+                    <PriorityBadge
+                      label={priority_label}
+                      background={{
+                        background:
+                          priorityColor[
+                            priority_label?.toLowerCase() as keyof typeof priorityColor
+                          ],
+                      }}
+                    />
                   </td>
-                  <td className="text-center">{"-"}</td>
+                  <td className="text-center">
+                    {
+                      <PriorityBadge
+                        label={statusConfig[currentStatus].label}
+                        background={{
+                          background:
+                            statusColor[
+                              statusConfig[currentStatus]
+                                .colorKey as keyof typeof statusColor
+                            ],
+                        }}
+                      />
+                    }
+                  </td>
                   <td className="text-center">
                     <Action
                       key={index}
@@ -129,32 +161,20 @@ const JobdeskGuruPage = () => {
             })}
           </tbody>
         </table>
+
         {!jobdeskList?.data.result.length && <NoData />}
-        <div className="join mx-auto mt-5">
-          <button
-            disabled={disabledPrev}
-            onClick={() => handlePageChange("prev", totalPages)}
-            className="disabled:cursor-pointer join-item btn btn-sm bg-stone-50-50 outline-none border-0 shadow-none hover:bg-stone-50-100 text-[#6A6B6B99] disabled:bg-stone-200"
-          >
-            <MdOutlineKeyboardArrowLeft className="w-5 h-5" />
-          </button>
-          {calcPagination(pageCount, totalPages, filter.page).map((page) => (
-            <button
-              className={`join-item btn btn-sm bg-stone-50-50 outline-none border-0 shadow-none hover:bg-stone-50-100 text-[#6A6B6B99] ${activePaginationStyle(page)}`}
-              key={page}
-              onClick={() => handlePageChange(page, totalPages)}
-            >
-              {page + 1}
-            </button>
-          ))}
-          <button
-            disabled={disabledNext}
-            onClick={() => handlePageChange("next", totalPages)}
-            className="disabled:cursor-pointer join-item btn btn-sm bg-stone-50-50 outline-none border-0 shadow-none hover:bg-stone-50-100 text-[#6A6B6B99] disabled:bg-stone-200"
-          >
-            <MdOutlineKeyboardArrowRight className="w-6 h-6" />
-          </button>
-        </div>
+
+        <Pagination
+          onChangeLimit={(value: number) =>
+            setBaseFilter((prev) => ({ ...prev, limit: value }))
+          }
+          onChangePage={(value: number) =>
+            setBaseFilter((prev) => ({ ...prev, page: value }))
+          }
+          limit={baseFilter.limit!}
+          totalPages={totalPages}
+          pageSize={6}
+        />
       </div>
 
       <ModalDetailJobdesk jobdesk={selectedJobdesk} />
@@ -164,23 +184,22 @@ const JobdeskGuruPage = () => {
 };
 
 function PriorityBadge({
-  priority,
+  label,
+  background,
   size = "default",
 }: {
-  priority?: string;
+  label?: string;
+  background?: React.CSSProperties;
   size?: "small" | "default";
 }) {
-  if (!priority) return null;
+  if (!label) return null;
 
   return (
     <span
-      className={`${size === "small" ? "text-xs px-2 py-1 tracking-wide" : "px-5 py-2 font-semibold"} rounded-lg  text-[#6A6B6BCC]`}
-      style={{
-        background:
-          priorityColor[priority.toLowerCase() as keyof typeof priorityColor],
-      }}
+      className={`${size === "small" ? "text-xs px-2 py-1 tracking-wide" : "px-5 py-2 font-medium text-sm"} rounded-lg text-[#6A6B6BCC]`}
+      style={{ ...background }}
     >
-      {priority}
+      {label}
     </span>
   );
 }
@@ -271,7 +290,13 @@ function ModalDetailJobdesk({ jobdesk }: { jobdesk?: Jobdesk }) {
               label: "Prioritas",
               value: (
                 <PriorityBadge
-                  priority={jobdesk?.priority_label}
+                  label={jobdesk?.priority_label}
+                  background={{
+                    background:
+                      priorityColor[
+                        jobdesk?.priority_label?.toLowerCase() as keyof typeof priorityColor
+                      ],
+                  }}
                   size="small"
                 />
               ),
@@ -308,9 +333,23 @@ function ModalDetailJobdesk({ jobdesk }: { jobdesk?: Jobdesk }) {
             <h3 className="text-xs">Status</h3>
             <ul className="timeline">
               {[
-                { label: "Belum dikerjakan", icon: <FaRegCircle /> },
-                { label: "Sedang dikerjakan", icon: <FaRegCircle /> },
-                { label: "Selesai", icon: <FaRegCircle /> },
+                {
+                  label: "Belum dikerjakan",
+                  icon: !jobdesk?.is_finish ? <FaCircle /> : <FaRegCircle />,
+                },
+                {
+                  label: "Sedang dikerjakan",
+                  icon: jobdesk?.is_finish ? <FaCircle /> : <FaRegCircle />,
+                },
+                {
+                  label: "Selesai",
+                  icon:
+                    jobdesk?.is_finish && jobdesk?.is_graded ? (
+                      <FaCircle />
+                    ) : (
+                      <FaRegCircle />
+                    ),
+                },
               ].map((item, index) => {
                 return (
                   <li key={index} className="w-1/3 h-[72px]">

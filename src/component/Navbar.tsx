@@ -30,7 +30,7 @@ const Navbar = () => {
   };
   const previewProfile = async (path: any) => {
     try {
-      const lowerCasePath = path.toLowerCase();
+      const lowerCasePath = path?.toLowerCase();
       const response = await Task.downloadTugas(path);
       let mimeType = "application/pdf";
 

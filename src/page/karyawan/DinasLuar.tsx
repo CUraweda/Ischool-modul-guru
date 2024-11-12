@@ -1,187 +1,119 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaFileExport } from "react-icons/fa6";
 import { GrStatusUnknown } from "react-icons/gr";
 import { MdPeopleAlt } from "react-icons/md";
 import { TbFaceId } from "react-icons/tb";
 import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
-import Icon from "../../assets/icon";
 import DetailCard from "../../component/DetailCard";
-import { Attendance, Employee } from "../../middleware/api-hrd";
+import NoData from "../../component/NoData";
+import Pagination from "../../component/ui/pagination";
+import Search from "../../component/ui/search";
+import {
+  attendanceStatus,
+  listType,
+  worktimeType,
+} from "../../constant/attendanceType";
+import { useGetAllEmployeeAttendance } from "../../hooks/useGetAllAttendance";
+import { useGetAllEmployee } from "../../hooks/useGetAllEmployee";
+import { useGetDivision } from "../../hooks/useGetDivision";
+import useSearchParams from "../../hooks/useSearchParams";
+import { Attendance } from "../../types/attendance";
+import {
+  capitalize,
+  filterParams,
+  formattedDate,
+  formattedTime,
+} from "../../utils/common";
+import { minimumPaginationPage, numberOfTable } from "../../utils/pagination";
 
-type EmployeeType = {
-  id: string;
-  employee: {
-    division: {
-      name: string;
-    };
-    full_name: string;
-  };
-  createdAt: string;
-  worktime: {
-    type: string;
-  };
-  status: string;
+type BaseFilter = {
+  type: string[];
+  status: string[];
+  division_id: string[];
+  date: string;
+  limit: number;
+  page: number;
+  search: string;
 };
 
 const DinasLuarPage = () => {
-  const [filterType, setFilterType] = useState<string[]>([]);
-  const [filterStatus, setFilterStatus] = useState<string[]>([]);
-  const [filterDivision, setFilterDivision] = useState<number | undefined>();
-  const [filterDate, setFilterDate] = useState<string>("");
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [DataAttendance, setDataAttendance] = useState<any[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(0);
-  const [dataEmployee, setDataEmployee] = useState<EmployeeType[]>([]);
-  const [search_query] = useState<string>("");
-  const [ListDivision, setListDivision] = useState<any[]>([]);
-  const [limit, setLimit] = useState<number>(10);
-  const [totalRows, setTotalRows] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const listType = [
-    { id: 1, category: "Type", value: "Masuk" },
-    { id: 2, category: "Type", value: "Keluar" },
-    { id: 3, category: "Status", value: "Tepat Waktu" },
-    { id: 4, category: "Status", value: "Terlambat" },
-  ];
+  const { getSearchParam, getSplitSearchParam, handleSearchParams } =
+    useSearchParams();
+
+  const params = {
+    type: getSplitSearchParam("type"),
+    status: getSplitSearchParam("status"),
+    division_id: getSplitSearchParam("division_id"),
+    date: getSearchParam("date"),
+    page: +getSearchParam("page") || 1,
+    limit: +getSearchParam("limit") || 10,
+    search: getSearchParam("search"),
+  };
+
+  const [baseFilter, setBaseFilter] = useState<BaseFilter>(params);
+  const [selectedItem, setSelectedItem] = useState<Attendance | undefined>();
   const [selectedItemEmployee, setSelectedItemEmployee] = useState<string[]>(
     []
   );
 
-  const handleCheckType = (value: string, category: "Type" | "Status") => {
-    if (category === "Type") {
-      setFilterType((prev) => {
-        if (prev.includes(value)) {
-          return prev.filter((item) => item !== value);
-        } else {
-          return [...prev, value];
-        }
-      });
-    } else if (category === "Status") {
-      setFilterStatus((prev) => {
-        if (prev.includes(value)) {
-          return prev.filter((item) => item !== value);
-        } else {
-          return [...prev, value];
-        }
-      });
-    }
-  };
-  const getAllEmployee = async () => {
-    try {
-      const response = await Employee.getAllEmployee(100000, search_query);
-      const { result } = response.data.data || {};
-      // setDataEmployee(result);
+  const {
+    data: dataEmployee,
+    error: errorGetEmployee,
+    refetch: refetchEmployee,
+  } = useGetAllEmployee<{ limit: number }>({
+    limit: 10,
+  });
+  if (errorGetEmployee) {
+    Swal.fire({
+      title: "Silahkan coba lagi",
+      icon: "error",
+      text: "Data yang dicari tidak ditemukan",
+    });
+  }
 
-      setDataEmployee(Array.isArray(result) ? result : []);
-      if (response.data.code !== 200) {
-        Swal.fire({
-          title: "Silahkan coba lagi",
-          icon: "error",
-          text: "Data yang dicari tidak ditemukan",
-        });
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const { data: listDivision, error: errorGetDivision } = useGetDivision();
+  if (errorGetDivision) {
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Something went wrong!",
+    });
+  }
 
-  const getAllAttendance = async () => {
-    try {
-      const result = await Attendance.getEmployeeAttendance(
-        currentPage,
-        limit,
-        filterType,
-        filterStatus,
-        searchQuery,
-        filterDivision,
-        filterDate
-      );
-      setDataAttendance(result.data.data.result);
-      setTotalRows(result.data.data.totalRows);
-      setTotalPages(result.data.data.totalPage);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  const fetchAllDivision = async () => {
-    try {
-      const response = await Attendance.getAllDivision();
-      const { result } = response.data.data || {};
-      setListDivision(Array.isArray(result) ? result : []);
-      if (response.data.code !== 200) {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!",
-        });
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-  };
-
-  const filterData = DataAttendance.filter((item) =>
-    filterDate ? item.createdAt.split("T")[0] === filterDate : true
+  const { data: employeeAttendance } = useGetAllEmployeeAttendance(
+    filterParams({
+      ...baseFilter,
+      search: getSearchParam("search"),
+      page: params.page! - 1,
+    })
   );
 
-  useEffect(() => {
-    getAllAttendance();
-    fetchAllDivision();
-  }, []);
-
-  useEffect(() => {
-    getAllAttendance();
-  }, [
-    searchQuery,
-    limit,
-    filterType,
-    filterStatus,
-    filterDivision,
-    filterDate,
-  ]);
-
-  const handleCheckDivision = (id: number) => {
-    if (filterDivision === id) {
-      // Uncheck
-      setFilterDivision(undefined); // Atau nilai default
-    } else {
-      // Check
-      setFilterDivision(id);
+  const updateBaseFilter = (category: keyof BaseFilter, value: string) => {
+    if (["date", "limit", "page"].includes(category)) {
+      setBaseFilter((prev) => ({ ...prev, [category]: value }));
+    } else if (["type", "status", "division_id"].includes(category)) {
+      const values = [...(baseFilter[category] as Array<string>), value];
+      setBaseFilter((prev) => {
+        const currentValues = Array.isArray(prev[category])
+          ? prev[category]
+          : [];
+        return {
+          ...prev,
+          [category]: currentValues.includes(value)
+            ? currentValues.filter((item) => item !== value)
+            : values,
+        };
+      });
     }
   };
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(0);
-  };
-  const handleDetailClose = () => {
-    setSelectedItem(null);
-  };
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toISOString().split("T")[0];
-  };
-  const exportToXLSX = () => {
-    const formattedData = filterData.map((item, index) => ({
-      no: index + 1,
-      id: item.id,
-      Nama: item.employee.full_name,
-      Divisi: item.employee.division,
-      uid: item.uid,
-      Deskripsi: item.description,
-      status: item.status,
-      Pukul: item.createdAt.split("T")[1].split(".")[0],
-      Tanggal: formatDate(item.createdAt),
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(formattedData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Data Dinas Luar");
-    XLSX.writeFile(workbook, "Data_Dinas_Luar.xlsx");
-  };
+
+  const handleCheckType = (value: string, category: keyof BaseFilter) =>
+    updateBaseFilter(category.toLowerCase() as keyof BaseFilter, value);
+
+  const handleCheckDivision = (id: number) =>
+    updateBaseFilter("division_id", id.toString());
+
   const handleCheckboxChange = (employeeName: string) => {
     setSelectedItemEmployee((prevSelected) =>
       prevSelected.includes(employeeName)
@@ -189,43 +121,52 @@ const DinasLuarPage = () => {
         : [...prevSelected, employeeName]
     );
   };
-  const tableColumns = [
-    "No",
-    "Divisi",
-    "Nama",
-    "Tanggal",
-    "Jam",
-    "Tipe",
-    "Status",
-    "Keterangan",
-    "Bukti Dinas",
-  ];
 
-  const handleOpenDetailModal = (item: EmployeeType) => {
-    setSelectedItem(item);
+  const totalPages = minimumPaginationPage(
+    employeeAttendance?.data.totalPage ?? 0,
+    6
+  );
+
+  const handleOpenDetailModal = (item: Attendance) => setSelectedItem(item);
+  const handleDetailClose = () => setSelectedItem(undefined);
+
+  const exportToXLSX = () => {
+    const formattedData = employeeAttendance?.data.result?.map(
+      (item, index) => ({
+        no: index + 1,
+        id: item.id,
+        Nama: item.employee.full_name,
+        Divisi: item.employee.division.name,
+        uid: item.uid,
+        Deskripsi: item.description,
+        status: item.status,
+        Pukul: formattedTime(item.createdAt),
+        Tanggal: formattedDate(item.createdAt),
+      })
+    );
+    const worksheet = XLSX.utils.json_to_sheet(formattedData || []);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Data Dinas Luar");
+    XLSX.writeFile(workbook, "Data_Dinas_Luar.xlsx");
   };
+
+  useEffect(() => {
+    handleSearchParams(params);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="h-screen w-full p-5">
       <div className="w-full flex-wrap justify-between items-center md:flex">
         <h3 className="text-lg font-bold">Dinas Luar</h3>
-        <label className="h-8 text-md input input-md input-bordered flex items-center gap-2 md:w-3/12">
-          <Icon name="search" />
-          <input
-            type="text"
-            className="grow"
-            placeholder="Search"
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
-        </label>
+        <Search />
       </div>
       <div className="my-5 flex-grow border-t border-gray-400 drop-shadow-sm"></div>
       <div className="flex w-full justify-between">
         <div className="m-2 flex flex-wrap-reverse gap-4">
           <button className="text-md badge btn badge-md btn-xs h-fit rounded-badge bg-[#ffffffc2] drop-shadow-sm">
             Semua
-            <div className="pl-5">{totalRows}</div>
+            <div className="pl-5">{employeeAttendance?.data.totalRows}</div>
           </button>
         </div>
         <div className="m-2 flex flex-wrap-reverse gap-4">
@@ -234,12 +175,12 @@ const DinasLuarPage = () => {
             onClick={exportToXLSX}
           >
             <FaFileExport />
-            <div className="pl-1">{totalRows}</div>
+            <div className="pl-1">{employeeAttendance?.data.totalRows}</div>
             Export
           </button>
           <div className="dropdown shrink-0">
             <div
-              onClick={getAllEmployee}
+              onClick={() => refetchEmployee()}
               tabIndex={0}
               role="button"
               className="text-md btn badge-info badge-md btn-xs h-fit rounded-badge text-white drop-shadow-sm"
@@ -248,24 +189,22 @@ const DinasLuarPage = () => {
             </div>
             <ul
               tabIndex={0}
-              className="menu dropdown-content z-[1] mt-2 h-96 w-52 overflow-y-scroll rounded-box bg-base-100 p-2 shadow"
+              className="menu dropdown-content z-[1] mt-2 w-52 overflow-y-scroll rounded-box bg-base-100 p-4 shadow"
             >
-              <div className="checkbox-group">
-                {dataEmployee.map((employee) => (
+              <div className="checkbox-group space-y-1">
+                {dataEmployee?.data.result.map((employee) => (
                   <label
-                    key={employee.id}
+                    key={employee?.id}
                     className="flex items-center space-x-2"
                   >
                     <input
                       type="checkbox"
                       checked={selectedItemEmployee.includes(
-                        employee.employee.full_name
+                        employee.full_name
                       )}
-                      onChange={() =>
-                        handleCheckboxChange(employee.employee.full_name)
-                      }
+                      onChange={() => handleCheckboxChange(employee.full_name)}
                     />
-                    <span>{employee.employee.full_name}</span>
+                    <span>{employee.full_name}</span>
                   </label>
                 ))}
               </div>
@@ -283,10 +222,10 @@ const DinasLuarPage = () => {
               </div>
               <ul
                 tabIndex={0}
-                className="menu dropdown-content z-[1] mt-2 w-52 rounded-box bg-base-100 p-2 shadow"
+                className="menu dropdown-content z-[1] mt-2 w-52 rounded-box bg-base-100 p-4 shadow"
               >
-                <h4 className="mt-2">Tipe</h4>
-                <div className="checkbox-group">
+                <h4 className="mt-2 font-medium mb-1">Tipe</h4>
+                <div className="checkbox-group space-y-1">
                   {listType
                     .filter((item) => item.category === "Type")
                     .map((item) => (
@@ -296,15 +235,15 @@ const DinasLuarPage = () => {
                       >
                         <input
                           type="checkbox"
-                          checked={filterType.includes(item.value)}
-                          onChange={() => handleCheckType(item.value, "Type")}
+                          checked={baseFilter.type.includes(item.value)}
+                          onChange={() => handleCheckType(item.value, "type")}
                         />
                         <span>{item.value}</span>
                       </label>
                     ))}
                 </div>
-                <h4 className="mt-2">Status</h4>
-                <div className="checkbox-group">
+                <h4 className="mt-2 font-medium mb-1">Status</h4>
+                <div className="checkbox-group space-y-1">
                   {listType
                     .filter((item) => item.category === "Status")
                     .map((item) => (
@@ -314,23 +253,25 @@ const DinasLuarPage = () => {
                       >
                         <input
                           type="checkbox"
-                          checked={filterStatus.includes(item.value)}
-                          onChange={() => handleCheckType(item.value, "Status")}
+                          checked={baseFilter.status.includes(item.value)}
+                          onChange={() => handleCheckType(item.value, "status")}
                         />
                         <span>{item.value}</span>
                       </label>
                     ))}
                 </div>
-                <h4 className="mt-2">Divisi</h4>
-                <div className="checkbox-group">
-                  {ListDivision.map((item) => (
+                <h4 className="mt-2 font-medium mb-1">Divisi</h4>
+                <div className="checkbox-group space-y-1">
+                  {listDivision?.data.result?.map((item) => (
                     <label
                       key={item.id}
                       className="flex items-center space-x-2"
                     >
                       <input
                         type="checkbox"
-                        checked={filterDivision === item.id}
+                        checked={baseFilter.division_id.includes(
+                          item.id.toString()
+                        )}
                         onChange={() => handleCheckDivision(item.id)}
                       />
                       <span>{item.name}</span>
@@ -343,111 +284,125 @@ const DinasLuarPage = () => {
           <input
             type="date"
             className="input input-xs input-bordered rounded-full outline-none"
-            value={filterDate}
-            onChange={(e) => setFilterDate(e.target.value)}
+            value={baseFilter.date}
+            onChange={(e) => updateBaseFilter("date", e.target.value)}
           />
-        </div>{" "}
+        </div>
       </div>
       <div className="card h-fit w-full overflow-x-auto bg-base-100 p-5 shadow-xl">
         <table className="text-md table min-h-20">
           <thead>
             <tr className="text-center font-bold">
-              {tableColumns.map((item) => (
-                <th key={item}>{item}</th>
+              {[
+                "No",
+                "Divisi",
+                "Nama",
+                "Tanggal",
+                "Jam",
+                "Tipe",
+                "Status",
+                "Keterangan",
+                "Bukti Dinas",
+              ].map((item) => (
+                <th key={item} className={item == "Nama" ? "text-left" : ""}>
+                  {item}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {filterData.map((item, index) => (
+            {employeeAttendance?.data.result.map((item, index) => (
               <tr className="hover" key={item.id}>
-                <td>{index + 1}</td>
-                <td>{item?.employee?.division?.name}</td>
-                <td>{item.employee.full_name}</td>
-                <td>{item.createdAt.split("T")[0]}</td>
-                <td>{item.createdAt.split("T")[1].split(".")[0]}</td>
-                <td>
-                  <div
-                    className={`text-md badge badge-md h-fit rounded-md px-3 drop-shadow-sm ${
-                      item.worktime.type.toUpperCase() === "MASUK"
-                        ? "bg-[#8ef96ac2] text-[#3d6b2e]"
-                        : item.worktime.type.toUpperCase() === "KELUAR"
-                          ? "bg-[#f96a6a] text-[#6b2e2e]"
-                          : ""
-                    }`}
-                  >
-                    {item.worktime.type.charAt(0).toUpperCase() +
-                      item.worktime.type.slice(1).toLowerCase()}
-                  </div>
-                </td>
-                <td>{item.status}</td>
-                <td>
-                  <div
-                    className={`text-md badge badge-md h-fit truncate rounded-md px-3 drop-shadow-sm ${
-                      item.status === "Tepat Waktu"
-                        ? "bg-[#8ef96ac2] text-[#3d6b2e]"
-                        : item.status === "Diluar Jadwal"
-                          ? "bg-[#f96a6a] text-[#6b2e2e]"
-                          : item.status === "Terlambat"
-                            ? "bg-[#f9f46a] text-[#6b2e2e]"
-                            : ""
-                    }`}
-                  >
-                    {item.status}
-                  </div>
-                </td>
-                <td className="text-center">
-                  <button
-                    className="btn btn-ghost"
-                    onClick={() => handleOpenDetailModal(item)}
-                  >
-                    <TbFaceId className="text-xl" />
-                  </button>
-                </td>
+                {[
+                  {
+                    value: numberOfTable(
+                      index,
+                      params.page ?? 0,
+                      params.limit,
+                      1
+                    ),
+                  },
+                  {
+                    value: item.employee.division.name,
+                    className: "text-left",
+                  },
+                  {
+                    value: item.employee.full_name,
+                  },
+                  {
+                    value: formattedDate(item.createdAt),
+                  },
+                  {
+                    value: formattedTime(item.createdAt),
+                  },
+                  {
+                    value: (
+                      <div
+                        className={`text-md badge badge-md h-fit rounded-md px-3 ${
+                          worktimeType[
+                            item.worktime.type.toLocaleLowerCase() as keyof typeof worktimeType
+                          ]
+                        }`}
+                      >
+                        {capitalize(item.worktime.type)}
+                      </div>
+                    ),
+                  },
+                  {
+                    value: item.status,
+                  },
+                  {
+                    value: (
+                      <div
+                        className={`text-md badge badge-md truncate rounded-md px-3 border-none ${attendanceStatus[item.status as keyof typeof attendanceStatus]}`}
+                      >
+                        {item.status}
+                      </div>
+                    ),
+                  },
+                  {
+                    value: (
+                      <button
+                        className="btn btn-ghost"
+                        onClick={() => handleOpenDetailModal(item)}
+                      >
+                        <TbFaceId className="text-xl" />
+                      </button>
+                    ),
+                  },
+                ].map(({ value, className }, index) => (
+                  <td key={`${index}-row`} className={className}>
+                    {value}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
-      </div>
-      <div className="join m-5">
-        <button
-          className="btn join-item btn-sm"
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 0}
-        >
-          Previous
-        </button>
-        <button className="btn join-item btn-sm">
-          <div className="flex justify-between">
-            <span>
-              Page {currentPage + 1} of {totalPages}
-            </span>
-          </div>
-        </button>
-        <button className="btn join-item btn-sm" onClick={() => setLimit(10)}>
-          10
-        </button>
-        <button className="btn join-item btn-sm" onClick={() => setLimit(50)}>
-          50
-        </button>
-        <button className="btn join-item btn-sm" onClick={() => setLimit(100)}>
-          100
-        </button>
-        <button className="btn join-item btn-sm" onClick={() => setLimit(0)}>
-          All
-        </button>
-        <button
-          className="btn join-item btn-sm"
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage + 1 === totalPages}
-        >
-          Next
-        </button>
+        {!employeeAttendance?.data.result.length && <NoData />}
       </div>
 
+      <Pagination
+        onChangeLimit={(value: number) =>
+          setBaseFilter((prev) => ({ ...prev, limit: value }))
+        }
+        onChangePage={(value: number) =>
+          setBaseFilter((prev) => ({ ...prev, page: value }))
+        }
+        limit={baseFilter.limit!}
+        totalPages={totalPages}
+        pageSize={6}
+      />
+
       {selectedItem && (
-        <DetailCard dataProps={selectedItem} onClose={handleDetailClose} />
+        <DetailCard
+          key={+new Date()}
+          dataProps={selectedItem}
+          onClose={handleDetailClose}
+        />
       )}
     </div>
   );
 };
+
 export default DinasLuarPage;
