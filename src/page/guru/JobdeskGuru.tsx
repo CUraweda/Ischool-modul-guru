@@ -16,12 +16,14 @@ import useSearchParams from "../../hooks/useSearchParams";
 import { Jobdesk } from "../../types/jobdesk";
 import { filterParams } from "../../utils/common";
 import { minimumPaginationPage, numberOfTable } from "../../utils/pagination";
+import { usePutJobdeskStatus } from "../../hooks/usePutJobdeskStatus";
 
 type FilterParams = Partial<{
   limit: number;
   page: number;
   employee_id: string;
   search: string;
+  priority_label: string;
 }>;
 
 const JobdeskGuruPage = () => {
@@ -31,6 +33,7 @@ const JobdeskGuruPage = () => {
     page: getSearchParam("search") ? undefined : +getSearchParam?.("page") || 1,
     limit: +getSearchParam("limit") || 10,
     search: getSearchParam("search"),
+    priority_label: getSearchParam("priority_label"),
   };
   const isPageParamsExist = Boolean(params.page);
 
@@ -67,7 +70,13 @@ const JobdeskGuruPage = () => {
           Semua
           <div className="pl-5 font-light">{jobdeskList?.data.totalRows}</div>
         </button>
-        <select className="select select-xs select-bordered w-24">
+        <select
+          value={params.priority_label}
+          onChange={(e) =>
+            handleSearchParams({ priority_label: e.target.value })
+          }
+          className="select select-xs select-bordered w-24"
+        >
           <option disabled selected>
             Filter
           </option>
@@ -192,7 +201,7 @@ function PriorityBadge({
   background?: React.CSSProperties;
   size?: "small" | "default";
 }) {
-  if (!label) return null;
+  if (!label) return <p className="text-xs text-slate-400">NOT SPECIFIED</p>;
 
   return (
     <span
@@ -371,6 +380,7 @@ function ModalDetailJobdesk({ jobdesk }: { jobdesk?: Jobdesk }) {
 }
 
 function ModalChangeStatus() {
+  const { mutate: updateStatus } = usePutJobdeskStatus();
   return (
     <dialog id="change_status_job" className="modal">
       <div className="modal-box max-w-80 p-0">
@@ -379,14 +389,9 @@ function ModalChangeStatus() {
         <div className="p-5 pb-6 flex flex-col gap-4">
           {[
             {
-              id: "todo",
-              name: "status_job",
-              defaultChecked: true,
-              labelText: "Belum dikerjakan",
-            },
-            {
               id: "onProgress",
               name: "status_job",
+              value: 1,
               defaultChecked: false,
               labelText: "Sedang dikerjakan",
               className: "radio-info",
@@ -394,15 +399,18 @@ function ModalChangeStatus() {
             {
               id: "done",
               name: "status_job",
+              value: 2,
               defaultChecked: false,
               labelText: "Selesai",
               className: "radio-success",
             },
-          ].map(({ id, name, defaultChecked, labelText, className }) => (
+          ].map(({ id, name, defaultChecked, labelText, className, value }) => (
             <label key={id} htmlFor={id} className="flex items-center gap-3">
               <input
                 id={id}
+                onChange={(e) => updateStatus(+e.target.value)}
                 type="radio"
+                value={value}
                 name={name}
                 className={`radio radio-sm ${className}`}
                 defaultChecked={defaultChecked}

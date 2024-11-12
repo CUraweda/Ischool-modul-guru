@@ -1,10 +1,7 @@
-import { useState, useEffect } from "react";
-import { Karyawan } from "../../middleware/api-hrd";
-import Modal, { openModal, closeModal } from "../../component/modal";
-import Swal from "sweetalert2";
-import Icon from "../../assets/icon";
-import { FiMoreHorizontal } from "react-icons/fi";
 import { AxiosError } from "axios";
+import { useEffect, useState } from "react";
+import Icon from "../../assets/icon";
+import { Karyawan } from "../../middleware/api-hrd";
 
 type DaftarPenilaianType = {
   user_id: string;
@@ -17,11 +14,8 @@ type DaftarPenilaianType = {
 
 const DaftarPenilaian = () => {
   const [fetch, setFetch] = useState<DaftarPenilaianType[]>([]);
-  const [id, setId] = useState("");
-  const [nilai, setNilai] = useState("");
   const [search, setSearch] = useState("");
 
-  const resetNilai = () => setNilai("");
   const fetchData = async () => {
     try {
       const response = await Karyawan.DaftarPenilaian(0, 20, search);
@@ -30,35 +24,6 @@ const DaftarPenilaian = () => {
       const message = (error as AxiosError<Error>).response?.data.message;
       console.error(message);
     }
-  };
-
-  const editNilai = async () => {
-    const data = {
-      grade: nilai,
-    };
-    try {
-      await Karyawan.EditNilai(data, id);
-      Swal.fire({
-        icon: "success",
-        title: "Sukses",
-        text: "Penilaian berhasil diubah",
-      });
-      closeModal("editGrade", resetNilai);
-    } catch (error) {
-      const message = (error as AxiosError<Error>).response?.data.message;
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: message,
-      });
-      closeModal("editGrade", resetNilai);
-    }
-  };
-
-  const handleDialog = (item: DaftarPenilaianType) => {
-    setId(item.user_id);
-    setNilai(item.grade);
-    openModal("editGrade");
   };
 
   useEffect(() => {
@@ -86,7 +51,7 @@ const DaftarPenilaian = () => {
         <table className="table table-zebra w-full min-h-20">
           <thead>
             <tr>
-              {["Nama", "Email", "Posisi", "Nilai", "Status", "Action"].map((column) => (
+              {["Nama", "Email", "Posisi", "Nilai", "Status"].map((column) => (
                 <th key={column}>{column}</th>
               ))}
             </tr>
@@ -103,66 +68,11 @@ const DaftarPenilaian = () => {
                 </td>
                 <td>{item.grade ?? "-"}</td>
                 <td>{item.is_finish ? "Aktif" : "Tidak aktif"}</td>
-                <td className="flex gap-2">
-                  <div className="dropdown dropdown-end">
-                    <label tabIndex={0} className="btn btn-primary btn-sm">
-                      <FiMoreHorizontal />
-                    </label>
-                    <ul
-                      tabIndex={0}
-                      className="menu dropdown-content w-52 rounded-box bg-base-100 p-2 shadow z-50"
-                    >
-                      <li className="hover:bg-gray-100 rounded-lg">
-                        <a
-                          style={{
-                            background: "transparent",
-                            color: "#222222",
-                          }}
-                          onClick={() => handleDialog(item)}
-                        >
-                          Edit Nilai
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      <Modal id="editGrade" onClose={resetNilai}>
-        <div className="p-6">
-          <h2 className="mb-4 text-xl font-bold text-gray-800">Edit Nilai</h2>
-          <div className="flex flex-col gap-4">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                Nilai
-              </label>
-              <input
-                type="text"
-                className="input input-bordered w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200"
-                placeholder="Masukkan nilai"
-                value={nilai}
-                onChange={(e) => setNilai(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="mt-6 flex justify-end gap-2">
-            <button
-              className="btn"
-              onClick={() => closeModal("editGrade", resetNilai)}
-            >
-              Tutup
-            </button>
-            <button className="btn btn-primary" onClick={editNilai}>
-              Simpan Perubahan
-            </button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 };

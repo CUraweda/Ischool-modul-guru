@@ -1,5 +1,4 @@
 import { ApexOptions } from "apexcharts";
-import { Field, Formik } from "formik";
 import { useEffect, useState } from "react";
 import ApexCharts from "react-apexcharts";
 import { FaCheckCircle } from "react-icons/fa";
@@ -11,17 +10,16 @@ import {
   Karyawan,
 } from "../../middleware/api-hrd";
 import { calculateRemainingProbation, formattedDate } from "../../utils/common";
+import NoData from "../../component/NoData";
 
 const DetailRekapPenilaianPage: React.FC = () => {
   const location = useLocation();
   const employee = location.state?.employee;
   const [Performance, setPerformance] = useState<any>(null);
-  const [showModal, setShowModal] = useState<boolean>(false);
   const [jobdeskList, setJobdeskList] = useState<any[]>([]);
   const [doneJobdesk, setDoneJobdesk] = useState<any[]>([]);
   const [avatar, setAvatar] = useState("");
   const [profile, setProfile] = useState("");
-  // const [ListEmployee, setListEmployee] = useState<any>(null);
 
   const navigate = useNavigate();
 
@@ -37,20 +35,10 @@ const DetailRekapPenilaianPage: React.FC = () => {
     }
   };
 
-  const createJobdesk = async (values: any) => {
-    try {
-      const res = await EmployeeJobdesk.createJobdesk(values);
-      console.log(JSON.stringify(res.data.data));
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const getDifference = async () => {
     try {
       const res = await EmployeeJobdesk.getDifference(employee.employee_id);
       setPerformance(res.data.data);
-      console.log(res.data.data);
     } catch (err) {
       console.error(err);
     }
@@ -146,11 +134,6 @@ const DetailRekapPenilaianPage: React.FC = () => {
     },
   ];
 
-  const handleSubmit = (values: any) => {
-    createJobdesk(values);
-    setShowModal(false);
-  };
-
   return (
     <div className="p-5">
       <div className="breadcrumbs items-center text-center text-xl md:w-2/3">
@@ -168,15 +151,6 @@ const DetailRekapPenilaianPage: React.FC = () => {
       <div className="my-5 flex-grow border-t border-gray-400 drop-shadow-sm" />
 
       <div>
-        <div className="flex justify-end">
-          <button
-            className="text-md mb-1 badge btn badge-md py-1 px-4 btn-xs h-fit rounded-badge bg-[#ffffffc2] drop-shadow-sm"
-            onClick={() => setShowModal(!showModal)}
-          >
-            Tambah Jobdesk
-          </button>
-        </div>
-
         <div className="w-full flex-wrap gap-3 md:flex md:flex-nowrap items-start">
           {/* Employee Details */}
           <div className="my-2 w-full md:w-[70%]">
@@ -196,7 +170,7 @@ const DetailRekapPenilaianPage: React.FC = () => {
                       <p className="text-xs font-medium text-gray-400">
                         {label}
                       </p>
-                      <p>{value}</p>
+                      <p className="truncate">{value}</p>
                     </div>
                   ))}
                 </div>
@@ -209,7 +183,7 @@ const DetailRekapPenilaianPage: React.FC = () => {
             <div className="card max-h-[207px] h-[250px] w-full  bg-base-100 p-4 shadow-xl">
               <h3 className="mb-4 text-md font-semibold">Jobdesk List</h3>
               <div className="mb-4 flex w-full flex-col justify-between gap-2 px-5 overflow-x-auto overflow-y-auto">
-                {jobdeskList.map((item, index) => (
+                {jobdeskList?.map((item, index) => (
                   <div key={index}>
                     <div className="flex items-center gap-1">
                       <p className="flex items-center gap-2 font-semibold">
@@ -230,6 +204,7 @@ const DetailRekapPenilaianPage: React.FC = () => {
                     </p>
                   </div>
                 ))}
+                {!jobdeskList.length && <NoData />}
               </div>
             </div>
           </div>
@@ -279,7 +254,7 @@ const DetailRekapPenilaianPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {doneJobdesk.map((item: any, index: any) => (
+                  {doneJobdesk?.map((item: any, index: any) => (
                     <tr key={index}>
                       <td className="border-b px-4 py-2 text-sm">
                         {index + 1}
@@ -300,113 +275,12 @@ const DetailRekapPenilaianPage: React.FC = () => {
                   ))}
                 </tbody>
               </table>
+
+              {!doneJobdesk?.length && <NoData />}
             </div>
           </div>
         </div>
       </div>
-
-      {showModal && (
-        <dialog
-          className="modal modal-open"
-          onClick={() => setShowModal(false)}
-        >
-          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2"
-              onClick={() => setShowModal(false)}
-            >
-              ✕
-            </button>
-            <h3 className="text-lg font-bold">Tambah Jobdesk</h3>
-            <Formik
-              initialValues={{
-                employee_id: employee.employee_id,
-                name: "",
-                description: "",
-                due_date: "",
-                priority: 1,
-                priority_label: "High",
-              }}
-              onSubmit={handleSubmit}
-            >
-              {({ handleSubmit }) => (
-                <form onSubmit={handleSubmit}>
-                  <div className="my-2 w-full">
-                    <label className="label">
-                      <span className="label-text">Nama Jobdesk</span>
-                    </label>
-                    <Field
-                      name="name"
-                      className="input input-bordered w-full"
-                    />
-                  </div>
-                  <div className="my-2 w-full">
-                    <label className="label">
-                      <span className="label-text">Deskripsi Jobdesk</span>
-                    </label>
-                    <Field
-                      name="description"
-                      as="textarea"
-                      className="textarea textarea-bordered w-full"
-                    />
-                  </div>
-                  <div className="my-2 w-full">
-                    <label className="label">
-                      <span className="label-text">Tanggal Tenggat</span>
-                    </label>
-                    <Field
-                      type="datetime-local"
-                      name="due_date"
-                      className="input input-bordered w-full"
-                    />
-                  </div>
-                  <div className="my-2 w-full">
-                    <label className="label">
-                      <span className="label-text">Prioritas</span>
-                    </label>
-                    <Field
-                      as="select"
-                      name="priority"
-                      className="select select-bordered w-full"
-                    >
-                      <option value="1">High</option>
-                      <option value="2">Medium</option>
-                      <option value="3">Low</option>
-                    </Field>
-                  </div>
-                  {/* <div className="my-2 w-full">
-										<label className="label">
-											<span className="label-text">Nama Peserta</span>
-										</label>
-										<Field as="select" name="employee_id" className="select select-bordered w-full">
-											<option value="" disabled>
-												Pilih Peserta
-											</option>
-											{ListEmployee?.map((employee: any) => (
-												<option key={employee.id} value={employee.id}>
-													{employee?.full_name}
-												</option>
-											))}
-										</Field>
-									</div> */}
-                  <div className="modal-action">
-                    <button className="btn btn-primary" type="submit">
-                      Submit
-                    </button>
-                    <button
-                      type="button"
-                      className="btn"
-                      onClick={() => setShowModal(false)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              )}
-            </Formik>
-          </div>
-        </dialog>
-      )}
     </div>
   );
 };
