@@ -188,7 +188,7 @@ const TrainFaceGuru: React.FC = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_REACT_API_HRD_URL}/api/face/train`,
+        `${import.meta.env.VITE_REACT_API_HRD_URL}face/train`,
         {
           method: "POST",
           headers: {
