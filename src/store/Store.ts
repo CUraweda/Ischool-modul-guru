@@ -1,15 +1,12 @@
-import { create, StoreApi } from "zustand";
-import { StoreState, StoreProps, IemployeeState, IglobalState } from "./Utils";
-import { getCurrentAcademicYear } from "../utils/common";
-import { getMonday } from "../utils/common";
+import { create } from "zustand";
+import { getCurrentAcademicYear, getMonday } from "../utils/common";
+import { IemployeeState, IglobalState, StoreProps, StoreState } from "./Utils";
 
-const Store = create<StoreState>((set: StoreApi<any>["setState"]) => ({
+const Store = create<StoreState>((set) => ({
   token: localStorage.getItem("token"),
   setToken: (token) => {
     if (token) {
       localStorage.setItem("token", token);
-    } else {
-      localStorage.removeItem("token");
     }
     set({ token });
   },
@@ -129,4 +126,4 @@ const globalStore = create<IglobalState>((set) => ({
     }),
 }));
 
-export { Store, useProps, employeeStore, globalStore };
+export { employeeStore, globalStore, Store, useProps };

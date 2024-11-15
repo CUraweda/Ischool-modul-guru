@@ -1,14 +1,14 @@
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import logo from "../assets/sade.png";
-import bg from "../assets/bg2.png";
-import { Auth } from "../middleware/api";
 import { useFormik } from "formik";
-import * as Yup from "yup";
-import { employeeStore, Store } from "../store/Store";
-import Swal from "sweetalert2";
-import { Input } from "../component/Input";
+import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import * as Yup from "yup";
+import bg from "../assets/bg2.png";
+import logo from "../assets/sade.png";
+import { Input } from "../component/Input";
+import { useLogin } from "../hooks/useLogin";
+import { employeeStore, Store } from "../store/Store";
 import { token } from "../utils/common";
 
 const schema = Yup.object({
@@ -30,6 +30,59 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  const { mutate: login } = useLogin({
+    onSuccess: (res) => {
+      const { data, tokens } = res;
+
+      const role = data.role_id;
+      const id = data.id;
+      setRole(role.toString());
+      setId(id.toString());
+
+      const {
+        id: employeeId,
+        full_name,
+        headmaster,
+        formextras,
+        formsubjects,
+        formteachers,
+        is_asessor,
+      } = data?.employee ?? {};
+
+      if (employeeId && full_name) setEmployee({ id: employeeId, full_name });
+      if (headmaster) setHeadmaster(headmaster);
+      if (formteachers) setFormTeachers(formteachers);
+      if (formsubjects) setFormSubjects(formsubjects);
+      if (formextras) setFormXtras(formextras);
+      if (is_asessor) setIsAsessor(is_asessor);
+
+      if (tokens.access.token) {
+        token.set(tokens.access.token);
+      }
+
+      if (role === 6 || role === 4) {
+        navigate("/guru/dashboard");
+      } else if (role === 2) {
+        navigate("/keuangan/");
+      } else if (role === 5) {
+        navigate("/hrd/rekap-presensi");
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Gagal",
+          text: "Akun anda tidak memiliki akses!",
+        });
+      }
+    },
+    onError: () => {
+      Swal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: "Cek kembali email dan password anda!",
+      });
+    },
+  });
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -37,61 +90,9 @@ const Login = () => {
     },
     validationSchema: schema,
     validateOnChange: false,
-    onSubmit: async (values, { setSubmitting }) => {
+    onSubmit: async (values) => {
       const { email, password } = values;
-      try {
-        setSubmitting(true);
-        const emailLower = email.toLowerCase();
-        const response = await Auth.Login(emailLower, password);
-        const role = response.data.data.role_id;
-        const id = response.data.data.id;
-        setRole(role.toString());
-        setId(id.toString());
-
-        const {
-          id: employeeId,
-          full_name,
-          headmaster,
-          formextras,
-          formsubjects,
-          formteachers,
-          is_asessor,
-        } = response.data.data?.employee ?? {};
-
-        if (employeeId && full_name) setEmployee({ id: employeeId, full_name });
-        if (headmaster) setHeadmaster(headmaster);
-        if (formteachers) setFormTeachers(formteachers);
-        if (formsubjects) setFormSubjects(formsubjects);
-        if (formextras) setFormXtras(formextras);
-        if (is_asessor) setIsAsessor(is_asessor);
-
-        // Adjust role comparison to use numbers instead of strings
-        if (response.data.tokens.access.token) {
-          token.set(response.data.tokens.access.token);
-        }
-
-        if (role === 6 || role === 4) {
-          navigate("/guru/dashboard");
-        } else if (role === 2) {
-          navigate("/keuangan/");
-        } else if (role === 5) {
-          navigate("/hrd/rekap-presensi");
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Gagal",
-            text: "Akun anda tidak memiliki akses!",
-          });
-        }
-      } catch (error) {
-        Swal.fire({
-          icon: "error",
-          title: "Gagal",
-          text: "Cek kembali email dan password anda!",
-        });
-      } finally {
-        setSubmitting(false);
-      }
+      login({ email: email.toLowerCase(), password });
     },
   });
 

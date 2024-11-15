@@ -5,9 +5,14 @@ import { token } from "../utils/common";
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_REACT_API_URL,
-  headers: {
-    Authorization: `Bearer ${token.get}`,
-  },
+});
+
+instance.interceptors.request.use((config) => {
+  const currentToken = localStorage.getItem("token") || token.get();
+  if (currentToken) {
+    config.headers.Authorization = `Bearer ${currentToken}`;
+  }
+  return config;
 });
 
 const Auth = {
@@ -15,7 +20,7 @@ const Auth = {
     email: string | null,
     password: string | null
   ): AxiosPromise<LoginResponse> =>
-    await axios.post(`${import.meta.env.VITE_REACT_API_URL}/auth/login`, {
+    await axios.post(`${import.meta.env.VITE_REACT_API_URL}auth/login`, {
       email,
       password,
     }),
