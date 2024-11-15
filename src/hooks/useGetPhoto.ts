@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { instance } from "../middleware/api-hrd";
 import { ApiResponse, DataPagination } from "../types/common";
-import { Division } from "../types/division";
 
 export const getPhoto = async (path: string | null) => {
   const data = await instance
@@ -11,7 +10,7 @@ export const getPhoto = async (path: string | null) => {
 };
 
 export const useGetPhoto = (path: string | null) =>
-  useQuery<ApiResponse<DataPagination<Division>>, Error>({
+  useQuery<ApiResponse<DataPagination<unknown>>, Error>({
     queryKey: ["useGetPhoto"],
     queryFn: () => getPhoto(path),
   });

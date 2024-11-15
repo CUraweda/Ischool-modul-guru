@@ -4,9 +4,14 @@ import { token } from "../utils/common";
 
 export const instance = axios.create({
   baseURL: import.meta.env.VITE_REACT_API_HRD_URL,
-  headers: {
-    Authorization: `Bearer ${token.get}`,
-  },
+});
+
+instance.interceptors.request.use((config) => {
+  const currentToken = localStorage.getItem("token") || token.get();
+  if (currentToken) {
+    config.headers.Authorization = `Bearer ${currentToken}`;
+  }
+  return config;
 });
 
 const Attendance = {
@@ -352,6 +357,5 @@ export {
   PengumumanKaryawan,
   PresensiKaryawan,
   Rekapan,
-  waktukerja
+  waktukerja,
 };
-

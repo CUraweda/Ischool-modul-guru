@@ -2,7 +2,7 @@
 import moment from "moment";
 
 export const token = {
-  get: localStorage.getItem("token"),
+  get: () => localStorage.getItem("token"),
   set: (value: string) => localStorage.setItem("token", value),
   delete: () => localStorage.removeItem("token"),
 };
