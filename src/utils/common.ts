@@ -1,4 +1,35 @@
+/* eslint-disable no-prototype-builtins */
 import moment from "moment";
+
+export const token = {
+  get: () => localStorage.getItem("token"),
+  set: (value: string) => localStorage.setItem("token", value),
+  delete: () => localStorage.removeItem("token"),
+};
+
+export const capitalize = (value?: string) =>
+  !value
+    ? ""
+    : value.charAt(0).toUpperCase() +
+      value.substring(1, value.length).toLowerCase();
+
+export const calculateRemainingProbation = (start: string, end: string) => {
+  const startDate = moment(start);
+  const endDate = moment(end);
+
+  const diffDays = endDate.diff(startDate, "days");
+
+  const remainingDuration = moment.duration(diffDays, "days");
+  const months = remainingDuration.months();
+  const days = remainingDuration.days();
+
+  return `${months} Bulan ${days} Hari`;
+};
+
+export const formattedDate = (isoDate: string) =>
+  moment(isoDate).format("DD MMM YYYY");
+export const formattedTime = (isoDate: string) =>
+  moment(isoDate).format("HH:mm");
 
 export const getAcademicYears = () => {
   const currYear = moment().year();
@@ -49,7 +80,7 @@ export const getReversedNumbersByLen = (length: number) => {
     return [];
   }
 
-  let result = [];
+  const result = [];
   for (let i = length; i >= 1; i--) {
     result.push(i);
   }
@@ -75,6 +106,17 @@ export const getSemesters = () => {
       label: "Genap",
     },
   ];
+};
+
+export const filterParams = (params?: Record<string, unknown>) => {
+  if (!params) return {};
+  return Object.entries(params)
+    .filter(([, value]) =>
+      Array.isArray(value)
+        ? value.length > 0
+        : !(value === undefined || value === "" || value === null)
+    )
+    .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
 };
 
 export const filterEmptyPayload = (payload: any): any => {

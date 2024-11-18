@@ -1,20 +1,19 @@
-import { useState, useEffect } from "react";
-import { FiPlus } from "react-icons/fi";
-import Modal from "../../component/modal";
+import { useEffect, useState } from "react";
 import { BiPencil, BiTrash } from "react-icons/bi";
-import { Task, Student } from "../../midleware/api";
-import { globalStore, Store } from "../../store/Store";
+import { FaSearch } from "react-icons/fa";
+import { FiPlus } from "react-icons/fi";
 import Swal from "sweetalert2";
+import { Input } from "../../component/Input";
+import Modal from "../../component/modal";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { FaSearch } from "react-icons/fa";
-import { Input } from "../../component/Input";
+import { Student, Task } from "../../middleware/api";
+import { globalStore } from "../../store/Store";
 
 const PresensiSiswa = () => {
   const { academicYear } = globalStore();
-  const { token } = Store();
   const today = new Date();
   const [date, setDate] = useState<any>(today.toISOString().substr(0, 10));
   const [kelas, setKelas] = useState<any[]>([]);
@@ -80,7 +79,7 @@ const PresensiSiswa = () => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20, "Y");
+    const response = await Task.GetAllClass(0, 20, "Y");
     setKelas(response.data.data.result);
   };
 
@@ -89,7 +88,6 @@ const PresensiSiswa = () => {
     const isoDate = newDate.toISOString();
     const formattedDate = isoDate.slice(0, 10);
     const response = await Student.showAllPresensi(
-      token,
       filter.search,
       filter.page,
       filter.limit,
@@ -102,12 +100,11 @@ const PresensiSiswa = () => {
     setDataSiswa(result);
     setPageMeta(meta);
   };
-  
+
   const getStudent = async () => {
     if (!filter.classId) return;
     try {
       const response = await Student.GetStudentByClass(
-        token,
         filter.classId,
         academicYear
       );
@@ -178,7 +175,7 @@ const PresensiSiswa = () => {
     if (data.status !== "Hadir") {
       delete data.remark;
     }
-    await Student.CreatePresensi(token, data);
+    await Student.CreatePresensi(data);
   };
 
   const deletePresensi = async (id: number) => {
@@ -202,7 +199,7 @@ const PresensiSiswa = () => {
   };
 
   const deletePresensiApi = async (id: number) => {
-    await Student.deletePresensi(token, id);
+    await Student.deletePresensi(id);
     Swal.fire({
       title: "Deleted!",
       text: "Your file has been deleted.",
@@ -213,7 +210,7 @@ const PresensiSiswa = () => {
 
   const handlePresensi = async (id: number) => {
     showModal("edit-presensi");
-    const response = await Student.GetPresensiById(token, id);
+    const response = await Student.GetPresensiById(id);
     const data = response.data.data[0];
     setPresensi(data.status);
     setTransport(data.remark || "🚗antar jemput"); // Set default value for transport if it's null
@@ -241,7 +238,7 @@ const PresensiSiswa = () => {
       }
 
       // Kirim data ke API
-      const response = await Student.UpdatePresensi(token, idPresensi, data);
+      const response = await Student.UpdatePresensi(idPresensi, data);
       console.log("Response:", response);
 
       // Tutup modal dan perbarui data presensi
@@ -326,7 +323,11 @@ const PresensiSiswa = () => {
                 {dataSiswa && dataSiswa.length > 0 ? (
                   dataSiswa.map((item: any, index: number) => (
                     <tr key={index}>
-                      <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
+                      <th>
+                        {index +
+                          1 +
+                          (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}
+                      </th>
                       <td>{item?.studentclass?.student?.full_name}</td>
                       <td>{item?.studentclass?.student?.nis}</td>
                       <td>{item?.studentclass?.student?.class}</td>
@@ -382,9 +383,7 @@ const PresensiSiswa = () => {
               value={filter.classId}
               onChange={(e) => handleFilter("classId", e.target.value)}
             >
-              <option>
-                Pilih Kelas
-              </option>
+              <option>Pilih Kelas</option>
               {kelas?.map((item: any, index: number) => (
                 <option
                   value={item.id}
@@ -410,9 +409,7 @@ const PresensiSiswa = () => {
               value={filter.semester}
               onChange={(e) => handleFilter("semester", +e.target.value)}
             >
-              <option >
-               Pilih Semester
-              </option>
+              <option>Pilih Semester</option>
               <option value={1}>Ganjil</option>
               <option value={2}>Genap </option>
             </select>

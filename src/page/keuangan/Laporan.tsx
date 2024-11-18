@@ -1,25 +1,23 @@
-import { FaFileExcel, FaLongArrowAltRight } from "react-icons/fa";
-import Modal, { closeModal, openModal } from "../../component/modal";
-import { Store } from "../../store/Store";
 import { useEffect, useState } from "react";
+import { FaFileExcel, FaLongArrowAltRight } from "react-icons/fa";
 import Swal from "sweetalert2";
+import { Input, Select } from "../../component/Input";
+import Modal, { closeModal, openModal } from "../../component/modal";
+import {
+  IpageMeta,
+  PaginationControl,
+} from "../../component/PaginationControl";
 import {
   Class,
   PosJenisPembayaran,
   Student,
   TagihanSiswa,
-} from "../../midleware/api";
-import {
-  IpageMeta,
-  PaginationControl,
-} from "../../component/PaginationControl";
-import { Input, Select } from "../../component/Input";
+} from "../../middleware/api";
 import { getAcademicYears } from "../../utils/common";
 import { formatTime } from "../../utils/date";
 
 const Laporan = () => {
-  const { token } = Store(),
-    modalFilterId = "filter-laporan";
+  const modalFilterId = "filter-laporan";
 
   // filtering
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
@@ -85,7 +83,7 @@ const Laporan = () => {
   const [classes, setClasses] = useState<any[]>([]);
   const getClasses = async () => {
     try {
-      const res = await Class.showAll(token, 0, 1000);
+      const res = await Class.showAll(0, 1000);
       setClasses(res.data.data.result);
       handleFilterInForm("studentId", "");
     } catch {}
@@ -95,7 +93,6 @@ const Laporan = () => {
   const getStudents = async () => {
     try {
       const res = await Student.GetStudentByClass(
-        token,
         filterInForm.classId,
         filterInForm.academicYear
       );
@@ -110,7 +107,7 @@ const Laporan = () => {
   const [paymentCats, setPaymentCats] = useState<any[]>([]);
   const getPaymentCats = async () => {
     try {
-      const res = await PosJenisPembayaran.showAll(token, "", "", "", 0, 1000);
+      const res = await PosJenisPembayaran.showAll("", "", "", 0, 1000);
       setPaymentCats(res.data.data.result);
     } catch {}
   };
@@ -126,7 +123,6 @@ const Laporan = () => {
   const getDataList = async () => {
     try {
       const res = await TagihanSiswa.showAllReports(
-        token,
         filter.paymentCatId,
         filter.classId,
         filter.studentId,
@@ -156,14 +152,13 @@ const Laporan = () => {
   const handleExport = async () => {
     try {
       const res = await TagihanSiswa.exportReports(
-        token,
         filter.paymentCatId,
         filter.classId,
         filter.studentId,
         filter.startPaid,
         filter.endPaid,
         filter.status,
-        filter.nisPrefix,
+        filter.nisPrefix
       );
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");

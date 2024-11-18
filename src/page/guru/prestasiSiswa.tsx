@@ -1,19 +1,18 @@
+import { useFormik } from "formik";
 import { useEffect, useRef, useState } from "react";
+import { FaCertificate, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
+import { FaPencil } from "react-icons/fa6";
+import Swal from "sweetalert2";
+import * as Yup from "yup";
+import { Input, Select, Textarea } from "../../component/Input";
+import Modal, { closeModal, openModal } from "../../component/modal";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { Input, Select, Textarea } from "../../component/Input";
-import { FaCertificate, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
-import { Store } from "../../store/Store";
-import { AchievementSiswa, Class, Year, Student } from "../../midleware/api";
-import Swal from "sweetalert2";
-import { formatTime } from "../../utils/date";
-import { FaPencil } from "react-icons/fa6";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import Modal, { closeModal, openModal } from "../../component/modal";
+import { AchievementSiswa, Class, Student, Year } from "../../middleware/api";
 import { getAcademicYears, getCurrentAcademicYear } from "../../utils/common";
+import { formatTime } from "../../utils/date";
 // import { setYear } from "date-fns/esm";
 
 // const certificateExts = ["pdf", "jpeg", "jpg", "png"];
@@ -46,8 +45,7 @@ const schema = Yup.object().shape({
 });
 
 const PrestasiSiswa = () => {
-  const { token } = Store(),
-    modalFormId = "form-achievement",
+  const modalFormId = "form-achievement",
     modalCertId = "view-cert-achievement";
 
   // filter
@@ -71,7 +69,7 @@ const PrestasiSiswa = () => {
   const [classes, setClasses] = useState<any[]>([]);
   const getClasses = async () => {
     try {
-      const res = await Class.showAll(token, 0, 0, "Y");
+      const res = await Class.showAll(0, 0, "Y");
       setClasses(res.data.data.result);
     } catch {}
   };
@@ -80,7 +78,7 @@ const PrestasiSiswa = () => {
   const getYearList = async () => {
     let years = [];
     try {
-      const response = await Year.getYear(token, "", 10000, 0);
+      const response = await Year.getYear("", 10000, 0);
       const { result } = response.data.data;
       years = result;
       console.log("test", response);
@@ -107,7 +105,6 @@ const PrestasiSiswa = () => {
   const getDataList = async () => {
     try {
       const res = await AchievementSiswa.showAll(
-        token,
         filter.search,
         filter.classId,
         filter.page,
@@ -151,11 +148,7 @@ const PrestasiSiswa = () => {
     if (!academicYear || !filter.classId) return;
 
     try {
-      const res = await Student.GetStudentByClass(
-        token,
-        filter.classId,
-        academicYear
-      );
+      const res = await Student.GetStudentByClass(filter.classId, academicYear);
       setStudents(res.data.data?.map((dat: any) => dat.student) ?? []);
     } catch {}
   };
@@ -188,8 +181,8 @@ const PrestasiSiswa = () => {
         if (values.file) formData.append("file", values.file);
 
         values.id
-          ? await AchievementSiswa.update(token, values.id, formData)
-          : await AchievementSiswa.create(token, formData);
+          ? await AchievementSiswa.update(values.id, formData)
+          : await AchievementSiswa.create(formData);
 
         handleReset();
         closeModal(modalFormId);
@@ -223,7 +216,7 @@ const PrestasiSiswa = () => {
     setIsGetLoading(true);
 
     try {
-      const res = await AchievementSiswa.showOne(token, id);
+      const res = await AchievementSiswa.showOne(id);
 
       form.setValues({
         id: res.data.data?.id ?? "",
@@ -261,7 +254,7 @@ const PrestasiSiswa = () => {
       try {
         setIsDelLoading(true);
         if (result.isConfirmed) {
-          await AchievementSiswa.delete(token, id);
+          await AchievementSiswa.delete(id);
 
           Swal.fire({
             icon: "success",
@@ -293,7 +286,7 @@ const PrestasiSiswa = () => {
 
     setIsCertLoading(true);
     try {
-      const response = await AchievementSiswa.downloadCertificate(token, path);
+      const response = await AchievementSiswa.downloadCertificate(path);
       const blob = new Blob([response.data], { type: "application/pdf" });
       setCertificateView(URL.createObjectURL(blob));
       openModal(modalCertId);

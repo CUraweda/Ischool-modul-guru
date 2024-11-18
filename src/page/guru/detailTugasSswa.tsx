@@ -2,14 +2,12 @@ import { useState, useEffect } from "react";
 import { BiDownload } from "react-icons/bi";
 import { VscTasklist } from "react-icons/vsc";
 import { Link } from "react-router-dom";
-import { Store } from "../../store/Store";
-import { Task } from "../../midleware/api";
+import { Task } from "../../middleware/api";
 import { BsEye } from "react-icons/bs";
 import Modal from "../../component/modal";
 import Swal from "sweetalert2";
 
 const DetailTugasSswa = () => {
-  const { token } = Store();
   const [taskList, setTaskList] = useState<any>([]);
   const [task, setTask] = useState<any>();
   const [showFile, setShowFile] = useState<any>();
@@ -29,7 +27,7 @@ const DetailTugasSswa = () => {
       if (id !== null) {
         idTask = parseInt(id);
       }
-      const response = await Task.getDetailTask(token, idTask);
+      const response = await Task.getDetailTask(idTask);
       console.log(response);
 
       setTaskList(response.data.data);
@@ -41,7 +39,7 @@ const DetailTugasSswa = () => {
     try {
       const id: string | null = sessionStorage.getItem("idTask");
 
-      const response = await Task.getTaskById(token, id);
+      const response = await Task.getTaskById(id);
 
       setTask(response.data.data);
     } catch (error) {
@@ -65,7 +63,7 @@ const DetailTugasSswa = () => {
   const downloadFileTugas = async () => {
     try {
       const path = task?.task_file;
-      const response = await Task.downloadTugas(token, path);
+      const response = await Task.downloadTugas(path);
       const urlParts = path.split("/");
       const fileName = urlParts.pop() || "";
       const blobUrl = window.URL.createObjectURL(response.data);
@@ -87,7 +85,7 @@ const DetailTugasSswa = () => {
       const path = task?.task_file;
       if (!path) throw new Error("File tidak tersedia");
 
-      const response = await Task.downloadTugas(token, path);
+      const response = await Task.downloadTugas(path);
       const lowerCasePath = path.toLowerCase();
 
       let mimeType = "application/pdf";
@@ -140,7 +138,7 @@ const DetailTugasSswa = () => {
         feedback: feedback,
         student_id: idSiswa,
       };
-      const response = await Task.editTaskDetail(token, idDetail, data);
+      const response = await Task.editTaskDetail(idDetail, data);
       console.log(response);
       closeModal("add-feedback-detail");
     } catch (error: any) {
@@ -154,7 +152,7 @@ const DetailTugasSswa = () => {
   };
   const downloadTugas = async (path: string) => {
     try {
-      const response = await Task.downloadTugas(token, path);
+      const response = await Task.downloadTugas(path);
       const urlParts = path.split("/");
       const fileName = urlParts.pop() || "";
       const blobUrl = window.URL.createObjectURL(response.data);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Class, DashboardSiswa } from "../../midleware/api";
+import { Class, DashboardSiswa } from "../../middleware/api";
 import { globalStore, Store } from "../../store/Store";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import Modal from "../../component/modal";
@@ -24,7 +24,7 @@ const validationSchema = Yup.object({
 
 const OverviewSiswa = () => {
   const { academicYear } = globalStore();
-  const { token, role } = Store();
+  const { role } = Store();
   const [overview, setOverview] = useState<any>([]);
   const [idOverview, setIdOverview] = useState<string>("");
 
@@ -68,7 +68,7 @@ const OverviewSiswa = () => {
 
   const getClasses = async () => {
     try {
-      const res = await Class.showAll(token, 0, 0, "Y");
+      const res = await Class.showAll(0, 0, "Y");
       setClasses(res.data.data.result);
     } catch {}
   };
@@ -78,14 +78,14 @@ const OverviewSiswa = () => {
   }, []);
 
   const showModal = (props: string) => {
-    let modalElement = document.getElementById(props) as HTMLDialogElement;
+    const modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
     }
   };
 
   const closeModal = (props: string) => {
-    let modalElement = document.getElementById(props) as HTMLDialogElement;
+    const modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {
       modalElement.close();
     }
@@ -93,7 +93,6 @@ const OverviewSiswa = () => {
 
   const getOverview = async () => {
     const response = await DashboardSiswa.getAllOverView(
-      token,
       filter.classId,
       academicYear,
       filter.page,
@@ -124,7 +123,7 @@ const OverviewSiswa = () => {
         status,
         class_id: class_id == "" ? null : class_id,
       };
-      await DashboardSiswa.createOverview(token, data);
+      await DashboardSiswa.createOverview(data);
 
       formik.resetForm();
       getOverview();
@@ -137,7 +136,7 @@ const OverviewSiswa = () => {
 
   const GetByIdOverview = async (id: string) => {
     try {
-      const response = await DashboardSiswa.getByIdOverView(token, id);
+      const response = await DashboardSiswa.getByIdOverView(id);
 
       const data = response.data.data;
       console.log(data);
@@ -176,7 +175,7 @@ const OverviewSiswa = () => {
         status,
         class_id: class_id == "" ? null : class_id,
       };
-      await DashboardSiswa.UpdateOverview(token, idOverview, data);
+      await DashboardSiswa.UpdateOverview(idOverview, data);
 
       getOverview();
       closeModal("edit-overview");
@@ -188,7 +187,7 @@ const OverviewSiswa = () => {
   };
 
   const deleteOverview = async (id: string) => {
-    await DashboardSiswa.DeleteOverview(token, id);
+    await DashboardSiswa.DeleteOverview(id);
     Swal.fire({
       title: "Deleted!",
       text: "Your data has been deleted.",
@@ -269,7 +268,9 @@ const OverviewSiswa = () => {
           <tbody>
             {overview?.map((item: any, index: number) => (
               <tr key={index}>
-                <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
+                <th>
+                  {index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}
+                </th>
 
                 <td>{item?.topic}</td>
                 <td>{item?.meaningful_understanding}</td>

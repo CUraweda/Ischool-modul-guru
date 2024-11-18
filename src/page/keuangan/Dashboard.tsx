@@ -1,6 +1,9 @@
 // import React from 'react'
 
-import { useEffect, useState, useRef } from "react";
+import { ApexOptions } from "apexcharts";
+import moment from "moment";
+import { useEffect, useRef, useState } from "react";
+import ReactApexChart from "react-apexcharts";
 import {
   FaChartPie,
   FaExclamationTriangle,
@@ -8,18 +11,13 @@ import {
   FaMoneyBillWave,
   FaWallet,
 } from "react-icons/fa";
-import { moneyFormat } from "../../utils/common";
-import { DashboardKeuangan, PosPembayaran } from "../../midleware/api";
-import { Store } from "../../store/Store";
-import moment from "moment";
 import { Link } from "react-router-dom";
-import { Input, Select } from "../../component/Input";
-import { ApexOptions } from "apexcharts";
-import ReactApexChart from "react-apexcharts";
 import { useReactToPrint } from "react-to-print";
+import { Input, Select } from "../../component/Input";
+import { DashboardKeuangan, PosPembayaran } from "../../middleware/api";
+import { moneyFormat } from "../../utils/common";
 
 const Dashboard = () => {
-  const { token } = Store();
   const componentRef = useRef(null);
 
   // filters
@@ -31,7 +29,7 @@ const Dashboard = () => {
 
   const getPostPayments = async () => {
     try {
-      const res = await PosPembayaran.showAll(token, "", 0, 1000);
+      const res = await PosPembayaran.showAll("", 0, 1000);
       setPostPayments(res.data?.data?.result ?? []);
     } catch {}
   };
@@ -53,7 +51,6 @@ const Dashboard = () => {
   const getCards = async () => {
     try {
       const res = await DashboardKeuangan.getCards(
-        token,
         startDate,
         endDate,
         postPaymentId
@@ -116,7 +113,6 @@ const Dashboard = () => {
 
     try {
       const res = await DashboardKeuangan.getChart(
-        token,
         startDate,
         endDate,
         postPaymentId

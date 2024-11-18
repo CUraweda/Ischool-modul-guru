@@ -1,15 +1,12 @@
-import create, { SetState } from "zustand";
-import { StoreState, StoreProps, IemployeeState, IglobalState } from "./Utils";
-import { getCurrentAcademicYear } from "../utils/common";
-import { getMonday } from "../utils/common";
+import { create } from "zustand";
+import { getCurrentAcademicYear, getMonday } from "../utils/common";
+import { IemployeeState, IglobalState, StoreProps, StoreState } from "./Utils";
 
-const Store = create<StoreState>((set: SetState<StoreState>) => ({
+const Store = create<StoreState>((set) => ({
   token: localStorage.getItem("token"),
   setToken: (token) => {
     if (token) {
       localStorage.setItem("token", token);
-    } else {
-      localStorage.removeItem("token");
     }
     set({ token });
   },
@@ -89,19 +86,22 @@ const useProps = create<StoreProps>((set) => ({
 
 const employeeStore = create<IemployeeState>((set, get) => ({
   employee: null,
-  setEmployee: (employee: any) => set({ employee }),
+  setEmployee: (employee) => set({ employee }),
 
   headmaster: null,
-  setHeadmaster: (headmaster: any) => set({ headmaster }),
+  setHeadmaster: (headmaster) => set({ headmaster }),
 
   formTeachers: [],
-  setFormTeachers: (formTeachers: any[]) => set({ formTeachers }),
+  setFormTeachers: (formTeachers) => set({ formTeachers }),
 
   formSubjects: [],
-  setFormSubjects: (formSubjects: any[]) => set({ formSubjects }),
+  setFormSubjects: (formSubjects) => set({ formSubjects }),
 
   formXtras: [],
-  setFormXtras: (formXtras: any[]) => set({ formXtras }),
+  setFormXtras: (formXtras) => set({ formXtras }),
+
+  isAsessor: false,
+  setIsAsessor: (isAsessor) => set({ isAsessor }),
 
   isHeadmaster: () => get().employee != null && Store().role?.toString() == "4",
 
@@ -109,6 +109,7 @@ const employeeStore = create<IemployeeState>((set, get) => ({
     set({
       employee: null,
       headmaster: null,
+      isAsessor: false,
       formTeachers: [],
       formSubjects: [],
       formXtras: [],
@@ -125,4 +126,4 @@ const globalStore = create<IglobalState>((set) => ({
     }),
 }));
 
-export { Store, useProps, employeeStore, globalStore };
+export { employeeStore, globalStore, Store, useProps };

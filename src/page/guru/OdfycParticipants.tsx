@@ -1,20 +1,19 @@
+import { useFormik } from "formik";
 import { useEffect, useState } from "react";
-import { globalStore, Store } from "../../store/Store";
+import { FaPlus, FaSearch, FaTrash } from "react-icons/fa";
+import { FaPencil } from "react-icons/fa6";
+import { IoChevronBack } from "react-icons/io5";
+import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+import * as Yup from "yup";
+import { Input } from "../../component/Input";
+import Modal, { closeModal, openModal } from "../../component/modal";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { Input } from "../../component/Input";
-import { FaSearch, FaTrash } from "react-icons/fa";
-import { ForCountry, User } from "../../midleware/api";
-import Swal from "sweetalert2";
-import { FaPencil } from "react-icons/fa6";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import Modal, { closeModal, openModal } from "../../component/modal";
-import { Link } from "react-router-dom";
-import { IoChevronBack } from "react-icons/io5";
-import { FaPlus } from "react-icons/fa";
+import { ForCountry, User } from "../../middleware/api";
+import { globalStore } from "../../store/Store";
 const schema = Yup.object().shape({
   id: Yup.string().optional(),
   user_id: Yup.array().of(Yup.string()).required("User harus dipilih"),
@@ -25,8 +24,7 @@ const schema = Yup.object().shape({
 });
 
 const OdfycParticipants = () => {
-  const { token } = Store(),
-    { academicYear } = globalStore(),
+  const { academicYear } = globalStore(),
     modalFormId = "form-for-country";
 
   // filter
@@ -52,7 +50,6 @@ const OdfycParticipants = () => {
   const getDataList = async () => {
     try {
       const res = await ForCountry.showAll(
-        token,
         filter.search,
         academicYear,
         filter.page,
@@ -94,7 +91,7 @@ const OdfycParticipants = () => {
   const handleSearchUser = async () => {
     form.setFieldValue("user_id", []);
     try {
-      const res = await User.showAll(token, searchUser);
+      const res = await User.showAll(searchUser);
 
       const filteredUsers = (res.data?.data?.result ?? [])
         .filter((user: { id: any; role_id: any }) => {
@@ -135,9 +132,9 @@ const OdfycParticipants = () => {
 
         if (!id) {
           payload.user_ids = selectedUsers;
-          await ForCountry.create(token, payload);
+          await ForCountry.create(payload);
         } else {
-          await ForCountry.update(token, id, payload);
+          await ForCountry.update(id, payload);
         }
 
         resetForm();
@@ -182,7 +179,7 @@ const OdfycParticipants = () => {
     setIsGetLoading(true);
 
     try {
-      const res = await ForCountry.showOne(token, id);
+      const res = await ForCountry.showOne(id);
 
       form.setValues({
         id: res.data.data?.id ?? "",
@@ -218,7 +215,7 @@ const OdfycParticipants = () => {
       try {
         setIsDelLoading(true);
         if (result.isConfirmed) {
-          await ForCountry.delete(token, id);
+          await ForCountry.delete(id);
 
           Swal.fire({
             icon: "success",

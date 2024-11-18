@@ -13,7 +13,7 @@ import {
   ViewSwitcher,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { globalStore, Store } from "../store/Store";
-import { Kalender, Task } from "../midleware/api";
+import { Kalender, Task } from "../middleware/api";
 import { FaPencil } from "react-icons/fa6";
 import { BiTrash } from "react-icons/bi";
 import { CiClock2 } from "react-icons/ci";
@@ -73,8 +73,7 @@ const schema = Yup.object({
 
 const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
   const { academicYear } = globalStore();
-  const { token, setTanggalPekanan, tanggalPekanan, setTanggalStartDate } =
-    Store();
+  const { setTanggalPekanan, tanggalPekanan, setTanggalStartDate } = Store();
   const [Dataappointment, setData] = useState<any[]>([]);
   const [Class, setClass] = useState<any[]>([]);
   const [dateProps, setDateProps] = useState<any>();
@@ -107,7 +106,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
           end_date: new Date(formatDateCreate(end_date)),
           hide_student: !hide,
         };
-        await Kalender.EditTimeTable(token, id, data);
+        await Kalender.EditTimeTable(id, data);
 
         getKalenderPendidikan();
 
@@ -135,7 +134,6 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
     try {
       // const smt = sessionStorage.getItem("smt") ? sessionStorage.getItem("smt") : '1'
       const response = await Kalender.GetAllTimetableByClass(
-        token,
         kelas,
         smt,
         academicYear,
@@ -170,7 +168,7 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
 
   const deleteDetail = async (id: number) => {
     try {
-      await Kalender.deleteTimeTable(token, id);
+      await Kalender.deleteTimeTable(id);
       Swal.fire({
         icon: "success",
         title: "Berhasil",
@@ -188,14 +186,14 @@ const KalenderPekanan: FC<Props> = ({ smt, kelas, triggerShow }) => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20, "Y");
+    const response = await Task.GetAllClass(0, 20, "Y");
     setClass(response.data.data.result);
   };
 
   const getTimeTableById = async (id: number) => {
     formik.resetForm();
     try {
-      const response = await Kalender.GetTimetableById(token, id);
+      const response = await Kalender.GetTimetableById(id);
       const dataRest = response.data.data;
 
       formik.setFieldValue("tahun", dataRest?.academic_year);

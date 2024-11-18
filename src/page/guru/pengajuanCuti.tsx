@@ -4,7 +4,7 @@ import Modal from "../../component/modal";
 
 import DatePicker from "../../component/datePicker";
 
-const pengajuanCuti = () => {
+const PengajuanCuti = () => {
   const [showInput, setShowInput] = useState(false);
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -16,7 +16,7 @@ const pengajuanCuti = () => {
   };
 
   const showModalAdd = () => {
-    let modalElement = document.getElementById("add-cuti") as HTMLDialogElement;
+    const modalElement = document.getElementById("add-cuti") as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
     }
@@ -150,4 +150,4 @@ const pengajuanCuti = () => {
   );
 };
 
-export default pengajuanCuti;
+export default PengajuanCuti;

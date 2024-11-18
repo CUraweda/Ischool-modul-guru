@@ -1,18 +1,17 @@
 // import React from "react";
+import { useFormik } from "formik";
+import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
-import { Store } from "../../store/Store";
-import { useEffect, useState } from "react";
-import { PosPembayaran } from "../../midleware/api";
 import Swal from "sweetalert2";
-import Modal, { closeModal, openModal } from "../../component/modal";
 import * as Yup from "yup";
-import { useFormik } from "formik";
 import { Input, Select, Textarea } from "../../component/Input";
+import Modal, { closeModal, openModal } from "../../component/modal";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
+import { PosPembayaran } from "../../middleware/api";
 
 const posPembayaranSchema = Yup.object().shape({
   name: Yup.string().required("Nama pos pembayaran harus diisi"),
@@ -23,8 +22,6 @@ const posPembayaranSchema = Yup.object().shape({
 });
 
 function PosKeuangan() {
-  const { token } = Store();
-
   // page states
   const [dataIdxInForm, setDataIdxInForm] = useState<any>(null);
   const [dataList, setDataList] = useState<any[]>([]);
@@ -45,12 +42,7 @@ function PosKeuangan() {
 
   const getDataList = async () => {
     try {
-      const res = await PosPembayaran.showAll(
-        token,
-        "",
-        filter.page,
-        filter.limit
-      );
+      const res = await PosPembayaran.showAll("", filter.page, filter.limit);
 
       const { result, ...meta } = res.data.data;
 
@@ -84,12 +76,8 @@ function PosKeuangan() {
 
       try {
         dataIdxInForm == null
-          ? await PosPembayaran.create(token, values)
-          : await PosPembayaran.update(
-              token,
-              dataList[dataIdxInForm].id,
-              values
-            );
+          ? await PosPembayaran.create(values)
+          : await PosPembayaran.update(dataList[dataIdxInForm].id, values);
 
         closeModal("form-pos-pembayaran");
 
@@ -149,7 +137,7 @@ function PosKeuangan() {
     }).then(async (result) => {
       try {
         if (result.isConfirmed) {
-          await PosPembayaran.delete(token, id);
+          await PosPembayaran.delete(id);
 
           Swal.fire({
             icon: "success",

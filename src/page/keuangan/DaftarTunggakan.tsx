@@ -1,19 +1,16 @@
 // import React from 'react'
-import { FaFileExcel, FaSearch } from "react-icons/fa";
-import { Store } from "../../store/Store";
 import { useEffect, useState } from "react";
-import { Class, TagihanSiswa } from "../../midleware/api";
-import { Input, Select } from "../../component/Input";
+import { FaFileExcel, FaSearch } from "react-icons/fa";
 import Swal from "sweetalert2";
+import { Input, Select } from "../../component/Input";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
+import { Class, TagihanSiswa } from "../../middleware/api";
 import { formatTime } from "../../utils/date";
 
 const DaftarTunggakan = () => {
-  const { token } = Store();
-
   // FILTERING
   const [classes, setClasses] = useState<any[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -27,7 +24,7 @@ const DaftarTunggakan = () => {
 
   const getClasses = async () => {
     try {
-      const res = await Class.showAll(token, 0, 1000);
+      const res = await Class.showAll(0, 1000);
       setClasses(res.data.data.result);
     } catch {}
   };
@@ -51,7 +48,6 @@ const DaftarTunggakan = () => {
   const getDataList = async () => {
     try {
       const res = await TagihanSiswa.showAllArrears(
-        token,
         filter.search,
         filter.classId,
         filter.page,
@@ -84,7 +80,6 @@ const DaftarTunggakan = () => {
   const handleExport = async () => {
     try {
       const res = await TagihanSiswa.exportArrears(
-        token,
         // filter.search,
         "",
         filter.classId

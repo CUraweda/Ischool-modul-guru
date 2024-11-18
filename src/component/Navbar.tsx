@@ -1,13 +1,13 @@
-import { BsList } from "react-icons/bs";
-import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import { FaBell } from "react-icons/fa";
-import { employeeStore, Store } from "../store/Store";
-import { Auth, Task } from "../midleware/api";
 import { useEffect, useState } from "react";
+import { BsList } from "react-icons/bs";
+import { FaBell } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { Auth, Task } from "../middleware/api";
+import { employeeStore } from "../store/Store";
+import { token } from "../utils/common";
 
 const Navbar = () => {
-  const { token } = Store();
   const navigate = useNavigate();
   const empStore = employeeStore();
   const [image, setImage] = useState<any>(null);
@@ -15,13 +15,14 @@ const Navbar = () => {
   // const date = moment().format('llll');
 
   const logout = () => {
+    token.delete();
     sessionStorage.clear();
     empStore.clearStore();
     navigate("/");
   };
   const getMe = async () => {
     try {
-      const res = await Auth.MeData(token);
+      const res = await Auth.MeData();
       previewProfile(res.data.data.avatar);
     } catch (error) {
       console.error(error);
@@ -29,8 +30,8 @@ const Navbar = () => {
   };
   const previewProfile = async (path: any) => {
     try {
-      const lowerCasePath = path.toLowerCase();
-      const response = await Task.downloadTugas(token, path);
+      const lowerCasePath = path?.toLowerCase();
+      const response = await Task.downloadTugas(path);
       let mimeType = "application/pdf";
 
       if (lowerCasePath.endsWith(".png")) {
@@ -51,9 +52,11 @@ const Navbar = () => {
       console.error(err);
     }
   };
+
   useEffect(() => {
     getMe();
   }, []);
+
   return (
     <div>
       <div className="navbar shadow-md bg-base-100">
@@ -80,7 +83,10 @@ const Navbar = () => {
               <div className="w-10 rounded-full">
                 <img
                   alt="Tailwind CSS Navbar component"
-                  src={`${image ?? "https://korpri.padang.go.id/assets/img/dewan_pengurus/no-pict.jpg"}`}
+                  src={
+                    image ??
+                    "https://korpri.padang.go.id/assets/img/dewan_pengurus/no-pict.jpg"
+                  }
                 />
               </div>
             </div>

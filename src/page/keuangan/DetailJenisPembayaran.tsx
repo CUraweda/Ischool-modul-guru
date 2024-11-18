@@ -1,22 +1,22 @@
 // import React from "react";
+import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { FaCheck, FaSearch, FaTrash } from "react-icons/fa";
 import { MdInsertPhoto } from "react-icons/md";
-import { Class, Student, TagihanSiswa } from "../../midleware/api";
-import { globalStore, Store } from "../../store/Store";
-import Modal, { closeModal, openModal } from "../../component/modal";
-import { Input, Select } from "../../component/Input";
 import { Link, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
-import { useFormik } from "formik";
+import { Input, Select } from "../../component/Input";
+import Modal, { closeModal, openModal } from "../../component/modal";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
+import { Class, Student, TagihanSiswa } from "../../middleware/api";
+import { globalStore } from "../../store/Store";
 import { formatTime } from "../../utils/date";
 
-const apiAssets = import.meta.env.VITE_REACT_API_URL + "/";
+const apiAssets = import.meta.env.VITE_REACT_API_URL;
 
 const tambahSiswaSchema = Yup.object().shape({
   academic_year: Yup.string().optional(),
@@ -29,8 +29,7 @@ const tambahSiswaSchema = Yup.object().shape({
 });
 
 const DetailJenisPembayaran = () => {
-  const { token } = Store(),
-    { academicYear } = globalStore(),
+  const { academicYear } = globalStore(),
     { id: billId } = useParams(),
     modalFormTambah = "form-tambah-siswa",
     modalBuktiBayar = "form-bukti-bayar";
@@ -61,7 +60,6 @@ const DetailJenisPembayaran = () => {
   const getDataList = async () => {
     try {
       const res = await TagihanSiswa.showAll(
-        token,
         filter.search,
         billId,
         filter.classId,
@@ -86,7 +84,7 @@ const DetailJenisPembayaran = () => {
 
   const getClasses = async () => {
     try {
-      const res = await Class.showAll(token, 0, 1000);
+      const res = await Class.showAll(0, 1000);
       setClasses(res.data.data.result);
     } catch {}
   };
@@ -113,7 +111,7 @@ const DetailJenisPembayaran = () => {
       setSubmitting(true);
 
       try {
-        const res = await TagihanSiswa.bulkCreate(token, {
+        const res = await TagihanSiswa.bulkCreate({
           student_ids: studentsToAdd.map((dat: any) => dat.id),
           payment_bill_id: billId,
         });
@@ -177,13 +175,12 @@ const DetailJenisPembayaran = () => {
 
       if (class_id) {
         result = await Student.GetStudentByClass(
-          token,
           class_id.toString(),
           academic_year
         );
         tambahSiswaForm.setFieldValue("student_id", 0);
       } else if (level) {
-        result = await Student.GetStudentByLevel(token, level, academic_year);
+        result = await Student.GetStudentByLevel(level, academic_year);
         tambahSiswaForm.setFieldValue("student_id", 0);
         tambahSiswaForm.setFieldValue("class_id", 0);
       }
@@ -212,7 +209,7 @@ const DetailJenisPembayaran = () => {
 
   const getClassesInForm = async () => {
     try {
-      const res = await Class.showAll(token, 0, 1000);
+      const res = await Class.showAll(0, 1000);
       setClassesInForm(
         res.data.data.result.filter(
           (dat: any) => dat.level == tambahSiswaForm.values.level
@@ -256,7 +253,7 @@ const DetailJenisPembayaran = () => {
     }).then(async (result) => {
       try {
         if (result.isConfirmed) {
-          await TagihanSiswa.delete(token, id);
+          await TagihanSiswa.delete(id);
 
           Swal.fire({
             icon: "success",
@@ -298,7 +295,7 @@ const DetailJenisPembayaran = () => {
     }).then(async (result) => {
       try {
         if (result.isConfirmed) {
-          await TagihanSiswa.confirmEvidence(token, id);
+          await TagihanSiswa.confirmEvidence(id);
 
           Swal.fire({
             icon: "success",
@@ -324,10 +321,8 @@ const DetailJenisPembayaran = () => {
     <>
       <Modal id={modalBuktiBayar} onClose={() => setEvidenceInModal("")}>
         <h3 className="text-xl font-bold mb-3">Bukti Bayar</h3>
-        <div className="avatar">
-          <div className="w-full rounded">
-            <img src={apiAssets + evidenceInModal} alt="" />
-          </div>
+        <div className="w-full rounded">
+          <img src={apiAssets.replace(`api/`, "") + evidenceInModal} alt="" />
         </div>
         <form className="modal-action" method="dialog">
           <button className="btn w-full btn-outline btn-primary">Tutup</button>

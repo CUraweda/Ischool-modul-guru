@@ -13,7 +13,7 @@ import {
   TodayButton,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { employeeStore, globalStore, Store } from "../store/Store";
-import { Kalender } from "../midleware/api";
+import { Kalender } from "../middleware/api";
 import { FaPencil } from "react-icons/fa6";
 import { BiTrash } from "react-icons/bi";
 import { CiClock2 } from "react-icons/ci";
@@ -69,7 +69,7 @@ interface propsColor {
 const Demo: React.FC = () => {
   const { academicYear } = globalStore();
   const { isHeadmaster } = employeeStore();
-  const { token, setTanggalPekanan, tanggalPekanan } = Store();
+  const { setTanggalPekanan, tanggalPekanan } = Store();
   const [Dataappointment, setData] = useState<any[]>([]);
   const [topik, setTopik] = useState<any[]>([]);
   const [idCal, setIdCal] = useState<number>(0);
@@ -122,7 +122,7 @@ const Demo: React.FC = () => {
 
   const getKalenderPendidikan = async () => {
     try {
-      const response = await Kalender.GetAllDetail(token, academicYear, 0, 20);
+      const response = await Kalender.GetAllDetail(academicYear, 0, 20);
       const dataList = response.data.data.result;
 
       const newData = dataList.map((item: any) => ({
@@ -139,7 +139,7 @@ const Demo: React.FC = () => {
   };
   const getKalenderPendidikanById = async (id: number) => {
     try {
-      const response = await Kalender.GetAllDetailById(token, id);
+      const response = await Kalender.GetAllDetailById(id);
       const data = response.data.data[0];
       formik.setFieldValue("edu_id", data.edu_id);
       formik.setFieldValue("agenda", data.agenda);
@@ -178,7 +178,7 @@ const Demo: React.FC = () => {
         agenda,
         ...(color ? { color } : {}),
       };
-      await Kalender.EditDetail(token, idCal, dataRest);
+      await Kalender.EditDetail(idCal, dataRest);
       closeModal("edit-kalender");
       window.location.reload();
     } catch (error: any) {
@@ -192,7 +192,7 @@ const Demo: React.FC = () => {
   };
 
   const deleteDetail = async (id: number) => {
-    await Kalender.deleteDetail(token, id);
+    await Kalender.deleteDetail(id);
     window.location.reload();
   };
 
@@ -230,7 +230,7 @@ const Demo: React.FC = () => {
   };
 
   const getTopik = async () => {
-    const response = await Kalender.GetAllTopik(token, academicYear, 0, 10);
+    const response = await Kalender.GetAllTopik(academicYear, 0, 10);
     setTopik(response.data.data.result);
   };
 

@@ -10,6 +10,7 @@ export interface LoginResponse {
       formteachers?: any[];
       formsubjects?: any[];
       formextras?: any[];
+      is_asessor?: boolean;
     };
   };
   tokens: {

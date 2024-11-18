@@ -1,25 +1,25 @@
-import { useState, useEffect, ChangeEvent } from "react";
+import { useFormik } from "formik";
+import { ChangeEvent, useEffect, useState } from "react";
+import "react-day-picker/dist/style.css";
+import { BiDownload, BiTrash } from "react-icons/bi";
+import { BsEyeFill } from "react-icons/bs";
+import { FaSearch } from "react-icons/fa";
+import { FaListCheck, FaPenClip } from "react-icons/fa6";
+import { FiPlus } from "react-icons/fi";
+import { IoInformationCircleOutline } from "react-icons/io5";
+import { VscTasklist } from "react-icons/vsc";
 import { Document, Page } from "react-pdf";
 import { useNavigate } from "react-router-dom";
-import { FiPlus } from "react-icons/fi";
-import Modal from "../../component/modal";
-import "react-day-picker/dist/style.css";
-import { FaListCheck, FaPenClip } from "react-icons/fa6";
-import { IoInformationCircleOutline } from "react-icons/io5";
-import { BiDownload, BiTrash } from "react-icons/bi";
-import { Task, Student } from "../../midleware/api";
-import { globalStore, Store } from "../../store/Store";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import Swal from "sweetalert2";
-import { VscTasklist } from "react-icons/vsc";
-import { BsEyeFill } from "react-icons/bs";
+import * as Yup from "yup";
+import { Input } from "../../component/Input";
+import Modal from "../../component/modal";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
-import { FaSearch } from "react-icons/fa";
-import { Input } from "../../component/Input";
+import { Student, Task } from "../../middleware/api";
+import { globalStore } from "../../store/Store";
 
 const schema = Yup.object({
   classId: Yup.string().required("required"),
@@ -36,7 +36,6 @@ const schema = Yup.object({
 
 const AdmSiswa = () => {
   const { academicYear } = globalStore();
-  const { token } = Store();
   const navigate = useNavigate();
 
   const [task, setTask] = useState<any>([]);
@@ -144,7 +143,6 @@ const AdmSiswa = () => {
   const getTask = async () => {
     try {
       const response = await Task.GetAll(
-        token,
         filterSiswa.search,
         filter.classId,
         academicYear,
@@ -162,7 +160,6 @@ const AdmSiswa = () => {
   const getTaskClass = async () => {
     try {
       const response = await Task.GetAllTask(
-        token,
         filter.search,
         filter.classId,
         filter.page,
@@ -178,7 +175,7 @@ const AdmSiswa = () => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20, "Y");
+    const response = await Task.GetAllClass(0, 20, "Y");
     const kelasData = response.data.data.result;
     const kelasFilter = kelasData.filter(
       (value: any) => value.id == formik.values.classId
@@ -190,7 +187,7 @@ const AdmSiswa = () => {
   };
 
   const getMapel = async () => {
-    const response = await Task.GetAllMapel(token, 0, "Y", 100);
+    const response = await Task.GetAllMapel(0, "Y", 100);
     const mapelData = response.data.data.result;
     const mapelFilter = mapelData.filter((value: any) => value.level == level);
     setMapel(mapelFilter);
@@ -198,11 +195,7 @@ const AdmSiswa = () => {
   const getStudent = async () => {
     const classId = formik.values.classId;
     if (!classId || !academicYear) return;
-    const response = await Student.GetStudentByClass(
-      token,
-      classId,
-      academicYear
-    );
+    const response = await Student.GetStudentByClass(classId, academicYear);
     setDataSiswa(response.data.data);
   };
 
@@ -240,7 +233,7 @@ const AdmSiswa = () => {
     formData.append("description", description);
 
     try {
-      await Task.createTaskClass(token, formData);
+      await Task.createTaskClass(formData);
       formik.resetForm({ values: formik.initialValues });
       closeModal("add-task");
       Swal.fire({
@@ -291,7 +284,7 @@ const AdmSiswa = () => {
     formData.append("up_file", file);
 
     try {
-      await Task.createTask(token, formData);
+      await Task.createTask(formData);
       formik.resetForm({ values: formik.initialValues });
       closeModal("add-task");
       Swal.fire({
@@ -347,7 +340,7 @@ const AdmSiswa = () => {
   };
 
   const deleteTask2 = async (id: number) => {
-    await Task.deleteTask(token, id);
+    await Task.deleteTask(id);
     Swal.fire({
       title: "Deleted!",
       text: "Your file has been deleted.",
@@ -375,9 +368,9 @@ const AdmSiswa = () => {
       console.log(error);
     }
   };
-  
+
   const deleteTaskClass = async (id: number) => {
-    await Task.deleteTaskClass(token, id);
+    await Task.deleteTaskClass(id);
     Swal.fire({
       title: "Deleted!",
       text: "Your file has been deleted.",
@@ -440,7 +433,7 @@ const AdmSiswa = () => {
     formData.append("status", status == "1" ? "Open" : "Close");
 
     try {
-      await Task.editTaskClass(token, idTugas, formData);
+      await Task.editTaskClass(idTugas, formData);
       closeModal("edit-task");
       Swal.fire({
         position: "center",
@@ -476,7 +469,7 @@ const AdmSiswa = () => {
 
   const getTaskById = async (id: string | null) => {
     try {
-      const response = await Task.getTaskById(token, id);
+      const response = await Task.getTaskById(id);
       const data = response.data.data;
       formik.setFieldValue("classId", data.class.id);
       formik.setFieldValue("subjectId", data.subject.id);
@@ -493,7 +486,7 @@ const AdmSiswa = () => {
 
   const downloadFileTugas = async (path: string) => {
     try {
-      const response = await Task.downloadTugas(token, path);
+      const response = await Task.downloadTugas(path);
       const urlParts = path.split("/");
       const fileName = urlParts.pop() || "";
       const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
@@ -517,7 +510,7 @@ const AdmSiswa = () => {
 
   const showFileTugas = async (path: string) => {
     try {
-      const response = await Task.downloadTugas(token, path);
+      const response = await Task.downloadTugas(path);
       downloadFileTugas(path);
       // Convert path to lowercase to make comparison case-insensitive
       const lowerCasePath = path.toLowerCase();
@@ -557,7 +550,7 @@ const AdmSiswa = () => {
       const data = {
         feed_fwd: feedback,
       };
-      const response = await Task.editTask(token, idTugas, data);
+      const response = await Task.editTask(idTugas, data);
       console.log(response);
       closeModal("add-feedback");
       getTask();
@@ -640,7 +633,11 @@ const AdmSiswa = () => {
                 <tbody>
                   {taskClass?.map((item: any, index: number) => (
                     <tr key={index}>
-                      <th>{index + 1 + (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}</th>
+                      <th>
+                        {index +
+                          1 +
+                          (pageMeta?.page ?? 0) * (pageMeta?.limit ?? 0)}
+                      </th>
                       <td>{item?.topic}</td>
                       <td>{item?.description}</td>
                       <td>{item?.subject.name}</td>
@@ -746,7 +743,12 @@ const AdmSiswa = () => {
                 <tbody>
                   {task?.map((item: any, index: number) => (
                     <tr key={index}>
-                      <th>{index + 1 + (pageMetaSiswa?.page ?? 0) * (pageMetaSiswa?.limit ?? 0)}</th>
+                      <th>
+                        {index +
+                          1 +
+                          (pageMetaSiswa?.page ?? 0) *
+                            (pageMetaSiswa?.limit ?? 0)}
+                      </th>
                       <td>{item?.studentclass?.student?.full_name}</td>
                       <td>{item?.topic}</td>
                       <td>{item?.description}</td>

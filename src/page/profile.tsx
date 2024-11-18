@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { employeeStore, Store } from "../store/Store";
-import { Auth, Task } from "../midleware/api";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Swal from "sweetalert2";
-import Modal, { openModal, closeModal } from "../component/modal";
-import { FaEyeSlash, FaEye } from "react-icons/fa";
+import Modal, { closeModal, openModal } from "../component/modal";
+import { Auth, Task } from "../middleware/api";
+import { employeeStore } from "../store/Store";
 const ProfilePage = () => {
-  const { token } = Store();
   const {
     setEmployee,
     setHeadmaster,
@@ -26,7 +25,7 @@ const ProfilePage = () => {
   const [Id, setId] = useState<any>(null);
   const getMe = async () => {
     try {
-      const res = await Auth.MeData(token);
+      const res = await Auth.MeData();
 
       setDataUser(res.data.data);
       setUpdatedName(res.data.data.full_name);
@@ -53,7 +52,7 @@ const ProfilePage = () => {
   const previewProfile = async (path: any) => {
     try {
       const lowerCasePath = path.toLowerCase();
-      const response = await Task.downloadTugas(token, path);
+      const response = await Task.downloadTugas(path);
       let mimeType = "application/pdf";
 
       if (lowerCasePath.endsWith(".png")) {
@@ -82,7 +81,7 @@ const ProfilePage = () => {
     };
 
     try {
-      await Auth.EditProfile(token, Id, data);
+      await Auth.EditProfile(Id, data);
       getMe();
       closeModal("editProfile");
     } catch (error) {
@@ -103,7 +102,7 @@ const ProfilePage = () => {
     };
 
     try {
-      await Auth.EditPassword(token, data);
+      await Auth.EditPassword(data);
       getMe();
       Swal.fire({
         position: "center",
@@ -124,7 +123,7 @@ const ProfilePage = () => {
     formData.append("avatar", file);
 
     try {
-      await Auth.EditPicture(token, Id, formData);
+      await Auth.EditPicture(Id, formData);
       getMe();
       closeModal("editProfile");
     } catch (error) {

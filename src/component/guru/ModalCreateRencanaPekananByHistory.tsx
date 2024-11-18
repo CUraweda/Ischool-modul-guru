@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import Modal, { closeModal } from "../modal";
-import * as Yup from "yup";
-import { Class, Kalender } from "../../midleware/api";
-import { globalStore, Store } from "../../store/Store";
-import { Input, Select } from "../Input";
 import { useFormik } from "formik";
-import { formatTime } from "../../utils/date";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import * as Yup from "yup";
+import { Class, Kalender } from "../../middleware/api";
+import { globalStore } from "../../store/Store";
+import { formatTime } from "../../utils/date";
+import { Input, Select } from "../Input";
+import Modal, { closeModal } from "../modal";
 
 const schema = Yup.object().shape({
   timetable_id: Yup.string().required("Rencana kegiatan harus dipilih"),
@@ -22,14 +22,13 @@ const ModalCreateRencanaPekananByHistory = ({
   postCreate: () => void;
 }) => {
   const { academicYear } = globalStore();
-  const { token } = Store();
 
   // filter data
   const [classes, setclasses] = useState([]);
 
   const getClasses = async () => {
     try {
-      const response = await Class.showAll(token, 0, 20, "Y");
+      const response = await Class.showAll(0, 20, "Y");
       setclasses(response.data.data.result);
     } catch {}
   };
@@ -52,10 +51,9 @@ const ModalCreateRencanaPekananByHistory = ({
 
     try {
       const res = await Kalender.GetAllTimetableByClass(
-        token,
         classId,
         semester,
-        academicYear,
+        academicYear
       );
       setTimetables(res.data.data);
     } catch {}
@@ -78,7 +76,7 @@ const ModalCreateRencanaPekananByHistory = ({
       setSubmitting(true);
 
       try {
-        await Kalender.duplicateTimetable(token, values);
+        await Kalender.duplicateTimetable(values);
 
         Swal.fire({
           icon: "success",

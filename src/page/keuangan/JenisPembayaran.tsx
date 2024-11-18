@@ -1,22 +1,22 @@
 // import React from "react";
-import { FaChevronDown, FaRegFileAlt, FaSearch, FaTrash } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { FaPencil } from "react-icons/fa6";
-import { useEffect, useState } from "react";
-import { moneyFormat } from "../../utils/common";
-import Modal, { openModal, closeModal } from "../../component/modal";
-import { Input, Select } from "../../component/Input";
 import { useFormik } from "formik";
-import * as Yup from "yup";
-import { PosJenisPembayaran, PosPembayaran } from "../../midleware/api";
-import { globalStore, Store } from "../../store/Store";
+import { useEffect, useState } from "react";
+import { FaChevronDown, FaRegFileAlt, FaSearch, FaTrash } from "react-icons/fa";
+import { FaPencil } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import * as Yup from "yup";
+import { Input, Select } from "../../component/Input";
+import ModalBulkCreateJenisPembayaran from "../../component/keuangan/ModalBulkCreateJenisPembayaran";
+import Modal, { closeModal, openModal } from "../../component/modal";
 import {
   IpageMeta,
   PaginationControl,
 } from "../../component/PaginationControl";
+import { PosJenisPembayaran, PosPembayaran } from "../../middleware/api";
+import { globalStore } from "../../store/Store";
+import { moneyFormat } from "../../utils/common";
 import { formatTime } from "../../utils/date";
-import ModalBulkCreateJenisPembayaran from "../../component/keuangan/ModalBulkCreateJenisPembayaran";
 
 const jenisPembayaranSchema = Yup.object().shape({
   name: Yup.string().required("Keterangan harus diisi"),
@@ -27,8 +27,7 @@ const jenisPembayaranSchema = Yup.object().shape({
 });
 
 const JenisPembayaran = () => {
-  const { token } = Store(),
-    { academicYear } = globalStore(),
+  const { academicYear } = globalStore(),
     modalFormId = "form-jenis-pembayaran",
     modalBulkFormId = "form-bulk-jenis-pembayran";
 
@@ -57,7 +56,6 @@ const JenisPembayaran = () => {
   const getDataList = async () => {
     try {
       const res = await PosJenisPembayaran.showAll(
-        token,
         filter.search,
         filter.paymentPostId,
         academicYear,
@@ -101,8 +99,8 @@ const JenisPembayaran = () => {
 
       try {
         dataIdInForm == null
-          ? await PosJenisPembayaran.create(token, values)
-          : await PosJenisPembayaran.update(token, dataIdInForm, values);
+          ? await PosJenisPembayaran.create(values)
+          : await PosJenisPembayaran.update(dataIdInForm, values);
 
         Swal.fire({
           icon: "success",
@@ -135,7 +133,7 @@ const JenisPembayaran = () => {
 
   const getPostPayments = async () => {
     try {
-      const res = await PosPembayaran.showAll(token, "", 0, 1000);
+      const res = await PosPembayaran.showAll("", 0, 1000);
       if (res.data?.data?.result) setPostPayments(res.data.data.result);
     } catch {}
   };
@@ -161,7 +159,7 @@ const JenisPembayaran = () => {
     } else {
       setLoadingGetOne(true);
       try {
-        const { data } = await PosJenisPembayaran.showOne(token, dataIdInForm);
+        const { data } = await PosJenisPembayaran.showOne(dataIdInForm);
         jenisPembayaranForm.setValues({
           name: data.data.name,
           payment_post_id: data.data.payment_post_id,
@@ -202,7 +200,7 @@ const JenisPembayaran = () => {
     }).then(async (result) => {
       try {
         if (result.isConfirmed) {
-          await PosJenisPembayaran.delete(token, id);
+          await PosJenisPembayaran.delete(id);
 
           Swal.fire({
             icon: "success",

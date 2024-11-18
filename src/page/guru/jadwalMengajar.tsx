@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import KalenderPekanan from "../../component/CalendarPekanan";
 import Modal, { closeModal, openModal } from "../../component/modal";
-import { Kalender, Task } from "../../midleware/api";
+import { Kalender, Task } from "../../middleware/api";
 import { globalStore, Store } from "../../store/Store";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -23,10 +23,9 @@ const schema = Yup.object({
   hide: Yup.boolean().required("required"),
 });
 
-const jadwalMengajar = () => {
+const JadwalMengajar = () => {
   const { academicYear } = globalStore();
-  const { token, tanggalPekanan, tanggalStartDate, setTanggalStartDate } =
-    Store();
+  const { tanggalPekanan, tanggalStartDate, setTanggalStartDate } = Store();
   const [triggerShow, setTriggerShow] = useState(true);
   const [kelas, setKelas] = useState<any[]>([]);
   const [smt, setSmt] = useState<string>("1");
@@ -69,7 +68,7 @@ const jadwalMengajar = () => {
       }
 
       try {
-        await Kalender.createTimeTable(token, data);
+        await Kalender.createTimeTable(data);
         formik.resetForm();
         setTriggerShow(!triggerShow);
 
@@ -136,7 +135,7 @@ const jadwalMengajar = () => {
   }, [tanggalStartDate]);
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20, "Y");
+    const response = await Task.GetAllClass(0, 20, "Y");
     setKelas(response.data.data.result);
   };
 
@@ -333,4 +332,4 @@ const jadwalMengajar = () => {
   );
 };
 
-export default jadwalMengajar;
+export default JadwalMengajar;

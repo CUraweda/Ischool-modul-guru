@@ -2,20 +2,26 @@ import React, { FC, useEffect } from "react";
 import Navbar from "./NavbarTrainFace";
 import bg from "../assets/bg2.png";
 import { employeeStore, Store } from "../store/Store";
-import { Auth } from "../midleware/api";
+import { Auth } from "../middleware/api";
 
 interface Props {
   children?: React.ReactNode;
   name?: string;
 }
 const Layout: FC<Props> = ({ children }) => {
-  const { role, token } = Store();
-  const { setEmployee, setHeadmaster, setFormTeachers, setFormSubjects, setFormXtras } = employeeStore()
+  const { role } = Store();
+  const {
+    setEmployee,
+    setHeadmaster,
+    setFormTeachers,
+    setFormSubjects,
+    setFormXtras,
+  } = employeeStore();
   const Role = role ? parseInt(role, 10) : 0;
 
   const getMe = async () => {
     try {
-      const res = await Auth.MeData(token)
+      const res = await Auth.MeData();
 
       const {
         id,
@@ -31,12 +37,12 @@ const Layout: FC<Props> = ({ children }) => {
       if (formteachers) setFormTeachers(formteachers);
       if (formsubjects) setFormSubjects(formsubjects);
       if (formextras) setFormXtras(formextras);
-    } catch { }
-  }
+    } catch {}
+  };
 
   useEffect(() => {
-    getMe()
-  }, [])
+    getMe();
+  }, []);
 
   return (
     <>

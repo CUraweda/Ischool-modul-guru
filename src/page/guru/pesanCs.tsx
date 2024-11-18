@@ -1,19 +1,21 @@
 import { BsSend } from "react-icons/bs";
-import { CustomerCare } from "../../midleware/api";
+import { CustomerCare } from "../../middleware/api";
 import { Store } from "../../store/Store";
 import { useEffect, useState } from "react";
 import socketService from "../../utils/socket";
 import Modal from "../../component/modal";
 
 const PesanCs = () => {
-  const { token, id, role } = Store();
+  const { id, role } = Store();
   const [userChats, setUserChats] = useState<any[]>([]);
   const [financialChats, setFinancialChats] = useState<any[]>([]);
   const [teacherChats, setTeacherChats] = useState<any[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
-  const [currentChatUser, setCurrentChatUser] = useState<string>(() => sessionStorage.getItem('currentChatUser') || "");
+  const [currentChatUser, setCurrentChatUser] = useState<string>(
+    () => sessionStorage.getItem("currentChatUser") || ""
+  );
   const [currentChatUserId, setCurrentChatUserId] = useState<number | null>(
-    () => Number(sessionStorage.getItem('currentChatUserId')) || null
+    () => Number(sessionStorage.getItem("currentChatUserId")) || null
   );
   const [chatInput, setChatInput] = useState("");
 
@@ -32,7 +34,7 @@ const PesanCs = () => {
   const initializeSocket = async () => {
     await socketService.connect();
     socketService.on("cc_refresh", () => {
-      console.log(currentChatUserId)
+      console.log(currentChatUserId);
       fetchUserChats();
       // fetchChatList();
       fetchMessages();
@@ -41,7 +43,7 @@ const PesanCs = () => {
 
   const fetchUserChats = async () => {
     try {
-      const response = await CustomerCare.GetAllUserChat(token, id);
+      const response = await CustomerCare.GetAllUserChat(id);
       setUserChats(response.data.data);
     } catch (error) {
       console.error("Error fetching user chats:", error);
@@ -51,10 +53,10 @@ const PesanCs = () => {
   const fetchChatList = async () => {
     try {
       if (role === "2") {
-        const response = await CustomerCare.GetUserToChat(token);
+        const response = await CustomerCare.GetUserToChat();
         setFinancialChats(response.data.data.result);
       } else {
-        const response = await CustomerCare.GetUserToChatGuru(token);
+        const response = await CustomerCare.GetUserToChatGuru();
         setTeacherChats(response.data.data);
       }
     } catch (error) {
@@ -64,13 +66,9 @@ const PesanCs = () => {
 
   const fetchMessages = async () => {
     try {
-      console.log(currentChatUserId)
+      console.log(currentChatUserId);
       if (currentChatUserId === null) return;
-      const response = await CustomerCare.GetMessage(
-        token,
-        id,
-        currentChatUserId
-      );
+      const response = await CustomerCare.GetMessage(id, currentChatUserId);
       if (response.data?.data[0]?.messages) {
         setMessages(response.data.data[0].messages);
       } else {
@@ -98,7 +96,7 @@ const PesanCs = () => {
     };
 
     try {
-      await CustomerCare.PostMessage(token, messageData);
+      await CustomerCare.PostMessage(messageData);
       setMessages((prevMessages) => [
         ...prevMessages,
         { message: chatInput, sender_id: id },
@@ -114,8 +112,8 @@ const PesanCs = () => {
   const handleUserClick = (userId: number, fullName: string) => {
     setCurrentChatUserId(userId);
     setCurrentChatUser(fullName);
-    sessionStorage.setItem('currentChatUserId', userId.toString());
-    sessionStorage.setItem('currentChatUser', fullName);
+    sessionStorage.setItem("currentChatUserId", userId.toString());
+    sessionStorage.setItem("currentChatUser", fullName);
   };
 
   const showModal = (modalId: string) => {
@@ -203,10 +201,11 @@ const PesanCs = () => {
                     }
                   >
                     <div
-                      className={`chat-bubble ${msg.sender_id != id
-                        ? "chat-bubble-accent"
-                        : "chat-bubble-primary"
-                        }`}
+                      className={`chat-bubble ${
+                        msg.sender_id != id
+                          ? "chat-bubble-accent"
+                          : "chat-bubble-primary"
+                      }`}
                     >
                       {msg.message}
                       {/* <div>
@@ -248,13 +247,33 @@ const PesanCs = () => {
           <ul className="space-y-2 max-h-[400px] overflow-y-auto">
             {role === "2"
               ? financialChats
-                .filter((item) => [1, 2, 3, 5, 10].includes(item.role_id))
-                .map((item) => (
+                  .filter((item) => [1, 2, 3, 5, 10].includes(item.role_id))
+                  .map((item) => (
+                    <li
+                      key={item.id}
+                      className="p-3 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer flex justify-between items-center"
+                      onClick={() => {
+                        handleUserClick(item.id, item.full_name);
+                        closeModal("daftar-chat");
+                      }}
+                    >
+                      <span className="font-semibold">
+                        {item.user ? item.user.full_name : item.full_name}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {item.user ? item.user.email : item.email}
+                      </span>
+                    </li>
+                  ))
+              : teacherChats.map((item) => (
                   <li
                     key={item.id}
                     className="p-3 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer flex justify-between items-center"
                     onClick={() => {
-                      handleUserClick(item.id, item.full_name);
+                      handleUserClick(
+                        item.user ? item.user.id : item.id,
+                        item.user ? item.user.full_name : item.full_name
+                      );
                       closeModal("daftar-chat");
                     }}
                   >
@@ -265,27 +284,7 @@ const PesanCs = () => {
                       {item.user ? item.user.email : item.email}
                     </span>
                   </li>
-                ))
-              : teacherChats.map((item) => (
-                <li
-                  key={item.id}
-                  className="p-3 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer flex justify-between items-center"
-                  onClick={() => {
-                    handleUserClick(
-                      item.user ? item.user.id : item.id,
-                      item.user ? item.user.full_name : item.full_name
-                    );
-                    closeModal("daftar-chat");
-                  }}
-                >
-                  <span className="font-semibold">
-                    {item.user ? item.user.full_name : item.full_name}
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    {item.user ? item.user.email : item.email}
-                  </span>
-                </li>
-              ))}
+                ))}
           </ul>
         </div>
       </Modal>

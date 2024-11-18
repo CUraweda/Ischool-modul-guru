@@ -1,13 +1,10 @@
-import { BsDownload } from "react-icons/bs";
-import { Lesson, Mapel, Task, FileRaporSiswa } from "../../midleware/api";
+import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
+import { BsDownload, BsPencilFill } from "react-icons/bs";
 import Swal from "sweetalert2";
-import { Store } from "../../store/Store";
-import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { BsPencilFill } from "react-icons/bs";
+import { FileRaporSiswa, Lesson, Mapel, Task } from "../../middleware/api";
 const BahanAjar: React.FC<{}> = () => {
-  const { token } = Store();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [DataLesson, setDataLesson] = useState<any[]>([]);
   const [selectedUpdate, setSelectedUpdate] = useState<any>();
@@ -23,14 +20,13 @@ const BahanAjar: React.FC<{}> = () => {
     totalPage: 0,
   });
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20, "Y", "N", "Y");
+    const response = await Task.GetAllClass(0, 20, "Y", "N", "Y");
     setClass(response.data.data.result);
   };
 
   const getLesson = async () => {
     try {
       const res = await Lesson.getAllData(
-        token,
         filter.page,
         filter.limit,
         filter.search
@@ -54,7 +50,7 @@ const BahanAjar: React.FC<{}> = () => {
   };
   const getMapel = async () => {
     try {
-      const res = await Mapel.GetAllDataMapel(token, 0, 0);
+      const res = await Mapel.GetAllDataMapel(0, 0);
       if (res.status === 200) {
         const { result } = res.data.data;
         setListMapel(result);
@@ -65,7 +61,7 @@ const BahanAjar: React.FC<{}> = () => {
   };
   const createLesson = async (payload: any) => {
     try {
-      const res = await Lesson.CreateNewLesson(token, payload);
+      const res = await Lesson.CreateNewLesson(payload);
       if (res.data.status === 200) {
         Swal.fire({
           icon: "success",
@@ -85,7 +81,7 @@ const BahanAjar: React.FC<{}> = () => {
 
     console.log(path);
     try {
-      const response = await FileRaporSiswa.downloadFile(token, path);
+      const response = await FileRaporSiswa.downloadFile(path);
       const blob = new Blob([response.data], { type: "application/pdf" });
 
       const fileUrl = URL.createObjectURL(blob);
@@ -118,7 +114,7 @@ const BahanAjar: React.FC<{}> = () => {
   };
   const updateDataLesson = async (payload: any, id: number) => {
     try {
-      const res = await Lesson.UpdateLesson(token, payload, id);
+      const res = await Lesson.UpdateLesson(payload, id);
       if (res.data.status === 200) {
         Swal.fire({
           icon: "success",

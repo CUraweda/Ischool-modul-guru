@@ -1,17 +1,16 @@
-import { useState, useEffect, ChangeEvent } from "react";
-import { FaFilePdf } from "react-icons/fa";
-import { MdCloudUpload } from "react-icons/md";
-import Modal from "../modal";
-import { IoChatboxEllipsesOutline } from "react-icons/io5";
-import { Task, Raport } from "../../midleware/api";
-import { globalStore, Store, useProps } from "../../store/Store";
+import { ChangeEvent, useEffect, useState } from "react";
 import { CiFolderOff } from "react-icons/ci";
+import { FaFilePdf } from "react-icons/fa";
+import { IoChatboxEllipsesOutline } from "react-icons/io5";
+import { MdCloudUpload } from "react-icons/md";
 import Swal from "sweetalert2";
+import { Raport, Task } from "../../middleware/api";
+import { globalStore, useProps } from "../../store/Store";
+import Modal from "../modal";
 import { IpageMeta, PaginationControl } from "../PaginationControl";
 
 const RaportPortofolio = () => {
   const { academicYear } = globalStore();
-  const { token } = Store();
   const { setSemesterProps, setKelasProps, semesterProps } = useProps();
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
   const [kelas, setKelas] = useState<any[]>([]);
@@ -66,14 +65,13 @@ const RaportPortofolio = () => {
   }, [filter, academicYear]);
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(token, 0, 20, "Y", "N");
+    const response = await Task.GetAllClass(0, 20, "Y", "N");
     setKelas(response.data.data.result);
   };
 
   const getStudent = async () => {
     try {
       const response = await Raport.showAllStudentReport(
-        token,
         filter.classId,
         filter.semester,
         filter.page,
@@ -92,7 +90,7 @@ const RaportPortofolio = () => {
   const getPortoByRapotId = async (id: string) => {
     setReportId(id);
     showModal("show-portofolio");
-    const response = await Raport.getPortofolioByRaport(token, id);
+    const response = await Raport.getPortofolioByRaport(id);
     const dataRest = response.data.data;
     const type = dataRest?.map((item: any) => item.type);
 
@@ -111,7 +109,7 @@ const RaportPortofolio = () => {
   const showFilePortofolio = async (path: string, type?: boolean) => {
     setPathPorto(path);
     try {
-      const response = await Task.downloadTugas(token, path);
+      const response = await Task.downloadTugas(path);
 
       const contentType = response.headers["content-type"];
       const typePath = path.split(".");
@@ -150,7 +148,7 @@ const RaportPortofolio = () => {
     formData.append("file", fileUpload);
 
     try {
-      await Raport.uploadPortofolio(token, formData);
+      await Raport.uploadPortofolio(formData);
       Swal.fire({
         position: "center",
         icon: "success",
@@ -179,7 +177,7 @@ const RaportPortofolio = () => {
       por_teacher_comments: komen,
     };
 
-    await Raport.createKomentar(token, reportId, data);
+    await Raport.createKomentar(reportId, data);
     getStudent();
     closeModal("komen-guru-porto");
     setKomen("");
@@ -204,7 +202,7 @@ const RaportPortofolio = () => {
   const handleMerge = async () => {
     try {
       setLoading(true);
-      await Raport.mergePortofolio(token, reportId);
+      await Raport.mergePortofolio(reportId);
     } catch (error) {
       console.log(error);
     } finally {

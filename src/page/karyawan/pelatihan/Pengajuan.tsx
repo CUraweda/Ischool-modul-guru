@@ -1,13 +1,5 @@
-import * as y from "yup";
-import { employeeStore, Store } from "../../../store/Store";
+import { useFormik } from "formik";
 import { useEffect, useState } from "react";
-import {
-  IpageMeta,
-  PaginationControl,
-} from "../../../component/PaginationControl";
-import { PengajuanPelatihanKaryawan } from "../../../midleware/api-hrd";
-import Swal from "sweetalert2";
-import { Input, Textarea } from "../../../component/Input";
 import {
   FaArrowRight,
   FaExclamationTriangle,
@@ -15,11 +7,19 @@ import {
   FaSearch,
   FaTrash,
 } from "react-icons/fa";
-import { formatTime } from "../../../utils/date";
 import { FaPencil } from "react-icons/fa6";
-import { useFormik } from "formik";
+import Swal from "sweetalert2";
+import * as y from "yup";
+import { Input, Textarea } from "../../../component/Input";
 import Modal, { closeModal, openModal } from "../../../component/modal";
+import {
+  IpageMeta,
+  PaginationControl,
+} from "../../../component/PaginationControl";
+import { PengajuanPelatihanKaryawan } from "../../../middleware/api-hrd";
+import { employeeStore } from "../../../store/Store";
 import { filterEmptyPayload } from "../../../utils/common";
+import { formatTime } from "../../../utils/date";
 
 const schema = y.object().shape({
   id: y.string().optional(),
@@ -36,8 +36,7 @@ const schema = y.object().shape({
 });
 
 const PengajuanPelatihan = () => {
-  const { token } = Store(),
-    { employee } = employeeStore(),
+  const { employee } = employeeStore(),
     modalFormId = "form-pengajuan";
 
   // filter
@@ -66,7 +65,6 @@ const PengajuanPelatihan = () => {
     try {
       // fetch find all
       const res = await PengajuanPelatihanKaryawan.showAll(
-        token,
         filter.search,
         employee.id,
         filter.page,
@@ -107,8 +105,8 @@ const PengajuanPelatihan = () => {
       try {
         const payload = filterEmptyPayload({ ...values });
         values.id
-          ? await PengajuanPelatihanKaryawan.update(token, values.id, payload)
-          : await PengajuanPelatihanKaryawan.request(token, payload);
+          ? await PengajuanPelatihanKaryawan.update(values.id, payload)
+          : await PengajuanPelatihanKaryawan.request(payload);
 
         handleReset();
         getDataList();
@@ -141,7 +139,7 @@ const PengajuanPelatihan = () => {
 
     try {
       // fetch get one
-      const res = await PengajuanPelatihanKaryawan.showOne(token, id);
+      const res = await PengajuanPelatihanKaryawan.showOne(id);
       const dat = res.data.data;
       form.setValues({
         id: dat.id ?? "",
@@ -179,7 +177,7 @@ const PengajuanPelatihan = () => {
       try {
         setIsDelLoading(true);
         if (result.isConfirmed) {
-          await PengajuanPelatihanKaryawan.delete(token, id);
+          await PengajuanPelatihanKaryawan.delete(id);
 
           Swal.fire({
             icon: "success",

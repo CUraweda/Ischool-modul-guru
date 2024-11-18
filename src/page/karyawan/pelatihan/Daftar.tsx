@@ -1,12 +1,5 @@
+import { useFormik } from "formik";
 import { useEffect, useRef, useState } from "react";
-import { employeeStore, Store } from "../../../store/Store";
-import {
-  IpageMeta,
-  PaginationControl,
-} from "../../../component/PaginationControl";
-import { PelatihanKaryawan } from "../../../midleware/api-hrd";
-import Swal from "sweetalert2";
-import { Input, Select } from "../../../component/Input";
 import {
   FaArrowRight,
   FaEye,
@@ -15,10 +8,17 @@ import {
   FaSearch,
   FaSmile,
 } from "react-icons/fa";
-import { formatTime } from "../../../utils/date";
-import Modal, { closeModal, openModal } from "../../../component/modal";
+import Swal from "sweetalert2";
 import * as y from "yup";
-import { useFormik } from "formik";
+import { Input, Select } from "../../../component/Input";
+import Modal, { closeModal, openModal } from "../../../component/modal";
+import {
+  IpageMeta,
+  PaginationControl,
+} from "../../../component/PaginationControl";
+import { PelatihanKaryawan } from "../../../middleware/api-hrd";
+import { employeeStore } from "../../../store/Store";
+import { formatTime } from "../../../utils/date";
 
 const attendFileExts = ["jpeg", "jpg", "png"];
 const schemaAttend = y.object().shape({
@@ -44,8 +44,7 @@ const schemaAttend = y.object().shape({
 });
 
 const DaftarPelatihan = () => {
-  const { token } = Store(),
-    { employee } = employeeStore(),
+  const { employee } = employeeStore(),
     modDetail = "detail-pelatihan-karyawan",
     modUpAttendance = "upload-kehadiran-pelatihan";
 
@@ -76,7 +75,6 @@ const DaftarPelatihan = () => {
     try {
       // fetch find all
       const res = await PelatihanKaryawan.showAll(
-        token,
         filter.search,
         employee.id,
         filter.status,
@@ -118,7 +116,7 @@ const DaftarPelatihan = () => {
 
     try {
       // fetch get one
-      const res = await PelatihanKaryawan.showOne(token, idDetail);
+      const res = await PelatihanKaryawan.showOne(idDetail);
       setData(res.data.data ?? null);
 
       openModal(modDetail);
@@ -142,7 +140,7 @@ const DaftarPelatihan = () => {
     setIsGetAttendLoading(true);
 
     try {
-      const res = await PelatihanKaryawan.showAllDokumentasi(token, idDetail);
+      const res = await PelatihanKaryawan.showAllDokumentasi(idDetail);
       setAttendanceList(res.data.data?.result ?? []);
       openModal(modDetail);
     } catch (error) {
@@ -174,7 +172,7 @@ const DaftarPelatihan = () => {
         formData.append("title", values.title);
         formData.append("file", values.file);
 
-        await PelatihanKaryawan.uploadDokumentasi(token, idDetail, formData);
+        await PelatihanKaryawan.uploadDokumentasi(idDetail, formData);
 
         handleResetAttend();
         getAttendances();
@@ -203,7 +201,7 @@ const DaftarPelatihan = () => {
 
   const delAttendance = async (id: string) => {
     try {
-      await PelatihanKaryawan.hapusDokumentasi(token, id);
+      await PelatihanKaryawan.hapusDokumentasi(id);
       getAttendances();
     } catch (error) {
       Swal.fire({

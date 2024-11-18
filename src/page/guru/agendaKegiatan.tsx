@@ -1,23 +1,22 @@
-import { useState, useEffect } from "react";
-import Paper from "@mui/material/Paper";
+import { ViewState } from "@devexpress/dx-react-scheduler";
 import {
-  Scheduler,
-  Appointments,
   AppointmentForm,
-  MonthView,
-  Toolbar,
+  Appointments,
   DateNavigator,
+  MonthView,
+  Scheduler,
   TodayButton,
+  Toolbar,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { Button } from "@mui/material";
-import { ViewState } from "@devexpress/dx-react-scheduler";
-import { Kalender } from "../../midleware/api";
-import { employeeStore, Store } from "../../store/Store";
+import Paper from "@mui/material/Paper";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
+import { Kalender } from "../../middleware/api";
+import { employeeStore } from "../../store/Store";
 
 const AgendaKegiatan = () => {
-  const { token } = Store();
   const { employee } = employeeStore();
   const [open, setOpen] = useState(false);
   const [eduList, setEduList] = useState<any[]>([]);
@@ -80,7 +79,7 @@ const AgendaKegiatan = () => {
       // Mengirim data ke API
       if (editingAppointment) {
         // Update existing appointment
-        Kalender.updateAgenda(token, newData, editingAppointment.id)
+        Kalender.updateAgenda(newData, editingAppointment.id)
           .then((response) => {
             if (response.status === 200) {
               handleModalClose();
@@ -101,7 +100,7 @@ const AgendaKegiatan = () => {
             });
           });
       } else {
-        Kalender.createAgenda(token, newData)
+        Kalender.createAgenda(newData)
           .then((response) => {
             if (response.status === 201) {
               handleModalClose();
@@ -130,7 +129,7 @@ const AgendaKegiatan = () => {
 
   const fetchDataEdu = async () => {
     try {
-      const res = await Kalender.getListEdu(token);
+      const res = await Kalender.getListEdu();
       setEduList(res.data.data.result);
     } catch (error) {
       console.error(error);
@@ -144,7 +143,7 @@ const AgendaKegiatan = () => {
         console.error("Employee data is null");
         return;
       }
-      const res = await Kalender.getByGuru(token, id);
+      const res = await Kalender.getByGuru(id);
       if (res.status === 200) {
         const fixedData = res.data.data?.map((dat: any) => {
           const startDate = new Date(dat.start_date);
@@ -187,7 +186,7 @@ const AgendaKegiatan = () => {
     });
     try {
       if (confirm.isConfirmed) {
-        Kalender.deleteAgenda(token, editingAppointment.id)
+        Kalender.deleteAgenda(editingAppointment.id)
           .then((response) => {
             if (response.status === 200) {
               getDataList();
