@@ -322,7 +322,10 @@ const DetailJenisPembayaran = () => {
       <Modal id={modalBuktiBayar} onClose={() => setEvidenceInModal("")}>
         <h3 className="text-xl font-bold mb-3">Bukti Bayar</h3>
         <div className="w-full rounded">
-          <img src={apiAssets.replace(`api/`, "") + evidenceInModal} alt="" />
+          <img
+            src={apiAssets.replace(`api/`, "public/") + evidenceInModal}
+            alt=""
+          />
         </div>
         <form className="modal-action" method="dialog">
           <button className="btn w-full btn-outline btn-primary">Tutup</button>
