@@ -20,10 +20,12 @@ const Auth = {
     email: string | null,
     password: string | null
   ): AxiosPromise<LoginResponse> =>
-    await axios.post(`${import.meta.env.VITE_REACT_API_URL}auth/login`, {
-      email,
-      password,
+    instance({
+      method: "POST",
+      url: "/auth/login",
+      data: { email, password },
     }),
+
   MeData: () =>
     instance({
       method: "GET",
