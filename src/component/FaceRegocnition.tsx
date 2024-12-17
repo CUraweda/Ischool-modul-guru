@@ -4,6 +4,7 @@ import Webcam from "react-webcam";
 import { Auth } from "../middleware/api";
 import { instance } from "../middleware/api-hrd";
 import { employeeStore } from "../store/Store";
+import Swal from "sweetalert2";
 
 interface FaceDetectionProps {
   onSuccess: (attendanceData: AttendanceData) => void;
@@ -138,28 +139,38 @@ const FaceDetection: React.FC<FaceDetectionProps> = ({
       });
 
       if (response.status === 200 || response.status === 201) {
-        console.log("Wajah Cocok");
+        let message = "Wajah Cocok."
         try {
           const attendanceResponse = await instance.post(
             "/employee-attendance/attend"
           );
 
           if (attendanceResponse.status === 201) {
-            console.log("Kehadiran berhasil dicatat");
+            message = `${message} Kehadiran berhasil dicatat` 
             onSuccess(attendanceResponse.data.data);
           } else if (attendanceResponse.status === 200) {
-            console.log("Anda Sudah Melakukan Absen Hari Ini");
+            message = `${message} Anda Sudah Melakukan Absen Hari Ini`
             reAbsen();
           } else {
-            console.log("Gagal mencatat kehadiran");
+            message = `${message} Gagal mencatat kehadiran`
             isSending = false; // retry
           }
+
+          Swal.fire({
+            title: "Berhasil!",
+            text: message,
+            icon: "success",
+          });
         } catch (attendanceError) {
           console.error("Error sending attendance data:", attendanceError);
           isSending = false; // retry
         }
       } else {
-        console.log("Wajah Tidak Cocok");
+        Swal.fire({
+          title: "Berhasil!",
+          text: "Wajah Tidak Cocok",
+          icon: "warning",
+        });
         isSending = false; // retry
       }
       console.log("Backend response:", response.data);
