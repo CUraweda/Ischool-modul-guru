@@ -372,21 +372,24 @@ const Dashboard: React.FC = () => {
                 <div className="px-3 py-1 grow">
                   <div className="overflow-x-auto">
                     <table className="table">
-                      <tbody>
+                      <tbody className="overflow-x-scroll">
                         {latestTraining.length < 1 ? (
                           <tr>Tidak Ada data pelatihan</tr>
                         ) : (
                           latestTraining?.map((item: any, index: any) => (
                             <tr key={index}>
-                              <th>
-                                <p className="line-clamp-2 text-ellipsis overflow-hidden">
-                                  {item.title}
-                                </p>
-                              </th>
-                              <td className="whitespace-nowrap">
-                                {item.start_date.split("T")[0]}
-                              </td>
-                            </tr>
+                            <th>
+                              <p className="line-clamp-2 text-ellipsis overflow-hidden min-w-40">
+                                {item.title}
+                              </p>
+                            </th>
+                            <td className="whitespace-nowrap">
+                              <p>{item.location ? item.location : "-"}</p>
+                            </td>
+                            <td className="whitespace-nowrap">
+                              <p>{item.start_date ? item.start_date.split("T")[0] : "-"}</p>
+                            </td>
+                          </tr>
                           ))
                         )}
                       </tbody>

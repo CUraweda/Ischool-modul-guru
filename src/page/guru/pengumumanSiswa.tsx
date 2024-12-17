@@ -304,7 +304,11 @@ const PengumumanSiswa = () => {
                   {formatTime(item?.date_start, "DD MMMM YYYY")}-{" "}
                   {formatTime(item?.date_end, "DD MMMM YYYY")}
                 </td>
-                <td>{item.class?.class_name ?? "-"}</td>
+                <td>
+                  {classes.find(
+                    (classItem) => classItem.id === item.class_ids
+                  )?.class_name ?? "-"}
+                </td>
 
                 <td>
                   <div className="flex gap-1 text-xl">

@@ -49,6 +49,20 @@ const Auth = {
       url: `/auth/update-profile/${id}`,
       data,
     }),
+  AddSignature: (data: any) =>
+    instance({
+      method: `POST`,
+      url: `/employee-signature/add-mine`,
+      data,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+  DataClass: () =>
+    instance({
+      method: `GET`,
+      url: `/classes?limit=1000`,
+    }),
 };
 
 const User = {
