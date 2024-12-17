@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import SignatureCanvas from "react-signature-canvas";
 import Swal from "sweetalert2";
 import Modal, { closeModal, openModal } from "../component/modal";
 import { Auth, Task } from "../middleware/api";
 import { employeeStore } from "../store/Store";
+
 const ProfilePage = () => {
   const {
     setEmployee,
@@ -12,11 +14,19 @@ const ProfilePage = () => {
     setFormSubjects,
     setFormXtras,
   } = employeeStore();
+  const [fetch, setFetch] = useState<any[]>([]);
   const [showPassword, setShowPassword] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [dataUser, setDataUser] = useState<any>(null);
   // const [idEmployee, setIdEmployee] = useState();
+  const sigPad = useRef<any>(null); // Referensi untuk SignatureCanvas
+  const [signatureImage, setSignatureImage] = useState<string | null>(null);
+  const [nameSignature, setNameSignature] = useState("");
+  const [levelHeadmaster, setLevelHeadmaster] = useState("");
+  const [classTeacher, setClassTeacher] = useState<number | null>(null);
+  const [statusTeacher, setStatusTeacher] = useState<any>(true);
+  const [statusHeadmaster, setStatusHeadmaster] = useState<any>("false");
   const [updatedName, setUpdatedName] = useState("");
   const [password, setPassword] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -49,6 +59,23 @@ const ProfilePage = () => {
       console.error(error);
     }
   };
+
+  const FetchData = async () => {
+    try {
+      const response = await Auth.DataClass();
+      const originalData = response.data.data.result;
+
+      const uniqueData = Array.from(
+        new Map(originalData.map((item: any) => [item.level, item])).values()
+      );
+
+      setFetch(uniqueData);
+      console.log("Filtered Unique Data:", uniqueData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const previewProfile = async (path: any) => {
     try {
       const lowerCasePath = path.toLowerCase();
@@ -74,8 +101,6 @@ const ProfilePage = () => {
     }
   };
   const EditProfile = async () => {
-    // Validasi kecocokan password
-
     const data = {
       full_name: updatedName,
     };
@@ -89,7 +114,6 @@ const ProfilePage = () => {
     }
   };
   const EditPassword = async () => {
-    // Validasi kecocokan password
     if (password !== confirmPassword) {
       alert("Password dan Confirm Password tidak cocok");
       return;
@@ -139,6 +163,7 @@ const ProfilePage = () => {
   };
   useEffect(() => {
     getMe();
+    FetchData();
   }, []);
 
   const handleDialog = () => {
@@ -146,6 +171,56 @@ const ProfilePage = () => {
   };
   const handleDialogPassword = () => {
     openModal("editPassword");
+  };
+  const handleDialogSignature = () => {
+    openModal("addSignature");
+    setNameSignature("");
+    setLevelHeadmaster("");
+    setClassTeacher(null);
+  };
+
+  const clearSignature = () => {
+    sigPad.current.clear();
+  };
+
+  const saveSignature = () => {
+    if (!sigPad.current.isEmpty()) {
+      const image = sigPad.current.getTrimmedCanvas().toDataURL("image/png");
+      setSignatureImage(image);
+    } else {
+      Swal.fire("Error", "Tanda tangan masih kosong!", "error");
+    }
+  };
+
+  const AddSignature = async () => {
+    const data = {
+      signature_image: signatureImage,
+      signature_name: nameSignature,
+      is_headmaster: statusHeadmaster,
+      headmaster_of: levelHeadmaster,
+      is_form_teacher: statusTeacher,
+      form_teacher_class_id: classTeacher,
+    };
+
+    try {
+      await Auth.AddSignature(data);
+      Swal.fire({
+        title: "Berhasil!",
+        text: "Tanda tangan berhasil ditambahkan.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      closeModal("addSignature");
+    } catch (error) {
+      console.error(error);
+      closeModal("addSignature");
+      Swal.fire({
+        title: "Gagal!",
+        text: "Gagal menambahkan tanda tangan. Silakan coba lagi.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
   };
 
   return (
@@ -168,6 +243,12 @@ const ProfilePage = () => {
               onClick={handleDialogPassword}
             >
               Edit Password
+            </button>
+            <button
+              className="btn btn-primary w-fit btn-sm"
+              onClick={handleDialogSignature}
+            >
+              Tambah Tanda Tangan
             </button>
           </div>
         </div>
@@ -333,10 +414,7 @@ const ProfilePage = () => {
 
       {dataUser?.full_name && (
         <div className="relative w-full">
-          <a
-            href="/guru/train-face"
-            className="absolute left-6 top-3 btn btn-secondary"
-          >
+          <a href="/guru/train-face" className="mt-4 w-full btn btn-secondary">
             Train Face
           </a>
         </div>
@@ -451,6 +529,152 @@ const ProfilePage = () => {
             onClick={() => EditPassword()}
           >
             Update
+          </button>
+        </div>
+      </Modal>
+      <Modal id="addSignature">
+        <div className="p-4">
+          <h2 className="text-lg font-bold mb-4">Tambah Tanda Tangan</h2>
+
+          {/* Input Gambar Tanda Tangan */}
+          <div className="mb-4 flex flex-col items-center">
+            <SignatureCanvas
+              ref={sigPad}
+              penColor="black"
+              canvasProps={{
+                width: 400,
+                height: 200,
+                className: "border-2 border-gray-300 rounded-lg",
+              }}
+            />
+            <div className="flex space-x-4 mt-4">
+              <button
+                onClick={clearSignature}
+                className="px-4 py-2 bg-gray-500 text-white rounded"
+              >
+                Hapus
+              </button>
+              <button
+                onClick={saveSignature}
+                className="px-4 py-2 bg-indigo-500 text-white rounded"
+              >
+                Simpan Tanda Tangan
+              </button>
+            </div>
+          </div>
+
+          {/* Input Nama Tanda Tangan */}
+          <div className="mb-6">
+            <label
+              htmlFor="signatureName"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Nama
+            </label>
+            <input
+              id="signatureName"
+              type="text"
+              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
+              placeholder="Masukkan Nama"
+              onChange={(e) => setNameSignature(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-6">
+            <label
+              htmlFor="isFormTeacher"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Apakah Kepala Sekolah?
+            </label>
+            <select
+              id="isFormTeacher"
+              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
+              value={statusHeadmaster.toString()}
+              onChange={(e) =>
+                setStatusHeadmaster(e.target.value == "true" ? true : false)
+              }
+            >
+              <option value="true">Ya</option>
+              <option value="false">Tidak</option>
+            </select>
+          </div>
+
+          {/* Select Kepala Sekolah */}
+          {statusHeadmaster == true && (
+            <div className="mb-6">
+              <label
+                htmlFor="isHeadmaster"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Kepala Sekolah
+              </label>
+              <select
+                id="isHeadmaster"
+                className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
+                onChange={(e) => setLevelHeadmaster(e.target.value)}
+              >
+                <option value="">Pilih Level</option>
+                {fetch.map((item, index) => (
+                  <option value={item?.level} key={index}>
+                    {item?.level}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="mb-6">
+            <label
+              htmlFor="isFormTeacher"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Apakah Wali Kelas?
+            </label>
+            <select
+              id="isFormTeacher"
+              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
+              onChange={(e) =>
+                setStatusTeacher(e.target.value == "true" ? true : false)
+              }
+            >
+              <option value="true">Ya</option>
+              <option value="false">Tidak</option>
+            </select>
+          </div>
+
+          {/* Input ID Kelas Wali Kelas */}
+          {statusTeacher == true && (
+            <div className="mb-6">
+              <label
+                htmlFor="isFormTeacher"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Wali Kelas
+              </label>
+              <select
+                id="isFormTeacher"
+                className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
+                onChange={(e) => setClassTeacher(parseInt(e.target.value))}
+              >
+                <option value="">Pilih Kelas</option>
+                {dataUser?.employee?.formteachers?.map(
+                  (item: any, index: any) => (
+                    <option value={item?.class?.id} key={index}>
+                      {item?.class?.class_name}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+          )}
+
+          {/* Tombol Simpan */}
+          <button
+            className="w-full btn btn-primary"
+            onClick={() => AddSignature()}
+          >
+            Simpan
           </button>
         </div>
       </Modal>
