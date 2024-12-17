@@ -24,9 +24,9 @@ const ProfilePage = () => {
   const [signatureImage, setSignatureImage] = useState<string | null>(null);
   const [nameSignature, setNameSignature] = useState("");
   const [levelHeadmaster, setLevelHeadmaster] = useState("");
-  const [classTeacher, setClassTeacher] = useState<number | null>(null);
+  const [classTeacher, setClassTeacher] = useState<number | string>("");
   const [statusTeacher, setStatusTeacher] = useState<any>(true);
-  const [statusHeadmaster, setStatusHeadmaster] = useState<any>("false");
+  const [statusHeadmaster, setStatusHeadmaster] = useState<any>(false);
   const [updatedName, setUpdatedName] = useState("");
   const [password, setPassword] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -176,7 +176,7 @@ const ProfilePage = () => {
     openModal("addSignature");
     setNameSignature("");
     setLevelHeadmaster("");
-    setClassTeacher(null);
+    setClassTeacher("");
   };
 
   const clearSignature = () => {
@@ -570,6 +570,7 @@ const ProfilePage = () => {
               type="text"
               className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
               placeholder="Masukkan Nama"
+              value={nameSignature}
               onChange={(e) => setNameSignature(e.target.value)}
             />
           </div>
@@ -607,6 +608,7 @@ const ProfilePage = () => {
                 id="isHeadmaster"
                 className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
                 onChange={(e) => setLevelHeadmaster(e.target.value)}
+                value={levelHeadmaster}
               >
                 <option value="">Pilih Level</option>
                 {fetch.map((item, index) => (
@@ -628,6 +630,7 @@ const ProfilePage = () => {
             <select
               id="isFormTeacher"
               className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
+              value={statusTeacher.toString()}
               onChange={(e) =>
                 setStatusTeacher(e.target.value == "true" ? true : false)
               }
@@ -650,6 +653,7 @@ const ProfilePage = () => {
                 id="isFormTeacher"
                 className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
                 onChange={(e) => setClassTeacher(parseInt(e.target.value))}
+                value={classTeacher}
               >
                 <option value="">Pilih Kelas</option>
                 {dataUser?.employee?.formteachers?.map(
