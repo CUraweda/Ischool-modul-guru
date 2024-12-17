@@ -20,7 +20,7 @@ const ProfilePage = () => {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [dataUser, setDataUser] = useState<any>(null);
   // const [idEmployee, setIdEmployee] = useState();
-  const sigPad = useRef<any>(null); // Referensi untuk SignatureCanvas
+  const sigPad = useRef<any>(null);
   const [signatureImage, setSignatureImage] = useState<string | null>(null);
   const [nameSignature, setNameSignature] = useState("");
   const [levelHeadmaster, setLevelHeadmaster] = useState("");
@@ -197,9 +197,9 @@ const ProfilePage = () => {
       signature_image: signatureImage,
       signature_name: nameSignature,
       is_headmaster: statusHeadmaster,
-      headmaster_of: levelHeadmaster,
+      ...(statusHeadmaster == true && { headmaster_of: levelHeadmaster }),
       is_form_teacher: statusTeacher,
-      form_teacher_class_id: classTeacher,
+      ...(statusTeacher == true && { form_teacher_class_id: classTeacher }),
     };
 
     try {
@@ -548,16 +548,10 @@ const ProfilePage = () => {
               }}
             />
             <div className="flex space-x-4 mt-4">
-              <button
-                onClick={clearSignature}
-                className="px-4 py-2 bg-gray-500 text-white rounded"
-              >
+              <button onClick={clearSignature} className="btn btn-outline">
                 Hapus
               </button>
-              <button
-                onClick={saveSignature}
-                className="px-4 py-2 bg-indigo-500 text-white rounded"
-              >
+              <button onClick={saveSignature} className="btn btn-primary">
                 Simpan Tanda Tangan
               </button>
             </div>
