@@ -230,8 +230,6 @@ const PengumumanSiswa = () => {
     }
   };
 
-  console.log({ lists: dataList, classes });
-
   useEffect(() => {
     downloadFile();
   }, [idPengumuman]);
