@@ -49,6 +49,17 @@ const Auth = {
       url: `/auth/update-profile/${id}`,
       data,
     }),
+  AddSignature: (data: any) =>
+    instance({
+      method: `POST`,
+      url: `/employee-signature/add-mine`,
+      data,
+    }),
+  DataClass: () =>
+    instance({
+      method: `GET`,
+      url: `/classes?limit=1000`,
+    }),
 };
 
 const User = {
@@ -457,10 +468,14 @@ const Raport = {
       method: "GET",
       url: `/number-report/show-by-student/${id}?semester=${smt}`,
     }),
-  generateNumberReport: (id: string | null, smt: string | null) =>
+  generateNumberReport: (
+    id: string | null,
+    smt: string | null,
+    date: string | null
+  ) =>
     instance({
       method: "GET",
-      url: `/number-report/generate/${id}?semester=${smt}`,
+      url: `/number-report/generate/${id}?semester=${smt}&date=${date}`,
     }),
   getByIdNumberReport: (id: string) =>
     instance({

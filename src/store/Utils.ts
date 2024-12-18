@@ -71,6 +71,9 @@ export interface IemployeeState {
   formXtras: any[];
   setFormXtras: (formXtras: any[]) => void;
 
+  employeeSignature: any[];
+  setEmployeeSignature: (employeeSignature: any[]) => void;
+
   isAsessor: Boolean;
   setIsAsessor: (isAsessor: Boolean) => void;
 

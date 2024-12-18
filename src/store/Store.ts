@@ -100,6 +100,9 @@ const employeeStore = create<IemployeeState>((set, get) => ({
   formXtras: [],
   setFormXtras: (formXtras) => set({ formXtras }),
 
+  employeeSignature: [],
+  setEmployeeSignature: (employeeSignature) => set({ employeeSignature }),
+
   isAsessor: false,
   setIsAsessor: (isAsessor) => set({ isAsessor }),
 
@@ -113,6 +116,7 @@ const employeeStore = create<IemployeeState>((set, get) => ({
       formTeachers: [],
       formSubjects: [],
       formXtras: [],
+      employeeSignature: [],
     }),
 }));
 
