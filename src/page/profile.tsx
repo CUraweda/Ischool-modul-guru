@@ -1,6 +1,5 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import SignatureCanvas from "react-signature-canvas";
 import Swal from "sweetalert2";
 import Modal, { closeModal, openModal } from "../component/modal";
 import { Auth, Task } from "../middleware/api";
@@ -20,12 +19,10 @@ const ProfilePage = () => {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [dataUser, setDataUser] = useState<any>(null);
   // const [idEmployee, setIdEmployee] = useState();
-  const sigPad = useRef<any>(null);
-  const [signatureImage, setSignatureImage] = useState<string | null>(null);
   const [nameSignature, setNameSignature] = useState("");
   const [levelHeadmaster, setLevelHeadmaster] = useState("");
   const [classTeacher, setClassTeacher] = useState<number | string>("");
-  const [statusTeacher, setStatusTeacher] = useState<any>(true);
+  const [statusTeacher, setStatusTeacher] = useState<any>(false);
   const [statusHeadmaster, setStatusHeadmaster] = useState<any>(false);
   const [updatedName, setUpdatedName] = useState("");
   const [password, setPassword] = useState("");
@@ -179,22 +176,8 @@ const ProfilePage = () => {
     setClassTeacher("");
   };
 
-  const clearSignature = () => {
-    sigPad.current.clear();
-  };
-
-  const saveSignature = () => {
-    if (!sigPad.current.isEmpty()) {
-      const image = sigPad.current.getTrimmedCanvas().toDataURL("image/png");
-      setSignatureImage(image);
-    } else {
-      Swal.fire("Error", "Tanda tangan masih kosong!", "error");
-    }
-  };
-
   const AddSignature = async () => {
     const data = {
-      signature_image: signatureImage,
       signature_name: nameSignature,
       is_headmaster: statusHeadmaster,
       ...(statusHeadmaster == true && { headmaster_of: levelHeadmaster }),
@@ -535,28 +518,6 @@ const ProfilePage = () => {
       <Modal id="addSignature">
         <div className="p-4">
           <h2 className="text-lg font-bold mb-4">Tambah Tanda Tangan</h2>
-
-          {/* Input Gambar Tanda Tangan */}
-          <div className="mb-4 flex flex-col items-center">
-            <SignatureCanvas
-              ref={sigPad}
-              penColor="black"
-              canvasProps={{
-                width: 400,
-                height: 200,
-                className: "border-2 border-gray-300 rounded-lg",
-              }}
-            />
-            <div className="flex space-x-4 mt-4">
-              <button onClick={clearSignature} className="btn btn-outline">
-                Hapus
-              </button>
-              <button onClick={saveSignature} className="btn btn-primary">
-                Simpan Tanda Tangan
-              </button>
-            </div>
-          </div>
-
           {/* Input Nama Tanda Tangan */}
           <div className="mb-6">
             <label
@@ -575,28 +536,27 @@ const ProfilePage = () => {
             />
           </div>
 
-          <div className="mb-6">
-            <label
-              htmlFor="isFormTeacher"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Apakah Kepala Sekolah?
-            </label>
-            <select
-              id="isFormTeacher"
-              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
-              value={statusHeadmaster.toString()}
-              onChange={(e) =>
-                setStatusHeadmaster(e.target.value == "true" ? true : false)
-              }
-            >
-              <option value="true">Ya</option>
-              <option value="false">Tidak</option>
-            </select>
-          </div>
+          {dataUser?.employee?.headmaster != null && (
+            <div className="mb-6">
+              <label
+                htmlFor="isFormTeacher"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Apakah Kepala Sekolah?
+              </label>
+              <select
+                id="isFormTeacher"
+                className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
+                value={statusHeadmaster.toString()}
+                onChange={(e) => setStatusHeadmaster(e.target.value === "true")}
+              >
+                <option value="true">Ya</option>
+                <option value="false">Tidak</option>
+              </select>
+            </div>
+          )}
 
-          {/* Select Kepala Sekolah */}
-          {statusHeadmaster == true && (
+          {statusHeadmaster === true && (
             <div className="mb-6">
               <label
                 htmlFor="isHeadmaster"
@@ -620,25 +580,27 @@ const ProfilePage = () => {
             </div>
           )}
 
-          <div className="mb-6">
-            <label
-              htmlFor="isFormTeacher"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Apakah Wali Kelas?
-            </label>
-            <select
-              id="isFormTeacher"
-              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
-              value={statusTeacher.toString()}
-              onChange={(e) =>
-                setStatusTeacher(e.target.value == "true" ? true : false)
-              }
-            >
-              <option value="true">Ya</option>
-              <option value="false">Tidak</option>
-            </select>
-          </div>
+          {dataUser?.employee?.formteachers?.length > 0 && (
+            <div className="mb-6">
+              <label
+                htmlFor="isFormTeacher"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Apakah Wali Kelas?
+              </label>
+              <select
+                id="isFormTeacher"
+                className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
+                value={statusTeacher.toString()}
+                onChange={(e) =>
+                  setStatusTeacher(e.target.value == "true" ? true : false)
+                }
+              >
+                <option value="true">Ya</option>
+                <option value="false">Tidak</option>
+              </select>
+            </div>
+          )}
 
           {/* Input ID Kelas Wali Kelas */}
           {statusTeacher == true && (

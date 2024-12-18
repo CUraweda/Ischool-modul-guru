@@ -51,6 +51,7 @@ const RaportAngka = () => {
   const [arrayKelas, setarrayKelas] = useState<any>();
   const [arrayNumber, setarrayNumber] = useState<any>();
   const [cekEror, setCekEror] = useState<boolean>(false);
+  const [raportDate, setRaportDate] = useState("");
 
   const [personalities, setPersonalities] = useState<any[]>([]);
   const [studentpersonalities, setStudentPersonalities] = useState<any[]>([]);
@@ -61,7 +62,7 @@ const RaportAngka = () => {
   const [search, setSearch] = useState("");
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
-    semester: "",
+    semester: "1",
     classId: "",
     subjectId: "",
     search: "",
@@ -498,7 +499,7 @@ const RaportAngka = () => {
 
   const generatePdf = async () => {
     try {
-      await Raport.generateNumberReport(idSiswa, filter.semester);
+      await Raport.generateNumberReport(idSiswa, filter.semester, raportDate);
       closeModal("view-angka");
       Swal.fire({
         position: "center",
@@ -1243,10 +1244,17 @@ const RaportAngka = () => {
           <span className="text-xl font-bold">Raport Angka</span>
           <span className=" mb-5">{arrayNumber?.full_name}</span>
 
-          <div className="w-full max-h-[800px] mt-10 overflow-auto">
-            <div className="w-full flex justify-end">
+          <div className="w-full mt-10 overflow-auto">
+            <div className="flex gap-2 items-center mb-4 justify-end">
+              <input
+                type="date"
+                className="rounded-lg border border-gray-300 p-2 transition duration-200 focus:border-blue-500 focus:ring focus:ring-blue-200"
+                onChange={(e) => setRaportDate(e.target.value)}
+                required
+              />
+
               <button
-                className="btn mb-4 bg-cyan-500 text-white"
+                className="btn bg-cyan-500 text-white"
                 onClick={generatePdf}
               >
                 Generate PDF

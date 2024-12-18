@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import bg from "../../assets/bg2.png";
 import ApexChart from "../../component/ApexChart";
 import FaceDetection from "../../component/FaceRegocnition";
-
+import Swal from "sweetalert2";
 import moment from "moment";
 import {
   FaDoorClosed,
@@ -24,13 +24,14 @@ import { formatTime } from "../../utils/date";
 
 const Dashboard: React.FC = () => {
   const currentDate = moment();
-  const { employee, formTeachers } = employeeStore();
+  const { employee, formTeachers, setEmployeeSignature } = employeeStore();
   const navigate = useNavigate();
 
   const [inAreas, setInAreas] = useState<boolean>(false);
   const handleInAreas = () => {
     setInAreas(true);
   };
+  const [dataUser, setDataUser] = useState<any>(null);
   const handleIsntAreas = () => {
     setInAreas(false);
   };
@@ -188,7 +189,9 @@ const Dashboard: React.FC = () => {
   const getMe = async () => {
     try {
       const res = await Auth.MeData();
+      setDataUser(res.data.data);
       previewProfile(res.data.data.avatar);
+      setEmployeeSignature(res.data.data.employee.employeesignatures);
     } catch (error) {
       console.error(error);
     }
@@ -221,6 +224,21 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     getData();
     getMe();
+
+    if (dataUser?.employee?.employeesignatures.length < 1) {
+      Swal.fire({
+        title: "Tanda Tangan Tidak Ditemukan",
+        text: "Silakan tambahkan tanda tangan Anda di halaman profil.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Pergi ke Profil",
+        cancelButtonText: "Nanti",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/profile");
+        }
+      });
+    }
   }, [employee]);
 
   return (
@@ -378,18 +396,22 @@ const Dashboard: React.FC = () => {
                         ) : (
                           latestTraining?.map((item: any, index: any) => (
                             <tr key={index}>
-                            <th>
-                              <p className="line-clamp-2 text-ellipsis overflow-hidden min-w-40">
-                                {item.title}
-                              </p>
-                            </th>
-                            <td className="whitespace-nowrap">
-                              <p>{item.location ? item.location : "-"}</p>
-                            </td>
-                            <td className="whitespace-nowrap">
-                              <p>{item.start_date ? item.start_date.split("T")[0] : "-"}</p>
-                            </td>
-                          </tr>
+                              <th>
+                                <p className="line-clamp-2 text-ellipsis overflow-hidden min-w-40">
+                                  {item.title}
+                                </p>
+                              </th>
+                              <td className="whitespace-nowrap">
+                                <p>{item.location ? item.location : "-"}</p>
+                              </td>
+                              <td className="whitespace-nowrap">
+                                <p>
+                                  {item.start_date
+                                    ? item.start_date.split("T")[0]
+                                    : "-"}
+                                </p>
+                              </td>
+                            </tr>
                           ))
                         )}
                       </tbody>
