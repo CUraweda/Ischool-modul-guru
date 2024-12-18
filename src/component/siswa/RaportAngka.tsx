@@ -51,8 +51,10 @@ const RaportAngka = () => {
   const [arrayKelas, setarrayKelas] = useState<any>();
   const [arrayNumber, setarrayNumber] = useState<any>();
   const [cekEror, setCekEror] = useState<boolean>(false);
-  const [raportDate, setRaportDate] = useState("");
-
+  const [raportDate, setRaportDate] = useState(() => {
+    const today = new Date();
+    return today.toISOString().split("T")[0]; // Format YYYY-MM-DD
+  });
   const [personalities, setPersonalities] = useState<any[]>([]);
   const [studentpersonalities, setStudentPersonalities] = useState<any[]>([]);
   const [studentInEditPersonality, setStudentInEditPersonality] = useState<any>(
@@ -1250,6 +1252,7 @@ const RaportAngka = () => {
                 type="date"
                 className="rounded-lg border border-gray-300 p-2 transition duration-200 focus:border-blue-500 focus:ring focus:ring-blue-200"
                 onChange={(e) => setRaportDate(e.target.value)}
+                value={raportDate}
                 required
               />
 
