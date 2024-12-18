@@ -54,9 +54,6 @@ const Auth = {
       method: `POST`,
       url: `/employee-signature/add-mine`,
       data,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
     }),
   DataClass: () =>
     instance({
@@ -471,10 +468,14 @@ const Raport = {
       method: "GET",
       url: `/number-report/show-by-student/${id}?semester=${smt}`,
     }),
-  generateNumberReport: (id: string | null, smt: string | null) =>
+  generateNumberReport: (
+    id: string | null,
+    smt: string | null,
+    date: string | null
+  ) =>
     instance({
       method: "GET",
-      url: `/number-report/generate/${id}?semester=${smt}`,
+      url: `/number-report/generate/${id}?semester=${smt}&date=${date}`,
     }),
   getByIdNumberReport: (id: string) =>
     instance({
