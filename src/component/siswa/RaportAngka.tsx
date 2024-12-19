@@ -97,7 +97,7 @@ const RaportAngka = () => {
   useEffect(() => {
     getStudent();
     getClass();
-  }, [formik.values.classId, arrayKelas, academicYear]);
+  }, [formik.values.classId, formik.values.subjectId, arrayKelas, academicYear]);
 
   useEffect(() => {
     getMapel();
@@ -145,11 +145,13 @@ const RaportAngka = () => {
 
   const getStudent = async () => {
     const idClass = formik.values.classId || "11";
+    const subjectId = formik.values.subjectId
     try {
       const response = await Raport.getAllStudentReport(
         idClass,
         null,
-        academicYear
+        academicYear,
+        subjectId
       );
       setDataSiswa(response.data.data);
     } catch (error) {
@@ -271,7 +273,7 @@ const RaportAngka = () => {
       grade: "A",
     },
     validationSchema: validationPersonalitySchema,
-    onSubmit: () => {},
+    onSubmit: () => { },
   });
 
   const getStudentPersonalities = async () => {
@@ -433,14 +435,14 @@ const RaportAngka = () => {
             prevData.map((item) =>
               item.id == dataExcel[1]
                 ? {
-                    ...item,
-                    nilai: dataExcel[6]
-                      ? dataExcel[6] > 10
-                        ? 10
-                        : dataExcel[6]
-                      : 0,
-                    terbilang: numberToWords(dataExcel[6]),
-                  }
+                  ...item,
+                  nilai: dataExcel[6]
+                    ? dataExcel[6] > 10
+                      ? 10
+                      : dataExcel[6]
+                    : 0,
+                  terbilang: numberToWords(dataExcel[6]),
+                }
                 : item
             )
           );
@@ -828,11 +830,10 @@ const RaportAngka = () => {
                   Kelas
                 </label>
                 <select
-                  className={`select join-item w-full select-bordered ${
-                    formik.touched.classId && formik.errors.classId
+                  className={`select join-item w-full select-bordered ${formik.touched.classId && formik.errors.classId
                       ? "select-error"
                       : ""
-                  }`}
+                    }`}
                   name="classId"
                   value={formik.values.classId}
                   onChange={formik.handleChange}
@@ -854,42 +855,13 @@ const RaportAngka = () => {
               </div>
               <div className="flex flex-col w-full">
                 <label htmlFor="" className="font-bold">
-                  Nama
-                </label>
-                <select
-                  className={`select join-item w-full select-bordered ${
-                    formik.touched.studentId && formik.errors.studentId
-                      ? "select-error"
-                      : ""
-                  }`}
-                  name="studentId"
-                  value={formik.values.studentId}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                >
-                  <option selected>pilih siswa</option>
-                  {DataSiswa?.map((item: any, index: number) => (
-                    <option value={item?.id} key={index}>
-                      {item?.studentclass.student.full_name}
-                    </option>
-                  ))}
-                </select>
-                {formik.touched.studentId && formik.errors.studentId ? (
-                  <div className="text-red-500 text-xs">
-                    {formik.errors.studentId}
-                  </div>
-                ) : null}
-              </div>
-              <div className="flex flex-col w-full">
-                <label htmlFor="" className="font-bold">
                   Semester
                 </label>
                 <select
-                  className={`select join-item w-full select-bordered ${
-                    formik.touched.semester && formik.errors.semester
+                  className={`select join-item w-full select-bordered ${formik.touched.semester && formik.errors.semester
                       ? "select-error"
                       : ""
-                  }`}
+                    }`}
                   name="semester"
                   value={formik.values.semester}
                   onChange={formik.handleChange}
@@ -910,11 +882,10 @@ const RaportAngka = () => {
                   Mapel
                 </label>
                 <select
-                  className={`select join-item w-full select-bordered ${
-                    formik.touched.subjectId && formik.errors.subjectId
+                  className={`select join-item w-full select-bordered ${formik.touched.subjectId && formik.errors.subjectId
                       ? "select-error"
                       : ""
-                  }`}
+                    }`}
                   name="subjectId"
                   value={formik.values.subjectId}
                   onChange={formik.handleChange}
@@ -935,18 +906,43 @@ const RaportAngka = () => {
               </div>
               <div className="flex flex-col w-full">
                 <label htmlFor="" className="font-bold">
+                  Nama
+                </label>
+                <select
+                  className={`select join-item w-full select-bordered ${formik.touched.studentId && formik.errors.studentId
+                      ? "select-error"
+                      : ""
+                    }`}
+                  name="studentId"
+                  value={formik.values.studentId}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <option selected>pilih siswa</option>
+                  {DataSiswa?.map((item: any, index: number) => (
+                    <option value={item?.id} key={index}>
+                      {item?.studentclass.student.full_name}
+                    </option>
+                  ))}
+                </select>
+                {formik.touched.studentId && formik.errors.studentId ? (
+                  <div className="text-red-500 text-xs">
+                    {formik.errors.studentId}
+                  </div>
+                ) : null}
+              </div>
+              <div className="flex flex-col w-full">
+                <label htmlFor="" className="font-bold">
                   Nilai (1-10)
                 </label>
                 <input
                   type="number"
                   placeholder="7.5"
-                  className={`input input-bordered w-full ${
-                    parseInt(formik.values.nilai) > 10 ? "input-error" : ""
-                  } ${
-                    formik.touched.nilai && formik.errors.nilai
+                  className={`input input-bordered w-full ${parseInt(formik.values.nilai) > 10 ? "input-error" : ""
+                    } ${formik.touched.nilai && formik.errors.nilai
                       ? "input-error"
                       : ""
-                  } `}
+                    } `}
                   name="nilai"
                   value={formik.values.nilai}
                   onBlur={formik.handleBlur}
@@ -955,9 +951,8 @@ const RaportAngka = () => {
                   }}
                 />
                 <span
-                  className={`text-red-500 text-xs ${
-                    parseInt(formik.values.nilai) > 10 ? "" : "hidden"
-                  }`}
+                  className={`text-red-500 text-xs ${parseInt(formik.values.nilai) > 10 ? "" : "hidden"
+                    }`}
                 >
                   Nilai tidak boleh lebih dari 10
                 </span>
@@ -1097,14 +1092,12 @@ const RaportAngka = () => {
         <div className="w-full flex flex-col items-center">
           <span className="text-xl font-bold mb-5">Upload Raport Angka</span>
           <div
-            className={`w-full mt-5 gap-2  flex-col ${
-              !arrayKelas || !arrayMapel ? "hidden" : "flex"
-            }`}
+            className={`w-full mt-5 gap-2  flex-col ${!arrayKelas || !arrayMapel ? "hidden" : "flex"
+              }`}
           >
             <button
-              className={`btn btn-sm w-1/3 bg-green-300 ${
-                !arrayKelas || !arrayMapel ? "btn-disabled" : ""
-              }`}
+              className={`btn btn-sm w-1/3 bg-green-300 ${!arrayKelas || !arrayMapel ? "btn-disabled" : ""
+                }`}
               onClick={() => exportToCSV()}
             >
               dowload template
@@ -1196,9 +1189,8 @@ const RaportAngka = () => {
                       <input
                         type="number"
                         placeholder="0"
-                        className={`input input-bordered w-16 ${
-                          cekEror ? (item.nilai ? "" : "bg-red-400") : ""
-                        }`}
+                        className={`input input-bordered w-16 ${cekEror ? (item.nilai ? "" : "bg-red-400") : ""
+                          }`}
                         value={item.nilai || ""}
                         onChange={(e) =>
                           handleInputChange(item.id, "nilai", e.target.value)
@@ -1209,9 +1201,8 @@ const RaportAngka = () => {
                       <input
                         type="text"
                         placeholder="nol"
-                        className={`input input-bordered w-full ${
-                          cekEror ? (item.terbilang ? "" : "bg-red-400") : ""
-                        }`}
+                        className={`input input-bordered w-full ${cekEror ? (item.terbilang ? "" : "bg-red-400") : ""
+                          }`}
                         value={item.terbilang || ""}
                         onChange={(e) =>
                           handleInputChange(
