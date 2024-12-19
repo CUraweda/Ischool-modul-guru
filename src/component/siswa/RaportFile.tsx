@@ -46,7 +46,7 @@ const RaportFile = () => {
   const [search, setSearch] = useState("");
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
-    classId: "",
+    classId: "22",
     studentId: "",
     semester: "1",
     search: "",

@@ -37,7 +37,7 @@ const RaportAll = () => {
 
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
-    classId: "",
+    classId: "22",
     semester: "1",
     page: 0,
     limit: 10,
