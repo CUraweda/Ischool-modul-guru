@@ -24,7 +24,6 @@ const ProfilePage = () => {
   const [classTeacher, setClassTeacher] = useState<number | string>("");
   const [employeeId, setEmployeeId] = useState<number | string>();
   const [signaturePath, setSignaturePath] = useState("");
-  const [indexId, setIndexId] = useState<number | string>();
   const [statusTeacher, setStatusTeacher] = useState<any>(true);
   const [statusHeadmaster, setStatusHeadmaster] = useState<any>(false);
   const [updatedName, setUpdatedName] = useState("");
@@ -181,14 +180,6 @@ const ProfilePage = () => {
     setClassTeacher("");
   };
 
-  // const handleCrud = () => {
-  //   if (dataUser?.employee?.employeesignatures > 1) {
-  //     UpdateSignature();
-  //   } else {
-  //     AddSignature();
-  //   }
-  // };
-
   const AddSignature = async () => {
     const data = {
       signature_name: nameSignature,
@@ -221,13 +212,13 @@ const ProfilePage = () => {
 
   const handleUpdateSignatureDialog = async (item: any) => {
     openModal("addSignature");
-    setEmployeeId(item.employeeId);
+    setEmployeeId(item.employee_id); // Fix key
     setNameSignature(item.signature_name);
-    setIndexId(item.id);
+    setSignaturePath(item.signature_path);
     setStatusHeadmaster(item.is_headmaster);
-    setLevelHeadmaster(item.headmaster_of);
+    setLevelHeadmaster(item.headmaster_of || "");
     setStatusTeacher(item.is_form_teacher);
-    setClassTeacher(parseInt(item.form_teacher_class_id));
+    setClassTeacher(parseInt(item.form_teacher_class_id || "0"));
   };
 
   const UpdateSignature = async () => {
@@ -236,13 +227,15 @@ const ProfilePage = () => {
       signature_path: signaturePath,
       signature_name: nameSignature,
       is_headmaster: statusHeadmaster,
-      ...(statusHeadmaster == true && { headmaster_of: levelHeadmaster }),
+      ...(statusHeadmaster && { headmaster_of: levelHeadmaster }),
       is_form_teacher: statusTeacher,
-      ...(statusTeacher == true && { form_teacher_class_id: classTeacher }),
+      ...(statusTeacher && { form_teacher_class_id: classTeacher }),
     };
 
+    console.log("Data yang dikirim:", data);
+
     try {
-      await Auth.UpdateSignature(indexId, data);
+      await Auth.UpdateSignature(data);
       Swal.fire({
         title: "Berhasil!",
         text: "Tanda tangan berhasil ditambahkan.",
@@ -251,7 +244,7 @@ const ProfilePage = () => {
       });
       closeModal("addSignature");
     } catch (error) {
-      console.error(error);
+      console.error("Error UpdateSignature:", error);
       closeModal("addSignature");
       Swal.fire({
         title: "Gagal!",
@@ -287,15 +280,20 @@ const ProfilePage = () => {
               <button
                 className="btn btn-primary w-fit btn-sm"
                 onClick={() => {
-                  dataUser?.employee?.employeesignatures?.length > 1
-                    ? handleUpdateSignatureDialog(
-                        dataUser?.employee?.employeesignatures[0]
-                      )
-                    : handleDialogSignature();
+                  if (!dataUser?.employee?.employeesignatures?.length) {
+                    handleDialogSignature();
+                  } else {
+                    handleUpdateSignatureDialog(
+                      dataUser.employee.employeesignatures[0]
+                    );
+                  }
                 }}
               >
-                Tambah Tanda Tangan
+                {dataUser?.employee?.employeesignatures.length > 0
+                  ? "Update Tanda Tangan"
+                  : "Tambah Tanda Tangan"}
               </button>
+
               <div className="mt-2 text-sm text-gray-700 flex items-center">
                 {/* Icon */}
                 <svg
@@ -643,11 +641,7 @@ const ProfilePage = () => {
               type="text"
               className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
               placeholder="Masukkan Nama"
-              value={
-                dataUser?.employee?.employeesignatures?.length > 0
-                  ? dataUser.employee.employeesignatures[0]?.signature_name
-                  : nameSignature
-              }
+              value={nameSignature}
               onChange={(e) => setNameSignature(e.target.value)}
             />
           </div>
@@ -748,7 +742,11 @@ const ProfilePage = () => {
           {/* Tombol Simpan */}
           <button
             className="w-full btn btn-primary"
-            onClick={() => AddSignature()}
+            onClick={() =>
+              dataUser?.employee?.employeesignatures.length > 0
+                ? UpdateSignature()
+                : AddSignature()
+            }
           >
             Simpan
           </button>

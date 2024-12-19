@@ -55,10 +55,10 @@ const Auth = {
       url: `/employee-signature/add-mine`,
       data,
     }),
-  UpdateSignature: (id: any, data: any) =>
+  UpdateSignature: (data: any) =>
     instance({
       method: `POST`,
-      url: `/employee-signature/update/${id}`,
+      url: `/employee-signature/add-mine`,
       data,
     }),
   DataClass: () =>
