@@ -868,6 +868,7 @@ const RaportAngka = () => {
                   value={formik.values.studentId}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  disabled={!formik.values.classId || !formik.values.subjectId}
                 >
                   <option selected>pilih siswa</option>
                   {DataSiswa?.map((item: any, index: number) => (

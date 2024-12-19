@@ -22,7 +22,7 @@ const ProfilePage = () => {
   const [nameSignature, setNameSignature] = useState("");
   const [levelHeadmaster, setLevelHeadmaster] = useState("");
   const [classTeacher, setClassTeacher] = useState<number | string>("");
-  const [statusTeacher, setStatusTeacher] = useState<any>(false);
+  const [statusTeacher, setStatusTeacher] = useState<any>(true);
   const [statusHeadmaster, setStatusHeadmaster] = useState<any>(false);
   const [updatedName, setUpdatedName] = useState("");
   const [password, setPassword] = useState("");

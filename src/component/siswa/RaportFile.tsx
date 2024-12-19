@@ -48,7 +48,7 @@ const RaportFile = () => {
   const [filter, setFilter] = useState({
     classId: "",
     studentId: "",
-    semester: "",
+    semester: "1",
     search: "",
     page: 0,
     limit: 0,
