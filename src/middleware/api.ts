@@ -55,6 +55,12 @@ const Auth = {
       url: `/employee-signature/add-mine`,
       data,
     }),
+  UpdateSignature: (id: any, data: any) =>
+    instance({
+      method: `POST`,
+      url: `/employee-signature/update/${id}`,
+      data,
+    }),
   DataClass: () =>
     instance({
       method: `GET`,
@@ -425,11 +431,13 @@ const Raport = {
   getAllStudentReport: (
     id: string | null,
     semester: string | null,
-    academic: string | null
+    academic: string | null,
+    subject_id: string | null = null
   ) =>
     instance({
       method: "GET",
-      url: `/student-report/show-by-class/${id}?semester=${semester}&academic=${academic}`,
+      url: `/student-report/show-by-class/${id}?semester=${semester}&academic=${academic}
+      ${subject_id ? `&subject_id=${subject_id}` : ""}`,
     }),
   showAllStudentReport: (
     classId: string,
