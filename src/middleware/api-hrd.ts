@@ -135,11 +135,17 @@ const Karyawan = {
       method: `GET`,
       url: `/employee/detail/${id}`,
     }),
-  DaftarPenilaian: (page: number, limit: number, search: string) =>
-    instance({
+  DaftarPenilaian: (
+    id: string,
+    page: number,
+    limit: number,
+    search: string
+  ) => {
+    return instance({
       method: `GET`,
-      url: `/employee?page=${page}&limit=${limit}&search=${search}`,
-    }),
+      url: `/employee-jobdesk?employee_id=${id}&page=${page}&limit=${limit}${search ? `&search=${search}` : ""}`,
+    });
+  },
   AddPenilaian: (data: any) =>
     instance({
       method: `POST`,
