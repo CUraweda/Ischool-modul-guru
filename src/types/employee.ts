@@ -1,4 +1,3 @@
-
 export type Employee = {
   id: number;
   user_id: number | null;
@@ -34,6 +33,7 @@ export type Employee = {
   is_asessor: boolean;
   raw_workhour: number;
   needed_employee_files: string;
+  is_assesor: boolean;
   createdAt: string;
   updatedAt: string;
 };
