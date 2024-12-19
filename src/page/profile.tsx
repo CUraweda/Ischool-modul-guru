@@ -181,13 +181,13 @@ const ProfilePage = () => {
     setClassTeacher("");
   };
 
-  const handleCrud = () => {
-    if (dataUser?.employee?.employeesignatures > 1) {
-      UpdateSignature();
-    } else {
-      AddSignature;
-    }
-  };
+  // const handleCrud = () => {
+  //   if (dataUser?.employee?.employeesignatures > 1) {
+  //     UpdateSignature();
+  //   } else {
+  //     AddSignature();
+  //   }
+  // };
 
   const AddSignature = async () => {
     const data = {
