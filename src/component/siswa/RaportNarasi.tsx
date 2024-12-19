@@ -649,7 +649,7 @@ const RaportNarasi = () => {
         <div className="w-full flex justify-center flex-col items-center">
           <p className="text-xl font-bold">Sub Kategori Narasi</p>
           <div className="w-full flex flex-col gap-1 mt-5">
-            <label htmlFor="">Kelas</label>
+            <label htmlFor="">Kategori</label>
             <select
               className="select join-item w-full select-bordered"
               value={formik.values.idKategori}
