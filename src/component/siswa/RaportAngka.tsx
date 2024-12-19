@@ -65,7 +65,7 @@ const RaportAngka = () => {
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
     semester: "1",
-    classId: "",
+    classId: "22",
     subjectId: "",
     search: "",
     page: 0,
@@ -99,7 +99,12 @@ const RaportAngka = () => {
   useEffect(() => {
     getStudent();
     getClass();
-  }, [formik.values.classId, arrayKelas, academicYear]);
+  }, [
+    formik.values.classId,
+    formik.values.subjectId,
+    arrayKelas,
+    academicYear,
+  ]);
 
   useEffect(() => {
     getMapel();
@@ -147,11 +152,13 @@ const RaportAngka = () => {
 
   const getStudent = async () => {
     const idClass = formik.values.classId || "11";
+    const subjectId = formik.values.subjectId;
     try {
       const response = await Raport.getAllStudentReport(
         idClass,
         null,
-        academicYear
+        academicYear,
+        subjectId
       );
       setDataSiswa(response.data.data);
     } catch (error) {
@@ -856,34 +863,6 @@ const RaportAngka = () => {
               </div>
               <div className="flex flex-col w-full">
                 <label htmlFor="" className="font-bold">
-                  Nama
-                </label>
-                <select
-                  className={`select join-item w-full select-bordered ${
-                    formik.touched.studentId && formik.errors.studentId
-                      ? "select-error"
-                      : ""
-                  }`}
-                  name="studentId"
-                  value={formik.values.studentId}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                >
-                  <option selected>pilih siswa</option>
-                  {DataSiswa?.map((item: any, index: number) => (
-                    <option value={item?.id} key={index}>
-                      {item?.studentclass.student.full_name}
-                    </option>
-                  ))}
-                </select>
-                {formik.touched.studentId && formik.errors.studentId ? (
-                  <div className="text-red-500 text-xs">
-                    {formik.errors.studentId}
-                  </div>
-                ) : null}
-              </div>
-              <div className="flex flex-col w-full">
-                <label htmlFor="" className="font-bold">
                   Semester
                 </label>
                 <select
@@ -932,6 +911,35 @@ const RaportAngka = () => {
                 {formik.touched.subjectId && formik.errors.subjectId ? (
                   <div className="text-red-500 text-xs">
                     {formik.errors.subjectId}
+                  </div>
+                ) : null}
+              </div>
+              <div className="flex flex-col w-full">
+                <label htmlFor="" className="font-bold">
+                  Nama
+                </label>
+                <select
+                  className={`select join-item w-full select-bordered ${
+                    formik.touched.studentId && formik.errors.studentId
+                      ? "select-error"
+                      : ""
+                  }`}
+                  name="studentId"
+                  value={formik.values.studentId}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  disabled={!formik.values.classId || !formik.values.subjectId}
+                >
+                  <option selected>pilih siswa</option>
+                  {DataSiswa?.map((item: any, index: number) => (
+                    <option value={item?.id} key={index}>
+                      {item?.studentclass.student.full_name}
+                    </option>
+                  ))}
+                </select>
+                {formik.touched.studentId && formik.errors.studentId ? (
+                  <div className="text-red-500 text-xs">
+                    {formik.errors.studentId}
                   </div>
                 ) : null}
               </div>

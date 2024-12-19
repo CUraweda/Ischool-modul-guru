@@ -22,7 +22,9 @@ const ProfilePage = () => {
   const [nameSignature, setNameSignature] = useState("");
   const [levelHeadmaster, setLevelHeadmaster] = useState("");
   const [classTeacher, setClassTeacher] = useState<number | string>("");
-  const [statusTeacher, setStatusTeacher] = useState<any>(false);
+  const [employeeId, setEmployeeId] = useState<number | string>();
+  const [signaturePath, setSignaturePath] = useState("");
+  const [statusTeacher, setStatusTeacher] = useState<any>(true);
   const [statusHeadmaster, setStatusHeadmaster] = useState<any>(false);
   const [updatedName, setUpdatedName] = useState("");
   const [password, setPassword] = useState("");
@@ -44,6 +46,7 @@ const ProfilePage = () => {
         formextras,
         formsubjects,
         formteachers,
+        employeesignatures,
       } = res.data.data?.employee ?? {};
 
       previewProfile(res.data.data.avatar);
@@ -52,6 +55,7 @@ const ProfilePage = () => {
       if (formteachers) setFormTeachers(formteachers);
       if (formsubjects) setFormSubjects(formsubjects);
       if (formextras) setFormXtras(formextras);
+      if (employeesignatures) setFormXtras(employeesignatures);
     } catch (error) {
       console.error(error);
     }
@@ -206,6 +210,51 @@ const ProfilePage = () => {
     }
   };
 
+  const handleUpdateSignatureDialog = async (item: any) => {
+    openModal("addSignature");
+    setEmployeeId(item.employee_id); // Fix key
+    setNameSignature(item.signature_name);
+    setSignaturePath(item.signature_path);
+    setStatusHeadmaster(item.is_headmaster);
+    setLevelHeadmaster(item.headmaster_of || "");
+    setStatusTeacher(item.is_form_teacher);
+    setClassTeacher(parseInt(item.form_teacher_class_id || "0"));
+  };
+
+  const UpdateSignature = async () => {
+    const data = {
+      employee_id: employeeId,
+      signature_path: signaturePath,
+      signature_name: nameSignature,
+      is_headmaster: statusHeadmaster,
+      ...(statusHeadmaster && { headmaster_of: levelHeadmaster }),
+      is_form_teacher: statusTeacher,
+      ...(statusTeacher && { form_teacher_class_id: classTeacher }),
+    };
+
+    console.log("Data yang dikirim:", data);
+
+    try {
+      await Auth.UpdateSignature(data);
+      Swal.fire({
+        title: "Berhasil!",
+        text: "Tanda tangan berhasil ditambahkan.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      closeModal("addSignature");
+    } catch (error) {
+      console.error("Error UpdateSignature:", error);
+      closeModal("addSignature");
+      Swal.fire({
+        title: "Gagal!",
+        text: "Gagal menambahkan tanda tangan. Silakan coba lagi.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
   return (
     <div className="w-full flex justify-center flex-col items-center p-3">
       <span className="font-bold text-xl mb-6">Profil</span>
@@ -227,12 +276,45 @@ const ProfilePage = () => {
             >
               Edit Password
             </button>
-            <button
-              className="btn btn-primary w-fit btn-sm"
-              onClick={handleDialogSignature}
-            >
-              Tambah Tanda Tangan
-            </button>
+            <div className="flex flex-col gap-2 items-center">
+              <button
+                className="btn btn-primary w-fit btn-sm"
+                onClick={() => {
+                  if (!dataUser?.employee?.employeesignatures?.length) {
+                    handleDialogSignature();
+                  } else {
+                    handleUpdateSignatureDialog(
+                      dataUser.employee.employeesignatures[0]
+                    );
+                  }
+                }}
+              >
+                {dataUser?.employee?.employeesignatures.length > 0
+                  ? "Update Tanda Tangan"
+                  : "Tambah Tanda Tangan"}
+              </button>
+
+              <div className="mt-2 text-sm text-gray-700 flex items-center">
+                {/* Icon */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-blue-500 mr-2"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm2 10a1 1 0 112 0 1 1 0 01-2 0zm4-6H8v2h4V6zm-4 4h4v2H8v-2z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+
+                <span className="font-medium">
+                  {dataUser?.employee?.employeesignatures[0]?.signature_name ||
+                    "No Signature"}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
         <div className="overflow-x-auto mb-6">
@@ -384,6 +466,34 @@ const ProfilePage = () => {
                       <tr key={i}>
                         <th>{i + 1}</th>
                         <td>{dat.subjectextra?.name ?? "-"}</td>
+                        {/* <td>{dat.academic_year ?? "-"}</td> */}
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+
+        {dataUser?.employee?.employeesignatures?.length > 0 && (
+          <>
+            <h6 className="text-md font-bold mb-3">Tanda Tangan</h6>
+            <div className="overflow-x-auto mb-6">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nama Tanda Tangan</th>
+                    {/* <th>Tahun pelajaran</th> */}
+                  </tr>
+                </thead>
+                <tbody>
+                  {dataUser?.employee?.employeesignatures?.map(
+                    (dat: any, i: number) => (
+                      <tr key={i}>
+                        <th>{i + 1}</th>
+                        <td>{dat?.signature_name ?? "-"}</td>
                         {/* <td>{dat.academic_year ?? "-"}</td> */}
                       </tr>
                     )
@@ -632,7 +742,11 @@ const ProfilePage = () => {
           {/* Tombol Simpan */}
           <button
             className="w-full btn btn-primary"
-            onClick={() => AddSignature()}
+            onClick={() =>
+              dataUser?.employee?.employeesignatures.length > 0
+                ? UpdateSignature()
+                : AddSignature()
+            }
           >
             Simpan
           </button>
