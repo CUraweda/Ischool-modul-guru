@@ -1,10 +1,21 @@
 /* eslint-disable no-prototype-builtins */
 import moment from "moment";
 
+export const value = (input: unknown) => (input ?? "Not Specified") as string;
+
 export const token = {
   get: () => localStorage.getItem("token"),
   set: (value: string) => localStorage.setItem("token", value),
   delete: () => localStorage.removeItem("token"),
+};
+
+export const modal = {
+  open: (id: string) => {
+    (document.getElementById(id) as HTMLDialogElement)?.showModal();
+  },
+  close: (id: string) => {
+    (document.getElementById(id) as HTMLDialogElement)?.close();
+  },
 };
 
 export const capitalize = (value?: string) =>

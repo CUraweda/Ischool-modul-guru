@@ -60,7 +60,7 @@ const Login = () => {
         token.set(tokens.access.token);
       }
 
-      if (role === 6 || role === 4) {
+      if ([6, 4, 11].includes(role)) {
         navigate("/guru/dashboard");
       } else if (role === 2) {
         navigate("/keuangan/");
