@@ -133,7 +133,9 @@ const JobdeskGuruPage = () => {
                   </td>
                   <td>{name}</td>
                   <td>{description}</td>
-                  <td>{format(new Date(due_date), "dd/MM/yyyy")}</td>
+                  <td>
+                    {due_date ? format(new Date(due_date), "dd/MM/yyyy") : "-"}
+                  </td>
                   <td className="text-center">
                     <PriorityBadge
                       label={priority_label}
