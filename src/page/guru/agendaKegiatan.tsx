@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import { Kalender } from "../../middleware/api";
 import { employeeStore } from "../../store/Store";
+import dayjs from "dayjs";
 
 const AgendaKegiatan = () => {
   const { employee } = employeeStore();
@@ -70,8 +71,8 @@ const AgendaKegiatan = () => {
       const newData = {
         teacher_id: employee.id,
         edu_id: data.edu_id,
-        start_date: new Date(data.start_date).toISOString(),
-        end_date: new Date(data.end_date).toISOString(),
+        start_date: dayjs(data.start_date).toISOString(),
+        end_date: dayjs(data.end_date).toISOString(),
         agenda: data.agenda,
         color: data.color,
       };
@@ -146,8 +147,9 @@ const AgendaKegiatan = () => {
       const res = await Kalender.getByGuru(id);
       if (res.status === 200) {
         const fixedData = res.data.data?.map((dat: any) => {
-          const startDate = new Date(dat.start_date);
-          const endDate = new Date(dat.end_date);
+          const dateFormat = "YYYY-MM-DDTHH:mm";
+          const startDate = dayjs(dat.start_date).format(dateFormat);
+          const endDate = dayjs(dat.end_date).format(dateFormat);
 
           // Jika endDate lebih kecil dari startDate, atur endDate menjadi startDate
           const fixedEndDate = endDate < startDate ? startDate : endDate;
