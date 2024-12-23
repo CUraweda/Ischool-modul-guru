@@ -50,7 +50,7 @@ const BahanAjar: React.FC<{}> = () => {
   };
   const getMapel = async () => {
     try {
-      const res = await Mapel.GetAllDataMapel(0, 0);
+      const res = await Mapel.GetAllDataMapel(0, 100);
       if (res.status === 200) {
         const { result } = res.data.data;
         setListMapel(result);
