@@ -9,11 +9,7 @@ import DetailCard from "../../component/DetailCard";
 import NoData from "../../component/NoData";
 import Pagination from "../../component/ui/pagination";
 import Icon from "../../assets/icon";
-import {
-  attendanceStatus,
-  listType,
-  worktimeType,
-} from "../../constant/attendanceType";
+import { listType, worktimeType } from "../../constant/attendanceType";
 import { useGetAllEmployeeAttendance } from "../../hooks/useGetAllAttendance";
 import { useGetAllEmployee } from "../../hooks/useGetAllEmployee";
 import { useGetDivision } from "../../hooks/useGetDivision";
@@ -310,21 +306,13 @@ const DinasLuarPage = () => {
         <table className="text-md table min-h-20">
           <thead>
             <tr className="text-center font-bold">
-              {[
-                "No",
-                "Divisi",
-                "Nama",
-                "Tanggal",
-                "Jam",
-                "Tipe",
-                "Status",
-                "Keterangan",
-                "Bukti Dinas",
-              ].map((item) => (
-                <th key={item} className={item == "Nama" ? "text-left" : ""}>
-                  {item}
-                </th>
-              ))}
+              {["No", "Tanggal", "Jam", "Tipe", "Status", "Bukti Dinas"].map(
+                (item) => (
+                  <th key={item} className={item == "Nama" ? "text-left" : ""}>
+                    {item}
+                  </th>
+                )
+              )}
             </tr>
           </thead>
           <tbody>
@@ -338,13 +326,6 @@ const DinasLuarPage = () => {
                       params.limit,
                       1
                     ),
-                  },
-                  {
-                    value: item.employee.division.name,
-                    className: "text-left",
-                  },
-                  {
-                    value: item.employee.full_name,
                   },
                   {
                     value: formattedDate(item.createdAt),
@@ -367,15 +348,6 @@ const DinasLuarPage = () => {
                   },
                   {
                     value: item.status,
-                  },
-                  {
-                    value: (
-                      <div
-                        className={`text-md badge badge-md truncate rounded-md px-3 border-none ${attendanceStatus[item.status as keyof typeof attendanceStatus]}`}
-                      >
-                        {item.status}
-                      </div>
-                    ),
                   },
                   {
                     value: (

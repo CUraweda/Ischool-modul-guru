@@ -19,7 +19,6 @@ import {
 import { PengajuanPelatihanKaryawan } from "../../../middleware/api-hrd";
 import { employeeStore } from "../../../store/Store";
 import { filterEmptyPayload } from "../../../utils/common";
-import { formatTime } from "../../../utils/date";
 
 const schema = y.object().shape({
   id: y.string().optional(),
@@ -145,10 +144,8 @@ const PengajuanPelatihan = () => {
         id: dat.id ?? "",
         title: dat.title ?? "",
         notes: dat.notes ?? "",
-        end_date: dat.end_date ? formatTime(dat.end_date, "YYYY-MM-DD") : "",
-        start_date: dat.start_date
-          ? formatTime(dat.start_date, "YYYY-MM-DD")
-          : "",
+        end_date: formatDateWithTime(dat.end_date),
+        start_date: formatDateWithTime(dat.start_date),
       });
 
       openModal(modalFormId);
@@ -162,6 +159,44 @@ const PengajuanPelatihan = () => {
       setIsGetLoading(false);
     }
   };
+
+  function formatDateWithTime(dateString: string): string {
+    const date = new Date(dateString);
+
+    const days = [
+      "Minggu",
+      "Senin",
+      "Selasa",
+      "Rabu",
+      "Kamis",
+      "Jumat",
+      "Sabtu",
+    ];
+    const months = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+
+    const dayName = days[date.getUTCDay()];
+    const day = date.getUTCDate();
+    const monthName = months[date.getUTCMonth()];
+    const year = date.getUTCFullYear();
+
+    const hours = String(date.getUTCHours()).padStart(2, "0");
+    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+
+    return `${dayName}, ${day} ${monthName} ${year} ${hours}:${minutes}`;
+  }
 
   // delete
   const [isDelLoading, setIsDelLoading] = useState(false);
@@ -310,16 +345,13 @@ const PengajuanPelatihan = () => {
                   {dat.start_date ? (
                     <div className="flex items-center flex-wrap gap-2">
                       <div className="badge whitespace-nowrap">
-                        {formatTime(dat.start_date, "dddd, DD MMMM YYYY HH:mm")}
+                        {formatDateWithTime(dat.start_date)}
                       </div>
                       {dat.end_date && (
                         <div className="flex items-center gap-2">
                           <FaArrowRight size={10} />
                           <div className="badge whitespace-nowrap">
-                            {formatTime(
-                              dat.end_date,
-                              "dddd, DD MMMM YYYY HH:mm"
-                            )}
+                            {formatDateWithTime(dat.end_date)}
                           </div>
                         </div>
                       )}
