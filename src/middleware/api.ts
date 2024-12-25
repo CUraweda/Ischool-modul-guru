@@ -77,10 +77,14 @@ const User = {
 };
 
 const Student = {
-  GetStudentByClass: (id: string | null, tahun: string | null, tanggal: string | null = null) =>
+  GetStudentByClass: (
+    id: string | null,
+    tahun: string | null,
+    tanggal: string | null = null
+  ) =>
     instance({
       method: "GET",
-      url: `/student-class/show-by-class/${id}?academic=${tahun}${tanggal ? `&date=${tanggal}` : ''}`,
+      url: `/student-class/show-by-class/${id}?academic=${tahun}${tanggal ? `&date=${tanggal}` : ""}`,
     }),
 
   GetStudentByLevel: (level: string | null, tahun: string | null) =>
@@ -1183,6 +1187,11 @@ const Lesson = {
       method: "PUT",
       url: `/lesson-plan/update/${id}`,
       data,
+    }),
+  DeleteLesson: (id: string | number) =>
+    instance({
+      method: "DELETE",
+      url: `/lesson-plan/delete/${id}`,
     }),
 };
 
