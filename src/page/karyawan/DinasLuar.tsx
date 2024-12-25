@@ -89,16 +89,16 @@ const DinasLuarPage = () => {
     if (["date", "limit", "page", "search"].includes(category)) {
       setBaseFilter((prev) => ({ ...prev, [category]: value }));
     } else if (["type", "status", "division_id"].includes(category)) {
-      const values = [...(baseFilter[category] as Array<string>), value];
+      const currentValues = Array.isArray(baseFilter[category])
+        ? (baseFilter[category] as string[])
+        : [];
       setBaseFilter((prev) => {
-        const currentValues = Array.isArray(prev[category])
-          ? prev[category]
-          : [];
+        const newValues = currentValues.includes(value)
+          ? currentValues.filter((item) => item !== value)
+          : [...currentValues, value];
         return {
           ...prev,
-          [category]: currentValues.includes(value)
-            ? currentValues.filter((item) => item !== value)
-            : values,
+          [category]: newValues,
         };
       });
     }
@@ -358,8 +358,9 @@ const DinasLuarPage = () => {
                         <TbFaceId className="text-xl" />
                       </button>
                     ),
+                    className: "text-center", // Tambahkan className jika diperlukan
                   },
-                ].map(({ value, className }, index) => (
+                ].map(({ value, className = "" }, index) => (
                   <td key={`${index}-row`} className={className}>
                     {value}
                   </td>
