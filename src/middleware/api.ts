@@ -77,10 +77,10 @@ const User = {
 };
 
 const Student = {
-  GetStudentByClass: (id: string | null, tahun: string | null) =>
+  GetStudentByClass: (id: string | null, tahun: string | null, tanggal: string | null = null) =>
     instance({
       method: "GET",
-      url: `/student-class/show-by-class/${id}?academic=${tahun}`,
+      url: `/student-class/show-by-class/${id}?academic=${tahun}${tanggal ? `&date=${tanggal}` : ''}`,
     }),
 
   GetStudentByLevel: (level: string | null, tahun: string | null) =>
