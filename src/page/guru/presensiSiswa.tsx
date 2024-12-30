@@ -55,7 +55,7 @@ const PresensiSiswa = () => {
     getStudent();
     getPresensiData();
     setSelectedStudents([]);
-  }, [filter, academicYear]);
+  }, [filter, academicYear, date]);
 
   const formattedDate = new Date(date).toLocaleDateString("id-ID", {
     weekday: "long",
@@ -65,6 +65,7 @@ const PresensiSiswa = () => {
   });
 
   const showModal = (props: string) => {
+    getStudent()
     let modalElement = document.getElementById(props) as HTMLDialogElement;
     if (modalElement) {
       modalElement.showModal();
@@ -106,7 +107,8 @@ const PresensiSiswa = () => {
     try {
       const response = await Student.GetStudentByClass(
         filter.classId,
-        academicYear
+        academicYear,
+        date
       );
       setSiswa(response.data.data);
     } catch (error) {
@@ -133,7 +135,7 @@ const PresensiSiswa = () => {
           const createPromises = selectedStudents.map((item: any) => {
             const dataRest = {
               student_class_id: item.id,
-              att_date: new Date(date).setHours(0, 0, 0, 0),
+              att_date: new Date(date),
               remark: item.transportasi ? item.transportasi : "🚗antar jemput",
               status: item.presensi ? item.presensi : "Hadir",
               semester: filter.semester ? filter.semester : "1",

@@ -1,13 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { instance } from "../middleware/api-hrd";
 import { ApiResponse, DataPagination, SearchParams } from "../types/common";
 import { Jobdesk } from "../types/jobdesk";
-import { instance } from "../middleware/api-hrd";
 import { filterParams } from "../utils/common";
-import { employeeStore } from "../store/Store";
 
-export const getAllJobdesk = async (
-  params?: SearchParams & { employee_id: number }
-) => {
+export const getAllJobdesk = async (params?: Record<string, unknown>) => {
   const data = await instance
     .get("/employee-jobdesk", {
       params: filterParams(params),
@@ -16,10 +13,11 @@ export const getAllJobdesk = async (
   return data;
 };
 
-export const useGetAllJobdesk = (searchParams?: SearchParams) => {
-  const { employee } = employeeStore();
+export const useGetAllJobdesk = (
+  params?: SearchParams & Record<string, unknown>
+) => {
   return useQuery<ApiResponse<DataPagination<Jobdesk>>, Error>({
-    queryKey: ["getAllJobdesk", searchParams],
-    queryFn: () => getAllJobdesk({ ...searchParams, employee_id: employee.id }),
+    queryKey: ["getAllJobdesk", JSON.stringify(params)],
+    queryFn: () => getAllJobdesk({ ...params }),
   });
 };

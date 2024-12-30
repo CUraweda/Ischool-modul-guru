@@ -21,6 +21,7 @@ import {
 import { CutiIzin } from "../../middleware/api-hrd";
 import { employeeStore } from "../../store/Store";
 import { formatTime } from "../../utils/date";
+import { mimeTypes } from "../../constant/fileType";
 const types = ["CUTI", "IZIN"];
 const statuses = ["Menunggu", "Disetujui", "Ditolak"];
 const evidenceExts = ["pdf", "jpeg", "jpg", "png"];
@@ -45,7 +46,7 @@ const schema = Yup.object().shape({
   evidence: Yup.mixed<File>()
     .when("id", {
       is: (id: any) => !!id,
-      then: () => Yup.mixed<File>().optional()
+      then: () => Yup.mixed<File>().optional(),
       // ,otherwise: () =>
       //   Yup.mixed<File>().required("Bukti file harus disertakan"),
     })
@@ -230,13 +231,16 @@ const DaftarCutiIzin = () => {
       });
       if (dat.file_path) {
         setIsFilePathExist(true);
-        const typePath = dat.file_path.split(".");
-        setFileExtensionEdit(typePath);
-        console.log(typePath);
+        const typePath = dat?.file_path?.split(".");
+        const ext = typePath ? typePath[typePath.length - 1].toLowerCase() : "";
+        setFileExtensionEdit(ext);
 
         try {
           const resEvidence = await CutiIzin.downloadFile(dat.file_path);
-          const blob = new Blob([resEvidence.data]);
+          const mimeType =
+            mimeTypes?.[ext as keyof typeof mimeTypes] ||
+            "application/octet-stream";
+          const blob = new Blob([resEvidence.data], { type: mimeType });
           setEvidencePreview(URL.createObjectURL(blob));
         } catch {}
       }
@@ -421,6 +425,7 @@ const DaftarCutiIzin = () => {
             onChange={(e) => {
               if (e.target.files) {
                 form.setFieldValue("evidence", e.target.files[0]);
+                setFileExtensionEdit(e.target.files[0].type.split("/")[1]);
               }
             }}
             hint={

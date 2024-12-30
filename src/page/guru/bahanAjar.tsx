@@ -1,6 +1,6 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
-import { BsDownload, BsPencilFill } from "react-icons/bs";
+import { BsDownload, BsPencilFill, BsTrash } from "react-icons/bs";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
 import { FileRaporSiswa, Lesson, Mapel, Task } from "../../middleware/api";
@@ -124,6 +124,22 @@ const BahanAjar: React.FC<{}> = () => {
           timer: 1500,
         });
       }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteDataLesson = async (id: number) => {
+    try {
+      await Lesson.DeleteLesson(id);
+      getLesson();
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Data berhasil dihapus",
+        showConfirmButton: true,
+        timer: 1500,
+      });
     } catch (error) {
       console.error(error);
     }
@@ -392,6 +408,12 @@ const BahanAjar: React.FC<{}> = () => {
                         onClick={() => DownloadFile(item.file_path, true)}
                       >
                         <BsDownload />
+                      </button>
+                      <button
+                        className="btn bg-blue-400 text-xl font-bold text-white"
+                        onClick={() => deleteDataLesson(item.id)}
+                      >
+                        <BsTrash />
                       </button>
                     </td>
                   </tr>
