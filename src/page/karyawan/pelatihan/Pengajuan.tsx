@@ -92,6 +92,7 @@ const PengajuanPelatihan = () => {
     initialValues: {
       id: "",
       title: "",
+      location: "",
       notes: "",
       start_date: "",
       end_date: "",
@@ -143,6 +144,7 @@ const PengajuanPelatihan = () => {
       form.setValues({
         id: dat.id ?? "",
         title: dat.title ?? "",
+        location: dat.location ?? "",
         notes: dat.notes ?? "",
         end_date: formatDateWithTime(dat.end_date),
         start_date: formatDateWithTime(dat.start_date),
@@ -248,6 +250,14 @@ const PengajuanPelatihan = () => {
             value={form.values.title}
             onChange={form.handleChange}
             errorMessage={form.errors.title}
+          />
+
+          <Input
+            label="Lokasi"
+            name="location"
+            value={form.values.location}
+            onChange={form.handleChange}
+            errorMessage={form.errors.location}
           />
 
           <Textarea
