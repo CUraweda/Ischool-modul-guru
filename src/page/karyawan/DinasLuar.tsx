@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
 import { FaFileExport } from "react-icons/fa6";
 import { GrStatusUnknown } from "react-icons/gr";
-import { MdPeopleAlt } from "react-icons/md";
+// import { MdPeopleAlt } from "react-icons/md";
 import { TbFaceId } from "react-icons/tb";
 import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import DetailCard from "../../component/DetailCard";
 import NoData from "../../component/NoData";
 import Pagination from "../../component/ui/pagination";
-import Search from "../../component/ui/search";
-import {
-  attendanceStatus,
-  listType,
-  worktimeType,
-} from "../../constant/attendanceType";
+import Icon from "../../assets/icon";
+import { listType, worktimeType } from "../../constant/attendanceType";
 import { useGetAllEmployeeAttendance } from "../../hooks/useGetAllAttendance";
 import { useGetAllEmployee } from "../../hooks/useGetAllEmployee";
 import { useGetDivision } from "../../hooks/useGetDivision";
@@ -48,19 +44,19 @@ const DinasLuarPage = () => {
     date: getSearchParam("date"),
     page: +getSearchParam("page") || 1,
     limit: +getSearchParam("limit") || 10,
-    search: getSearchParam("search"),
+    search: getSearchParam("search") || "",
   };
 
   const [baseFilter, setBaseFilter] = useState<BaseFilter>(params);
   const [selectedItem, setSelectedItem] = useState<Attendance | undefined>();
-  const [selectedItemEmployee, setSelectedItemEmployee] = useState<string[]>(
-    []
-  );
+  const [search, setSearch] = useState(params.search); // const [selectedItemEmployee, setSelectedItemEmployee] = useState<string[]>(
+  //   []
+  // );
 
   const {
-    data: dataEmployee,
+    // data: dataEmployee,
     error: errorGetEmployee,
-    refetch: refetchEmployee,
+    // refetch: refetchEmployee,
   } = useGetAllEmployee<{ limit: number }>({
     limit: 10,
   });
@@ -84,28 +80,36 @@ const DinasLuarPage = () => {
   const { data: employeeAttendance } = useGetAllEmployeeAttendance(
     filterParams({
       ...baseFilter,
-      search: getSearchParam("search"),
+      search: search.trim(), // Gunakan nilai search
       page: params.page! - 1,
     })
   );
 
   const updateBaseFilter = (category: keyof BaseFilter, value: string) => {
-    if (["date", "limit", "page"].includes(category)) {
+    if (["date", "limit", "page", "search"].includes(category)) {
       setBaseFilter((prev) => ({ ...prev, [category]: value }));
     } else if (["type", "status", "division_id"].includes(category)) {
-      const values = [...(baseFilter[category] as Array<string>), value];
+      const currentValues = Array.isArray(baseFilter[category])
+        ? (baseFilter[category] as string[])
+        : [];
       setBaseFilter((prev) => {
-        const currentValues = Array.isArray(prev[category])
-          ? prev[category]
-          : [];
+        const newValues = currentValues.includes(value)
+          ? currentValues.filter((item) => item !== value)
+          : [...currentValues, value];
         return {
           ...prev,
-          [category]: currentValues.includes(value)
-            ? currentValues.filter((item) => item !== value)
-            : values,
+          [category]: newValues,
         };
       });
     }
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearch(value);
+
+    // Perbarui parameter API
+    updateBaseFilter("search", value);
   };
 
   const handleCheckType = (value: string, category: keyof BaseFilter) =>
@@ -114,13 +118,13 @@ const DinasLuarPage = () => {
   const handleCheckDivision = (id: number) =>
     updateBaseFilter("division_id", id.toString());
 
-  const handleCheckboxChange = (employeeName: string) => {
-    setSelectedItemEmployee((prevSelected) =>
-      prevSelected.includes(employeeName)
-        ? prevSelected.filter((name) => name !== employeeName)
-        : [...prevSelected, employeeName]
-    );
-  };
+  // const handleCheckboxChange = (employeeName: string) => {
+  //   setSelectedItemEmployee((prevSelected) =>
+  //     prevSelected.includes(employeeName)
+  //       ? prevSelected.filter((name) => name !== employeeName)
+  //       : [...prevSelected, employeeName]
+  //   );
+  // };
 
   const totalPages = minimumPaginationPage(
     employeeAttendance?.data.totalPage ?? 0,
@@ -159,7 +163,16 @@ const DinasLuarPage = () => {
     <div className="h-screen w-full p-5">
       <div className="w-full flex-wrap justify-between items-center md:flex">
         <h3 className="text-lg font-bold">Dinas Luar</h3>
-        <Search />
+        <label className="h-8 text-md input input-md input-bordered flex items-center gap-2 md:w-3/12">
+          <Icon name="search" />
+          <input
+            type="text"
+            className="grow"
+            placeholder="Search"
+            value={search}
+            onChange={handleSearchChange} // Tambahkan onChange handler
+          />
+        </label>
       </div>
       <div className="my-5 flex-grow border-t border-gray-400 drop-shadow-sm"></div>
       <div className="flex w-full justify-between">
@@ -178,7 +191,7 @@ const DinasLuarPage = () => {
             <div className="pl-1">{employeeAttendance?.data.totalRows}</div>
             Export
           </button>
-          <div className="dropdown shrink-0">
+          {/* <div className="dropdown shrink-0">
             <div
               onClick={() => refetchEmployee()}
               tabIndex={0}
@@ -209,7 +222,7 @@ const DinasLuarPage = () => {
                 ))}
               </div>
             </ul>
-          </div>
+          </div> */}
 
           <div className="my-auto flex gap-4">
             <div className="dropdown">
@@ -293,21 +306,13 @@ const DinasLuarPage = () => {
         <table className="text-md table min-h-20">
           <thead>
             <tr className="text-center font-bold">
-              {[
-                "No",
-                "Divisi",
-                "Nama",
-                "Tanggal",
-                "Jam",
-                "Tipe",
-                "Status",
-                "Keterangan",
-                "Bukti Dinas",
-              ].map((item) => (
-                <th key={item} className={item == "Nama" ? "text-left" : ""}>
-                  {item}
-                </th>
-              ))}
+              {["No", "Tanggal", "Jam", "Tipe", "Status", "Bukti Dinas"].map(
+                (item) => (
+                  <th key={item} className={item == "Nama" ? "text-left" : ""}>
+                    {item}
+                  </th>
+                )
+              )}
             </tr>
           </thead>
           <tbody>
@@ -321,13 +326,6 @@ const DinasLuarPage = () => {
                       params.limit,
                       1
                     ),
-                  },
-                  {
-                    value: item.employee.division.name,
-                    className: "text-left",
-                  },
-                  {
-                    value: item.employee.full_name,
                   },
                   {
                     value: formattedDate(item.createdAt),
@@ -353,15 +351,6 @@ const DinasLuarPage = () => {
                   },
                   {
                     value: (
-                      <div
-                        className={`text-md badge badge-md truncate rounded-md px-3 border-none ${attendanceStatus[item.status as keyof typeof attendanceStatus]}`}
-                      >
-                        {item.status}
-                      </div>
-                    ),
-                  },
-                  {
-                    value: (
                       <button
                         className="btn btn-ghost"
                         onClick={() => handleOpenDetailModal(item)}
@@ -369,8 +358,9 @@ const DinasLuarPage = () => {
                         <TbFaceId className="text-xl" />
                       </button>
                     ),
+                    className: "text-center", // Tambahkan className jika diperlukan
                   },
-                ].map(({ value, className }, index) => (
+                ].map(({ value, className = "" }, index) => (
                   <td key={`${index}-row`} className={className}>
                     {value}
                   </td>
