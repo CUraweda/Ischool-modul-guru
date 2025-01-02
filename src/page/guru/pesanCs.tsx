@@ -11,6 +11,7 @@ const PesanCs = () => {
   const [financialChats, setFinancialChats] = useState<any[]>([]);
   const [teacherChats, setTeacherChats] = useState<any[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
+  const [search, setSearch] = useState("");
   const [currentChatUser, setCurrentChatUser] = useState<string>(
     () => sessionStorage.getItem("currentChatUser") || ""
   );
@@ -139,28 +140,47 @@ const PesanCs = () => {
         <div className="flex w-full">
           <div className="w-1/4 shadow-md min-h-[650px] z-10 glass">
             <div className="w-full p-5 text-3xl font-bold bg-white">Chats</div>
-            <div className="overflow-y-auto h-[36rem]">
-              {userChats.map((item) => (
-                <div
-                  key={item.id}
-                  className="w-full p-3 bg-blue-300 flex gap-2 cursor-pointer"
-                  onClick={() =>
-                    handleUserClick(item.withUser.id, item.withUser.full_name)
-                  }
-                >
-                  <div className="chat-image avatar">
-                    <div className="w-10 rounded-full">
-                      <img
-                        alt="Avatar"
-                        src="https://thinksport.com.au/wp-content/uploads/2020/01/avatar-.jpg"
-                      />
+
+            <div className="relative overflow-y-auto max-h-[36rem]">
+              <div className="sticky top-0 bg-white z-10">
+                <input
+                  type="search"
+                  placeholder="Cari"
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full px-3 outline-none focus:outline-none py-2"
+                />
+              </div>
+              {userChats
+                .filter((item) =>
+                  !search
+                    ? true
+                    : item.withUser.full_name
+                        .toLowerCase()
+                        .includes(search.toLowerCase())
+                )
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className={`w-full p-3 ${currentChatUser === item.withUser.full_name ? "bg-blue-300" : "bg-blue-50"} flex items-center gap-2 cursor-pointer`}
+                    onClick={() =>
+                      handleUserClick(item.withUser.id, item.withUser.full_name)
+                    }
+                  >
+                    <div className="chat-image avatar">
+                      <div className="w-10 rounded-full">
+                        <img
+                          alt="Avatar"
+                          src="https://thinksport.com.au/wp-content/uploads/2020/01/avatar-.jpg"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col w-full">
+                      <span className="font-bold">
+                        {item.withUser.full_name}
+                      </span>
                     </div>
                   </div>
-                  <div className="flex flex-col w-full">
-                    <span className="font-bold">{item.withUser.full_name}</span>
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
             <div className="toast">
               <div className="dropdown dropdown-top dropdown-end">
