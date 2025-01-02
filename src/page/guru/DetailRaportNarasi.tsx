@@ -772,9 +772,9 @@ const RaportNarasi = () => {
                   </th>
                 </tr>
                 <tr>
-                  <th className="text-center">Mandiri</th>
-                  <th className="text-center">Berkembang</th>
                   <th className="text-center">Membutuhkan Banyak Latihan</th>
+                  <th className="text-center">Berkembang</th>
+                  <th className="text-center">Mandiri</th>
                 </tr>
               </thead>
               <tbody>
