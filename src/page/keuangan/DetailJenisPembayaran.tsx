@@ -475,75 +475,82 @@ const DetailJenisPembayaran = () => {
                 </tr>
               </thead>
               <tbody>
-                {dataList.map((dat, i) => (
-                  <tr key={i}>
-                    <th>{i + 1}</th>
-                    <td>
-                      <p className="text-lg line-clamp-2">
-                        {dat.student?.full_name ?? "-"}
-                      </p>
-                    </td>
-                    <td>{dat.student?.nis ?? "-"}</td>
-                    <td>{dat.studentpaymentbill?.name ?? "-"}</td>
-                    <td>
-                      <p
-                        className={
-                          "font-extrabold whitespace-nowrap " +
-                          (dat.status.toLowerCase() == "lunas"
-                            ? "text-success"
-                            : "") +
-                          (dat.status.toLowerCase() == "belum lunas"
-                            ? "text-error"
-                            : "")
-                        }
-                      >
-                        {dat.status?.toUpperCase() ?? "-"}
-                      </p>
-                    </td>
-                    <td>
-                      <button
-                        disabled={dat.evidence_path == null}
-                        className="btn btn-ghost btn-sm text-2xl "
-                        onClick={() => setEvidenceInModal(dat.evidence_path)}
-                      >
-                        <MdInsertPhoto />
-                      </button>
-                    </td>
-                    <td className="whitespace-nowrap">
-                      {dat.paidoff_at
-                        ? formatTime(dat.paidoff_at, "DD MMMM YYYY HH:mm")
-                        : "-"}
-                    </td>
+                {dataList
+                  .sort(
+                    (a, b) => new Date(b.paidoff_at).getTime() - new Date(a.paidoff_at).getTime()
+                  )
+                  .map((dat, i) => (
+                    <tr key={i}>
+                      <th>{i + 1}</th>
+                      <td>
+                        <p className="text-lg line-clamp-2">
+                          {dat.student?.full_name ?? "-"}
+                        </p>
+                      </td>
+                      <td>{dat.student?.nis ?? "-"}</td>
+                      <td>{dat.studentpaymentbill?.name ?? "-"}</td>
+                      <td>
+                        <p
+                          className={
+                            "font-extrabold whitespace-nowrap " +
+                            (dat.status.toLowerCase() == "lunas"
+                              ? "text-success"
+                              : "") +
+                            (dat.status.toLowerCase() == "belum lunas"
+                              ? "text-error"
+                              : "")
+                          }
+                        >
+                          {dat.status?.toUpperCase() ?? "-"}
+                        </p>
+                      </td>
+                      <td>
+                        <button
+                          disabled={dat.evidence_path == null}
+                          className="btn btn-ghost btn-sm text-2xl "
+                          onClick={() => setEvidenceInModal(dat.evidence_path)}
+                        >
+                          <MdInsertPhoto />
+                        </button>
+                      </td>
+                      <td className="whitespace-nowrap">
+                        {dat.paidoff_at
+                          ? formatTime(dat.paidoff_at, "DD MMMM YYYY HH:mm")
+                          : "-"}
+                      </td>
 
-                    <td>
-                      <div className="join">
-                        <button
-                          className="btn btn-ghost btn-sm join-item bg-success text-white tooltip"
-                          data-tip="Terima"
-                          disabled={
-                            dat.status?.toLowerCase() == "lunas" ||
-                            loadingConfirm
-                          }
-                          onClick={() =>
-                            handleConfirm(dat.id, dat.student?.full_name ?? "")
-                          }
-                        >
-                          <FaCheck />
-                        </button>
-                        <button
-                          className="btn btn-ghost btn-sm join-item bg-red-500 text-white tooltip"
-                          data-tip="Hapus"
-                          disabled={loadingDel}
-                          onClick={() =>
-                            handleDelete(dat.id, dat.student?.full_name ?? "")
-                          }
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      <td>
+                        <div className="join">
+                          <button
+                            className="btn btn-ghost btn-sm join-item bg-success text-white tooltip"
+                            data-tip="Terima"
+                            disabled={
+                              dat.status?.toLowerCase() == "lunas" ||
+                              loadingConfirm
+                            }
+                            onClick={() =>
+                              handleConfirm(
+                                dat.id,
+                                dat.student?.full_name ?? ""
+                              )
+                            }
+                          >
+                            <FaCheck />
+                          </button>
+                          <button
+                            className="btn btn-ghost btn-sm join-item bg-red-500 text-white tooltip"
+                            data-tip="Hapus"
+                            disabled={loadingDel}
+                            onClick={() =>
+                              handleDelete(dat.id, dat.student?.full_name ?? "")
+                            }
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
