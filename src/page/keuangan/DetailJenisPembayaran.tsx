@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { FaCheck, FaSearch, FaTrash } from "react-icons/fa";
 import { MdInsertPhoto } from "react-icons/md";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
 import { Input, Select } from "../../component/Input";
@@ -33,6 +33,8 @@ const DetailJenisPembayaran = () => {
     { id: billId } = useParams(),
     modalFormTambah = "form-tambah-siswa",
     modalBuktiBayar = "form-bukti-bayar";
+  const [searchParams] = useSearchParams();
+  const evidencePath = searchParams.get("evidence_path");
 
   // data state
   const [classes, setClasses] = useState<any[]>([]);
@@ -96,6 +98,12 @@ const DetailJenisPembayaran = () => {
   const [studentsToAdd, setStudentsToAdd] = useState([]);
   const [studentsToAddShow, setStudentsToAddShow] = useState([]);
   const [classesInForm, setClassesInForm] = useState([]);
+
+  useEffect(() => {
+    if (evidencePath) {
+      setEvidenceInModal(evidencePath);
+    }
+  }, [evidencePath]);
 
   const tambahSiswaForm = useFormik({
     initialValues: {
@@ -477,7 +485,9 @@ const DetailJenisPembayaran = () => {
               <tbody>
                 {dataList
                   .sort(
-                    (a, b) => new Date(b.paidoff_at).getTime() - new Date(a.paidoff_at).getTime()
+                    (a, b) =>
+                      new Date(b.paidoff_at).getTime() -
+                      new Date(a.paidoff_at).getTime()
                   )
                   .map((dat, i) => (
                     <tr key={i}>
