@@ -12,6 +12,7 @@ import {
 } from "../../component/PaginationControl";
 import { formatTime } from "../../utils/date";
 import { Input, Select, Textarea } from "../../component/Input";
+import { extractNumbers } from "../../utils/common";
 
 const fileExts = ["pdf"];
 
@@ -19,7 +20,7 @@ const validationSchema = Yup.object({
   startDate: Yup.string().required("Tanggal mulai tidak boleh kosong"),
   endDate: Yup.string().required("Tanggal selesai tidak boleh kosong"),
   anouncement: Yup.string().required("Pengumuman tidak boleh kosong"),
-  class_id: Yup.string().optional(),
+  class_ids: Yup.string().optional(),
   file: Yup.mixed<File>()
     .nullable()
     .optional()
@@ -46,17 +47,19 @@ const PengumumanSiswa = () => {
 
   const formik = useFormik({
     initialValues: {
-      startDate: "",
-      endDate: "",
+      startDate: formatTime(new Date(), "YYYY-MM-DD"),
+      endDate: formatTime(new Date(), "YYYY-MM-DD"),
       anouncement: "",
-      class_id: "",
+      class_ids: "",
       file: "",
       filePath: "",
     },
     validationSchema,
+    validateOnChange: false,
+    validateOnMount: false,
     onSubmit: async (values, { setSubmitting, setFieldError }) => {
-      if (role == "6" && !values.class_id) {
-        setFieldError("class_id", "Kelas tidak boleh kosong");
+      if (role == "6" && !values.class_ids) {
+        setFieldError("class_ids", "Kelas tidak boleh kosong");
         return;
       }
 
@@ -64,7 +67,7 @@ const PengumumanSiswa = () => {
       formData.append("date_start", values.startDate);
       formData.append("date_end", values.endDate);
       formData.append("announcement_desc", values.anouncement);
-      if (values.class_id) formData.append("class_id", values.class_id);
+      if (values.class_ids) formData.append("class_ids", values.class_ids);
       if (values.file) formData.append("file", values.file);
 
       setSubmitting(true);
@@ -111,7 +114,7 @@ const PengumumanSiswa = () => {
     page: 0,
     limit: 10,
     search: "",
-    classId: "",
+    classIds: "",
     startDate: "",
     endDate: "",
   });
@@ -139,7 +142,7 @@ const PengumumanSiswa = () => {
     try {
       const response = await Pengumuman.getAllPengumuman(
         filter.search,
-        filter.classId,
+        filter.classIds,
         filter.startDate,
         filter.endDate,
         filter.page,
@@ -170,7 +173,7 @@ const PengumumanSiswa = () => {
           : "",
         endDate: data.date_end ? formatTime(data.date_end, "YYYY-MM-DD") : "",
         anouncement: data.announcement_desc ?? "",
-        class_id: data.class_id ?? "",
+        class_ids: String(extractNumbers(data.class_ids)) ?? "",
         file: "",
         filePath: "",
       });
@@ -254,8 +257,8 @@ const PengumumanSiswa = () => {
           />
         </div>
         <select
-          value={filter.classId}
-          onChange={(e) => handleFilter("classId", e.target.value)}
+          value={filter.classIds}
+          onChange={(e) => handleFilter("classIds", e.target.value)}
           className="select select-bordered w-32"
         >
           <option value={""}>Pilih Kelas</option>
@@ -306,8 +309,9 @@ const PengumumanSiswa = () => {
                 </td>
                 <td>
                   {classes.find(
-                    (classItem) => classItem.id === item.class_ids
-                  )?.class_name ?? "-"}
+                    (classItem) =>
+                      classItem.id === extractNumbers(item.class_ids)
+                  )?.class_name ?? "Semua Kelas"}
                 </td>
 
                 <td>
@@ -370,14 +374,14 @@ const PengumumanSiswa = () => {
             <Select
               label="Kelas"
               placeholder="Pilih kelas"
-              name="class_id"
+              name="class_ids"
               keyValue="id"
               displayBuilder={(op) => `${op.level} - ${op.class_name}`}
               options={classes}
-              value={formik.values.class_id}
+              value={formik.values.class_ids}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              errorMessage={formik.errors.class_id}
+              errorMessage={formik.errors.class_ids}
             />
 
             <Textarea

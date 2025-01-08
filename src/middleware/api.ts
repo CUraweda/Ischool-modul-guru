@@ -683,7 +683,7 @@ const Pengumuman = {
   ) =>
     instance({
       method: "GET",
-      url: `/announcement?search_query=${search}&class_id=${classId}&start_date=${start}&end_date=${end}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
+      url: `/announcement?search_query=${search}&class_ids=${classId}&start_date=${start}&end_date=${end}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
     }),
   getByIdPengumuman: (id: string | null) =>
     instance({
