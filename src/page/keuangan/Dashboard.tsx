@@ -256,7 +256,7 @@ const Dashboard = () => {
               <div className="bg-base-100 p-3 rounded-lg border">
                 <h4 className="text-lg font-bold mb-6">Pembayaran Terbaru</h4>
 
-                {recentPaidOff.map((item, i) => (
+                {recentPaidOff?.map((item, i) => (
                   <div className="px-3" key={i}>
                     <div className="flex justify-between items-center">
                       <div>
@@ -268,7 +268,7 @@ const Dashboard = () => {
                             {item.studentpaymentbill?.name ?? "-"}
                           </p>
                           <Link
-                            to={`/keuangan/jenis-pembayaran/${item.studentpaymentbill?.id ?? ""}`}
+                            to={`/keuangan/jenis-pembayaran/${item.studentpaymentbill?.id ?? ""}?evidence_path=${item.evidence_path}`}
                             className="btn btn-link px-0 btn-xs relative -top-1"
                           >
                             Lihat
