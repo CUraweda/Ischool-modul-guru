@@ -146,3 +146,14 @@ export const filterEmptyPayload = (payload: any): any => {
 
   return newPayload;
 };
+
+export function toRupiah(amount: string) {
+  const temp = parseInt(amount, 10);
+
+  if (isNaN(temp)) {
+    return 'Rp. 0';
+  }
+
+  const formattedAmount = new Intl.NumberFormat("id-ID").format(temp);
+  return `Rp. ${formattedAmount}`;
+}

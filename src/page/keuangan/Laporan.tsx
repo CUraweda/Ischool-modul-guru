@@ -13,7 +13,7 @@ import {
   Student,
   TagihanSiswa,
 } from "../../middleware/api";
-import { getAcademicYears } from "../../utils/common";
+import { getAcademicYears, toRupiah } from "../../utils/common";
 import { formatTime } from "../../utils/date";
 
 const Laporan = () => {
@@ -209,6 +209,7 @@ const Laporan = () => {
                   <th>NIS</th>
                   <th>Pembayaran</th>
                   <th>Status</th>
+                  <th>Total</th>
                   <th>Tanggal Bayar</th>
                 </tr>
               </thead>
@@ -237,6 +238,12 @@ const Laporan = () => {
                       >
                         {dat.status?.toUpperCase() ?? "-"}
                       </p>
+                    </td>
+                    <td>
+                      {toRupiah(
+                        paymentCats?.find((item) => item.id == dat.student_id)
+                          ?.total ?? "-"
+                      )}
                     </td>
                     <td className="whitespace-nowrap">
                       {dat.paidoff_at
