@@ -5,6 +5,7 @@ import { Auth } from "../middleware/api";
 import { instance } from "../middleware/api-hrd";
 import { employeeStore } from "../store/Store";
 import Swal from "sweetalert2";
+import { closeModal } from "../component/modal";
 
 interface FaceDetectionProps {
   onSuccess: (attendanceData: AttendanceData) => void;
@@ -131,6 +132,7 @@ const FaceDetection: React.FC<FaceDetectionProps> = ({
   const sendToBackend = async (dataUser: any, faceDescriptor: Float32Array) => {
     if (isSending) return; // prevent multiple requests
     isSending = true;
+    closeModal("modal-absen");
 
     try {
       const response = await instance.post("/face/detect", {
@@ -139,41 +141,57 @@ const FaceDetection: React.FC<FaceDetectionProps> = ({
       });
 
       if (response.status === 200 || response.status === 201) {
-        let message = "Wajah Cocok."
+        let message = "Wajah Cocok.";
         try {
           const attendanceResponse = await instance.post(
             "/employee-attendance/attend"
           );
 
           if (attendanceResponse.status === 201) {
-            message = `${message} Kehadiran berhasil dicatat` 
+            message = `${message} Kehadiran berhasil dicatat`;
             onSuccess(attendanceResponse.data.data);
+            Swal.fire({
+              title: "Berhasil!",
+              text: message,
+              icon: "success",
+              timer: 2000,
+              showConfirmButton: false
+            });
           } else if (attendanceResponse.status === 200) {
-            message = `${message} Anda Sudah Melakukan Absen Hari Ini`
+            message = `${message} Anda Sudah Melakukan Absen Hari Ini`;
+            Swal.fire({
+              title: "Gagal!",
+              text: message,
+              icon: "warning",
+              timer: 2000,
+              showConfirmButton: false,
+            });
             reAbsen();
           } else {
-            message = `${message} Gagal mencatat kehadiran`
+            message = `${message} Gagal mencatat kehadiran`;
+            Swal.fire({
+              title: "Gagal!",
+              text: message,
+              icon: "warning",
+              timer: 2000,
+              showConfirmButton: false,
+            });
             isSending = false; // retry
           }
-
-          Swal.fire({
-            title: "Berhasil!",
-            text: message,
-            icon: "success",
-          });
         } catch (attendanceError) {
           console.error("Error sending attendance data:", attendanceError);
           isSending = false; // retry
         }
       } else {
         Swal.fire({
-          title: "Berhasil!",
+          title: "Gagal!",
           text: "Wajah Tidak Cocok",
           icon: "warning",
+          timer: 2000,
+          showConfirmButton: false,
         });
         isSending = false; // retry
       }
-      console.log("Backend response:", response.data);
     } catch (error) {
       console.error("Error sending data to backend:", error);
       isSending = false; // retry
