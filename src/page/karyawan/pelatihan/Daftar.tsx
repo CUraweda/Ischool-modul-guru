@@ -234,7 +234,7 @@ const DaftarPelatihan = () => {
         <div>
           <Select
             placeholder="Status"
-            options={["Tuntas", "Proses pelatihan"]}
+            options={["Selesai", "Sedang Berjalan"]}
             value={filter.status}
             onChange={(e) => handleFilter("status", e.target.value)}
           />
