@@ -391,11 +391,10 @@ const DaftarCutiIzin = () => {
 
           {evidencePreview ? (
             fileExtensionEdit === "pdf" ? (
-              <iframe
+              <embed
                 src={evidencePreview}
-                frameBorder="0"
-                width="100%"
-                height="300px"
+                type="application/pdf"
+                className="h-[200px] w-full"
               />
             ) : (
               <img
