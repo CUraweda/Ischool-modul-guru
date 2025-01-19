@@ -155,8 +155,9 @@ const FaceDetection: React.FC<FaceDetectionProps> = ({
               text: message,
               icon: "success",
               timer: 2000,
-              showConfirmButton: false
+              showConfirmButton: false,
             });
+            window.location.reload();
           } else if (attendanceResponse.status === 200) {
             message = `${message} Anda Sudah Melakukan Absen Hari Ini`;
             Swal.fire({

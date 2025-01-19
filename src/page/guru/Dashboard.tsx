@@ -25,6 +25,7 @@ import { formatTime } from "../../utils/date";
 const Dashboard: React.FC = () => {
   const currentDate = moment();
   const { employee, formTeachers, setEmployeeSignature } = employeeStore();
+  const [dinasLuar, setDinasLuar] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const [inAreas, setInAreas] = useState<boolean>(false);
@@ -53,6 +54,9 @@ const Dashboard: React.FC = () => {
       .then(function (stream) {
         setCamera(true);
         setCameraStream(stream);
+        if (dinasLuar == true) {
+          setInAreas(true);
+        }
         console.log("Izin kamera telah diberikan");
       })
       .catch(function (err) {
@@ -192,6 +196,7 @@ const Dashboard: React.FC = () => {
       setDataUser(res.data.data);
       previewProfile(res.data.data.avatar);
       setEmployeeSignature(res.data.data.employee.employeesignatures);
+      setDinasLuar(res.data.data.employee.is_outstation);
     } catch (error) {
       console.error(error);
     }
@@ -488,13 +493,20 @@ const Dashboard: React.FC = () => {
                 ) : (
                   <img
                     src="https://png.pngtree.com/png-clipart/20230917/original/pngtree-flat-vector-illustration-of-photo-camera-icon-and-no-image-available-png-image_12324435.png"
-                    alt=""
+                    alt="No image available"
                   />
                 )}
-                <MapWithTwoRadiusPins
-                  onAreas={handleInAreas}
-                  notOnAreas={handleIsntAreas}
-                />
+                {dinasLuar === false ? (
+                  <MapWithTwoRadiusPins
+                    onAreas={handleInAreas}
+                    notOnAreas={handleIsntAreas}
+                  />
+                ) : (
+                  <div>
+                    Izin lokasi tidak akan dikalkulasikan dikarenakan karyawan
+                    sedang dinas luar.
+                  </div>
+                )}
               </div>
             </>
           ) : (
@@ -508,7 +520,7 @@ const Dashboard: React.FC = () => {
               </div>
               <img
                 src="https://png.pngtree.com/png-clipart/20230917/original/pngtree-flat-vector-illustration-of-photo-camera-icon-and-no-image-available-png-image_12324435.png"
-                alt=""
+                alt="No image available"
               />
             </div>
           )}
