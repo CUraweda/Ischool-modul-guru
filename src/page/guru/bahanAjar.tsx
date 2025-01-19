@@ -61,19 +61,24 @@ const BahanAjar: React.FC<{}> = () => {
   };
   const createLesson = async (payload: any) => {
     try {
-      const res = await Lesson.CreateNewLesson(payload);
-      if (res.data.status === 200) {
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text: "Berhasil dibuat",
-          showConfirmButton: true,
-          timer: 1500,
-        });
-        getLesson();
-      }
+      await Lesson.CreateNewLesson(payload);
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Berhasil dibuat",
+        showConfirmButton: true,
+        timer: 1500,
+      });
+      getLesson();
     } catch (error) {
       console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Gagal dibuat",
+        showConfirmButton: true,
+        timer: 1500,
+      });
     }
   };
   const DownloadFile = async (path?: string, type?: boolean) => {
@@ -171,7 +176,8 @@ const BahanAjar: React.FC<{}> = () => {
   const handleSubmit = async (values: any) => {
     const formData = new FormData();
     formData.append("assignments_name", values.assignments_name);
-    formData.append("subjects_name", values.subjects_name);
+    formData.append("subject_id", values.subjects_name.split("-")[1]);
+    formData.append("subjects_name", values.subjects_name.split("-")[0]);
     formData.append("class_id", values.class);
     formData.append("description", values.description);
     if (selectedFile) {
@@ -256,7 +262,7 @@ const BahanAjar: React.FC<{}> = () => {
                     >
                       <option value="">Pilih Mapel</option>
                       {ListMapel.map((item, i) => (
-                        <option key={i} value={item.name}>
+                        <option key={i} value={`${item.name}-${item.id}`}>
                           {item.level + "-" + item.name}
                         </option>
                       ))}
@@ -297,6 +303,7 @@ const BahanAjar: React.FC<{}> = () => {
                     <input
                       type="file"
                       name="file"
+                      accept=".pdf, .jpg, .jpeg, .png"
                       className="file-input file-input-bordered w-full"
                       onChange={(event) => {
                         handleFileChange(event);

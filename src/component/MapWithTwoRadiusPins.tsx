@@ -61,10 +61,10 @@ const MapWithTwoRadiusPins: React.FC<FaceDetectionProps> = ({
     try {
       const response = await instance.get("location/");
       setLocations(response.data.data.result);
-      console.log("Locations fetched:", response.data); // Debug log
+      console.log("Locations fetched:", response.data);
     } catch (error) {
       console.error("Error fetching locations:", error);
-      setError("Failed to fetch locations. Please try again."); // Set error state
+      setError("Failed to fetch locations. Please try again.");
     }
   };
 
