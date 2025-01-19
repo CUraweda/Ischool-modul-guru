@@ -18,7 +18,7 @@ const schema = Yup.object({
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setRole, setId } = Store();
+  const { setRole, setId, setEmployeeId } = Store();
   const {
     setEmployee,
     setFormTeachers,
@@ -36,7 +36,9 @@ const Login = () => {
 
       const role = data.role_id;
       const id = data.id;
+      const employee_id = data.employee.id;
       setRole(role.toString());
+      setEmployeeId(employee_id.toString());
       setId(id.toString());
 
       const {
