@@ -69,7 +69,7 @@ interface propsColor {
 const Demo: React.FC = () => {
   const { academicYear } = globalStore();
   const { isHeadmaster } = employeeStore();
-  const { setTanggalPekanan, tanggalPekanan } = Store();
+  const { setTanggalPekanan, tanggalPekanan, employeeId } = Store();
   const [Dataappointment, setData] = useState<any[]>([]);
   const [topik, setTopik] = useState<any[]>([]);
   const [idCal, setIdCal] = useState<number>(0);
@@ -122,7 +122,13 @@ const Demo: React.FC = () => {
 
   const getKalenderPendidikan = async () => {
     try {
-      const response = await Kalender.GetAllDetail(academicYear, 0, 20);
+      const response = await Kalender.GetAllDetail(
+        academicYear,
+        0,
+        20,
+        employeeId,
+        "Y"
+      );
       const dataList = response.data.data.result;
 
       const newData = dataList.map((item: any) => ({

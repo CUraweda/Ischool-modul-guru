@@ -285,11 +285,13 @@ const Kalender = {
   GetAllDetail: (
     academic: string | null,
     page: number | null,
-    limit: number | null
+    limit: number | null,
+    employeeId: string | null,
+    allowAll: string | null
   ) =>
     instance({
       method: "GET",
-      url: `/edu-calendar-detail?academic=${academic}&search_query=&page=${page}&limit=${limit}`,
+      url: `/edu-calendar-detail?academic=${academic}&search_query=&page=${page}&limit=${limit}&teacher_id=${employeeId}&allow_all=${allowAll}`,
     }),
   GetAllDetailById: (id: number | null) =>
     instance({
