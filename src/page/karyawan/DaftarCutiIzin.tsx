@@ -8,9 +8,6 @@ import {
   FaSearch,
   FaTrash,
 } from "react-icons/fa";
-import { Worker, Viewer } from "@react-pdf-viewer/core";
-import "@react-pdf-viewer/core/lib/styles/index.css";
-import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { FaPencil } from "react-icons/fa6";
 import { useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -394,11 +391,12 @@ const DaftarCutiIzin = () => {
 
           {evidencePreview ? (
             fileExtensionEdit === "pdf" ? (
-              <div className="pdf-preview-container">
-                <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.15.349/build/pdf.worker.min.js">
-                  <Viewer fileUrl={evidencePreview} />
-                </Worker>
-              </div>
+              <iframe
+                src={evidencePreview}
+                frameBorder="0"
+                width="100%"
+                height="300px"
+              />
             ) : (
               <img
                 src={evidencePreview}
