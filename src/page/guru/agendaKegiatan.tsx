@@ -24,10 +24,10 @@ const AgendaKegiatan = () => {
   const [dataList, setDataList] = useState<any[]>([]);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [editingAppointment, setEditingAppointment] = useState<any>(null);
-  const { register, handleSubmit, setValue, watch } = useForm({
+  const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
-      start_date: new Date().toISOString().slice(0, 16),
-      end_date: new Date().toISOString().slice(0, 16),
+      start_date: "",
+      end_date: "",
       agenda: "",
       color: "#06b6d4",
       edu_id: "",
@@ -38,8 +38,8 @@ const AgendaKegiatan = () => {
   const handleModalClose = () => {
     setOpen(false);
     setEditingAppointment(null);
-    setValue("start_date", new Date().toISOString().slice(0, 16));
-    setValue("end_date", new Date().toISOString().slice(0, 16));
+    setValue("start_date", "");
+    setValue("end_date", "");
     setValue("agenda", "");
     setValue("color", "#06b6d4");
     setValue("edu_id", "");
@@ -71,8 +71,8 @@ const AgendaKegiatan = () => {
       const newData = {
         teacher_id: employee.id,
         edu_id: data.edu_id,
-        start_date: dayjs(data.start_date).toISOString(),
-        end_date: dayjs(data.end_date).toISOString(),
+        start_date: data.start_date,
+        end_date: data.end_date,
         agenda: data.agenda,
         color: data.color,
       };
@@ -249,7 +249,6 @@ const AgendaKegiatan = () => {
                   type="datetime-local"
                   {...register("start_date", { required: true })}
                   className="input input-bordered"
-                  value={watch("start_date")}
                   onChange={(e) => setValue("start_date", e.target.value)}
                 />
               </div>
@@ -263,7 +262,6 @@ const AgendaKegiatan = () => {
                   type="datetime-local"
                   {...register("end_date", { required: true })}
                   className="input input-bordered"
-                  value={watch("end_date")}
                   onChange={(e) => setValue("end_date", e.target.value)}
                 />
               </div>
