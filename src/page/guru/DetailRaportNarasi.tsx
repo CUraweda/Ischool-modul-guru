@@ -458,7 +458,7 @@ const RaportNarasi = () => {
                                   <div className="flex justify-center ">
                                     <div
                                       className={`w-5 h-5 ${
-                                        nilai.grade === 3
+                                        nilai.grade === 1
                                           ? "bg-blue-800"
                                           : "bg-blue-200"
                                       } rounded-full`}
@@ -480,7 +480,7 @@ const RaportNarasi = () => {
                                   <div className="flex justify-center ">
                                     <div
                                       className={`w-5 h-5 ${
-                                        nilai.grade === 1
+                                        nilai.grade === 3
                                           ? "bg-blue-800"
                                           : "bg-blue-200"
                                       } rounded-full`}

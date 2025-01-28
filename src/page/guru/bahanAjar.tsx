@@ -119,18 +119,23 @@ const BahanAjar: React.FC<{}> = () => {
   };
   const updateDataLesson = async (payload: any, id: number) => {
     try {
-      const res = await Lesson.UpdateLesson(payload, id);
-      if (res.data.status === 200) {
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text: "Berhasil dirubah",
-          showConfirmButton: true,
-          timer: 1500,
-        });
-      }
+      await Lesson.UpdateLesson(payload, id);
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Berhasil dirubah",
+        showConfirmButton: true,
+        timer: 1500,
+      });
     } catch (error) {
       console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Gagal dibuat",
+        showConfirmButton: true,
+        timer: 1500,
+      });
     }
   };
 
@@ -202,6 +207,7 @@ const BahanAjar: React.FC<{}> = () => {
     setShowModal(false);
     setModalType(true);
   };
+
   return (
     <>
       {showModal && (
@@ -226,8 +232,11 @@ const BahanAjar: React.FC<{}> = () => {
             <Formik
               initialValues={{
                 assignments_name: selectedUpdate?.assignments_name || "",
-                subjects_name: selectedUpdate?.subjects_name || "",
-                class: selectedUpdate?.class,
+                subjects_name:
+                  `${selectedUpdate?.subjects_name}-${selectedUpdate?.subject_id}` ||
+                  "",
+                subject_id: selectedUpdate?.subject_id,
+                class: selectedUpdate?.class_id,
                 description: selectedUpdate?.description,
                 file: selectedUpdate?.file_path || null,
               }}
