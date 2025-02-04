@@ -42,7 +42,7 @@ const RaportNarasi = () => {
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
     classId: "0",
-    semester: "1",
+    semester: 1,
     page: 0,
     limit: 10,
   });
