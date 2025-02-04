@@ -447,7 +447,7 @@ const Raport = {
     }),
   showAllStudentReport: (
     classId: string,
-    semester: string,
+    semester: string | number,
     page: number | null,
     limit: number | null,
     withAssign: string | null = "N",

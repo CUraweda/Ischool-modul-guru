@@ -20,7 +20,6 @@ import dayjs from "dayjs";
 const AgendaKegiatan = () => {
   const { employee } = employeeStore();
   const [open, setOpen] = useState(false);
-  const [eduList, setEduList] = useState<any[]>([]);
   const [dataList, setDataList] = useState<any[]>([]);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [editingAppointment, setEditingAppointment] = useState<any>(null);
@@ -30,7 +29,6 @@ const AgendaKegiatan = () => {
       end_date: "",
       agenda: "",
       color: "#06b6d4",
-      edu_id: "",
     },
   });
 
@@ -42,7 +40,6 @@ const AgendaKegiatan = () => {
     setValue("end_date", "");
     setValue("agenda", "");
     setValue("color", "#06b6d4");
-    setValue("edu_id", "");
   };
 
   useEffect(() => {
@@ -56,7 +53,6 @@ const AgendaKegiatan = () => {
         new Date(editingAppointment.endDate).toISOString().slice(0, 16)
       );
       setValue("agenda", editingAppointment.title || "");
-      setValue("edu_id", editingAppointment.edu_id || "");
     }
   }, [editingAppointment, setValue]);
 
@@ -70,7 +66,6 @@ const AgendaKegiatan = () => {
     try {
       const newData = {
         teacher_id: employee.id,
-        edu_id: data.edu_id,
         start_date: data.start_date,
         end_date: data.end_date,
         agenda: data.agenda,
@@ -127,15 +122,6 @@ const AgendaKegiatan = () => {
       console.error("Error creating agenda:", error);
     }
   };
-
-  const fetchDataEdu = async () => {
-    try {
-      const res = await Kalender.getListEdu();
-      setEduList(res.data.data.result);
-    } catch (error) {
-      console.error(error);
-    }
-  };
   const getDataList = async () => {
     try {
       setDataList([]);
@@ -159,7 +145,6 @@ const AgendaKegiatan = () => {
             startDate: startDate,
             endDate: fixedEndDate,
             title: dat.agenda,
-            edu_id: dat.edu_id,
             color: dat.color.split("_")[0],
           };
         });
@@ -216,7 +201,6 @@ const AgendaKegiatan = () => {
 
   useEffect(() => {
     getDataList();
-    fetchDataEdu();
   }, [employee]);
 
   return (
@@ -276,23 +260,6 @@ const AgendaKegiatan = () => {
                   {...register("agenda", { required: true })}
                   className="input input-bordered"
                 />
-              </div>
-
-              {/* Edu ID */}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Edu ID</span>
-                </label>
-                <select
-                  {...register("edu_id", { required: true })}
-                  className="select select-bordered"
-                >
-                  {eduList.map((edu) => (
-                    <option key={edu.id} value={edu.id}>
-                      {edu.academic_year} - {edu.level} Semester {edu.semester}
-                    </option>
-                  ))}
-                </select>
               </div>
 
               {/* Modal Actions */}
