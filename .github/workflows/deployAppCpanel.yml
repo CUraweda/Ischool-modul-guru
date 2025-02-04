@@ -13,11 +13,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install Dependencies
         run: npm install
-      - name: Build
-        run: npm run build
-        env:
-          VITE_REACT_API_URL: ${{ secrets.VITE_REACT_API_URL }}
-          VITE_REACT_API_HRD_URL: ${{ secrets.VITE_REACT_API_HRD_URL }}
       - name: Upload to cPanel
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
