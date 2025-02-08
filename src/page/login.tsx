@@ -36,9 +36,9 @@ const Login = () => {
 
       const role = data.role_id;
       const id = data.id;
-      const employee_id = data.employee.id;
+      const employee_id = data.employee?.id;
       setRole(role.toString());
-      setEmployeeId(employee_id.toString());
+      setEmployeeId(employee_id?.toString());
       setId(id.toString());
 
       const {
