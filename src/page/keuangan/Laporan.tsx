@@ -240,10 +240,7 @@ const Laporan = () => {
                       </p>
                     </td>
                     <td>
-                      {toRupiah(
-                        paymentCats?.find((item) => item.id == dat.student_id)
-                          ?.total ?? "-"
-                      )}
+                      {toRupiah(dat.studentpaymentbill?.total ?? 0)}
                     </td>
                     <td className="whitespace-nowrap">
                       {dat.paidoff_at
