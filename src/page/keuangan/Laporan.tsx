@@ -13,7 +13,7 @@ import {
   Student,
   TagihanSiswa,
 } from "../../middleware/api";
-import { getAcademicYears, toRupiah } from "../../utils/common";
+import { getAcademicYears, moneyFormat, toRupiah } from "../../utils/common";
 import { formatTime } from "../../utils/date";
 
 const Laporan = () => {
@@ -119,7 +119,6 @@ const Laporan = () => {
 
   // main
   const [dataList, setDataList] = useState<any[]>([]);
-
   const getDataList = async () => {
     try {
       const res = await TagihanSiswa.showAllReports(
@@ -145,8 +144,25 @@ const Laporan = () => {
     }
   };
 
+  const [grandTotals, setGrandTotals] = useState<any[]>([]);
+  const getGrandTotals = async () => {
+    try {
+      const res = await TagihanSiswa.grandTotalByStatus({
+        payment_category_id: filter.paymentCatId,
+        class_id: filter.classId,
+        student_id: filter.studentId,
+        start_paid: filter.startPaid,
+        end_paid: filter.endPaid,
+        status: filter.status,
+        nis_prefix: filter.nisPrefix,
+      });
+      setGrandTotals(res.data.data ?? []);
+    } catch {}
+  };
+
   useEffect(() => {
     getDataList();
+    getGrandTotals();
   }, [filter]);
 
   const handleExport = async () => {
@@ -181,23 +197,36 @@ const Laporan = () => {
     <>
       <div className="w-full flex justify-center flex-col items-center p-3">
         <span className="font-bold text-xl">LAPORAN</span>
-        <div className="w-full p-3 bg-white rounded-lg">
-          <div className="w-full flex justify-end my-3 gap-2">
-            <button
-              className="btn btn-primary text-white"
-              onClick={() => openModal(modalFilterId)}
-            >
-              Filter
-            </button>
-            <button
-              onClick={handleExport}
-              className="btn bg-[#1d6f42] text-white"
-            >
-              <FaFileExcel size={18} />
-              Export
-            </button>
-          </div>
+        <div className="flex mb-3 gap-2 w-full">
+          <button
+            className="btn btn-primary text-white"
+            onClick={() => openModal(modalFilterId)}
+          >
+            Filter
+          </button>
+          <button
+            onClick={handleExport}
+            className="btn bg-[#1d6f42] text-white"
+          >
+            <FaFileExcel size={18} />
+            Export
+          </button>
+        </div>
 
+        {grandTotals.length > 0 && (
+          <div className="flex mb-3 flex-wrap gap-2 w-full">
+            {grandTotals.map((gt, i) => (
+              <div key={i} className="stat w-fit bg-base-100 rounded-lg border">
+                <div className="stat-title">{gt.status ?? "-"}</div>
+                <div className="stat-value overflow-hidden text-ellipsis">
+                  {moneyFormat(gt.total ?? 0)}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="w-full p-3 bg-white rounded-lg">
           {/* data list */}
           <div className="overflow-x-auto">
             <table className="table table-zebra">
@@ -239,9 +268,7 @@ const Laporan = () => {
                         {dat.status?.toUpperCase() ?? "-"}
                       </p>
                     </td>
-                    <td>
-                      {toRupiah(dat.studentpaymentbill?.total ?? 0)}
-                    </td>
+                    <td>{toRupiah(dat.studentpaymentbill?.total ?? 0)}</td>
                     <td className="whitespace-nowrap">
                       {dat.paidoff_at
                         ? formatTime(dat.paidoff_at, "DD MMMM YYYY HH:mm")

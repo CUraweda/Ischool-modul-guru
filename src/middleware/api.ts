@@ -887,6 +887,12 @@ const TagihanSiswa = {
       method: "GET",
       url: `/student-payment-report?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}&nis_prefix=${nisPrefix}&page=${page}&limit=${limit}`,
     }),
+  grandTotalByStatus: (params?: Record<string, any>) =>
+    instance({
+      method: "GET",
+      url: "/student-payment-report/group-by-status",
+      params,
+    }),
   exportReports: (
     paymentCatId?: string,
     classId?: string,
