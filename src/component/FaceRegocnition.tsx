@@ -225,9 +225,8 @@ const FaceDetection: React.FC<FaceDetectionProps> = ({
               mirrored={true}
               className="absolute"
               videoConstraints={{
-                width: 400,
-                height: 200,
-                aspectRatio: 3 / 4,
+                width: 200,
+                height: 100,
               }}
             />
             <canvas ref={canvasRef} className="absolute" />
