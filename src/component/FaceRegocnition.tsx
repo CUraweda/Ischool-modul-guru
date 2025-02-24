@@ -223,10 +223,11 @@ const FaceDetection: React.FC<FaceDetectionProps> = ({
               ref={webcamRef}
               muted={true}
               mirrored={true}
-              className="absolute"
+              className="absolute w-96 h-96"
               videoConstraints={{
-                width: 200,
-                height: 100,
+                width: 400,
+                height: 400,
+                aspectRatio: 1 / 1,
               }}
             />
             <canvas ref={canvasRef} className="absolute" />
