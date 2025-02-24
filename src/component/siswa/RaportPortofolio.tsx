@@ -65,7 +65,7 @@ const RaportPortofolio = () => {
   }, [filter, academicYear]);
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(0, 20, "Y", "N");
+    const response = await Task.GetAllClass(0, 20, "Y", "Y");
     setKelas(response.data.data.result);
   };
 
