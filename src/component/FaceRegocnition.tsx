@@ -226,8 +226,8 @@ const FaceDetection: React.FC<FaceDetectionProps> = ({
               className="absolute"
               videoConstraints={{
                 width: 400,
-                height: 400,
-                aspectRatio: 1 / 1,
+                height: 200,
+                aspectRatio: 3 / 4,
               }}
             />
             <canvas ref={canvasRef} className="absolute" />
