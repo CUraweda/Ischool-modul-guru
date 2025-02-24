@@ -230,7 +230,7 @@ const FaceDetection: React.FC<FaceDetectionProps> = ({
                 aspectRatio: 1 / 1,
               }}
             />
-            <canvas ref={canvasRef} className="absolute" />
+            <canvas ref={canvasRef} />
           </>
         ) : (
           <div className="camera-blocked-message">
