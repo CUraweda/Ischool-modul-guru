@@ -41,8 +41,8 @@ const RaportNarasi = () => {
   const [edit, setEdit] = useState<string>("");
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
   const [filter, setFilter] = useState({
-    classId: "22",
-    semester: "1",
+    classId: "0",
+    semester: 1,
     page: 0,
     limit: 10,
   });
@@ -99,8 +99,9 @@ const RaportNarasi = () => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(0, 20, "Y");
+    const response = await Task.GetAllClass(0, 10000, "Y");
     setKelas(response.data.data.result);
+    handleFilter("classId", response.data.data.result[0].id);
   };
 
   const getStudent = async () => {

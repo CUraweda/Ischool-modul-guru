@@ -9,6 +9,9 @@ export interface StoreState {
   id: string | null;
   setId: (id: string | null) => void;
 
+  employeeId: string | null;
+  setEmployeeId: (employeeId: string | null) => void;
+
   tanggalPekanan: any;
   setTanggalPekanan: (tanggalPekanan: any) => void;
 

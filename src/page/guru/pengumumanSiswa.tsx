@@ -20,7 +20,7 @@ const validationSchema = Yup.object({
   startDate: Yup.string().required("Tanggal mulai tidak boleh kosong"),
   endDate: Yup.string().required("Tanggal selesai tidak boleh kosong"),
   anouncement: Yup.string().required("Pengumuman tidak boleh kosong"),
-  class_ids: Yup.string().optional(),
+  class_id: Yup.string().optional(),
   file: Yup.mixed<File>()
     .nullable()
     .optional()
@@ -50,7 +50,7 @@ const PengumumanSiswa = () => {
       startDate: formatTime(new Date(), "YYYY-MM-DD"),
       endDate: formatTime(new Date(), "YYYY-MM-DD"),
       anouncement: "",
-      class_ids: "",
+      class_id: "",
       file: "",
       filePath: "",
     },
@@ -58,8 +58,8 @@ const PengumumanSiswa = () => {
     validateOnChange: false,
     validateOnMount: false,
     onSubmit: async (values, { setSubmitting, setFieldError }) => {
-      if (role == "6" && !values.class_ids) {
-        setFieldError("class_ids", "Kelas tidak boleh kosong");
+      if (role == "6" && !values.class_id) {
+        setFieldError("class_id", "Kelas tidak boleh kosong");
         return;
       }
 
@@ -67,7 +67,7 @@ const PengumumanSiswa = () => {
       formData.append("date_start", values.startDate);
       formData.append("date_end", values.endDate);
       formData.append("announcement_desc", values.anouncement);
-      if (values.class_ids) formData.append("class_ids", values.class_ids);
+      if (values.class_id) formData.append("class_id", values.class_id);
       if (values.file) formData.append("file", values.file);
 
       setSubmitting(true);
@@ -173,7 +173,7 @@ const PengumumanSiswa = () => {
           : "",
         endDate: data.date_end ? formatTime(data.date_end, "YYYY-MM-DD") : "",
         anouncement: data.announcement_desc ?? "",
-        class_ids: String(extractNumbers(data.class_ids)) ?? "",
+        class_id: String(extractNumbers(data.class_id)) ?? "",
         file: "",
         filePath: "",
       });
@@ -262,6 +262,7 @@ const PengumumanSiswa = () => {
           className="select select-bordered w-32"
         >
           <option value={""}>Pilih Kelas</option>
+          <option value={0}>Semua Kelas</option>
           {classes.map((dat, i) => (
             <option value={dat.id} key={i}>
               {dat.class_name}
@@ -308,10 +309,8 @@ const PengumumanSiswa = () => {
                   {formatTime(item?.date_end, "DD MMMM YYYY")}
                 </td>
                 <td>
-                  {classes.find(
-                    (classItem) =>
-                      classItem.id === extractNumbers(item.class_ids)
-                  )?.class_name ?? "Semua Kelas"}
+                  {classes.find((classItem) => classItem.id === item.class_id)
+                    ?.class_name ?? "Semua Kelas"}
                 </td>
 
                 <td>
@@ -374,14 +373,14 @@ const PengumumanSiswa = () => {
             <Select
               label="Kelas"
               placeholder="Pilih kelas"
-              name="class_ids"
+              name="class_id"
               keyValue="id"
               displayBuilder={(op) => `${op.level} - ${op.class_name}`}
               options={classes}
-              value={formik.values.class_ids}
+              value={formik.values.class_id}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              errorMessage={formik.errors.class_ids}
+              errorMessage={formik.errors.class_id}
             />
 
             <Textarea

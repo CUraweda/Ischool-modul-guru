@@ -35,6 +35,16 @@ const Store = create<StoreState>((set) => ({
     set({ id });
   },
 
+  employeeId: sessionStorage.getItem("employeeId"),
+  setEmployeeId: (employeeId) => {
+    if (employeeId) {
+      sessionStorage.setItem("employeeId", employeeId);
+    } else {
+      sessionStorage.removeItem("employeeId");
+    }
+    set({ employeeId });
+  },
+
   tanggalPekanan: getMonday(new Date()),
   setTanggalPekanan: (data) => set({ tanggalPekanan: data }),
 

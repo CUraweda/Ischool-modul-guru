@@ -285,11 +285,13 @@ const Kalender = {
   GetAllDetail: (
     academic: string | null,
     page: number | null,
-    limit: number | null
+    limit: number | null,
+    employeeId: string | null,
+    allowAll: string | null
   ) =>
     instance({
       method: "GET",
-      url: `/edu-calendar-detail?academic=${academic}&search_query=&page=${page}&limit=${limit}`,
+      url: `/edu-calendar-detail?academic=${academic}&search_query=&page=${page}&limit=${limit}&teacher_id=${employeeId}&allow_all=${allowAll}`,
     }),
   GetAllDetailById: (id: number | null) =>
     instance({
@@ -445,7 +447,7 @@ const Raport = {
     }),
   showAllStudentReport: (
     classId: string,
-    semester: string,
+    semester: string | number,
     page: number | null,
     limit: number | null,
     withAssign: string | null = "N",
@@ -683,7 +685,7 @@ const Pengumuman = {
   ) =>
     instance({
       method: "GET",
-      url: `/announcement?search_query=${search}&class_ids=${classId}&start_date=${start}&end_date=${end}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
+      url: `/announcement?search_query=${search}&class_id=${classId}&start_date=${start}&end_date=${end}&page=${page}&limit=${limit}&with_assign=${withAssign}`,
     }),
   getByIdPengumuman: (id: string | null) =>
     instance({
@@ -884,6 +886,12 @@ const TagihanSiswa = {
     instance({
       method: "GET",
       url: `/student-payment-report?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}&nis_prefix=${nisPrefix}&page=${page}&limit=${limit}`,
+    }),
+  grandTotalByStatus: (params?: Record<string, any>) =>
+    instance({
+      method: "GET",
+      url: "/student-payment-report/group-by-status",
+      params,
     }),
   exportReports: (
     paymentCatId?: string,
