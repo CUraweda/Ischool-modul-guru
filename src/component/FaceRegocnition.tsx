@@ -223,7 +223,7 @@ const FaceDetection: React.FC<FaceDetectionProps> = ({
               ref={webcamRef}
               muted={true}
               mirrored={true}
-              className="absolute w-96 h-96"
+              className="w-96 h-96"
               videoConstraints={{
                 width: 400,
                 height: 400,
