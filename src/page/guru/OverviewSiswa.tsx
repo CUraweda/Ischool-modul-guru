@@ -68,7 +68,7 @@ const OverviewSiswa = () => {
 
   const getClasses = async () => {
     try {
-      const res = await Class.showAll(0, 0, "Y");
+      const res = await Class.showAll(0, 10000, "Y");
       setClasses(res.data.data.result);
     } catch {}
   };

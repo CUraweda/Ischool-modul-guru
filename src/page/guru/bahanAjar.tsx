@@ -20,7 +20,7 @@ const BahanAjar: React.FC<{}> = () => {
     totalPage: 0,
   });
   const getClass = async () => {
-    const response = await Task.GetAllClass(0, 20, "Y", "N", "Y");
+    const response = await Task.GetAllClass(0, 10000, "Y", "Y", "Y");
     setClass(response.data.data.result);
   };
 

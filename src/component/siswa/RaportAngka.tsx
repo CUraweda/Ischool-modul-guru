@@ -102,6 +102,7 @@ const RaportAngka = () => {
   }, [
     formik.values.classId,
     formik.values.subjectId,
+    formik.values.semester,
     arrayKelas,
     academicYear,
   ]);
@@ -139,7 +140,7 @@ const RaportAngka = () => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(0, 20, "Y", "N", "Y");
+    const response = await Task.GetAllClass(0, 100000, "Y", "Y", "Y");
     const kelasData = response.data.data.result;
     const kelasFilter = kelasData.filter(
       (value: any) => value.id == formik.values.classId
@@ -152,11 +153,12 @@ const RaportAngka = () => {
 
   const getStudent = async () => {
     const idClass = formik.values.classId || "11";
+    const semester = formik.values.semester || "0";
     const subjectId = formik.values.subjectId;
     try {
       const response = await Raport.getAllStudentReport(
         idClass,
-        null,
+        semester,
         academicYear,
         subjectId
       );

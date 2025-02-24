@@ -99,7 +99,7 @@ const RaportNarasi = () => {
   };
 
   const getClass = async () => {
-    const response = await Task.GetAllClass(0, 20, "Y");
+    const response = await Task.GetAllClass(0, 10000, "Y");
     setKelas(response.data.data.result);
     handleFilter("classId", response.data.data.result[0].id);
   };

@@ -206,12 +206,12 @@ function PriorityBadge({
   if (!label) return <p className="text-xs text-slate-400">NOT SPECIFIED</p>;
 
   return (
-    <span
+    <div
       className={`${size === "small" ? "text-xs px-2 py-1 tracking-wide" : "px-5 py-2 font-medium text-sm"} rounded-lg text-[#6A6B6BCC]`}
       style={{ ...background }}
     >
       {label}
-    </span>
+    </div>
   );
 }
 

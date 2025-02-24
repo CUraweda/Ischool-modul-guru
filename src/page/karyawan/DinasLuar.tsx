@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaFileExport } from "react-icons/fa6";
-import { GrStatusUnknown } from "react-icons/gr";
+// import { GrStatusUnknown } from "react-icons/gr";
 // import { MdPeopleAlt } from "react-icons/md";
 import { TbFaceId } from "react-icons/tb";
 import Swal from "sweetalert2";
@@ -9,10 +9,10 @@ import DetailCard from "../../component/DetailCard";
 import NoData from "../../component/NoData";
 import Pagination from "../../component/ui/pagination";
 import Icon from "../../assets/icon";
-import { listType, worktimeType } from "../../constant/attendanceType";
+import { worktimeType } from "../../constant/attendanceType";
 import { useGetAllEmployeeAttendance } from "../../hooks/useGetAllAttendance";
 import { useGetAllEmployee } from "../../hooks/useGetAllEmployee";
-import { useGetDivision } from "../../hooks/useGetDivision";
+// import { useGetDivision } from "../../hooks/useGetDivision";
 import useSearchParams from "../../hooks/useSearchParams";
 import { Attendance } from "../../types/attendance";
 import {
@@ -68,14 +68,14 @@ const DinasLuarPage = () => {
     });
   }
 
-  const { data: listDivision, error: errorGetDivision } = useGetDivision();
-  if (errorGetDivision) {
-    Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: "Something went wrong!",
-    });
-  }
+  // const { data: listDivision, error: errorGetDivision } = useGetDivision();
+  // if (errorGetDivision) {
+  //   Swal.fire({
+  //     icon: "error",
+  //     title: "Oops...",
+  //     text: "Something went wrong!",
+  //   });
+  // }
 
   const { data: employeeAttendance } = useGetAllEmployeeAttendance(
     filterParams({
@@ -112,11 +112,11 @@ const DinasLuarPage = () => {
     updateBaseFilter("search", value);
   };
 
-  const handleCheckType = (value: string, category: keyof BaseFilter) =>
-    updateBaseFilter(category.toLowerCase() as keyof BaseFilter, value);
+  // const handleCheckType = (value: string, category: keyof BaseFilter) =>
+  //   updateBaseFilter(category.toLowerCase() as keyof BaseFilter, value);
 
-  const handleCheckDivision = (id: number) =>
-    updateBaseFilter("division_id", id.toString());
+  // const handleCheckDivision = (id: number) =>
+  //   updateBaseFilter("division_id", id.toString());
 
   // const handleCheckboxChange = (employeeName: string) => {
   //   setSelectedItemEmployee((prevSelected) =>
@@ -225,7 +225,7 @@ const DinasLuarPage = () => {
           </div> */}
 
           <div className="my-auto flex gap-4">
-            <div className="dropdown">
+            {/* <div className="dropdown">
               <div
                 tabIndex={0}
                 role="button"
@@ -292,7 +292,7 @@ const DinasLuarPage = () => {
                   ))}
                 </div>
               </ul>
-            </div>
+            </div> */}
           </div>
           <input
             type="date"
