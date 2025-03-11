@@ -100,13 +100,19 @@ const PengajuanPelatihan = () => {
     validationSchema: schema,
     validateOnChange: false,
     onSubmit: async (values, { setSubmitting }) => {
-      setSubmitting(false);
-
       try {
-        const payload = filterEmptyPayload({ ...values });
-        values.id
-          ? await PengajuanPelatihanKaryawan.update(values.id, payload)
-          : await PengajuanPelatihanKaryawan.request(payload);
+        setSubmitting(true);
+
+        const payload = filterEmptyPayload({
+          ...values,
+          end_date: `${values.end_date}T23:59:59.999z`, // Gunakan end_date yang sudah diformat
+        });
+
+        if (values.id) {
+          await PengajuanPelatihanKaryawan.update(values.id, payload);
+        } else {
+          await PengajuanPelatihanKaryawan.request(payload);
+        }
 
         handleReset();
         getDataList();
@@ -124,7 +130,7 @@ const PengajuanPelatihan = () => {
         });
       } finally {
         closeModal(modalFormId);
-        setSubmitting(true);
+        setSubmitting(false); // Pastikan form bisa digunakan kembali
       }
     },
   });

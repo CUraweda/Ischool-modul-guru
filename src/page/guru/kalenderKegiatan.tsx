@@ -8,10 +8,11 @@ import * as Yup from "yup";
 import Swal from "sweetalert2";
 
 const schema = Yup.object({
-  edu_id: Yup.string().required("required"),
   agenda: Yup.string().required("required"),
   start_date: Yup.string().required("required"),
   end_date: Yup.string().required("required"),
+  only_teacher: Yup.string().required("required"),
+  teacher_id: Yup.string().required("required"),
   tahun: Yup.string().required("required"),
   level: Yup.string().required("required"),
   smt: Yup.string().required("required"),
@@ -40,12 +41,16 @@ const KalenderKegiatan = () => {
     getTopik();
   }, [academicYear]);
 
+  const employee_id = sessionStorage.getItem("employeeId");
+
   const formik = useFormik({
     initialValues: {
       edu_id: "",
       agenda: "",
       start_date: "",
       end_date: "",
+      only_teacher: false,
+      teacher_id: employee_id,
       tahun: academicYear,
       level: "",
       smt: "",
@@ -139,7 +144,8 @@ const KalenderKegiatan = () => {
   }, [academicYear]);
 
   const createAgenda = async () => {
-    const { edu_id, start_date, end_date, agenda } = formik.values;
+    const { start_date, end_date, only_teacher, teacher_id, agenda } =
+      formik.values;
     const color = Color.value;
 
     const startDate = new Date(start_date);
@@ -157,16 +163,17 @@ const KalenderKegiatan = () => {
       closeModal("add-kalender");
     } else {
       const dataRest = {
-        edu_id: parseInt(edu_id),
         start_date,
         end_date,
+        only_teacher,
+        teacher_id,
         agenda,
         color,
       };
 
       await Kalender.createDetail(dataRest);
       closeModal("add-kalender");
-      window.location.reload();
+      // window.location.reload();
     }
   };
 
@@ -245,7 +252,7 @@ const KalenderKegiatan = () => {
           <div className="w-full">
             <div className="w-full flex flex-col gap-2">
               <label className="mt-4 font-bold">Tanggal</label>
-              <div className="flex gap-2 justify-center items-center">
+              <div className="lg:flex flex-col gap-2 justify-center items-center">
                 <input
                   type="datetime-local"
                   className="input input-bordered bg-white shadow-md"
@@ -263,6 +270,17 @@ const KalenderKegiatan = () => {
                 />
               </div>
             </div>
+          </div>
+          <div className="w-full flex flex-col gap-2">
+            <label className="mt-4 w-full font-bold">Hanya Guru</label>
+            <input
+              type="checkbox"
+              className="toggle"
+              checked={formik.values.only_teacher}
+              onChange={(e) =>
+                formik.setFieldValue("only_teacher", e.target.checked)
+              }
+            />
           </div>
           <div className="w-full mt-5">
             <label className="mt-4 font-bold">Warna Background</label>

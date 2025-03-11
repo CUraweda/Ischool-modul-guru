@@ -557,7 +557,6 @@ const DaftarPelatihan = () => {
                       )}
                     </td>
                     <td>{dat.status ?? ""}</td>
-                    {/* ...the rest of data  */}
                     <td>
                       <div className="join">
                         <button
