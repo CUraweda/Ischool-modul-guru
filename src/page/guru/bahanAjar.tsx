@@ -141,18 +141,32 @@ const BahanAjar: React.FC<{}> = () => {
   };
 
   const deleteDataLesson = async (id: number) => {
-    try {
-      await Lesson.DeleteLesson(id);
-      getLesson();
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Data berhasil dihapus",
-        showConfirmButton: true,
-        timer: 1500,
-      });
-    } catch (error) {
-      console.error(error);
+    // Konfirmasi delete dengan SweetAlert dalam bahasa Indonesia
+    const result = await Swal.fire({
+      icon: "warning",
+      title: "Apakah Anda yakin?",
+      text: "Tindakan ini tidak dapat dibatalkan!",
+      showCancelButton: true,
+      confirmButtonText: "Ya, hapus!",
+      cancelButtonText: "Tidak, batal",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await Lesson.DeleteLesson(id);
+        getLesson(); // Memanggil data lesson setelah penghapusan
+        Swal.fire({
+          icon: "success",
+          title: "Berhasil",
+          text: "Data berhasil dihapus",
+          showConfirmButton: true,
+          timer: 1500,
+        });
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
