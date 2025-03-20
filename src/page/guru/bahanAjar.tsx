@@ -1,6 +1,7 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { BsDownload, BsPencilFill, BsTrash } from "react-icons/bs";
+import { CiCircleInfo } from "react-icons/ci";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
 import { FileRaporSiswa, Lesson, Mapel, Task } from "../../middleware/api";
@@ -308,7 +309,14 @@ const BahanAjar: React.FC<{}> = () => {
                     />
                   </div>
                   <div className="mb-4 w-full">
-                    <label className="label">Upload File</label>
+                    <label className="flex gap-2 items-center my-2">
+                      <div>Upload File</div>
+                      <div className="tooltip" data-tip="Wajib diisi">
+                        <div>
+                          <CiCircleInfo />
+                        </div>
+                      </div>
+                    </label>
                     <input
                       type="file"
                       name="file"
@@ -406,7 +414,7 @@ const BahanAjar: React.FC<{}> = () => {
                     <th>{index + 1}</th>
                     <td>{item.assignments_name}</td>
                     <td>{item.subjects_name}</td>
-                    <td>{item.class.class_name + "-" + item.class.level}</td>
+                    <td>{item.class.level + "-" + item.class.class_name}</td>
                     <td>{item.description}</td>
                     <td>
                       <button
