@@ -1,27 +1,29 @@
-import { ViewState } from "@devexpress/dx-react-scheduler";
-import {
-  AppointmentForm,
-  Appointments,
-  DateNavigator,
-  MonthView,
-  Scheduler,
-  TodayButton,
-  Toolbar,
-} from "@devexpress/dx-react-scheduler-material-ui";
+import { useState, useEffect } from "react";
 import { Button } from "@mui/material";
 import Paper from "@mui/material/Paper";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import Swal from "sweetalert2";
-import { Kalender } from "../../middleware/api";
+import { ViewState } from "@devexpress/dx-react-scheduler";
+import {
+  Scheduler,
+  Appointments,
+  AppointmentForm,
+  AppointmentTooltip,
+  MonthView,
+  Toolbar,
+  DateNavigator,
+  TodayButton,
+} from "@devexpress/dx-react-scheduler-material-ui";
 import { employeeStore } from "../../store/Store";
-import dayjs from "dayjs";
+import { Kalender } from "../../middleware/api";
+import Swal from "sweetalert2";
+import { BiTrash } from "react-icons/bi";
+import { CiClock2 } from "react-icons/ci";
+import { useForm } from "react-hook-form";
 
 const AgendaKegiatan = () => {
   const { employee } = employeeStore();
-  const [open, setOpen] = useState(false);
   const [dataList, setDataList] = useState<any[]>([]);
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [currentDate, setCurrentDate] = useState<Date>(new Date("2025-08-15"));
+  const [open, setOpen] = useState(false);
   const [editingAppointment, setEditingAppointment] = useState<any>(null);
   const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -31,6 +33,31 @@ const AgendaKegiatan = () => {
       color: "#06b6d4",
     },
   });
+
+  const getDataList = async () => {
+    try {
+      const res = await Kalender.getByGuru(employee.id);
+      if (res.status === 200) {
+        const mapped = res.data.data.map((dat: any) => {
+          const startDate = new Date(dat.start_date);
+          let endDate = new Date(dat.end_date);
+          if (endDate <= startDate) {
+            endDate = new Date(startDate.getTime() + 60000);
+          }
+          return {
+            id: dat.id,
+            title: dat.agenda,
+            startDate,
+            endDate,
+            color: dat.color || "#06b6d4",
+          };
+        });
+        setDataList(mapped);
+      }
+    } catch (err) {
+      console.error("Failed to fetch data:", err);
+    }
+  };
 
   const handleModalOpen = () => setOpen(true);
   const handleModalClose = () => {
@@ -42,7 +69,91 @@ const AgendaKegiatan = () => {
     setValue("color", "#06b6d4");
   };
 
+  const deleteAgenda = async () => {
+    if (!editingAppointment) return;
+    const confirm = await Swal.fire({
+      title: "Hapus agenda ini?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya, hapus",
+    });
+    if (confirm.isConfirmed) {
+      try {
+        await Kalender.deleteAgenda(editingAppointment.id);
+        Swal.fire("Dihapus!", "Agenda berhasil dihapus.", "success");
+        handleModalClose();
+        getDataList();
+      } catch (err) {
+        Swal.fire("Gagal", "Tidak bisa menghapus agenda.", "error");
+      }
+    }
+  };
+
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const CustomAppointment = ({ children, style, ...restProps }: any) => {
+    const backgroundColor = restProps.data.color?.split("_")[0] || "#06b6d4";
+    return (
+      <Appointments.Appointment
+        {...restProps}
+        style={{
+          ...style,
+          backgroundColor,
+          borderRadius: "8px",
+          fontSize: "14px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        onDoubleClick={() => handleAppointmentClick(restProps.data)}
+      >
+        {children}
+      </Appointments.Appointment>
+    );
+  };
+
+  const CustomTooltipContent = ({ appointmentData }: any) => (
+    <div className="w-full p-3">
+      <div className="flex justify-between items-center">
+        <h3 className="font-bold text-lg">{appointmentData.title}</h3>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleAppointmentClick(appointmentData)}
+            className="text-blue-500 text-xl"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => {
+              setEditingAppointment(appointmentData);
+              deleteAgenda();
+            }}
+            className="text-red-500 text-xl"
+          >
+            <BiTrash />
+          </button>
+        </div>
+      </div>
+      <div className="mt-3 flex items-center gap-2 text-gray-700">
+        <CiClock2 />
+        <span>
+          {formatDate(appointmentData.startDate)} -{" "}
+          {formatDate(appointmentData.endDate)}
+        </span>
+      </div>
+    </div>
+  );
+
   useEffect(() => {
+    getDataList();
     if (editingAppointment) {
       setValue(
         "start_date",
@@ -54,177 +165,51 @@ const AgendaKegiatan = () => {
       );
       setValue("agenda", editingAppointment.title || "");
     }
-  }, [editingAppointment, setValue]);
+  }, [employee, editingAppointment, setValue]);
 
   const handleAppointmentClick = (appointmentData: any) => {
-    setEditingAppointment(appointmentData); // Set appointment yang di-edit
-    console.log(appointmentData);
+    setEditingAppointment(appointmentData);
     setOpen(true);
   };
 
   const onSubmit = async (data: any) => {
-    try {
-      const newData = {
-        teacher_id: employee.id,
-        start_date: data.start_date,
-        end_date: data.end_date,
-        agenda: data.agenda,
-        color: data.color,
-      };
+    const newData = {
+      teacher_id: employee.id,
+      start_date: data.start_date,
+      end_date: data.end_date,
+      agenda: data.agenda,
+      color: data.color,
+    };
 
-      // Mengirim data ke API
+    try {
       if (editingAppointment) {
-        // Update existing appointment
-        Kalender.updateAgenda(newData, editingAppointment.id)
-          .then((response) => {
-            if (response.status === 200) {
-              handleModalClose();
-              getDataList();
-              Swal.fire({
-                icon: "success",
-                title: "Berhasil...",
-                text: "Agenda Berhasil dirubah",
-              });
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-            Swal.fire({
-              icon: "error",
-              title: "Terjadi Kesalahan",
-              text: "Gagal mengupdate agenda.",
-            });
-          });
+        await Kalender.updateAgenda(newData, editingAppointment.id);
+        Swal.fire("Berhasil", "Agenda berhasil diperbarui", "success");
       } else {
-        Kalender.createAgenda(newData)
-          .then((response) => {
-            if (response.status === 201) {
-              handleModalClose();
-              getDataList();
-              Swal.fire({
-                icon: "success",
-                title: "Berhasil...",
-
-                text: "Agenda Berhasil Ditambahkan",
-              });
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-            Swal.fire({
-              icon: "error",
-              title: "Terjadi Kesalahan",
-              text: "Gagal menyimpan agenda.",
-            });
-          });
+        await Kalender.createAgenda(newData);
+        Swal.fire("Berhasil", "Agenda berhasil ditambahkan", "success");
       }
+      handleModalClose();
+      getDataList();
     } catch (error) {
-      console.error("Error creating agenda:", error);
+      Swal.fire("Error", "Gagal menyimpan agenda", "error");
     }
   };
-  const getDataList = async () => {
-    try {
-      setDataList([]);
-      const id = employee?.id; // Pastikan employee tidak null
-      if (!id) {
-        console.error("Employee data is null");
-        return;
-      }
-      const res = await Kalender.getByGuru(id);
-      if (res.status === 200) {
-        const fixedData = res.data.data?.map((dat: any) => {
-          const dateFormat = "YYYY-MM-DDTHH:mm";
-          const startDate = dayjs(dat.start_date).format(dateFormat);
-          const endDate = dayjs(dat.end_date).format(dateFormat);
-
-          // Jika endDate lebih kecil dari startDate, atur endDate menjadi startDate
-          const fixedEndDate = endDate < startDate ? startDate : endDate;
-
-          return {
-            id: dat.id,
-            startDate: startDate,
-            endDate: fixedEndDate,
-            title: dat.agenda,
-            color: dat.color.split("_")[0],
-          };
-        });
-
-        setDataList(fixedData);
-      } else {
-        throw new Error("Invalid response format");
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: `${error} Gagal Mengambil data rekap kehadiran, silakan coba lain kali`,
-      });
-    }
-  };
-
-  const deleteDataAgenda = async () => {
-    const confirm = await Swal.fire({
-      title: "Apakah Anda yakin ingin menghapus agenda ini?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Ya, Hapus",
-    });
-    try {
-      if (confirm.isConfirmed) {
-        Kalender.deleteAgenda(editingAppointment.id)
-          .then((response) => {
-            if (response.status === 200) {
-              getDataList();
-              handleModalClose();
-              Swal.fire({
-                icon: "success",
-                title: "Berhasil...",
-                text: "Agenda Berhasil Dihapus",
-              });
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-            Swal.fire({
-              icon: "error",
-              title: "Terjadi Kesalahan",
-              text: "Gagal menghapus agenda.",
-            });
-          });
-      }
-    } catch (error) {
-      console.error("Error creating agenda:", error);
-    }
-  };
-
-  useEffect(() => {
-    getDataList();
-  }, [employee]);
 
   return (
-    <div className="w-full p-3">
-      <p className="font-bold w-full text-center text-xl mb-6">
-        Agenda Kegiatan
-      </p>
+    <div className="p-5">
+      <h1 className="text-xl font-bold mb-4 text-center">Agenda Kegiatan</h1>
       <Button variant="contained" color="primary" onClick={handleModalOpen}>
         Tambah Agenda
       </Button>
 
-      {/* Modal Form */}
       {open && (
         <div className="modal modal-open" onClick={handleModalClose}>
-          <div
-            className="modal-box"
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            <h3 className="font-bold text-lg">Tambah Agenda Kegiatan</h3>
-
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <h3 className="font-bold text-lg">
+              {editingAppointment ? "Edit Agenda" : "Tambah Agenda"}
+            </h3>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              {/* Start Date */}
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Start Date</span>
@@ -233,11 +218,8 @@ const AgendaKegiatan = () => {
                   type="datetime-local"
                   {...register("start_date", { required: true })}
                   className="input input-bordered"
-                  onChange={(e) => setValue("start_date", e.target.value)}
                 />
               </div>
-
-              {/* End Date */}
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">End Date</span>
@@ -246,11 +228,8 @@ const AgendaKegiatan = () => {
                   type="datetime-local"
                   {...register("end_date", { required: true })}
                   className="input input-bordered"
-                  onChange={(e) => setValue("end_date", e.target.value)}
                 />
               </div>
-
-              {/* Agenda */}
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Agenda</span>
@@ -261,8 +240,6 @@ const AgendaKegiatan = () => {
                   className="input input-bordered"
                 />
               </div>
-
-              {/* Modal Actions */}
               <div className="modal-action">
                 <button
                   type="button"
@@ -271,16 +248,14 @@ const AgendaKegiatan = () => {
                 >
                   Cancel
                 </button>
-                {editingAppointment ? (
+                {editingAppointment && (
                   <button
                     type="button"
                     className="btn btn-error"
-                    onClick={deleteDataAgenda}
+                    onClick={deleteAgenda}
                   >
                     Delete
                   </button>
-                ) : (
-                  ""
                 )}
                 <button type="submit" className="btn btn-success">
                   {editingAppointment ? "Update" : "Submit"}
@@ -291,30 +266,21 @@ const AgendaKegiatan = () => {
         </div>
       )}
 
-      {/* Scheduler */}
-      <div className="w-full p-3">
-        <Paper>
-          <Scheduler data={dataList} locale={"id"}>
-            <ViewState
-              currentDate={currentDate}
-              onCurrentDateChange={(date) => setCurrentDate(date)}
-            />
-            <MonthView />
-            <Appointments
-              appointmentComponent={(props) => (
-                <Appointments.Appointment
-                  {...props}
-                  onDoubleClick={() => handleAppointmentClick(props.data)}
-                />
-              )}
-            />
-            <Toolbar />
-            <DateNavigator />
-            <TodayButton />
-            <AppointmentForm />
-          </Scheduler>
-        </Paper>
-      </div>
+      <Paper>
+        <Scheduler data={dataList} locale="id">
+          <ViewState
+            currentDate={currentDate}
+            onCurrentDateChange={(date) => setCurrentDate(date)}
+          />
+          <MonthView />
+          <Appointments appointmentComponent={CustomAppointment} />
+          <Toolbar />
+          <DateNavigator />
+          <TodayButton />
+          <AppointmentTooltip contentComponent={CustomTooltipContent} />
+          <AppointmentForm />
+        </Scheduler>
+      </Paper>
     </div>
   );
 };
