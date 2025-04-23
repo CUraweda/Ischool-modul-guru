@@ -12,7 +12,6 @@ import {
 } from "../../component/PaginationControl";
 import { formatTime } from "../../utils/date";
 import { Input, Select, Textarea } from "../../component/Input";
-import { extractNumbers } from "../../utils/common";
 
 const fileExts = ["pdf"];
 
@@ -173,7 +172,7 @@ const PengumumanSiswa = () => {
           : "",
         endDate: data.date_end ? formatTime(data.date_end, "YYYY-MM-DD") : "",
         anouncement: data.announcement_desc ?? "",
-        class_id: String(extractNumbers(data.class_id)) ?? "",
+        class_id: data.class_id ?? "",
         file: "",
         filePath: "",
       });

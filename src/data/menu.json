@@ -85,17 +85,6 @@
     ]
   },
   {
-    "submenu": true,
-    "hide": false,
-    "title": "Penilaian",
-    "icon": "<GoTasklist />",
-    "url": "",
-    "subtitle": [
-      { "name": "Daftar Penilaian", "url": "/guru/daftar-penilaian" },
-      { "name": "Rekap Penilaian", "url": "/guru/rekap-penilaian" }
-    ]
-  },
-  {
     "submenu": false,
     "hide": false,
     "title": "Jobdesk",

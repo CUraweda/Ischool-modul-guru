@@ -72,6 +72,7 @@ const JobdeskSupervisor = () => {
       }, 300);
     } catch (error) {
       console.error(error);
+      closeModal("jobdesk-supervisor");
       Swal.fire("Error", "Gagal memperbarui data!", "error");
     }
   };

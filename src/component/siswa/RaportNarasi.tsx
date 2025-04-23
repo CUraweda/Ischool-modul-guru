@@ -388,7 +388,8 @@ const RaportNarasi = () => {
                                 sessionStorage.setItem(
                                   "idSiswa",
                                   item?.studentclass?.id
-                                );
+                                ),
+                                sessionStorage.setItem("smt", item?.semester);
                             }
                           }}
                         >
