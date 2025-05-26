@@ -1,6 +1,5 @@
 import { ViewState } from "@devexpress/dx-react-scheduler";
 import {
-  AppointmentForm,
   Appointments,
   DateNavigator,
   MonthView,
@@ -299,7 +298,25 @@ const AgendaKegiatan = () => {
               currentDate={currentDate}
               onCurrentDateChange={(date) => setCurrentDate(date)}
             />
-            <MonthView />
+            <MonthView
+              timeTableCellComponent={({ startDate, ...props }) => (
+                <MonthView.TimeTableCell
+                  {...props}
+                  startDate={startDate}
+                  onDoubleClick={() => {
+                    setValue(
+                      "start_date",
+                      dayjs(startDate).startOf("day").format("YYYY-MM-DDTHH:mm")
+                    );
+                    setValue(
+                      "end_date",
+                      dayjs(startDate).endOf("day").format("YYYY-MM-DDTHH:mm")
+                    );
+                    handleModalOpen();
+                  }}
+                />
+              )}
+            />
             <Appointments
               appointmentComponent={(props) => (
                 <Appointments.Appointment
@@ -311,7 +328,6 @@ const AgendaKegiatan = () => {
             <Toolbar />
             <DateNavigator />
             <TodayButton />
-            <AppointmentForm />
           </Scheduler>
         </Paper>
       </div>
