@@ -29,7 +29,7 @@ const schema = Yup.object().shape({
     .optional()
     .test(
       "is-valid-type",
-      "File harus pdf atau gambar",
+      "File harus pdf",
       (value) =>
         !value ||
         (value &&
