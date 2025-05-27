@@ -1,23 +1,22 @@
-import { useState, useEffect } from "react";
+import { ViewState } from "@devexpress/dx-react-scheduler";
+import dayjs from "dayjs";
+import {
+  Appointments,
+  DateNavigator,
+  MonthView,
+  Scheduler,
+  TodayButton,
+  Toolbar,
+} from "@devexpress/dx-react-scheduler-material-ui";
 import { Button } from "@mui/material";
 import Paper from "@mui/material/Paper";
-import { ViewState } from "@devexpress/dx-react-scheduler";
-import {
-  Scheduler,
-  Appointments,
-  AppointmentForm,
-  AppointmentTooltip,
-  MonthView,
-  Toolbar,
-  DateNavigator,
-  TodayButton,
-} from "@devexpress/dx-react-scheduler-material-ui";
 import { employeeStore } from "../../store/Store";
 import { Kalender } from "../../middleware/api";
 import Swal from "sweetalert2";
-import { BiTrash } from "react-icons/bi";
-import { CiClock2 } from "react-icons/ci";
+// import { BiTrash } from "react-icons/bi";
+// import { CiClock2 } from "react-icons/ci";
 import { useForm } from "react-hook-form";
+import { useState, useEffect } from "react";
 
 const AgendaKegiatan = () => {
   const { employee } = employeeStore();
@@ -91,66 +90,66 @@ const AgendaKegiatan = () => {
     }
   };
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
+  // const formatDate = (date: string) => {
+  //   return new Date(date).toLocaleDateString("id-ID", {
+  //     day: "numeric",
+  //     month: "long",
+  //     year: "numeric",
+  //   });
+  // };
 
-  const CustomAppointment = ({ children, style, ...restProps }: any) => {
-    const backgroundColor = restProps.data.color?.split("_")[0] || "#06b6d4";
-    return (
-      <Appointments.Appointment
-        {...restProps}
-        style={{
-          ...style,
-          backgroundColor,
-          borderRadius: "8px",
-          fontSize: "14px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        onDoubleClick={() => handleAppointmentClick(restProps.data)}
-      >
-        {children}
-      </Appointments.Appointment>
-    );
-  };
+  // const CustomAppointment = ({ children, style, ...restProps }: any) => {
+  //   const backgroundColor = restProps.data.color?.split("_")[0] || "#06b6d4";
+  //   return (
+  //     <Appointments.Appointment
+  //       {...restProps}
+  //       style={{
+  //         ...style,
+  //         backgroundColor,
+  //         borderRadius: "8px",
+  //         fontSize: "14px",
+  //         display: "flex",
+  //         justifyContent: "center",
+  //         alignItems: "center",
+  //       }}
+  //       onDoubleClick={() => handleAppointmentClick(restProps.data)}
+  //     >
+  //       {children}
+  //     </Appointments.Appointment>
+  //   );
+  // };
 
-  const CustomTooltipContent = ({ appointmentData }: any) => (
-    <div className="w-full p-3">
-      <div className="flex justify-between items-center">
-        <h3 className="font-bold text-lg">{appointmentData.title}</h3>
-        <div className="flex gap-2">
-          <button
-            onClick={() => handleAppointmentClick(appointmentData)}
-            className="text-blue-500 text-xl"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => {
-              setEditingAppointment(appointmentData);
-              deleteAgenda();
-            }}
-            className="text-red-500 text-xl"
-          >
-            <BiTrash />
-          </button>
-        </div>
-      </div>
-      <div className="mt-3 flex items-center gap-2 text-gray-700">
-        <CiClock2 />
-        <span>
-          {formatDate(appointmentData.startDate)} -{" "}
-          {formatDate(appointmentData.endDate)}
-        </span>
-      </div>
-    </div>
-  );
+  // const CustomTooltipContent = ({ appointmentData }: any) => (
+  //   <div className="w-full p-3">
+  //     <div className="flex justify-between items-center">
+  //       <h3 className="font-bold text-lg">{appointmentData.title}</h3>
+  //       <div className="flex gap-2">
+  //         <button
+  //           onClick={() => handleAppointmentClick(appointmentData)}
+  //           className="text-blue-500 text-xl"
+  //         >
+  //           Edit
+  //         </button>
+  //         <button
+  //           onClick={() => {
+  //             setEditingAppointment(appointmentData);
+  //             deleteAgenda();
+  //           }}
+  //           className="text-red-500 text-xl"
+  //         >
+  //           <BiTrash />
+  //         </button>
+  //       </div>
+  //     </div>
+  //     <div className="mt-3 flex items-center gap-2 text-gray-700">
+  //       <CiClock2 />
+  //       <span>
+  //         {formatDate(appointmentData.startDate)} -{" "}
+  //         {formatDate(appointmentData.endDate)}
+  //       </span>
+  //     </div>
+  //   </div>
+  // );
 
   useEffect(() => {
     getDataList();
@@ -266,21 +265,47 @@ const AgendaKegiatan = () => {
         </div>
       )}
 
-      <Paper>
-        <Scheduler data={dataList} locale="id">
-          <ViewState
-            currentDate={currentDate}
-            onCurrentDateChange={(date) => setCurrentDate(date)}
-          />
-          <MonthView />
-          <Appointments appointmentComponent={CustomAppointment} />
-          <Toolbar />
-          <DateNavigator />
-          <TodayButton />
-          <AppointmentTooltip contentComponent={CustomTooltipContent} />
-          <AppointmentForm />
-        </Scheduler>
-      </Paper>
+      {/* Scheduler */}
+      <div className="w-full p-3">
+        <Paper>
+          <Scheduler data={dataList} locale={"id"}>
+            <ViewState
+              currentDate={currentDate}
+              onCurrentDateChange={(date) => setCurrentDate(date)}
+            />
+            <MonthView
+              timeTableCellComponent={({ startDate, ...props }) => (
+                <MonthView.TimeTableCell
+                  {...props}
+                  startDate={startDate}
+                  onDoubleClick={() => {
+                    setValue(
+                      "start_date",
+                      dayjs(startDate).startOf("day").format("YYYY-MM-DDTHH:mm")
+                    );
+                    setValue(
+                      "end_date",
+                      dayjs(startDate).endOf("day").format("YYYY-MM-DDTHH:mm")
+                    );
+                    handleModalOpen();
+                  }}
+                />
+              )}
+            />
+            <Appointments
+              appointmentComponent={(props) => (
+                <Appointments.Appointment
+                  {...props}
+                  onDoubleClick={() => handleAppointmentClick(props.data)}
+                />
+              )}
+            />
+            <Toolbar />
+            <DateNavigator />
+            <TodayButton />
+          </Scheduler>
+        </Paper>
+      </div>
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { CiCircleInfo } from "react-icons/ci";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
 import { FileRaporSiswa, Lesson, Mapel, Task } from "../../middleware/api";
+
 const BahanAjar: React.FC<{}> = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [DataLesson, setDataLesson] = useState<any[]>([]);
@@ -20,6 +21,7 @@ const BahanAjar: React.FC<{}> = () => {
     totalRows: 0,
     totalPage: 0,
   });
+
   const getClass = async () => {
     const response = await Task.GetAllClass(0, 10000, "Y", "Y", "Y");
     setClass(response.data.data.result);
@@ -49,6 +51,7 @@ const BahanAjar: React.FC<{}> = () => {
       });
     }
   };
+
   const getMapel = async () => {
     try {
       const res = await Mapel.GetAllDataMapel(0, 100);
@@ -60,6 +63,7 @@ const BahanAjar: React.FC<{}> = () => {
       console.error(error);
     }
   };
+
   const createLesson = async (payload: any) => {
     try {
       await Lesson.CreateNewLesson(payload);
@@ -82,16 +86,13 @@ const BahanAjar: React.FC<{}> = () => {
       });
     }
   };
+
   const DownloadFile = async (path?: string, type?: boolean) => {
     if (!path) return;
-
-    console.log(path);
     try {
       const response = await FileRaporSiswa.downloadFile(path);
       const blob = new Blob([response.data], { type: "application/pdf" });
-
       const fileUrl = URL.createObjectURL(blob);
-
       if (type === true) {
         const link: any = document.createElement("a");
         link.href = fileUrl;
@@ -100,24 +101,19 @@ const BahanAjar: React.FC<{}> = () => {
         link.click();
         document.body.removeChild(link);
       }
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil",
+        text: "Download berhasil",
+      });
     } catch (error: any) {
       let message = "Gagal mengunduh file rapor siswa";
       if (error.response?.status == 404)
         message = "File rapor siswa tidak ditemukan";
-
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: message,
-      });
-    } finally {
-      Swal.fire({
-        icon: "success",
-        title: "Berhasil...",
-        text: "Download berhasil",
-      });
+      Swal.fire({ icon: "error", title: "Oops...", text: message });
     }
   };
+
   const updateDataLesson = async (payload: any, id: number) => {
     try {
       await Lesson.UpdateLesson(payload, id);
@@ -133,7 +129,7 @@ const BahanAjar: React.FC<{}> = () => {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Gagal dibuat",
+        text: "Gagal dirubah",
         showConfirmButton: true,
         timer: 1500,
       });
@@ -141,10 +137,9 @@ const BahanAjar: React.FC<{}> = () => {
   };
 
   const deleteDataLesson = async (id: number) => {
-    // Konfirmasi delete dengan SweetAlert dalam bahasa Indonesia
     const result = await Swal.fire({
       icon: "warning",
-      title: "Apakah Anda yakin?",
+      title: "Apakah Anda yakin ingin menghapus?",
       text: "Tindakan ini tidak dapat dibatalkan!",
       showCancelButton: true,
       confirmButtonText: "Ya, hapus!",
@@ -152,11 +147,10 @@ const BahanAjar: React.FC<{}> = () => {
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
     });
-
     if (result.isConfirmed) {
       try {
         await Lesson.DeleteLesson(id);
-        getLesson(); // Memanggil data lesson setelah penghapusan
+        getLesson();
         Swal.fire({
           icon: "success",
           title: "Berhasil",
@@ -166,6 +160,11 @@ const BahanAjar: React.FC<{}> = () => {
         });
       } catch (error) {
         console.error(error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Gagal menghapus data",
+        });
       }
     }
   };
@@ -184,13 +183,13 @@ const BahanAjar: React.FC<{}> = () => {
     const file = event.target.files?.[0];
     setSelectedFile(file || null);
   };
-  // Validation schema for formik
+
   const validationSchema = Yup.object({
-    assignments_name: Yup.string().required("Required"),
-    subjects_name: Yup.string().required("Required"),
-    class: Yup.number().required("Required"),
-    description: Yup.string().required("Required"),
-    file: Yup.mixed().required("Required"),
+    assignments_name: Yup.string().required("Nama tugas wajib diisi"),
+    subjects_name: Yup.string().required("Mapel wajib dipilih"),
+    class: Yup.number().required("Kelas wajib dipilih"),
+    description: Yup.string().required("Keterangan wajib diisi"),
+    file: Yup.mixed().required("File wajib diunggah"),
   });
 
   const handleSubmit = async (values: any) => {
@@ -209,10 +208,9 @@ const BahanAjar: React.FC<{}> = () => {
       } else {
         updateDataLesson(formData, selectedUpdate.id);
       }
-      console.log(values);
       setShowModal(false);
     } catch (error) {
-      Swal.fire("Error", "Failed to add lesson", "error");
+      Swal.fire("Error", "Gagal menyimpan data", "error");
     }
   };
 
@@ -229,21 +227,21 @@ const BahanAjar: React.FC<{}> = () => {
         <dialog
           className="modal modal-open"
           onClick={() => {
-            setShowModal(false), resetForm();
+            setShowModal(false);
+            resetForm();
           }}
         >
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <button
               className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2"
               onClick={() => {
-                setShowModal(false), resetForm();
+                setShowModal(false);
+                resetForm();
               }}
             >
               ✕
             </button>
             <h3 className="text-lg font-bold">Tambah Bahan Ajar</h3>
-
-            {/* Formik form inside modal */}
             <Formik
               initialValues={{
                 assignments_name: selectedUpdate?.assignments_name || "",
@@ -291,14 +289,12 @@ const BahanAjar: React.FC<{}> = () => {
                         </option>
                       ))}
                     </Field>
-
                     <ErrorMessage
                       name="subjects_name"
                       component="div"
                       className="text-red-500 text-sm"
                     />
                   </div>
-
                   <div className="mb-4 w-full">
                     <label htmlFor="class" className="label">
                       Kelas
@@ -308,8 +304,8 @@ const BahanAjar: React.FC<{}> = () => {
                       as="select"
                       className="input input-bordered w-full"
                     >
-                      <option selected>Kelas</option>
-                      {Class?.map((item: any, index: number) => (
+                      <option value="">Pilih Kelas</option>
+                      {Class?.map((item, index) => (
                         <option
                           value={item.id}
                           key={index}
@@ -341,8 +337,12 @@ const BahanAjar: React.FC<{}> = () => {
                         setFieldValue("file", event.currentTarget.files?.[0]);
                       }}
                     />
+                    <ErrorMessage
+                      name="file"
+                      component="div"
+                      className="text-red-500 text-sm"
+                    />
                   </div>
-
                   <div className="mb-4 w-full">
                     <label htmlFor="description" className="label">
                       Keterangan
@@ -358,7 +358,6 @@ const BahanAjar: React.FC<{}> = () => {
                       className="text-red-500 text-sm"
                     />
                   </div>
-
                   <div className="modal-action">
                     <button
                       type="submit"
@@ -373,43 +372,25 @@ const BahanAjar: React.FC<{}> = () => {
           </div>
         </dialog>
       )}
-
       <div className="w-full flex flex-col items-center">
         <div className="w-full flex justify-center mt-10">
           <span className="text-4xl font-bold">Bahan Ajar Guru</span>
         </div>
-
         <div className="w-full flex justify-center mt-10 flex-col items-center">
           <div className="w-full justify-between flex px-5">
-            {/* <select
-              className="select select-primary w-32 max-w-xs"
-              value={filter.search}
-              onChange={(e) =>
-                setFilter((prev) => ({ ...prev, search: e.target.value }))
-              }
-            >
-              <option disabled selected>
-                Mapel
-              </option>
-              <option value="">Pilih Mapel</option>
-              {ListMapel.map((item, i) => (
-                <option key={i} value={item.name}>
-                  {item.level + "-" + item.name}
-                </option>
-              ))}
-            </select> */}
             <div className="join">
               <button
-                onClick={() => (
-                  setShowModal(true), setModalType(true), selectedUpdate()
-                )}
+                onClick={() => {
+                  setShowModal(true);
+                  setModalType(true);
+                  setSelectedUpdate(null);
+                }}
                 className="btn join-item bg-blue-500 text-white"
               >
                 Tambah
               </button>
             </div>
           </div>
-
           <div className="overflow-x-auto w-full p-5">
             <table className="table shadow-lg bg-white">
               <thead className="bg-blue-200">
@@ -423,20 +404,20 @@ const BahanAjar: React.FC<{}> = () => {
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {DataLesson?.map((item: any, index) => (
+                {DataLesson?.map((item, index) => (
                   <tr key={index}>
                     <th>{index + 1}</th>
                     <td>{item.assignments_name}</td>
                     <td>{item.subjects_name}</td>
                     <td>{item.class.level + "-" + item.class.class_name}</td>
                     <td>{item.description}</td>
-                    <td>
+                    <td className="flex gap-1">
                       <button
-                        onClick={() => (
-                          setShowModal(true),
-                          setModalType(false),
-                          setSelectedUpdate(item)
-                        )}
+                        onClick={() => {
+                          setShowModal(true);
+                          setModalType(false);
+                          setSelectedUpdate(item);
+                        }}
                         className="btn bg-blue-400 text-xl font-bold text-white"
                       >
                         <BsPencilFill />
@@ -469,7 +450,7 @@ const BahanAjar: React.FC<{}> = () => {
                 Previous page
               </button>
               <button
-                className="join-item btn  btn-sm"
+                className="join-item btn btn-sm"
                 onClick={() => {
                   setFilter((prev) => ({ ...prev, page: 10 }));
                 }}
@@ -486,14 +467,10 @@ const BahanAjar: React.FC<{}> = () => {
               >
                 20
               </button>
-
               <button
-                className="join-item btn  btn-sm"
+                className="join-item btn btn-sm"
                 onClick={() =>
-                  setFilter((prev) => ({
-                    ...prev,
-                    page: filter.page + 1,
-                  }))
+                  setFilter((prev) => ({ ...prev, page: filter.page + 1 }))
                 }
                 disabled={filter.page === filter.totalPage - 1}
               >

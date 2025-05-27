@@ -604,11 +604,14 @@ const AdmSiswa = () => {
               </select>
               <button
                 className="btn bg-green-500 text-white font-bold"
-                onClick={() => showModal("add-task")}
+                onClick={() => {
+                  formik.resetForm();
+                  showModal("add-task");
+                }}
               >
                 <span className="text-xl">
                   <FiPlus />
-                </span>{" "}
+                </span>
                 Tambah
               </button>
             </div>
