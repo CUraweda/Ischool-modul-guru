@@ -110,14 +110,14 @@ const RaportNarasi = () => {
       const filteredData = dataRaportSiswa.filter(
         (item: any) => item.id === idKategori
       );
-      console.log(filteredData);
-
+     
       setDataRaport(filteredData[0]);
     }
     setData(response.data.data);
   };
 
   const getSubKategori = async () => {
+    setIdSubKategori('')
     try {
       if (!selectKategori) {
         closeModal("tambah-keterangan");
@@ -265,7 +265,7 @@ const RaportNarasi = () => {
 
       return newState;
     });
-    console.log(EditdataRaport);
+  
   };
 
   const handleEditReport = async () => {
@@ -330,7 +330,7 @@ const RaportNarasi = () => {
                 className="select w-32 max-w-md select-bordered join-item"
                 onChange={(e) => setSelectKategori(JSON.parse(e.target.value))}
               >
-                <option disabled selected>
+                <option selected value={''}>
                   Kategori
                 </option>
                 {kategori?.map((item: any, index: number) => (
@@ -738,7 +738,7 @@ const RaportNarasi = () => {
                 className="select join-item w-32 select-bordered"
                 onChange={(e) => setIdSubKategori(e.target.value)}
               >
-                <option disabled selected>
+                <option selected value='' >
                   Sub Kategori
                 </option>
                 {subKategori?.map((item: any, index: number) => (
