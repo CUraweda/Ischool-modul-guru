@@ -573,8 +573,8 @@ const RaportNarasi = () => {
                     type="radio"
                     name={`item-1`}
                     className="checkbox"
-                    value={3}
-                    checked={EditdataRaport?.grade === 3 ? true : false}
+                    value={1}
+                    checked={EditdataRaport?.grade === 1 ? true : false}
                     onChange={handleEditCheckboxChange}
                   />
                   <label htmlFor="">Membutuhkan Banyak Latihan</label>
@@ -595,8 +595,8 @@ const RaportNarasi = () => {
                     type="radio"
                     name={`item-1`}
                     className="checkbox"
-                    value={1}
-                    checked={EditdataRaport?.grade === 1 ? true : false}
+                    value={3}
+                    checked={EditdataRaport?.grade === 3 ? true : false}
                     onChange={handleEditCheckboxChange}
                   />
                   <label htmlFor="">Mandiri</label>
