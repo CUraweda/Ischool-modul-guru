@@ -41,6 +41,10 @@ const RaportNarasi = () => {
     }
   };
 
+  // hapus ini
+
+  console.log("selectKategori", selectDeskripsi);
+
   useEffect(() => {
     getKategori();
     getDataNarasi();
@@ -110,14 +114,14 @@ const RaportNarasi = () => {
       const filteredData = dataRaportSiswa.filter(
         (item: any) => item.id === idKategori
       );
-     
+
       setDataRaport(filteredData[0]);
     }
     setData(response.data.data);
   };
 
   const getSubKategori = async () => {
-    setIdSubKategori('')
+    setIdSubKategori("");
     try {
       if (!selectKategori) {
         closeModal("tambah-keterangan");
@@ -222,18 +226,24 @@ const RaportNarasi = () => {
       const smt = sessionStorage.getItem("smt");
 
       if (selectDeskripsi) {
-        await Promise.all(
-          selectDeskripsi.map(async (item: any) => {
-            const dataRest = {
-              semester: smt ? smt : 1,
-              narrative_desc_id: item.id,
-              grade: item.nilai ? item.nilai : 1,
-              student_report_id: idRaport,
-            };
+        for (const item of selectDeskripsi) {
+          const dataRest = {
+            semester: smt ? smt : 1,
+            narrative_desc_id: item.id,
+            grade: item.nilai ? item.nilai : 1,
+            student_report_id: idRaport,
+          };
+          console.log("dataRest", dataRest);
+
+          try {
             const response = await Raport.createRapotNarasi(dataRest);
-            return response;
-          })
-        );
+            console.log("Success:", response);
+          } catch (err) {
+            console.error("Error submitting dataRest:", dataRest, err);
+            // optional: break atau continue jika terjadi error
+            break; // stop jika ada error
+          }
+        }
       }
     } catch (error) {
       console.log(error);
@@ -265,7 +275,6 @@ const RaportNarasi = () => {
 
       return newState;
     });
-  
   };
 
   const handleEditReport = async () => {
@@ -330,7 +339,7 @@ const RaportNarasi = () => {
                 className="select w-32 max-w-md select-bordered join-item"
                 onChange={(e) => setSelectKategori(JSON.parse(e.target.value))}
               >
-                <option selected value={''}>
+                <option selected value={""}>
                   Kategori
                 </option>
                 {kategori?.map((item: any, index: number) => (
@@ -701,9 +710,6 @@ const RaportNarasi = () => {
                     </td>
                     <td>{item?.desc}</td>
                     <td className="flex gap-1 text-2xl">
-                      {/* <span className="text-orange-500 cursor-pointer">
-                        <PiNotePencilBold />
-                      </span> */}
                       <span
                         className="text-red-500 cursor-pointer"
                         onClick={() => handleDeleteDeskripsi(item.id)}
@@ -728,6 +734,7 @@ const RaportNarasi = () => {
           </div>
         </div>
       </Modal>
+
       <Modal id="tambah-narasi" width="w-full max-w-7xl">
         <div className="w-full flex flex-col items-center">
           <span className="text-xl font-bold">Tambah Raport Narasi</span>
@@ -738,7 +745,7 @@ const RaportNarasi = () => {
                 className="select join-item w-32 select-bordered"
                 onChange={(e) => setIdSubKategori(e.target.value)}
               >
-                <option selected value='' >
+                <option selected value="">
                   Sub Kategori
                 </option>
                 {subKategori?.map((item: any, index: number) => (
