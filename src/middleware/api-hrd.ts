@@ -172,16 +172,31 @@ const Karyawan = {
 };
 
 const Jobdesk = {
-  getAllJobdesk: (limit: number, search: string, page: number, id: string) =>
-    instance.get(`/employee?employee_id=${id}`, {
-      params: {
-        limit: limit,
-        search,
-        page: page,
-      },
+  getAllJobdesk: (
+    limit: number,
+    page: number,
+    personal: string,
+    partner: string,
+    supervisor: string
+  ) =>
+    instance.get(
+      `/employee-jobdesk?personal=${personal}&partner=${partner}&supervisor${supervisor}&limit=${limit}&page=${page}`,
+      {
+        params: {
+          limit: limit,
+          page: page,
+          personal: personal,
+          partner: partner,
+          supervisor: supervisor,
+        },
+      }
+    ),
+  UpdateJobdesk: (data: any, id: number) =>
+    instance({
+      method: `PUT`,
+      url: `/employee-jobdesk/grade/${id}`,
+      data,
     }),
-  createJobdesk: (data: any) =>
-    instance.post("/employee?page=0&limit=20&employee_id=1", data),
 };
 
 const Employee = {

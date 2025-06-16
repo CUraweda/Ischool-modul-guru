@@ -380,7 +380,7 @@ const Kalender = {
       data,
     }),
 
-  getByGuru: (id: number) =>
+  getByGuru: (id: any) =>
     instance({
       method: "GET",
       url: `/edu-calendar-detail/show-by-teacher/${id}`,

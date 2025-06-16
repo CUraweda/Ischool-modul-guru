@@ -215,22 +215,17 @@ const FaceDetection: React.FC<FaceDetectionProps> = ({
   }, [webcamRef, dataUser]);
 
   return (
-    <div className="h-[350px] sm:h-[400px] w-[400px]">
-      <div className="relative">
+    <div>
+      <div>
         {cameraPermission ? (
           <>
             <Webcam
               ref={webcamRef}
               muted={true}
               mirrored={true}
-              className="absolute"
-              videoConstraints={{
-                width: 400,
-                height: 400,
-                aspectRatio: 1 / 1,
-              }}
+              className="w-96 h-96"
             />
-            <canvas ref={canvasRef} className="absolute" />
+            <canvas ref={canvasRef} />
           </>
         ) : (
           <div className="camera-blocked-message">

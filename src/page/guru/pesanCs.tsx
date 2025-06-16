@@ -9,6 +9,7 @@ const PesanCs = () => {
   const { id, role } = Store();
   const [userChats, setUserChats] = useState<any[]>([]);
   const [financialChats, setFinancialChats] = useState<any[]>([]);
+  const [searchModal, setSearchModal] = useState("");
   const [teacherChats, setTeacherChats] = useState<any[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
   const [search, setSearch] = useState("");
@@ -264,10 +265,24 @@ const PesanCs = () => {
           <div className="flex justify-between items-center border-b pb-4 mb-4">
             <h2 className="text-xl font-bold">Daftar Chat</h2>
           </div>
+
+          {/* Input Pencarian */}
+          <input
+            type="search"
+            placeholder="Cari user di sini..."
+            value={searchModal}
+            onChange={(e) => setSearchModal(e.target.value)}
+            className="w-full px-3 outline-none focus:outline-none py-2 mb-4 border border-gray-300 rounded"
+          />
+
           <ul className="space-y-2 max-h-[400px] overflow-y-auto">
             {role === "2"
               ? financialChats
-                  .filter((item) => [1, 2, 3, 5, 10].includes(item.role_id))
+                  .filter((item) =>
+                    item.full_name
+                      ?.toLowerCase()
+                      .includes(searchModal.toLowerCase())
+                  )
                   .map((item) => (
                     <li
                       key={item.id}
@@ -285,26 +300,32 @@ const PesanCs = () => {
                       </span>
                     </li>
                   ))
-              : teacherChats.map((item) => (
-                  <li
-                    key={item.id}
-                    className="p-3 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer flex justify-between items-center"
-                    onClick={() => {
-                      handleUserClick(
-                        item.user ? item.user.id : item.id,
-                        item.user ? item.user.full_name : item.full_name
-                      );
-                      closeModal("daftar-chat");
-                    }}
-                  >
-                    <span className="font-semibold">
-                      {item.user ? item.user.full_name : item.full_name}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {item.user ? item.user.email : item.email}
-                    </span>
-                  </li>
-                ))}
+              : teacherChats
+                  .filter((item) =>
+                    item.full_name
+                      ?.toLowerCase()
+                      .includes(searchModal.toLowerCase())
+                  )
+                  .map((item) => (
+                    <li
+                      key={item.id}
+                      className="p-3 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer flex justify-between items-center"
+                      onClick={() => {
+                        handleUserClick(
+                          item.user ? item.user.id : item.id,
+                          item.user ? item.user.full_name : item.full_name
+                        );
+                        closeModal("daftar-chat");
+                      }}
+                    >
+                      <span className="font-semibold">
+                        {item.user ? item.user.full_name : item.full_name}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {item.user ? item.user.email : item.email}
+                      </span>
+                    </li>
+                  ))}
           </ul>
         </div>
       </Modal>

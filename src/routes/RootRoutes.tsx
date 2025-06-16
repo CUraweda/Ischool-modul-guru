@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Loading from "../component/Loading";
 import DaftarPenilaianPage from "../page/guru/DaftarPenilaian";
 import DetailRekapPenilaianPage from "../page/guru/DetailRekapPenilaian";
-import JobdeskGuruPage from "../page/guru/JobdeskGuru";
+// import JobdeskGuruPage from "../page/guru/JobdeskGuru";
 import RekapPenilaianPage from "../page/guru/RekapPenilaian";
 import Test from "../page/guru/Test";
 import DinasLuarPage from "../page/karyawan/DinasLuar";
@@ -31,7 +31,7 @@ const ODFYC = lazy(() => import("../page/guru/ODFYC"));
 const PrestasiSiswa = lazy(() => import("../page/guru/prestasiSiswa"));
 const OdfycPartisipants = lazy(() => import("../page/guru/OdfycParticipants"));
 const TrainFaceGuru = lazy(() => import("../page/guru/FormTrainFaceGuru"));
-
+const Jobdesk = lazy(() => import("../page/guru/Jobdesk"));
 const Ke_Dashbaord = lazy(() => import("../page/keuangan/Dashboard"));
 const Ke_DataSiswa = lazy(() => import("../page/keuangan/DataSiswa"));
 const Ke_PosKeuangan = lazy(() => import("../page/keuangan/PosKeuangan"));
@@ -215,7 +215,7 @@ const RootRoutes = () => {
     },
     {
       path: "/guru/jobdesk",
-      element: <JobdeskGuruPage />,
+      element: <Jobdesk />,
       layout: <Layout />,
       isSuspended: true,
     },

@@ -24,7 +24,7 @@ const ProfilePage = () => {
   const [classTeacher, setClassTeacher] = useState<number | string>("");
   const [employeeId, setEmployeeId] = useState<number | string>();
   const [signaturePath, setSignaturePath] = useState("");
-  const [statusTeacher, setStatusTeacher] = useState<any>(true);
+  const [statusTeacher, setStatusTeacher] = useState<any>(false);
   const [statusHeadmaster, setStatusHeadmaster] = useState<any>(false);
   const [updatedName, setUpdatedName] = useState("");
   const [password, setPassword] = useState("");
@@ -197,6 +197,8 @@ const ProfilePage = () => {
         icon: "success",
         confirmButtonText: "OK",
       });
+      FetchData();
+      getMe();
       closeModal("addSignature");
     } catch (error) {
       console.error(error);
@@ -242,6 +244,8 @@ const ProfilePage = () => {
         icon: "success",
         confirmButtonText: "OK",
       });
+      FetchData();
+      getMe();
       closeModal("addSignature");
     } catch (error) {
       console.error("Error UpdateSignature:", error);
