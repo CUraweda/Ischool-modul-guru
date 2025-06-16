@@ -10,6 +10,7 @@ import {
 import {
   Class,
   PosJenisPembayaran,
+  PosPembayaran,
   Student,
   TagihanSiswa,
 } from "../../middleware/api";
@@ -21,6 +22,14 @@ const Laporan = () => {
 
   // filtering
   const [pageMeta, setPageMeta] = useState<IpageMeta>({ page: 0, limit: 10 });
+  const [postPayments, setPostPayments] = useState<any[]>([]);
+  const [grandTotals, setGrandTotals] = useState<any[]>([]);
+  const [classes, setClasses] = useState<any[]>([]);
+  const [students, setStudents] = useState<any[]>([]);
+  const [paymentCats, setPaymentCats] = useState<any[]>([]);
+  const [dataList, setDataList] = useState<any[]>([]);
+
+  
   const [filter, setFilter] = useState({
     page: 0,
     limit: 10,
@@ -31,7 +40,9 @@ const Laporan = () => {
     endPaid: "",
     status: "",
     nisPrefix: "",
+    pos: "",
   });
+
   const [filterInForm, setFilterInForm] = useState({
     academicYear: "",
     paymentCatId: "",
@@ -41,6 +52,7 @@ const Laporan = () => {
     endPaid: "",
     status: "",
     nisPrefix: "",
+    pos: "",
   });
 
   const applyFilterInForm = () => {
@@ -61,6 +73,7 @@ const Laporan = () => {
       endPaid: "",
       status: "",
       nisPrefix: "",
+      pos: "",
     });
   };
 
@@ -80,7 +93,6 @@ const Laporan = () => {
     setFilter(obj);
   };
 
-  const [classes, setClasses] = useState<any[]>([]);
   const getClasses = async () => {
     try {
       const res = await Class.showAll(0, 1000);
@@ -89,7 +101,13 @@ const Laporan = () => {
     } catch {}
   };
 
-  const [students, setStudents] = useState<any[]>([]);
+  const getPostPayments = async () => {
+    try {
+      const res = await PosPembayaran.showAll("", 0, 1000);
+      if (res.data?.data?.result) setPostPayments(res.data.data.result);
+    } catch {}
+  };
+
   const getStudents = async () => {
     try {
       const res = await Student.GetStudentByClass(
@@ -97,28 +115,18 @@ const Laporan = () => {
         filterInForm.academicYear
       );
       setStudents(res.data.data.map((dat: any) => dat.student));
+     
     } catch {}
   };
 
-  useEffect(() => {
-    if (filterInForm.classId) getStudents();
-  }, [filterInForm.classId, filterInForm.academicYear]);
-
-  const [paymentCats, setPaymentCats] = useState<any[]>([]);
   const getPaymentCats = async () => {
     try {
-      const res = await PosJenisPembayaran.showAll("", "", "", 0, 1000);
+      const res = await PosJenisPembayaran.showAll("", filterInForm.pos, "", 0, 1000);
       setPaymentCats(res.data.data.result);
+     
     } catch {}
   };
 
-  useEffect(() => {
-    getClasses();
-    getPaymentCats();
-  }, []);
-
-  // main
-  const [dataList, setDataList] = useState<any[]>([]);
   const getDataList = async () => {
     try {
       const res = await TagihanSiswa.showAllReports(
@@ -130,7 +138,8 @@ const Laporan = () => {
         filter.status,
         filter.nisPrefix,
         filter.page,
-        filter.limit
+        filter.limit,
+        filter.pos
       );
       const { result, ...meta } = res.data.data;
       setDataList(result);
@@ -144,7 +153,6 @@ const Laporan = () => {
     }
   };
 
-  const [grandTotals, setGrandTotals] = useState<any[]>([]);
   const getGrandTotals = async () => {
     try {
       const res = await TagihanSiswa.grandTotalByStatus({
@@ -155,15 +163,11 @@ const Laporan = () => {
         end_paid: filter.endPaid,
         status: filter.status,
         nis_prefix: filter.nisPrefix,
+        pos: filter.pos,
       });
       setGrandTotals(res.data.data ?? []);
     } catch {}
   };
-
-  useEffect(() => {
-    getDataList();
-    getGrandTotals();
-  }, [filter]);
 
   const handleExport = async () => {
     try {
@@ -174,7 +178,8 @@ const Laporan = () => {
         filter.startPaid,
         filter.endPaid,
         filter.status,
-        filter.nisPrefix
+        filter.nisPrefix,
+        filter.pos
       );
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
@@ -192,6 +197,26 @@ const Laporan = () => {
       });
     }
   };
+
+
+  useEffect(() => {
+    if (filterInForm.classId) getStudents();
+    if (filterInForm.pos) {
+      getPaymentCats();
+    }
+  }, [filterInForm.classId, filterInForm.academicYear, filterInForm.pos]);
+
+  useEffect(() => {
+    getDataList();
+    getGrandTotals();
+  }, [filter]);
+
+
+  useEffect(() => {
+    getClasses();
+
+    getPostPayments();
+  }, []);
 
   return (
     <>
@@ -341,10 +366,21 @@ const Laporan = () => {
           />
 
           <Select
+            label="POS Pembayaran"
+            placeholder="Semua"
+            keyValue="id"
+            keyDisplay="name"
+            options={postPayments}
+            value={filterInForm.pos}
+            onChange={(e) => handleFilterInForm("pos", e.target.value)}
+          />
+
+          <Select
             label="Pembayaran"
             placeholder="Semua"
             keyValue="id"
             keyDisplay="name"
+            disabled={!filterInForm.pos}
             options={paymentCats}
             value={filterInForm.paymentCatId}
             onChange={(e) => handleFilterInForm("paymentCatId", e.target.value)}

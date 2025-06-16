@@ -881,11 +881,12 @@ const TagihanSiswa = {
     status?: string,
     nisPrefix?: string,
     page: number = 0,
-    limit: number = 10
+    limit: number = 10,
+    pos: string | null = null
   ) =>
     instance({
       method: "GET",
-      url: `/student-payment-report?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}&nis_prefix=${nisPrefix}&page=${page}&limit=${limit}`,
+      url: `/student-payment-report?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}&nis_prefix=${nisPrefix}&page=${page}&limit=${limit}&pos=${pos}`,
     }),
   grandTotalByStatus: (params?: Record<string, any>) =>
     instance({
@@ -900,11 +901,12 @@ const TagihanSiswa = {
     startPaid?: string,
     endPaid?: string,
     status?: string,
-    nisPrefix?: string
+    nisPrefix?: string,
+    pos?: string | null
   ) =>
     instance({
       method: "GET",
-      url: `/student-payment-report/export-all?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}&nis_prefix=${nisPrefix}`,
+      url: `/student-payment-report/export-all?payment_category_id=${paymentCatId}&class_id=${classId}&student_id=${studentId}&start_paid=${startPaid}&end_paid=${endPaid}&status=${status}&nis_prefix=${nisPrefix}&pos=${pos}`,
       responseType: "blob",
     }),
   showAllArrears: (
