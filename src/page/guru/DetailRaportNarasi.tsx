@@ -5,17 +5,21 @@ import {
   FaPlus,
   FaRegTrashAlt,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link} from "react-router-dom";
 import Modal from "../../component/modal";
 import { Raport } from "../../middleware/api";
 import Swal from "sweetalert2";
 import { BiTrash } from "react-icons/bi";
 import { AiFillCloseCircle } from "react-icons/ai";
+import { globalStore } from "../../store/Store";
 
 const RaportNarasi = () => {
+  const { academicYear } = globalStore();
   const [kategori, setKategori] = useState<any[]>([]);
+
   const [selectKategori, setSelectKategori] = useState<any>();
   const [data, setData] = useState<any>();
+  const [dataSiswa, setDataSiswa] = useState<any>();
   const [trigerKet, settrigerKet] = useState<boolean>(false);
   const [deskripsi, setDeskripsi] = useState<any>([]);
   const [subKategori, setSubKategori] = useState<any>([]);
@@ -28,6 +32,11 @@ const RaportNarasi = () => {
 
   const [dataRaport, setDataRaport] = useState<any>([]);
   const [EditdataRaport, setEditDataRaport] = useState<any>();
+  const [idSiswa, setIdSiswa] = useState(sessionStorage.getItem("idSiswa"));
+
+  const idClass = sessionStorage.getItem("idClass");
+  const smt = sessionStorage.getItem("smt");
+
   const showModal = (props: string) => {
     let modalElement = document.getElementById(`${props}`) as HTMLDialogElement;
     if (modalElement) {
@@ -41,15 +50,17 @@ const RaportNarasi = () => {
     }
   };
 
-  // hapus ini
-
-  console.log("selectKategori", selectDeskripsi);
-
   useEffect(() => {
     getKategori();
-    getDataNarasi();
+     getDataNarasi();
     getKomentarKategori();
   }, [selectKategori]);
+
+  useEffect(() => {
+    getStudent();
+  }, [idClass]);
+
+  
 
   const getKategori = async () => {
     try {
@@ -103,10 +114,38 @@ const RaportNarasi = () => {
     }
   };
 
-  const getDataNarasi = async () => {
-    const id = sessionStorage.getItem("idSiswa");
+  const getStudent = async () => {
+    try {
+      const response = await Raport.showAllStudentReport(
+        idClass ?? "",
+        smt ?? 1,
+        0,
+        100,
+        "Y",
+        academicYear
+      );
+
+      const { result} = response.data.data;
+
+      const dataSiswaa = result?.map((item: any) => item.studentclass)
+    
+      console.log(dataSiswaa);
+      
+      setDataSiswa(dataSiswaa)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  const getDataNarasi = async (id?: string) => {
     const smt = sessionStorage.getItem("smt");
-    const response = await Raport.getDataNarasiSiswa(id, smt);
+    const siswaId = id ? id : idSiswa
+    console.log(siswaId, 'props');
+    
+    const response = await Raport.getDataNarasiSiswa(siswaId, smt);
+
+    sessionStorage.setItem("idSiswa", idSiswa ?? "");
 
     if (selectKategori) {
       const idKategori = selectKategori.id;
@@ -117,6 +156,7 @@ const RaportNarasi = () => {
 
       setDataRaport(filteredData[0]);
     }
+
     setData(response.data.data);
   };
 
@@ -314,6 +354,11 @@ const RaportNarasi = () => {
     }
   };
 
+  const handleClik = (id: string) => {
+    setIdSiswa(id)
+     getDataNarasi(id);
+  }
+  
   return (
     <>
       <div className="p-5">
@@ -335,6 +380,20 @@ const RaportNarasi = () => {
         <div className="w-full mt-10 ">
           <div className="flex items-center w-full justify-start gap-3 mb-5 pr-10">
             <div className="join">
+              <select
+                className="select w-32 max-w-md select-bordered join-item"
+                onChange={(e) => {handleClik(e.target.value), console.log(e.target.value, 'id yang bener');
+                }}
+              >
+                <option selected value={""}>
+                  Siswa
+                </option>
+                {dataSiswa?.map((item: any, index: number) => (
+                  <option key={index} value={item?.id}>
+                    {item?.student.full_name}
+                  </option>
+                ))}
+              </select>
               <select
                 className="select w-32 max-w-md select-bordered join-item"
                 onChange={(e) => setSelectKategori(JSON.parse(e.target.value))}
@@ -737,7 +796,9 @@ const RaportNarasi = () => {
 
       <Modal id="tambah-narasi" width="w-full max-w-7xl">
         <div className="w-full flex flex-col items-center">
-          <span className="text-xl font-bold">Raport Narasi {data?.full_name} - {data?.class_name}</span>
+          <span className="text-xl font-bold">
+            Raport Narasi {data?.full_name} - {data?.class_name}
+          </span>
 
           <div className="w-full gap-2 flex justify-end mt-5">
             <div>

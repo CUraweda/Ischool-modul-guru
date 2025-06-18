@@ -6,7 +6,7 @@ import { FaGear } from "react-icons/fa6";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { MdOutlineDocumentScanner } from "react-icons/md";
 import { PiNotePencilBold } from "react-icons/pi";
-import { Link } from "react-router-dom";
+import { Link} from "react-router-dom";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
 import { Raport, Task } from "../../middleware/api";
@@ -26,6 +26,7 @@ const schema = Yup.object({
 
 const RaportNarasi = () => {
   const { academicYear } = globalStore();
+
   const { setKelasProps, kelasProps } = useProps();
   const [kelas, setKelas] = useState<any[]>([]);
   const [DataSiswa, setDataSiswa] = useState<any[]>([]);
@@ -53,6 +54,7 @@ const RaportNarasi = () => {
       [key]: value,
     };
     if (key != "page") obj["page"] = 0;
+    
     setFilter(obj);
   };
 
@@ -114,6 +116,8 @@ const RaportNarasi = () => {
         "Y",
         academicYear
       );
+      console.log(response, 'ini responya');
+      
 
       sessionStorage.setItem("idClass", filter.classId);
       const { result, ...meta } = response.data.data;
