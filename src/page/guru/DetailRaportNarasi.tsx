@@ -737,7 +737,7 @@ const RaportNarasi = () => {
 
       <Modal id="tambah-narasi" width="w-full max-w-7xl">
         <div className="w-full flex flex-col items-center">
-          <span className="text-xl font-bold">Tambah Raport Narasi</span>
+          <span className="text-xl font-bold">Raport Narasi {data?.full_name} - {data?.class_name}</span>
 
           <div className="w-full gap-2 flex justify-end mt-5">
             <div>
