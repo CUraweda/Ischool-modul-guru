@@ -5,7 +5,7 @@ import {
   FaPlus,
   FaRegTrashAlt,
 } from "react-icons/fa";
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import Modal from "../../component/modal";
 import { Raport } from "../../middleware/api";
 import Swal from "sweetalert2";
@@ -33,6 +33,7 @@ const RaportNarasi = () => {
   const [dataRaport, setDataRaport] = useState<any>([]);
   const [EditdataRaport, setEditDataRaport] = useState<any>();
   const [idSiswa, setIdSiswa] = useState(sessionStorage.getItem("idSiswa"));
+  const [idNarasi, setNarasi] = useState(sessionStorage.getItem("idNar"));
 
   const idClass = sessionStorage.getItem("idClass");
   const smt = sessionStorage.getItem("smt");
@@ -52,15 +53,13 @@ const RaportNarasi = () => {
 
   useEffect(() => {
     getKategori();
-     getDataNarasi();
+    getDataNarasi();
     getKomentarKategori();
   }, [selectKategori]);
 
   useEffect(() => {
     getStudent();
   }, [idClass]);
-
-  
 
   const getKategori = async () => {
     try {
@@ -72,10 +71,11 @@ const RaportNarasi = () => {
     }
   };
 
-  const getKomentarKategori = async () => {
+  const getKomentarKategori = async (id?: string) => {
     try {
-      const idRaport = sessionStorage.getItem("idNar");
+      const idRaport = id ? id : idNarasi;
       const response = await Raport.getKomentarNarasiSiswa(idRaport);
+      sessionStorage.setItem("idNar", idRaport ?? "");
       const dataKomen = response.data?.data;
       const idKategori = selectKategori?.id;
       const filterKomenByKategori = dataKomen?.filter(
@@ -125,24 +125,21 @@ const RaportNarasi = () => {
         academicYear
       );
 
-      const { result} = response.data.data;
+      const { result } = response.data.data;
 
-      const dataSiswaa = result?.map((item: any) => item.studentclass)
-    
-      console.log(dataSiswaa);
-      
-      setDataSiswa(dataSiswaa)
+      const dataSiswaa = result?.map((item: any) => item);
+      const siswa = dataSiswaa.map((item: any) => item);
+
+      setDataSiswa(siswa);
     } catch (error) {
       console.log(error);
     }
   };
 
-
   const getDataNarasi = async (id?: string) => {
     const smt = sessionStorage.getItem("smt");
-    const siswaId = id ? id : idSiswa
-    console.log(siswaId, 'props');
-    
+    const siswaId = id ? id : idSiswa;
+
     const response = await Raport.getDataNarasiSiswa(siswaId, smt);
 
     sessionStorage.setItem("idSiswa", idSiswa ?? "");
@@ -354,11 +351,15 @@ const RaportNarasi = () => {
     }
   };
 
-  const handleClik = (id: string) => {
-    setIdSiswa(id)
-     getDataNarasi(id);
-  }
-  
+  const handleClik = (id: any) => {
+    const parts = id.split(",");
+    const [a, b] = parts;
+
+    setIdSiswa(b);
+    getDataNarasi(b);
+    getKomentarKategori(a);
+  };
+
   return (
     <>
       <div className="p-5">
@@ -382,15 +383,16 @@ const RaportNarasi = () => {
             <div className="join">
               <select
                 className="select w-32 max-w-md select-bordered join-item"
-                onChange={(e) => {handleClik(e.target.value), console.log(e.target.value, 'id yang bener');
+                onChange={(e) => {
+                  handleClik(e.target.value);
                 }}
               >
                 <option selected value={""}>
                   Siswa
                 </option>
                 {dataSiswa?.map((item: any, index: number) => (
-                  <option key={index} value={item?.id}>
-                    {item?.student.full_name}
+                  <option key={index} value={[item.id, item?.studentclass?.id]}>
+                    {item?.studentclass?.student.full_name}
                   </option>
                 ))}
               </select>

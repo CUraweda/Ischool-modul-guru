@@ -310,6 +310,8 @@ const RaportNarasi = () => {
     }
   };
 
+  console.log(DataSiswa);
+  
   return (
     <div>
       <div className="w-full flex justify-between gap-2">
