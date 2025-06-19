@@ -358,6 +358,7 @@ const RaportNarasi = () => {
     setIdSiswa(b);
     getDataNarasi(b);
     getKomentarKategori(a);
+    setNarasi(a)
   };
 
   return (
